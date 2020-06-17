@@ -1,0 +1,24 @@
+# User driven backup files #
+############################
+*.bak
+*.swp
+
+# Logs and databases #
+######################
+*.log
+*.sql
+*.sqlite
+logs/*
+
+# IDE Files
+###########
+.idea
+.ropeproject
+.ipynb_checkpoints
+
+# Testing
+#########
+.coverage
+.tox
+
+repos
