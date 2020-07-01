@@ -1,0 +1,384 @@
+diagram.py:44:35: E251 unexpected spaces around keyword / parameter equals
+diagram.py:44:37: E251 unexpected spaces around keyword / parameter equals
+diagram.py:45:33: E251 unexpected spaces around keyword / parameter equals
+diagram.py:45:35: E251 unexpected spaces around keyword / parameter equals
+diagram.py:46:34: E251 unexpected spaces around keyword / parameter equals
+diagram.py:46:36: E251 unexpected spaces around keyword / parameter equals
+diagram.py:47:33: E251 unexpected spaces around keyword / parameter equals
+diagram.py:47:35: E251 unexpected spaces around keyword / parameter equals
+diagram.py:48:30: E251 unexpected spaces around keyword / parameter equals
+diagram.py:48:32: E251 unexpected spaces around keyword / parameter equals
+diagram.py:51:33: E251 unexpected spaces around keyword / parameter equals
+diagram.py:51:35: E251 unexpected spaces around keyword / parameter equals
+diagram.py:54:33: E251 unexpected spaces around keyword / parameter equals
+diagram.py:54:35: E251 unexpected spaces around keyword / parameter equals
+diagram.py:55:34: E251 unexpected spaces around keyword / parameter equals
+diagram.py:55:36: E251 unexpected spaces around keyword / parameter equals
+diagram.py:67:29: E711 comparison to None should be 'if cond is None:'
+diagram.py:74:5: E303 too many blank lines (2)
+diagram.py:75:18: E711 comparison to None should be 'if cond is None:'
+diagram.py:86:41: E251 unexpected spaces around keyword / parameter equals
+diagram.py:86:43: E251 unexpected spaces around keyword / parameter equals
+diagram.py:87:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:87:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:88:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:88:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:89:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:89:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:90:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:90:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:95:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:95:53: E251 unexpected spaces around keyword / parameter equals
+diagram.py:96:62: E251 unexpected spaces around keyword / parameter equals
+diagram.py:96:64: E251 unexpected spaces around keyword / parameter equals
+diagram.py:97:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:97:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:98:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:98:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:99:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:99:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:99:80: E501 line too long (86 > 79 characters)
+diagram.py:100:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:100:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:100:80: E501 line too long (87 > 79 characters)
+diagram.py:107:45: E251 unexpected spaces around keyword / parameter equals
+diagram.py:107:47: E251 unexpected spaces around keyword / parameter equals
+diagram.py:108:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:108:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:109:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:109:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:110:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:110:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:111:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:111:54: E251 unexpected spaces around keyword / parameter equals
+diagram.py:117:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:117:53: E251 unexpected spaces around keyword / parameter equals
+diagram.py:118:62: E251 unexpected spaces around keyword / parameter equals
+diagram.py:118:64: E251 unexpected spaces around keyword / parameter equals
+diagram.py:119:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:119:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:120:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:120:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:121:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:121:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:121:80: E501 line too long (86 > 79 characters)
+diagram.py:122:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:122:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:122:80: E501 line too long (87 > 79 characters)
+diagram.py:126:41: E251 unexpected spaces around keyword / parameter equals
+diagram.py:126:43: E251 unexpected spaces around keyword / parameter equals
+diagram.py:127:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:127:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:128:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:128:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:129:42: E251 unexpected spaces around keyword / parameter equals
+diagram.py:129:44: E251 unexpected spaces around keyword / parameter equals
+diagram.py:130:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:130:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:133:40: E711 comparison to None should be 'if cond is not None:'
+diagram.py:139:45: E251 unexpected spaces around keyword / parameter equals
+diagram.py:139:47: E251 unexpected spaces around keyword / parameter equals
+diagram.py:140:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:140:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:141:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:141:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:142:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:142:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:143:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:143:54: E251 unexpected spaces around keyword / parameter equals
+diagram.py:149:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:149:53: E251 unexpected spaces around keyword / parameter equals
+diagram.py:150:62: E251 unexpected spaces around keyword / parameter equals
+diagram.py:150:64: E251 unexpected spaces around keyword / parameter equals
+diagram.py:151:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:151:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:152:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:152:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:153:49: E251 unexpected spaces around keyword / parameter equals
+diagram.py:153:51: E251 unexpected spaces around keyword / parameter equals
+diagram.py:153:80: E501 line too long (86 > 79 characters)
+diagram.py:154:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:154:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:164:45: E251 unexpected spaces around keyword / parameter equals
+diagram.py:164:47: E251 unexpected spaces around keyword / parameter equals
+diagram.py:165:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:165:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:166:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:166:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:167:46: E251 unexpected spaces around keyword / parameter equals
+diagram.py:167:48: E251 unexpected spaces around keyword / parameter equals
+diagram.py:168:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:168:54: E251 unexpected spaces around keyword / parameter equals
+diagram.py:178:17: E113 unexpected indentation
+diagram.py:179:17: E115 expected an indented block (comment)
+diagram.py:180:17: E115 expected an indented block (comment)
+diagram.py:180:80: E501 line too long (80 > 79 characters)
+diagram.py:181:17: E115 expected an indented block (comment)
+diagram.py:182:17: E112 expected an indented block
+diagram.py:190:5: E303 too many blank lines (2)
+diagram.py:198:80: E501 line too long (92 > 79 characters)
+diagram.py:219:5: E303 too many blank lines (2)
+diagram.py:228:17: E741 ambiguous variable name 'l'
+diagram.py:257:17: E741 ambiguous variable name 'l'
+diagram.py:275:80: E501 line too long (96 > 79 characters)
+diagram.py:278:80: E501 line too long (96 > 79 characters)
+diagram.py:307:50: E251 unexpected spaces around keyword / parameter equals
+diagram.py:307:52: E251 unexpected spaces around keyword / parameter equals
+diagram.py:308:32: E251 unexpected spaces around keyword / parameter equals
+diagram.py:308:34: E251 unexpected spaces around keyword / parameter equals
+diagram.py:309:32: E251 unexpected spaces around keyword / parameter equals
+diagram.py:309:34: E251 unexpected spaces around keyword / parameter equals
+diagram.py:310:32: E251 unexpected spaces around keyword / parameter equals
+diagram.py:310:34: E251 unexpected spaces around keyword / parameter equals
+diagram.py:326:9: E722 do not use bare 'except'
+diagram.py:327:16: E713 test for membership should be 'not in'
+diagram.py:348:80: E501 line too long (93 > 79 characters)
+diagram.py:357:80: E501 line too long (94 > 79 characters)
+diagram.py:360:80: E501 line too long (98 > 79 characters)
+diagram.py:368:80: E501 line too long (100 > 79 characters)
+diagram.py:379:80: E501 line too long (102 > 79 characters)
+diagram.py:390:80: E501 line too long (92 > 79 characters)
+diagram.py:392:34: W605 invalid escape sequence '\.'
+diagram.py:392:65: W605 invalid escape sequence '\g'
+diagram.py:392:80: E501 line too long (92 > 79 characters)
+diagram.py:393:32: W605 invalid escape sequence '\.'
+diagram.py:393:61: W605 invalid escape sequence '\g'
+diagram.py:393:80: E501 line too long (86 > 79 characters)
+diagram.py:397:28: W605 invalid escape sequence '\$'
+diagram.py:397:39: W605 invalid escape sequence '\$'
+diagram.py:397:54: W605 invalid escape sequence '\$'
+diagram.py:397:65: W605 invalid escape sequence '\$'
+diagram.py:397:78: W605 invalid escape sequence '\g'
+diagram.py:397:80: E501 line too long (95 > 79 characters)
+diagram.py:398:28: W605 invalid escape sequence '\$'
+diagram.py:398:37: W605 invalid escape sequence '\$'
+diagram.py:398:52: W605 invalid escape sequence '\$'
+diagram.py:398:61: W605 invalid escape sequence '\$'
+diagram.py:398:72: W605 invalid escape sequence '\g'
+diagram.py:398:80: E501 line too long (89 > 79 characters)
+diagram.py:400:1: W391 blank line at end of file
+exceptions.py:23:1: E302 expected 2 blank lines, found 1
+exceptions.py:26:1: E302 expected 2 blank lines, found 1
+exceptions.py:29:1: E302 expected 2 blank lines, found 1
+exceptions.py:32:1: E302 expected 2 blank lines, found 1
+exceptions.py:34:1: W391 blank line at end of file
+mac.py:22:80: E501 line too long (116 > 79 characters)
+mac.py:48:80: E501 line too long (92 > 79 characters)
+mac.py:57:80: E501 line too long (92 > 79 characters)
+mac.py:63:5: E303 too many blank lines (2)
+mac.py:63:80: E501 line too long (93 > 79 characters)
+mac.py:65:80: E501 line too long (83 > 79 characters)
+mac.py:75:80: E501 line too long (96 > 79 characters)
+mac.py:92:80: E501 line too long (102 > 79 characters)
+mac.py:93:80: E501 line too long (81 > 79 characters)
+mac.py:96:80: E501 line too long (99 > 79 characters)
+mac.py:97:80: E501 line too long (87 > 79 characters)
+mac.py:107:1: W391 blank line at end of file
+nettopo.py:86:9: E112 expected an indented block
+nettopo.py:102:80: E501 line too long (90 > 79 characters)
+nettopo.py:118:80: E501 line too long (92 > 79 characters)
+nettopo.py:138:41: E711 comparison to None should be 'if cond is None:'
+nettopo.py:141:43: E711 comparison to None should be 'if cond is None:'
+nettopo.py:152:80: E501 line too long (80 > 79 characters)
+nettopo.py:194:1: W391 blank line at end of file
+network.py:14:1: E302 expected 2 blank lines, found 1
+network.py:23:80: E501 line too long (80 > 79 characters)
+network.py:62:80: E501 line too long (88 > 79 characters)
+network.py:94:80: E501 line too long (98 > 79 characters)
+network.py:97:30: E221 multiple spaces before operator
+network.py:98:31: E221 multiple spaces before operator
+network.py:99:31: E221 multiple spaces before operator
+network.py:100:32: E221 multiple spaces before operator
+network.py:101:32: E221 multiple spaces before operator
+network.py:102:30: E221 multiple spaces before operator
+network.py:103:29: E221 multiple spaces before operator
+network.py:105:27: E221 multiple spaces before operator
+network.py:106:35: E221 multiple spaces before operator
+network.py:107:27: E221 multiple spaces before operator
+network.py:108:26: E221 multiple spaces before operator
+network.py:109:27: E221 multiple spaces before operator
+network.py:110:27: E221 multiple spaces before operator
+network.py:111:28: E221 multiple spaces before operator
+network.py:125:80: E501 line too long (99 > 79 characters)
+network.py:169:80: E501 line too long (85 > 79 characters)
+network.py:177:80: E501 line too long (92 > 79 characters)
+network.py:184:17: E221 multiple spaces before operator
+network.py:185:22: E221 multiple spaces before operator
+network.py:186:20: E221 multiple spaces before operator
+network.py:187:18: E221 multiple spaces before operator
+network.py:223:80: E501 line too long (89 > 79 characters)
+network.py:281:80: E501 line too long (85 > 79 characters)
+network.py:300:80: E501 line too long (84 > 79 characters)
+network.py:301:23: E221 multiple spaces before operator
+network.py:303:80: E501 line too long (115 > 79 characters)
+network.py:317:22: E221 multiple spaces before operator
+network.py:322:80: E501 line too long (93 > 79 characters)
+network.py:328:80: E501 line too long (82 > 79 characters)
+network.py:334:42: E701 multiple statements on one line (colon)
+network.py:336:13: E122 continuation line missing indentation or outdented
+network.py:336:40: E701 multiple statements on one line (colon)
+network.py:337:31: E711 comparison to None should be 'if cond is not None:'
+network.py:337:70: E701 multiple statements on one line (colon)
+network.py:339:13: E122 continuation line missing indentation or outdented
+network.py:339:40: E701 multiple statements on one line (colon)
+network.py:340:58: E701 multiple statements on one line (colon)
+network.py:342:13: E122 continuation line missing indentation or outdented
+network.py:342:38: E701 multiple statements on one line (colon)
+network.py:343:54: E701 multiple statements on one line (colon)
+network.py:345:9: E122 continuation line missing indentation or outdented
+network.py:347:5: E122 continuation line missing indentation or outdented
+network.py:347:42: E701 multiple statements on one line (colon)
+network.py:352:32: E701 multiple statements on one line (colon)
+network.py:356:32: E701 multiple statements on one line (colon)
+network.py:358:44: E701 multiple statements on one line (colon)
+network.py:360:43: E701 multiple statements on one line (colon)
+network.py:361:80: E501 line too long (101 > 79 characters)
+network.py:361:101: E701 multiple statements on one line (colon)
+network.py:362:80: E501 line too long (90 > 79 characters)
+network.py:362:90: E701 multiple statements on one line (colon)
+network.py:363:53: E251 unexpected spaces around keyword / parameter equals
+network.py:363:55: E251 unexpected spaces around keyword / parameter equals
+network.py:364:80: E501 line too long (86 > 79 characters)
+network.py:364:86: E701 multiple statements on one line (colon)
+network.py:365:51: E251 unexpected spaces around keyword / parameter equals
+network.py:365:53: E251 unexpected spaces around keyword / parameter equals
+network.py:366:80: E501 line too long (92 > 79 characters)
+network.py:366:92: E701 multiple statements on one line (colon)
+network.py:367:55: E251 unexpected spaces around keyword / parameter equals
+network.py:367:57: E251 unexpected spaces around keyword / parameter equals
+network.py:368:80: E501 line too long (89 > 79 characters)
+network.py:368:89: E701 multiple statements on one line (colon)
+network.py:369:59: E251 unexpected spaces around keyword / parameter equals
+network.py:369:61: E251 unexpected spaces around keyword / parameter equals
+network.py:369:80: E501 line too long (83 > 79 characters)
+network.py:370:80: E501 line too long (93 > 79 characters)
+network.py:370:93: E701 multiple statements on one line (colon)
+network.py:371:61: E251 unexpected spaces around keyword / parameter equals
+network.py:371:63: E251 unexpected spaces around keyword / parameter equals
+network.py:371:80: E501 line too long (87 > 79 characters)
+network.py:373:13: E701 multiple statements on one line (colon)
+network.py:374:38: E701 multiple statements on one line (colon)
+network.py:375:80: E501 line too long (97 > 79 characters)
+network.py:375:97: E701 multiple statements on one line (colon)
+network.py:376:80: E501 line too long (81 > 79 characters)
+network.py:382:5: E122 continuation line missing indentation or outdented
+network.py:382:38: E701 multiple statements on one line (colon)
+network.py:383:28: E701 multiple statements on one line (colon)
+network.py:384:34: E701 multiple statements on one line (colon)
+network.py:387:1: W391 blank line at end of file
+network.py:387:1: W391 blank line at end of file
+network.py:388:1: E901 TokenError: EOF in multi-line statement
+node.py:118:80: E501 line too long (92 > 79 characters)
+node.py:128:80: E501 line too long (86 > 79 characters)
+node.py:142:80: E501 line too long (92 > 79 characters)
+node.py:168:80: E501 line too long (108 > 79 characters)
+node.py:180:80: E501 line too long (82 > 79 characters)
+node.py:192:80: E501 line too long (94 > 79 characters)
+node.py:220:80: E501 line too long (89 > 79 characters)
+node.py:225:80: E501 line too long (93 > 79 characters)
+node.py:228:80: E501 line too long (92 > 79 characters)
+node.py:230:80: E501 line too long (87 > 79 characters)
+node.py:234:21: E722 do not use bare 'except'
+node.py:270:80: E501 line too long (87 > 79 characters)
+node.py:274:80: E501 line too long (113 > 79 characters)
+node.py:276:80: E501 line too long (111 > 79 characters)
+node.py:279:17: E722 do not use bare 'except'
+node.py:281:80: E501 line too long (112 > 79 characters)
+node.py:285:21: E722 do not use bare 'except'
+node.py:288:80: E501 line too long (112 > 79 characters)
+node.py:305:80: E501 line too long (96 > 79 characters)
+node.py:309:80: E501 line too long (108 > 79 characters)
+node.py:310:80: E501 line too long (110 > 79 characters)
+node.py:313:80: E501 line too long (83 > 79 characters)
+node.py:317:80: E501 line too long (84 > 79 characters)
+node.py:360:80: E501 line too long (109 > 79 characters)
+node.py:362:80: E501 line too long (104 > 79 characters)
+node.py:364:80: E501 line too long (105 > 79 characters)
+node.py:375:80: E501 line too long (109 > 79 characters)
+node.py:388:80: E501 line too long (82 > 79 characters)
+node.py:400:9: E722 do not use bare 'except'
+node.py:439:80: E501 line too long (80 > 79 characters)
+node.py:471:80: E501 line too long (99 > 79 characters)
+node.py:473:80: E501 line too long (101 > 79 characters)
+node.py:486:1: W391 blank line at end of file
+snmp.py:11:1: E722 do not use bare 'except'
+snmp.py:16:1: E302 expected 2 blank lines, found 1
+snmp.py:61:80: E501 line too long (83 > 79 characters)
+snmp.py:64:80: E501 line too long (86 > 79 characters)
+snmp.py:73:5: E303 too many blank lines (2)
+snmp.py:77:80: E501 line too long (95 > 79 characters)
+snmp.py:80:80: E501 line too long (87 > 79 characters)
+snmp.py:103:1: W391 blank line at end of file
+stack.py:12:18: E221 multiple spaces before operator
+stack.py:13:17: E221 multiple spaces before operator
+stack.py:14:18: E221 multiple spaces before operator
+stack.py:15:17: E221 multiple spaces before operator
+stack.py:16:17: E221 multiple spaces before operator
+stack.py:17:17: E221 multiple spaces before operator
+stack.py:19:18: E221 multiple spaces before operator
+stack.py:30:5: E301 expected 1 blank line, found 0
+stack.py:38:80: E501 line too long (84 > 79 characters)
+stack.py:44:22: E711 comparison to None should be 'if cond is None:'
+stack.py:47:23: E711 comparison to None should be 'if cond is None:'
+stack.py:72:80: E501 line too long (89 > 79 characters)
+stack.py:73:80: E501 line too long (87 > 79 characters)
+stack.py:74:80: E501 line too long (87 > 79 characters)
+stack.py:75:80: E501 line too long (87 > 79 characters)
+stack.py:77:80: E501 line too long (105 > 79 characters)
+stack.py:79:80: E501 line too long (100 > 79 characters)
+stack.py:91:1: W391 blank line at end of file
+util.py:32:1: E302 expected 2 blank lines, found 1
+util.py:38:10: E225 missing whitespace around operator
+util.py:39:10: E225 missing whitespace around operator
+util.py:40:10: E225 missing whitespace around operator
+util.py:45:1: E302 expected 2 blank lines, found 1
+util.py:56:1: E302 expected 2 blank lines, found 1
+util.py:59:11: E221 multiple spaces before operator
+util.py:61:26: E227 missing whitespace around bitwise or shift operator
+util.py:61:80: E501 line too long (84 > 79 characters)
+util.py:68:21: E227 missing whitespace around bitwise or shift operator
+util.py:71:1: E302 expected 2 blank lines, found 1
+util.py:76:9: E722 do not use bare 'except'
+util.py:82:20: W605 invalid escape sequence '\('
+util.py:82:24: W605 invalid escape sequence '\('
+util.py:82:28: W605 invalid escape sequence '\)'
+util.py:90:1: E302 expected 2 blank lines, found 1
+util.py:101:1: E305 expected 2 blank lines after class or function definition, found 1
+util.py:103:80: E501 line too long (100 > 79 characters)
+util.py:106:1: E302 expected 2 blank lines, found 1
+util.py:108:26: W605 invalid escape sequence '\d'
+util.py:108:31: W605 invalid escape sequence '\d'
+util.py:108:36: W605 invalid escape sequence '\d'
+util.py:108:40: W605 invalid escape sequence '\d'
+util.py:111:5: E722 do not use bare 'except'
+util.py:115:1: E302 expected 2 blank lines, found 1
+util.py:120:5: E722 do not use bare 'except'
+util.py:124:1: E302 expected 2 blank lines, found 1
+util.py:126:32: W605 invalid escape sequence '\}'
+util.py:128:5: E722 do not use bare 'except'
+util.py:137:1: E302 expected 2 blank lines, found 1
+util.py:138:24: W605 invalid escape sequence '\.'
+util.py:146:1: E302 expected 2 blank lines, found 1
+util.py:150:1: E302 expected 2 blank lines, found 1
+util.py:166:1: E302 expected 2 blank lines, found 1
+util.py:170:1: E302 expected 2 blank lines, found 1
+util.py:210:1: E302 expected 2 blank lines, found 1
+util.py:211:9: E117 over-indented
+util.py:213:45: W605 invalid escape sequence '\.'
+util.py:218:9: E722 do not use bare 'except'
+util.py:223:1: E302 expected 2 blank lines, found 1
+util.py:225:1: W391 blank line at end of file
+vss.py:12:18: E221 multiple spaces before operator
+vss.py:13:17: E221 multiple spaces before operator
+vss.py:15:18: E221 multiple spaces before operator
+vss.py:25:31: E251 unexpected spaces around keyword / parameter equals
+vss.py:25:33: E251 unexpected spaces around keyword / parameter equals
+vss.py:25:44: E251 unexpected spaces around keyword / parameter equals
+vss.py:25:46: E251 unexpected spaces around keyword / parameter equals
+vss.py:30:20: E711 comparison to None should be 'if cond is not None:'
+vss.py:34:80: E501 line too long (86 > 79 characters)
+vss.py:59:18: E231 missing whitespace after ','
+vss.py:63:80: E501 line too long (98 > 79 characters)
+vss.py:68:80: E501 line too long (126 > 79 characters)
+vss.py:70:80: E501 line too long (132 > 79 characters)
+vss.py:74:1: W391 blank line at end of file

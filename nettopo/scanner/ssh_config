@@ -1,0 +1,232 @@
+#	$OpenBSD: ssh_config,v 1.28 2013/09/16 11:35:43 sthen Exp $
+
+# If necessary, adjust SSH configuration file. For example, the
+# below firewall does not support latest algorithms. Thus,
+# the enabling of `diffie-hellman-group1-sha1` is necessary:
+# Host example.firewall
+#     KexAlgorithms +diffie-hellman-group1-sha1
+
+#Host wbal-gw-sw*
+#    Ciphers aes128-cbc,3des-cbc,aes192-cbc,aes256-cbc
+
+#Host wbal-inet1:22
+#    User rlaney
+#    Hostname wbal-inet1
+#    Port 22
+#    ProxyCommand ssh ubuntu22 nc %h %p
+#
+#Host wbal-inet2:22
+#    User rlaney
+#    Hostname wbal-inet1
+#    Port 22
+#    ProxyCommand ssh ubuntu22 nc %h %p
+#
+#Host wgal-inet1:22
+#    User rlaney
+#    Hostname wbal-inet1
+#    Port 22
+#    ProxyCommand ssh ubuntu22 nc %h %p
+
+Host ROA2960X01-A
+    Hostname 172.16.10.65
+Host BONITZ3560G-A
+    Hostname 192.168.118.1
+Host BONITZ3560G-B
+    Hostname 192.168.119.1
+Host BONITZ3560G-C
+    Hostname 192.168.120.1
+Host C3650CORE-A
+    Hostname 192.168.197.1
+Host TS
+    Hostname 192.168.197.15
+Host BONITZ3560G-D
+    Hostname 192.168.200.2
+Host C3650CORE-B
+    Hostname 192.168.202.1
+Host BONITZ3560G-E
+    Hostname 192.168.203.254
+Host BONITZ3560G-F
+    Hostname 192.168.211.1
+Host BONITZ3560G-G
+    Hostname 192.168.214.2
+Host BONITZ3560G-H
+    Hostname 192.168.215.1
+Host BONITZ3560G-I
+    Hostname 192.168.218.1
+Host NASH2960X01-A
+    Hostname 192.168.222.129
+Host NASH2960X01-B
+    Hostname 192.168.222.193
+Host GRVL2960X01-A
+    Hostname 192.168.226.2
+Host RAL2901RTR
+    Hostname 192.168.230.29
+Host RAL2960X01-A
+    Hostname 192.168.230.65
+Host RAL2960X01-B
+    Hostname 192.168.230.129
+Host 2960SVRROOM
+    Hostname 192.168.118.3
+Host 2960X10APS
+    Hostname 192.168.236.10
+Host 3RDFLRPRINT
+    Hostname 192.168.1.10
+Host ATLNORC2960X01
+    Hostname 192.168.224.2
+Host AUG2960X01
+    Hostname 192.168.240.2
+Host BONITZ2960
+    Hostname 192.168.118.2
+Host BONITZ2960A
+    Hostname 192.168.118.4
+Host BONITZ2960B
+    Hostname 192.168.118.5
+Host BONITZ3560G
+    Hostname 192.168.1.1
+Host C3650CORE
+    Hostname 192.168.198.1
+Host CHAS2960X01
+    Hostname 192.168.227.2
+Host CHAS2960X02
+    Hostname 192.168.227.4
+Host CHLT2960X01
+    Hostname 192.168.236.6
+Host CHLT2960X02
+    Hostname 192.168.236.7
+Host CHLT2960X03
+    Hostname 192.168.236.5
+Host GRVL2960X01
+    Hostname 192.168.225.7
+Host GRVL2960X02
+    Hostname 192.168.225.8
+Host GRVL2960X04
+    Hostname 192.168.225.27
+Host GRVL2960X05
+    Hostname 192.168.225.19
+Host GVRL2960X03
+    Hostname 192.168.225.26
+Host HHSWITCH
+    Hostname 192.168.100.2
+Host JAC2960X01
+    Hostname 172.16.30.2
+Host KNOX2960X01
+    Hostname 192.168.242.2
+Host NASH2960X01
+    Hostname 192.168.222.2
+Host NOR2960X01
+    Hostname 192.168.223.2
+Host PIT2960X01
+    Hostname 172.16.20.2
+Host RAL2960X01
+    Hostname 192.168.230.2
+Host RAL2960X02
+    Hostname 192.168.230.3
+Host RICH2960X01
+    Hostname 192.168.250.2
+Host ROA2960X01
+    Hostname 172.16.10.2
+Host RRS2960X01
+    Hostname 192.168.221.12
+Host WS2960X01
+    Hostname 192.168.248.4
+Host iprisim
+    Hostname 192.168.236.3
+Host 172.16.20.9
+    Hostname 172.16.20.9
+Host 192.168.1.4
+    Hostname 192.168.1.4
+Host ATLAP1
+    Hostname 192.168.224.200
+Host ATLAP2
+    Hostname 192.168.224.202
+Host CHLTAP01
+    Hostname 192.168.236.200
+Host CHLTAP1
+    Hostname 192.168.236.201
+Host CHLTAP2
+    Hostname 192.168.236.202
+Host CHLTAP3
+    Hostname 192.168.236.203
+Host CHLTAP4
+    Hostname 192.168.236.204
+Host CHLTAP5
+    Hostname 192.168.236.205
+Host CHLTAP6
+    Hostname 192.168.236.206
+Host CHLTAP7
+    Hostname 192.168.236.207
+Host CHLTAP8
+    Hostname 192.168.236.208
+Host COLAAP1
+    Hostname 192.168.1.2
+Host COLAAP2
+    Hostname 192.168.1.15
+Host PITAP01
+    Hostname 172.16.20.10
+Host RALIAP23
+    Hostname 192.168.230.23
+Host RALIAP24
+    Hostname 192.168.230.24
+Host RALIAP25
+    Hostname 192.168.230.25
+Host RALIAP26
+    Hostname 192.168.230.26
+Host 2960* ATL* AUG* BONITZ* C3650* CHAS* CHLT* GRVL* HH* NASH* RAL* RIC* ROA* RRS* TS* WS* 
+    User admin
+    PreferredAuthentications password,keyboard-interactive,publickey
+
+Host sw1
+    Hostname switch1
+Host sw2
+    Hostname switch2
+Host sw3
+    Hostname switch3
+Host gw1
+    Hostname tw-gw1
+Host gw2
+    Hostname tw-gw2
+Host r1
+    Hostname het-remote1
+Host fi1
+    Hostname imon-fi1
+Host sw1 sw2 sw3 gw1 gw2 r1 fi1 ns1 ns2
+    BatchMode yes    
+    ForwardX11Trusted yes
+    PreferredAuthentications publickey,keyboard-interactive,password
+
+Host dev01 tw-gw1.ddns.net
+    BatchMode yes    
+    ForwardAgent yes
+    ForwardX11 yes
+    ForwardX11Trusted yes
+    PreferredAuthentications publickey,keyboard-interactive,password
+
+Host github.com
+    User rlaneyjr
+    IdentityFile ~/.ssh/ssh_rsa
+    PreferredAuthentications publickey,keyboard-interactive,password
+
+Host *
+    AddKeysToAgent yes
+    BatchMode no    
+    StrictHostKeyChecking no
+    ForwardAgent no
+    ForwardX11 no
+    ForwardX11Trusted no
+    PubkeyAuthentication yes
+    PasswordAuthentication yes
+    User rlaney
+    Port 22
+    Protocol 2
+    TCPKeepAlive no
+    ServerAliveInterval 120
+    ServerAliveCountMax 30
+    IdentityFile ~/.ssh/cloud_id
+#    PreferredAuthentications any
+    Ciphers +3des-cbc,aes128-cbc,aes192-cbc,aes256-cbc
+    KexAlgorithms +diffie-hellman-group-exchange-sha1,diffie-hellman-group1-sha1
+
+#    PreferredAuthentications publickey,keyboard-interactive,password
+#    PreferredAuthentications keyboard-interactive,password,publickey
+#    PreferredAuthentications gssapi-with-mic,hostbased,publickey,keyboard-interactive,password
+

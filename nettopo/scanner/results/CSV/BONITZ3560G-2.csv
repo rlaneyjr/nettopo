@@ -1,0 +1,7 @@
+"BONITZ3560G","192.168.119.1","WS-C3560G-48TS-S","12.2(53)SE","FOC1401W19T","","flash:/c3560-ipbase-mz.122-53.SE/c3560-ipbase-mz.122-53.SE.bin"
+"LABSWITCH","192.168.1.16","cisco WS-C2960-24TT-L","12.2(55)SE7","None","","None"
+"BLADESW","192.168.1.7","cisco OS-CIGESM-18TT-EBU","12.1(22)EA10a","None","","None"
+"BONITZ2960","192.168.1.9","cisco WS-C2960-24TT-L","12.2(46)SE","None","","None"
+"BONITZ2960B","192.168.1.12","cisco WS-C2960-48TT-L","12.2(52)SE","None","","None"
+"BONITZ2960A","192.168.1.11","cisco WS-C2960-48TT-L","12.2(52)SE","None","","None"
+"2960SVRROOM","192.168.1.14","cisco WS-C2960-48TT-L","12.2(50)SE5","None","","None"

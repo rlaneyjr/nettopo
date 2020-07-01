@@ -1,0 +1,13 @@
+wesh-bops-sw1:
+  device_type: cisco_ios
+  ip: 10.133.14.254
+  username: rlaney
+  password: FunckyColdMadina22$
+  cmd: 'sh int status'
+
+kcci-user-sw1:
+  device_type: cisco_ios
+  ip: 10.147.1.5
+  username: rlaney
+  password: FunckyColdMadina22$
+  cmd: 'sh int status'

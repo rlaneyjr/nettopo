@@ -1,0 +1,103 @@
+# virlutils generated ansible file for sim id 
+#
+# the overall structure of the inventory follows best practices
+# at http://docs.ansible.com/ansible/latest/intro_inventory.html
+
+# we've rendered what we think is best if you disagree, override
+# virl.generators.ansible_inventory_generator
+
+# you can modify grouping behavior by adding extension entries
+# to your .virl file as such
+
+# <node name="router1" type="SIMPLE" subtype="CSR1000v" location="361,129" ipv4="172.16.252.6" ipv6="2001:db8:b:0:1::2">
+#    <extensions>
+#        <entry key="ansible_group" type="String">mygroup</entry>
+#    </extensions>
+# </node>
+
+all:
+  children:
+    firewall:
+      hosts:
+
+        fw1:
+          ansible_host: 172.16.1.142
+          console_server: virl.icloudmon.local
+          console_port: 17001
+          ansible_network_os: unknown
+    
+    router:
+      hosts:
+
+        rtr1:
+          ansible_host: 172.16.1.143
+          console_server: virl.icloudmon.local
+          console_port: 17002
+          ansible_network_os: ios
+
+        rtr2:
+          ansible_host: 172.16.1.144
+          console_server: virl.icloudmon.local
+          console_port: 17004
+          ansible_network_os: ios
+
+        rtr3:
+          ansible_host: 172.16.1.145
+          console_server: virl.icloudmon.local
+          console_port: 17006
+          ansible_network_os: ios
+    
+    server:
+      hosts:
+
+        server-1:
+          ansible_host: 172.16.1.146
+          console_server: virl.icloudmon.local
+          console_port: 17008
+          ansible_network_os: unknown
+
+        server-2:
+          ansible_host: 172.16.1.147
+          console_server: virl.icloudmon.local
+          console_port: 17009
+          ansible_network_os: unknown
+
+        server-3:
+          ansible_host: 172.16.1.148
+          console_server: virl.icloudmon.local
+          console_port: 17010
+          ansible_network_os: unknown
+    
+    switch:
+      hosts:
+
+        sw1:
+          ansible_host: 172.16.1.149
+          console_server: virl.icloudmon.local
+          console_port: 17011
+          ansible_network_os: ios
+
+        sw2:
+          ansible_host: 172.16.1.150
+          console_server: virl.icloudmon.local
+          console_port: 17013
+          ansible_network_os: ios
+
+        sw3:
+          ansible_host: 172.16.1.151
+          console_server: virl.icloudmon.local
+          console_port: 17015
+          ansible_network_os: ios
+
+        sw4:
+          ansible_host: 172.16.1.152
+          console_server: virl.icloudmon.local
+          console_port: 17017
+          ansible_network_os: ios
+
+        sw5:
+          ansible_host: 172.16.1.153
+          console_server: virl.icloudmon.local
+          console_port: 17019
+          ansible_network_os: ios
+    

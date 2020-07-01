@@ -1,0 +1,5 @@
+Value Required ports (.*)
+Value Required trunk_id (.*)
+
+Start
+  ^trunk ${ports} Trk${trunk_id} LACP -> Record

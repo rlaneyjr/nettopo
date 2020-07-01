@@ -1,0 +1,5469 @@
+[
+    {
+        "net": "165.166.185.96/27",
+        "hosts": [
+            {
+                "ip": "165.166.185.97",
+                "names": [
+                    "fmdt9-97.2wcm.comporium.net"
+                ],
+                "ports": []
+            },
+            {
+                "ip": "165.166.185.101",
+                "names": [
+                    "lsvpn.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "165.166.185.102",
+                "names": [
+                    "ts.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "165.166.185.96/27",
+        "hosts": [
+            {
+                "ip": "165.166.185.97",
+                "names": [
+                    "fmdt9-97.2wcm.comporium.net"
+                ],
+                "ports": []
+            },
+            {
+                "ip": "165.166.185.101",
+                "names": [
+                    "lsvpn.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "165.166.185.102",
+                "names": [
+                    "ts.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "172.16.10.0/24",
+        "hosts": [
+            {
+                "ip": "172.16.10.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "172.16.10.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh Aficio MP C2550 printer ftpd",
+                        "cpe ": "cpe:/h:ricoh:aficio_mp_c2550"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "Ricoh Aficio printer web image monitor"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Dell B2360dn Laser Printer printer ftpd",
+                        "cpe ": "cpe:/h:dell:b2360dn_laser_printer"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.16",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.17",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.65",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "172.16.10.72",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "172.16.100.0/24"
+    },
+    {
+        "net": "172.16.20.0/24"
+    },
+    {
+        "net": "172.16.30.0/24"
+    },
+    {
+        "net": "192.168.100.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.100.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.100.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.100.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Dell B2360dn Laser Printer printer ftpd",
+                        "cpe ": "cpe:/h:dell:b2360dn_laser_printer"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.100.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.100.12",
+                "names": [],
+                "ports": []
+            }
+        ]
+    },
+    {
+        "net": "192.168.117.0/24"
+    },
+    {
+        "net": "192.168.118.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.118.1",
+                "names": [
+                    "bonitz3560g.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.118.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.118.3",
+                "names": [
+                    "2960svrroom.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.118.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.118.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.118.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.119.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.119.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.119.16",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AEWS",
+                        "extra ": "Avocent Mergepoint KVM switch",
+                        "cpe ": "cpe:/h:emerson:network_power_avocent_mergepoint_unity_2016"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "AEWS",
+                        "extra ": "Avocent Mergepoint KVM switch",
+                        "cpe ": "cpe:/h:emerson:network_power_avocent_mergepoint_unity_2016"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.120.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.120.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Mbedthis-Appweb",
+                        "extra ": "Dell iDRAC6 http config",
+                        "cpe ": "cpe:/h:dell:idrac6"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Mbedthis-Appweb",
+                        "cpe ": "cpe:/a:mbedthis:appweb:2.4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.10",
+                "names": [
+                    "2012r2svr01.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.22",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.0"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Mbedthis-Appweb",
+                        "extra ": "Dell iDRAC6 http config",
+                        "cpe ": "cpe:/h:dell:idrac6"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Mbedthis-Appweb",
+                        "cpe ": "cpe:/a:mbedthis:appweb:2.4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.23",
+                "names": [
+                    "2012netsvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.25",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Mbedthis-Appweb",
+                        "extra ": "Dell iDRAC6 http config",
+                        "cpe ": "cpe:/h:dell:idrac6"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Mbedthis-Appweb",
+                        "cpe ": "cpe:/a:mbedthis:appweb:2.4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.26",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "extra ": "protocol 2.0"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.42",
+                "names": [
+                    "2016wsussvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.43",
+                "names": [
+                    "2016domesvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.120.46",
+                "names": [
+                    "2012utilsvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.196.0/24"
+    },
+    {
+        "net": "192.168.196.0/24"
+    },
+    {
+        "net": "192.168.197.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.197.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:5.3"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.18",
+                "names": [
+                    "pa-200lsvpn.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.20",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.197.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.197.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:5.3"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.18",
+                "names": [
+                    "pa-200lsvpn.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.197.20",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.198.1/24",
+        "hosts": [
+            {
+                "ip": "192.168.198.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.4",
+                "names": [
+                    "2013ex2.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.7",
+                "names": [
+                    "2013ex1.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.0"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Mbedthis-Appweb",
+                        "extra ": "Dell iDRAC6 http config",
+                        "cpe ": "cpe:/h:dell:idrac6"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Mbedthis-Appweb",
+                        "cpe ": "cpe:/a:mbedthis:appweb:2.4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.19",
+                "names": [
+                    "mail.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.21",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.22",
+                "names": [
+                    "azureadcnt.bonitz.biz"
+                ],
+                "ports": []
+            }
+        ]
+    },
+    {
+        "net": "192.168.198.1/24",
+        "hosts": [
+            {
+                "ip": "192.168.198.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.4",
+                "names": [
+                    "2013ex2.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.7",
+                "names": [
+                    "2013ex1.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.0"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Mbedthis-Appweb",
+                        "extra ": "Dell iDRAC6 http config",
+                        "cpe ": "cpe:/h:dell:idrac6"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Mbedthis-Appweb",
+                        "cpe ": "cpe:/a:mbedthis:appweb:2.4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.19",
+                "names": [
+                    "autodiscover.bonitz.com"
+                ],
+                "ports": [
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.21",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.5"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kemp 2500 load balancer http config",
+                        "extra ": "mini-http 1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.198.22",
+                "names": [
+                    "azureadcnt.bonitz.biz"
+                ],
+                "ports": []
+            }
+        ]
+    },
+    {
+        "net": "192.168.199.0/30"
+    },
+    {
+        "net": "192.168.199.0/30"
+    },
+    {
+        "net": "192.168.200.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.200.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.200.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.200.0/30",
+        "hosts": [
+            {
+                "ip": "192.168.200.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.200.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.201.0/29",
+        "hosts": [
+            {
+                "ip": "192.168.201.0",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.201.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.202.0/29",
+        "hosts": [
+            {
+                "ip": "192.168.202.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.202.3",
+                "names": [
+                    "iprism01.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server:2.4.10"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server:2.4.10"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.202.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.202.0/29",
+        "hosts": [
+            {
+                "ip": "192.168.202.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.202.3",
+                "names": [
+                    "iprism01.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server:2.4.10"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server:2.4.10"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.202.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.203.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.203.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.2",
+                "names": [
+                    "proddb.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "IBM HTTP Server",
+                        "extra ": "Derived from Apache 2.0.47; Unix",
+                        "cpe ": "cpe:/a:ibm:http_server:6.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.4",
+                "names": [
+                    "prodst.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.5",
+                "names": [
+                    "prodldap.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.7",
+                "names": [
+                    "uatportal.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "IBM HTTP Server",
+                        "extra ": "Derived from Apache 2.0.47; Unix",
+                        "cpe ": "cpe:/a:ibm:http_server:6.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.9",
+                "names": [
+                    "devldap.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/a:openbsd:openssh:4.2"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.11",
+                "names": [
+                    "gitserver.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.6.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.15",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Dell PowerVault TL4000 http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.203.254",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.211.0/28",
+        "hosts": [
+            {
+                "ip": "192.168.211.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.212.0/28",
+        "hosts": [
+            {
+                "ip": "192.168.212.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "161"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.212.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.212.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "161"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.212.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.212.13",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "161"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.214.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.214.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "extra ": "HP LaserJet http config",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP-ChaiSOE",
+                        "extra ": "HP LaserJet http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.15",
+                "names": [
+                    "hp4050_3.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP JetDirect ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "HP Jetdirect httpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.30",
+                "names": [
+                    "p5n001b_4.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "extra ": "HP LaserJet http config",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP-ChaiSOE",
+                        "extra ": "HP LaserJet http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.92",
+                "names": [
+                    "plasmon1.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:3.9p1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache Tomcat/Coyote JSP engine",
+                        "cpe ": "cpe:/a:apache:coyote_http_connector:1.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.99",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Microplex emHTTPD/1.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.100",
+                "names": [
+                    "bonitz.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "IBM OS/400 FTPd",
+                        "cpe ": "cpe:/o:ibm:os_400"
+                    },
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.9"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.120",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.4"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Server Hardware Management Console"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.121",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:5.2"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.122",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:5.2"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.123",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.6.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache Tomcat/Coyote JSP engine",
+                        "cpe ": "cpe:/a:apache:coyote_http_connector:1.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache Tomcat/Coyote JSP engine",
+                        "cpe ": "cpe:/a:apache:coyote_http_connector:1.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.124",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP-UX or AIX ftpd"
+                    },
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.125",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP-UX or AIX ftpd"
+                    },
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.126",
+                "names": [
+                    "linux04.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.6.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Fortinet FortiGate 50B or FortiWifi 60C or 80C firewall http config",
+                        "cpe ": "cpe:/h:fortinet:fortiwifi:80c"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.127",
+                "names": [
+                    "linux05.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.6.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.128",
+                "names": [
+                    "linux06.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.6.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.214.133",
+                "names": [
+                    "p5n001a_4.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "extra ": "HP LaserJet http config",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP-ChaiSOE",
+                        "extra ": "HP LaserJet http config"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.215.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.215.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.9",
+                "names": [
+                    "dconsole.bonitz.biz"
+                ],
+                "ports": []
+            },
+            {
+                "ip": "192.168.215.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.18",
+                "names": [
+                    "rhippcolaxp.bonitz.biz"
+                ],
+                "ports": []
+            },
+            {
+                "ip": "192.168.215.24",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.27",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.42",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.0"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.51",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.140",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.141",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP LaserJet printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.142",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh Aficio MP 3352 printer ftpd",
+                        "cpe ": "cpe:/h:ricoh:aficio_mp_3352"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "Ricoh Aficio printer web image monitor"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.143",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh printer ftpd",
+                        "extra ": "model: MP C4503",
+                        "cpe ": "cpe:/h:ricoh:mp_c4503"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "NRG copier or Ricoh Aficio printer http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.144",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh printer ftpd",
+                        "extra ": "model: MP C3503",
+                        "cpe ": "cpe:/h:ricoh:mp_c3503"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "NRG copier or Ricoh Aficio printer http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.145",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh Aficio MP C2551 printer ftpd",
+                        "cpe ": "cpe:/h:ricoh:aficio_mp_c2551"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "Ricoh Aficio printer web image monitor"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.150",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "SCS sshd",
+                        "extra ": "protocol 2.0"
+                    },
+                    {
+                        "port": "53"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.151",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.184",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.215.195",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.196",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "lighttpd/1.4.35"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.198",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.199",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.215.202",
+                "names": [
+                    "5zf6282.bonitz.biz"
+                ],
+                "ports": []
+            }
+        ]
+    },
+    {
+        "net": "192.168.218.0/28",
+        "hosts": [
+            {
+                "ip": "192.168.218.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.220.0/24"
+    },
+    {
+        "net": "192.168.221.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.221.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.221.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP Jetdirect httpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.221.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.221.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.221.132",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.221.200",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP HTTP Server; Hewlett-Packard HP Designjet T120 - CQ891B; Serial Number: CN77M"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP HTTP Server; Hewlett-Packard HP Designjet T120 - CQ891B; Serial Number: CN77M"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.222.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.222.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.222.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.24",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.129",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.150",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP HTTP Server; Hewlett-Packard HP Designjet T120 - CQ891A; Serial Number: CN38I"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP HTTP Server; Hewlett-Packard HP Designjet T120 - CQ891A; Serial Number: CN38I"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.222.193",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.223.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.223.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.223.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.223.10",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "oftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "extra ": "HP MFP printer",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.223.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.223.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh Aficio MP C3501 printer ftpd",
+                        "cpe ": "cpe:/h:ricoh:aficio_mp_c3501"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "Ricoh Aficio printer web image monitor"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.223.30",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.223.31",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.223.38",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.224.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.224.1",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.102",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.224.104",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.200",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.224.202",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.225.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.225.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.225.5",
+                "names": [
+                    "2012grvlsvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.10",
+                "names": [
+                    "2008grvlsvr.bonitz.biz"
+                ],
+                "ports": []
+            },
+            {
+                "ip": "192.168.225.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP HTTP Server; OfficeJet Pro 7740 series - G5J38A; Serial Number: CN787450G9; B"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP HTTP Server; OfficeJet Pro 7740 series - G5J38A; Serial Number: CN787450G9; B"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.13",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP LaserJet printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.14",
+                "names": [
+                    "scc7e746.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "SHARP MX-M363N printer ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "RapidLogic httpd",
+                        "extra ": "Sharp MX-2700N printer",
+                        "cpe ": "cpe:/h:sharp:mx-2700n"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "RapidLogic httpd",
+                        "extra ": "Sharp MX-2700N printer",
+                        "cpe ": "cpe:/h:sharp:mx-2700n"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.16",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP HTTP Server; OfficeJet Pro 7740 series - G5J38A; Serial Number: CN8BU350BF; B"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP HTTP Server; OfficeJet Pro 7740 series - G5J38A; Serial Number: CN8BU350BF; B"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.17",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP JetDirect ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "HP JetDirect printer webadmin",
+                        "extra ": "HP-ChaiServer 3.0"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.19",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.21",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.22",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Canon iPF6100 printer ftpd",
+                        "cpe ": "cpe:/h:canon:ipf6100"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "JC-HTTPD/1.14.20"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.23",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.225.24",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.25",
+                "names": [
+                    "rnpb1bd1f.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "Ricoh Aficio printer web image monitor"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.26",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.27",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.28",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Kyocera TASKalfa copier ftpd",
+                        "extra ": "model: 3051ci",
+                        "cpe ": "cpe:/h:kyocera:taskalfa_3051ci"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Kyocera TASKalfa printer httpd",
+                        "extra ": "redirect to HTTPS, TLS 1.0"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Kyocera MFP httpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.29",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.31",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.225.32",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.226.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.226.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.227.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.227.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.227.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP LaserJet printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.7",
+                "names": [
+                    "2012chassvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Dell B3460dn Laser Printer printer ftpd",
+                        "cpe ": "cpe:/h:dell:b3460dn_laser_printer"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.10",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "oftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Dell 2330dn Laser Printer printer ftpd",
+                        "cpe ": "cpe:/h:dell:2330dn_laser_printer"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh printer ftpd",
+                        "extra ": "model: MP C4503",
+                        "cpe ": "cpe:/h:ricoh:mp_c4503"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "NRG copier or Ricoh Aficio printer http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.17",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP LaserJet P4014 printer ftpd",
+                        "cpe ": "cpe:/h:hp:laserjet_p4014"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.37",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "ulwsd/1.0.1-20140331"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.47",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.227.49",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.230.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.230.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.230.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.5",
+                "names": [
+                    "2012ralsvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.19",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.21",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:12.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Embedthis-Appweb",
+                        "extra ": "extension: php",
+                        "cpe ": "cpe:/a:mbedthis:appweb"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.23",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.24",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.25",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.26",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Dropbear sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.29",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.230.65",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.82",
+                "names": [
+                    "macesmith.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.97",
+                "names": [
+                    "mp202.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.113",
+                "names": [
+                    "brn3c2af46cc11a.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.124",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "extra ": "Western Digital web management; Orion 2.1",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "extra ": "Western Digital web management; Orion 2.1",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.125",
+                "names": [
+                    "canon39c94a5400.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Canon printer web interface"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Canon printer web interface"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.230.129",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.236.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.236.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.236.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Adtran sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:adtran:aos"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "ADTRAN, Inc."
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.5",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.10",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.11",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Dell B2360dn Laser Printer printer ftpd",
+                        "cpe ": "cpe:/h:dell:b2360dn_laser_printer"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "thttpd",
+                        "cpe ": "cpe:/a:acme:thttpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.16",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "HP Officejet Pro 8630 printer http config",
+                        "extra ": "Serial CN61JFW47V",
+                        "cpe ": "cpe:/h:hp:officejet_pro_8630"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP Officejet Pro 8630 printer http config",
+                        "extra ": "Serial CN61JFW47V",
+                        "cpe ": "cpe:/h:hp:officejet_pro_8630"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.17",
+                "names": [
+                    "rnp002673de758e.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh printer ftpd",
+                        "extra ": "model: MP C6004",
+                        "cpe ": "cpe:/h:ricoh:mp_c6004"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "NRG copier or Ricoh Aficio printer http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.19",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Brother/HP printer ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.26",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.27",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.28",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.53",
+                "names": [
+                    "npi779dd5.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.200",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.201",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.202",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.203",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.204",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.205",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.206",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.207",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.236.208",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.1"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "mini_httpd",
+                        "cpe ": "cpe:/a:acme:mini_httpd"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.240.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.240.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.240.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.240.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.240.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "oftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.240.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.240.10",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.240.36",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.242.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.242.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.242.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.6",
+                "names": [
+                    "2012knoxsvr.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Microsoft IIS httpd",
+                        "cpe ": "cpe:/o:microsoft:windows"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP JetDirect ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "HP Jetdirect httpd"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.12",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.13",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Virata-EmWeb",
+                        "cpe ": "cpe:/a:virata:emweb:6.2.1"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.14",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9631 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.16",
+                "names": [
+                    "xrxbonitz.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.25",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.242.39",
+                "names": [
+                    "brn30055c8edde5.bonitz.biz"
+                ],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Brother/HP printer ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Debut embedded httpd",
+                        "extra ": "Brother/HP printer http admin"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.248.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.248.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.248.3",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.6",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "gSOAP",
+                        "cpe ": "cpe:/a:genivia:gsoap:2.7"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Nucleus ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "NEC Electra Elite IPK II WebPro"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.10",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "Ubuntu Linux; protocol 2.0",
+                        "cpe ": "cpe:/o:linux:linux_kernel"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Apache httpd",
+                        "cpe ": "cpe:/a:apache:http_server"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.13",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.17",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Canon iPF6100 printer ftpd",
+                        "cpe ": "cpe:/h:canon:ipf6100"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "JC-HTTPD/1.14.20"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.18",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "Ricoh printer ftpd",
+                        "extra ": "model: MP C2503",
+                        "cpe ": "cpe:/h:ricoh:mp_c2503"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Web-Server httpd",
+                        "extra ": "NRG copier or Ricoh Aficio printer http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.108",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:6.4"
+                    },
+                    {
+                        "port": "80"
+                    },
+                    {
+                        "port": "443"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.248.118",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "192.168.250.0/24",
+        "hosts": [
+            {
+                "ip": "192.168.250.1",
+                "names": [],
+                "ports": []
+            },
+            {
+                "ip": "192.168.250.2",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "Cisco SSH",
+                        "extra ": "protocol 1.99",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Cisco IOS http config",
+                        "cpe ": "cpe:/o:cisco:ios"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.4",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "22",
+                        "prod": "APC AOS cryptlib sshd",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.7",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "HP JetDirect ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "HP-ChaiSOE",
+                        "extra ": "HP LaserJet http config"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "HP-ChaiSOE",
+                        "extra ": "HP LaserJet http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.8",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "SHARP MX-4141N printer ftpd"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "RapidLogic httpd",
+                        "extra ": "Sharp MX-2700N printer",
+                        "cpe ": "cpe:/h:sharp:mx-2700n"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "RapidLogic httpd",
+                        "extra ": "Sharp MX-2700N printer",
+                        "cpe ": "cpe:/h:sharp:mx-2700n"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.9",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "21",
+                        "prod": "APC AOS ftpd",
+                        "extra ": "on APC AP9630 network management card",
+                        "cpe ": "cpe:/o:apc:aos"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "APC SmartUPS http config"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.13",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "22",
+                        "prod": "OpenSSH",
+                        "extra ": "protocol 2.0",
+                        "cpe ": "cpe:/a:openbsd:openssh:7.4"
+                    },
+                    {
+                        "port": "80",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    },
+                    {
+                        "port": "443",
+                        "prod": "Dell iDRAC 8 admin httpd",
+                        "extra ": "time zone: CDT",
+                        "cpe ": "cpe:/o:dell:idrac8_firmware"
+                    }
+                ]
+            },
+            {
+                "ip": "192.168.250.107",
+                "names": [],
+                "ports": [
+                    {
+                        "port": "80",
+                        "prod": "AudioCodes MP-202 VoIP adapter http config",
+                        "cpe ": "cpe:/h:audiocodes:mp-202"
+                    }
+                ]
+            }
+        ]
+    },
+    {
+        "net": "198.18.120.142/30"
+    },
+    {
+        "net": "198.18.120.146/30"
+    },
+    {
+        "net": "198.18.120.146/30"
+    },
+    {
+        "net": "198.18.120.150/30"
+    },
+    {
+        "net": "198.18.120.154/30"
+    },
+    {
+        "net": "198.18.120.158/30"
+    },
+    {
+        "net": "198.18.120.162/30"
+    },
+    {
+        "net": "198.18.120.166/30"
+    },
+    {
+        "net": "198.18.120.170/30"
+    },
+    {
+        "net": "198.18.121.218/30"
+    },
+    {
+        "net": "198.18.190.46/30"
+    },
+    {
+        "net": "198.18.210.120/30"
+    },
+    {
+        "net": "198.18.85.26/30"
+    }
+]

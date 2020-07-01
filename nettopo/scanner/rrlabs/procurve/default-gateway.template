@@ -1,0 +1,4 @@
+Value Required gateway (\S+)
+
+Start
+  ^ip default-gateway ${gateway} -> Record

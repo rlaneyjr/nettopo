@@ -1,0 +1,29 @@
+---
+# With SNMPv2c:
+#   snmp_community must be set
+#
+# With SNMPv3:
+#   if snmp_auth is set:
+#     snmp_auth == md5|sha
+#     snmp_username must be set
+#     snmp_password must be set
+#   if snmp_priv is set:
+#     snmp_auth must be set
+#     snmp_auth == des|3des|aes128|aes192|aes256
+#     snmp_privpassword must be set
+
+R1:
+  nornir_host: 192.168.102.142
+  groups: ["ios", "snmpv2"]
+R2:
+  nornir_host: 192.168.102.145
+  groups: ["ios", "snmpv2"]
+R3:
+  nornir_host: 192.168.102.144
+  groups: ["ios", "snmpv2"]
+SW1:
+  nornir_host: 192.168.102.143
+  groups: ["ios", "snmpv2"]
+SW2:
+  nornir_host: 192.168.102.149
+  groups: ["ios", "snmpv2"]

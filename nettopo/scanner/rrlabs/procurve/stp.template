@@ -1,0 +1,9 @@
+Value Required port (\S+)
+Value bpdu_protection (bpdu-protection)
+Value bpdu_filter (bpdu-filter)
+Value admin_edge (admin-edge-port)
+
+Start
+  ^spanning-tree ${port} .*${admin_edge} -> Continue.Record
+  ^spanning-tree ${port} .*${bpdu_filter} -> Continue.Record
+  ^spanning-tree ${port} .*${bpdu_protection} -> Record

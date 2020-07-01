@@ -1,0 +1,4 @@
+Value Required location ([^"]+)
+
+Start
+  ^snmp-server location "${location}" -> Record

@@ -1,0 +1,5 @@
+Value Required host (\S+)
+Value Required community ([^"]+)
+
+Start
+  ^snmp-server host ${host} "${community}" -> Record

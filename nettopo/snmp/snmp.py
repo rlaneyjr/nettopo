@@ -1,0 +1,239 @@
+# -*- coding: utf-8 -*-
+# vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
+
+'''
+Title:              snmp.py
+Description:        SNMP
+Author:             Ricky Laney
+Version:            0.1.1
+'''
+from pysnmp.entity.rfc3413.oneliner import cmdgen
+
+from nettopo.snmp.constants import (
+    VALID_VERSIONS,
+    VALID_V3_LEVELS,
+    VALID_INTEGRITY_ALGO,
+    VALID_PRIVACY_ALGO,
+    TYPES,
+    INTEGRITY_ALGO,
+    PRIVACY_ALGO,
+)
+from nettopo.snmp.errors import ArgumentError, SnmpError
+from nettopo.snmp.utils import (
+    return_pretty_val,
+    return_snmp_data,
+)
+
+
+class SnmpHandler:
+
+    def __init__(self, **kwargs):
+        self.port = 161
+        self.timeout = 2
+        self.retries = 3
+        self.version = '2c'
+        self.community = 'public'
+        self.host = False
+        self.username = False
+        self.level = False
+        self.integrity = False
+        self.privacy = False
+        self.authkey = False
+        self.privkey = False
+        self._parse_args(**kwargs)
+
+    def _parse_args(self, **kwargs):
+        for key in kwargs:
+            if key == 'version':
+                self.version = kwargs[key]
+            if key == 'community':
+                self.community = kwargs[key]
+            if key == 'host':
+                self.host = kwargs[key]
+            if key == 'port':
+                try:
+                    port = int(kwargs[key])
+                except:
+                    raise ArgumentError('Port must be an integer between 1 and 65535')
+
+                if 1 <= port <= 65535:
+                    self.port = port
+                else:
+                    raise ArgumentError('Port must be between 1 and 65535')
+            if key == 'timeout':
+                self.timeout = kwargs[key]
+            if key == 'retries':
+                self.retries = kwargs[key]
+            if key == 'username':
+                self.username = kwargs[key]
+            if key == 'level':
+                if kwargs[key] in VALID_V3_LEVELS:
+                    self.level = kwargs[key]
+                else:
+                    raise ArgumentError('Security level invalid')
+            if key == 'integrity':
+                if kwargs[key] in VALID_INTEGRITY_ALGO:
+                    self.integrity = kwargs[key]
+                else:
+                    raise ArgumentError('Integrity algorithm not valid')
+            if key == 'privacy':
+                if kwargs[key] in VALID_PRIVACY_ALGO:
+                    self.privacy = kwargs[key]
+                else:
+                    raise ArgumentError('Privacy algorithm not valid')
+            if key == 'authkey':
+                self.authkey = kwargs[key]
+            if key == 'privkey':
+                self.privkey = kwargs[key]
+
+        if self.host is False:
+            raise ArgumentError('Host not defined')
+
+        if self.version not in VALID_VERSIONS:
+            raise ArgumentError('No valid SNMP version defined')
+
+        if self.version == "2c":
+            self.snmp_auth = cmdgen.CommunityData(self.community)
+
+        if self.version == "3":
+            if self.username is False:
+                raise ArgumentError('No username specified')
+            if self.level is False:
+                raise ArgumentError('No security level specified')
+            if self.integrity is False:
+                raise ArgumentError('No integrity protocol specified')
+            if self.authkey is False:
+                raise ArgumentError('No authkey specified')
+
+            if self.level == 'authNoPriv':
+                self.snmp_auth = cmdgen.UsmUserData(
+                    self.username,
+                    authKey=self.authkey,
+                    authProtocol=INTEGRITY_ALGO[self.integrity])
+            elif self.level == 'authPriv':
+                if self.privacy is False:
+                    raise ArgumentError('No privacy protocol specified')
+                if self.privkey is False:
+                    raise ArgumentError('No privacy key specified')
+                self.snmp_auth = cmdgen.UsmUserData(
+                    self.username,
+                    authKey=self.authkey,
+                    authProtocol=INTEGRITY_ALGO[self.integrity],
+                    privKey=self.privkey,
+                    privProtocol=PRIVACY_ALGO[self.privacy])
+
+    def get(self, *oidlist):
+
+        snmp_query = []
+        for oid in oidlist:
+            snmp_query.append(oid,)
+
+        cmdGen = cmdgen.CommandGenerator()
+        errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
+            self.snmp_auth,
+            cmdgen.UdpTransportTarget((self.host, self.port),
+                                      timeout=self.timeout,
+                                      retries=self.retries),
+            *snmp_query,
+            lookupMib=False
+        )
+
+        if errorIndication or errorStatus:
+            current_error = errorIndication._ErrorIndication__descr
+            raise SnmpError(current_error)
+
+        pretty_varbinds = []
+        for oid, value in varBinds:
+            pretty_varbinds.append([oid.prettyPrint(),
+                                   return_pretty_val(value)])
+
+        return pretty_varbinds
+
+    def get_value(self, *oidlist):
+
+        snmp_query = []
+        for oid in oidlist:
+            snmp_query.append(oid,)
+
+        cmdGen = cmdgen.CommandGenerator()
+        errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
+            self.snmp_auth,
+            cmdgen.UdpTransportTarget((self.host, self.port)),
+            *snmp_query,
+            lookupMib=False
+        )
+
+        if errorIndication or errorStatus:
+            current_error = errorIndication._ErrorIndication__descr
+            raise SnmpError(current_error)
+
+        values = []
+        for oid, value in varBinds:
+            values.append(return_pretty_val(value))
+
+        if len(values) == 1:
+            values = values[0]
+
+        return values
+
+    def getnext(self, *oidlist):
+
+        snmp_query = []
+        for oid in oidlist:
+            snmp_query.append(oid,)
+
+        cmdGen = cmdgen.CommandGenerator()
+        errorIndication, errorStatus, errorIndex, varTable = cmdGen.nextCmd(
+            self.snmp_auth,
+            cmdgen.UdpTransportTarget((self.host, self.port)),
+            *snmp_query,
+            lookupMib=False
+        )
+
+        if errorIndication or errorStatus:
+            current_error = errorIndication._ErrorIndication__descr
+            raise SnmpError(current_error)
+
+        pretty_vartable = []
+
+        for varbinds in varTable:
+            pretty_varbinds = []
+            for oid, value in varbinds:
+                pretty_varbinds.append([oid.prettyPrint(),
+                                       return_pretty_val(value)])
+            pretty_vartable.append(pretty_varbinds)
+
+        return pretty_vartable
+
+    def set(self, oid=None, value=None, value_type=None, multi=None):
+
+        if multi is None:
+            data = return_snmp_data(value, value_type)
+            snmp_sets = (oid, data),
+        else:
+            snmp_sets = []
+            for snmp_set in multi:
+                if len(snmp_set) == 2:
+                    oid = snmp_set[0]
+                    value = snmp_set[1]
+                    value_type = None
+                    data = return_snmp_data(value, value_type)
+                elif len(snmp_set) == 3:
+                    oid = snmp_set[0]
+                    value = snmp_set[1]
+                    value_type = snmp_set[2]
+                    data = return_snmp_data(value, value_type)
+                snmp_sets.append((oid, data),)
+
+        cmdGen = cmdgen.CommandGenerator()
+        errorIndication, errorStatus, errorIndex, varTable = cmdGen.setCmd(
+            self.snmp_auth,
+            cmdgen.UdpTransportTarget((self.host, self.port)),
+            *snmp_sets,
+            lookupMib=False
+        )
+
+        if errorIndication or errorStatus:
+            current_error = errorIndication._ErrorIndication__descr
+            raise SnmpError(current_error)
+

@@ -1,0 +1,10 @@
+*.py[cod]
+*.egg
+*.egg-info
+dist
+*~
+*.log
+*.swp
+*.swo
+IDEAS
+modules/test.py

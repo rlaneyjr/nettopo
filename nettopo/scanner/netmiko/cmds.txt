@@ -1,0 +1,3 @@
+set snmp community 0d71d56ae6 read-write
+set snmp community y8y9bhPa read-only
+save config

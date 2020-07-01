@@ -21,4 +21,4 @@ logs/*
 .coverage
 .tox
 
-repos
+repos/*

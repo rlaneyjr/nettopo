@@ -1,0 +1,9 @@
+Value Required port (\d+)
+Value desc ([^"]+)
+Value disable (disable)
+
+Start
+  ^interface ${port}
+  ^\s+name "${desc}"
+  ^\s+${disable}
+  ^\s*exit -> Record

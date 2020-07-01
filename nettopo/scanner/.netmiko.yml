@@ -1,0 +1,554 @@
+---
+
+ROA2960X01-A:
+  device_type: cisco_ios
+  ip: 172.16.10.65
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-A:
+  device_type: cisco_ios
+  ip: 192.168.118.1
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-B:
+  device_type: cisco_ios
+  ip: 192.168.119.1
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-C:
+  device_type: cisco_ios
+  ip: 192.168.120.1
+  username: admin
+  password: N@!litD0wn
+
+C3650CORE-A:
+  device_type: cisco_xe
+  ip: 192.168.197.1
+  username: admin
+  password: N@!litD0wn
+
+TS:
+  device_type: paloalto_panos
+  ip: 192.168.197.15
+  username: admin
+  password: 3ScoreAndFive2Freedom
+
+BONITZ3560G-D:
+  device_type: cisco_ios
+  ip: 192.168.200.2
+  username: admin
+  password: N@!litD0wn
+
+C3650CORE-B:
+  device_type: cisco_xe
+  ip: 192.168.202.1
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-E:
+  device_type: cisco_ios
+  ip: 192.168.203.254
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-F:
+  device_type: cisco_ios
+  ip: 192.168.211.1
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-G:
+  device_type: cisco_ios
+  ip: 192.168.214.2
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-H:
+  device_type: cisco_ios
+  ip: 192.168.215.1
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G-I:
+  device_type: cisco_ios
+  ip: 192.168.218.1
+  username: admin
+  password: N@!litD0wn
+
+NASH2960X01-A:
+  device_type: cisco_ios
+  ip: 192.168.222.129
+  username: admin
+  password: N@!litD0wn
+
+NASH2960X01-B:
+  device_type: cisco_ios
+  ip: 192.168.222.193
+  username: admin
+  password: N@!litD0wn
+
+GRVL2960X01-A:
+  device_type: cisco_ios
+  ip: 192.168.226.2
+  username: admin
+  password: N@!litD0wn
+
+RAL2901RTR:
+  device_type: cisco_ios
+  ip: 192.168.230.29
+  username: admin
+  password: N@!litD0wn
+
+RAL2960X01-A:
+  device_type: cisco_ios
+  ip: 192.168.230.65
+  username: admin
+  password: N@!litD0wn
+
+RAL2960X01-B:
+  device_type: cisco_ios
+  ip: 192.168.230.129
+  username: admin
+  password: N@!litD0wn
+
+2960SVRROOM:
+  device_type: cisco_ios
+  ip: 192.168.118.3
+  username: admin
+  password: N@!litD0wn
+
+2960X10APS:
+  device_type: cisco_ios
+  ip: 192.168.236.10
+  username: admin
+  password: N@!litD0wn
+
+3RDFLRPRINT:
+  device_type: cisco_ios
+  ip: 192.168.1.10
+  username: admin
+  password: N@!litD0wn
+
+ATLNORC2960X01:
+  device_type: cisco_ios
+  ip: 192.168.224.2
+  username: admin
+  password: N@!litD0wn
+
+AUG2960X01:
+  device_type: cisco_ios
+  ip: 192.168.240.2
+  username: admin
+  password: N@!litD0wn
+
+BONITZ2960:
+  device_type: cisco_ios
+  ip: 192.168.118.2
+  username: admin
+  password: N@!litD0wn
+
+BONITZ2960A:
+  device_type: cisco_ios
+  ip: 192.168.118.4
+  username: admin
+  password: N@!litD0wn
+
+BONITZ2960B:
+  device_type: cisco_ios
+  ip: 192.168.118.5
+  username: admin
+  password: N@!litD0wn
+
+BONITZ3560G:
+  device_type: cisco_ios
+  ip: 192.168.1.1
+  username: admin
+  password: N@!litD0wn
+
+C3650CORE:
+  device_type: cisco_xe
+  ip: 192.168.198.1
+  username: admin
+  password: N@!litD0wn
+
+CHAS2960X01:
+  device_type: cisco_ios
+  ip: 192.168.227.2
+  username: admin
+  password: N@!litD0wn
+
+CHAS2960X02:
+  device_type: cisco_ios
+  ip: 192.168.227.4
+  username: admin
+  password: N@!litD0wn
+
+CHLT2960X01:
+  device_type: cisco_ios
+  ip: 192.168.236.6
+  username: admin
+  password: N@!litD0wn
+
+CHLT2960X02:
+  device_type: cisco_ios
+  ip: 192.168.236.7
+  username: admin
+  password: N@!litD0wn
+
+CHLT2960X03:
+  device_type: cisco_ios
+  ip: 192.168.236.5
+  username: admin
+  password: N@!litD0wn
+
+GRVL2960X01:
+  device_type: cisco_ios
+  ip: 192.168.225.7
+  username: admin
+  password: N@!litD0wn
+
+GRVL2960X02:
+  device_type: cisco_ios
+  ip: 192.168.225.8
+  username: admin
+  password: N@!litD0wn
+
+GRVL2960X04:
+  device_type: cisco_ios
+  ip: 192.168.225.27
+  username: admin
+  password: N@!litD0wn
+
+GRVL2960X05:
+  device_type: cisco_ios
+  ip: 192.168.225.19
+  username: admin
+  password: N@!litD0wn
+
+GVRL2960X03:
+  device_type: cisco_ios
+  ip: 192.168.225.26
+  username: admin
+  password: N@!litD0wn
+
+HHSWITCH:
+  device_type: cisco_ios
+  ip: 192.168.100.2
+  username: admin
+  password: N@!litD0wn
+
+JAC2960X01:
+  device_type: cisco_ios
+  ip: 172.16.30.2
+  username: admin
+  password: N@!litD0wn
+
+KNOX2960X01:
+  device_type: cisco_ios
+  ip: 192.168.242.2
+  username: admin
+  password: N@!litD0wn
+
+NASH2960X01:
+  device_type: cisco_ios
+  ip: 192.168.222.2
+  username: admin
+  password: N@!litD0wn
+
+NOR2960X01:
+  device_type: cisco_ios
+  ip: 192.168.223.2
+  username: admin
+  password: N@!litD0wn
+
+PIT2960X01:
+  device_type: cisco_ios
+  ip: 172.16.20.2
+  username: admin
+  password: N@!litD0wn
+
+RAL2960X01:
+  device_type: cisco_ios
+  ip: 192.168.230.2
+  username: admin
+  password: N@!litD0wn
+
+RAL2960X02:
+  device_type: cisco_ios
+  ip: 192.168.230.3
+  username: admin
+  password: N@!litD0wn
+
+RICH2960X01:
+  device_type: cisco_ios
+  ip: 192.168.250.2
+  username: admin
+  password: N@!litD0wn
+
+ROA2960X01:
+  device_type: cisco_ios
+  ip: 172.16.10.2
+  username: admin
+  password: N@!litD0wn
+
+RRS2960X01:
+  device_type: cisco_ios
+  ip: 192.168.221.12
+  username: admin
+  password: N@!litD0wn
+
+WS2960X01:
+  device_type: cisco_ios
+  ip: 192.168.248.4
+  username: admin
+  password: N@!litD0wn
+
+iprisim:
+  device_type: xns_idp
+  ip: 192.168.236.3
+  username: admin
+  password: N@!litD0wn
+
+172.16.20.9:
+  device_type: aruba_os
+  ip: 172.16.20.9
+  username: admin
+  password: N@!litD0wn
+
+192.168.1.4:
+  device_type: aruba_os
+  ip: 192.168.1.4
+  username: admin
+  password: N@!litD0wn
+
+ATLAP1:
+  device_type: aruba_os
+  ip: 192.168.224.200
+  username: admin
+  password: N@!litD0wn
+
+ATLAP2:
+  device_type: aruba_os
+  ip: 192.168.224.202
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP01:
+  device_type: aruba_os
+  ip: 192.168.236.200
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP1:
+  device_type: aruba_os
+  ip: 192.168.236.201
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP2:
+  device_type: aruba_os
+  ip: 192.168.236.202
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP3:
+  device_type: aruba_os
+  ip: 192.168.236.203
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP4:
+  device_type: aruba_os
+  ip: 192.168.236.204
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP5:
+  device_type: aruba_os
+  ip: 192.168.236.205
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP6:
+  device_type: aruba_os
+  ip: 192.168.236.206
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP7:
+  device_type: aruba_os
+  ip: 192.168.236.207
+  username: admin
+  password: N@!litD0wn
+
+CHLTAP8:
+  device_type: aruba_os
+  ip: 192.168.236.208
+  username: admin
+  password: N@!litD0wn
+
+COLAAP1:
+  device_type: aruba_os
+  ip: 192.168.1.2
+  username: admin
+  password: N@!litD0wn
+
+COLAAP2:
+  device_type: aruba_os
+  ip: 192.168.1.15
+  username: admin
+  password: N@!litD0wn
+
+PITAP01:
+  device_type: aruba_os
+  ip: 172.16.20.10
+  username: admin
+  password: N@!litD0wn
+
+RALIAP23:
+  device_type: aruba_os
+  ip: 192.168.230.23
+  username: admin
+  password: N@!litD0wn
+
+RALIAP24:
+  device_type: aruba_os
+  ip: 192.168.230.24
+  username: admin
+  password: N@!litD0wn
+
+RALIAP25:
+  device_type: aruba_os
+  ip: 192.168.230.25
+  username: admin
+  password: N@!litD0wn
+
+RALIAP26:
+  device_type: aruba_os
+  ip: 192.168.230.26
+  username: admin
+  password: N@!litD0wn
+
+
+##### Groups #####
+cisco-ios:
+  - ROA2960X01-1
+  - ROA2960X01-2
+  - HHSWITCH
+  - BONITZ3560G-1
+  - BONITZ2960
+  - 2960SVRROOM
+  - BONITZ2960A
+  - BONITZ2960B
+  - BONITZ3560G-2
+  - BONITZ3560G-3
+  - BONITZ3560G-4
+  - BONITZ3560G-5
+  - BONITZ3560G-6
+  - BONITZ3560G-7
+  - BONITZ3560G-8
+  - BONITZ3560G-9
+  - BONITZ3560G-10
+  - RRS2960X01
+  - NASH2960X01-1
+  - NASH2960X01-2
+  - NASH2960X01-3
+  - ATLNORX2960X01
+  - GRVL2960X01-1
+  - GRVL2960X02
+  - GRVL2960X05
+  - GVRL2960X03
+  - GRVL2960X04
+  - GRVL2960X01-2
+  - CHAS2960X01
+  - CHAS2960X02
+  - RAL2960X01-1
+  - RAL2960X02
+  - RAL2901RTR
+  - RAL2960X01-2
+  - RAL2960X01-3
+  - CHLT2960X03
+  - CHLT2960X01
+  - CHLT2960X02
+  - AUG2960X01
+  - WS2960X01
+  - RICH2960X01
+  - 2960SVRROOM
+  - 2960X10APS
+  - 3RDFLRPRINT
+  - ATLNORC2960X01
+  - AUG2960X01
+  - BONITZ2960
+  - BONITZ2960A
+  - BONITZ2960B
+  - BONITZ3560G
+  - CHAS2960X01
+  - CHAS2960X02
+  - CHLT2960X01
+  - CHLT2960X02
+  - CHLT2960X03
+  - GRVL2960X01
+  - GRVL2960X02
+  - GRVL2960X04
+  - GRVL2960X05
+  - GVRL2960X03
+  - HHSWITCH
+  - JAC2960X01
+  - KNOX2960X01
+  - NASH2960X01
+  - NOR2960X01
+  - PIT2960X01
+  - RAL2960X01
+  - RAL2960X02
+  - RICH2960X01
+  - ROA2960X01
+  - RRS2960X01
+  - WS2960X01
+
+aruba-os:
+  - 172.16.20.9
+  - 192.168.1.4
+  - 192.168.224.200
+  - 192.168.236.200
+  - ATLAP2
+  - CHLTAP1
+  - CHLTAP2
+  - CHLTAP3
+  - CHLTAP4
+  - CHLTAP5
+  - CHLTAP6
+  - CHLTAP7
+  - CHLTAP8
+  - COLAAP1
+  - COLAAP2
+  - PITAP01
+  - RALIAP23
+  - RALIAP24
+  - RALIAP25
+  - RALIAP26
+
+pan-os:
+  - TS
+
+xns-idp:
+  - iprisim
+
+cisco-xe:
+  - C3650CORE-1
+  - C3650CORE-2
+  - C3650CORE-3
+  - C3650CORE
+
+cisco:
+  - cisco-ios
+  - cisco-xe
+
+all:
+  - aruba-os
+  - pan-os
+  - cisco
+  - xns-idp
+

@@ -1,0 +1,263 @@
+Error with 172.16.10.1
+172.16.10.2,<SNMPVariable value='ROA2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(2)E5, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2016 by Cisco Systems, Inc.\r\nCompiled Thu 02-Jun-16 01:31 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 172.16.10.5
+Error with 172.16.10.6
+Error with 172.16.10.8
+Error with 172.16.10.12
+Error with 172.16.10.16
+Error with 172.16.10.17
+172.16.10.65,<SNMPVariable value='ROA2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(2)E5, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2016 by Cisco Systems, Inc.\r\nCompiled Thu 02-Jun-16 01:31 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 172.16.10.72
+Error with 192.168.100.1
+192.168.100.2,<SNMPVariable value='HHSWITCH.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Tue 28-Sep-10 13:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.100.6
+Error with 192.168.100.11
+Error with 192.168.100.12
+192.168.118.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.118.2,<SNMPVariable value='BONITZ2960.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(46)SE, RELEASE SOFTWARE (fc2)\r\nCopyright (c) 1986-2008 by Cisco Systems, Inc.\r\nCompiled Thu 21-Aug-08 15:59 by nachen' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.118.3,<SNMPVariable value='2960SVRROOM.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(50)SE5, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Tue 28-Sep-10 13:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.118.4,<SNMPVariable value='BONITZ2960A.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960 Software (C2960-LANBASE-M), Version 12.2(52)SE, RELEASE SOFTWARE (fc3)\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Fri 25-Sep-09 03:14 by sasyamal' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.118.5,<SNMPVariable value='BONITZ2960B.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960 Software (C2960-LANBASE-M), Version 12.2(52)SE, RELEASE SOFTWARE (fc3)\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Fri 25-Sep-09 03:14 by sasyamal' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.118.6
+192.168.119.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.119.16
+192.168.120.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.120.5
+Error with 192.168.120.10
+Error with 192.168.120.15
+Error with 192.168.120.22
+Error with 192.168.120.23
+Error with 192.168.120.25
+Error with 192.168.120.26
+Error with 192.168.120.42
+Error with 192.168.120.43
+Error with 192.168.120.46
+192.168.197.1,<SNMPVariable value='C3650CORE' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, IOS-XE Software, Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 03.03.03SE RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\r\nCompiled Sun 27-Apr' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.197.3
+Error with 192.168.197.7
+Error with 192.168.197.14
+192.168.197.15,<SNMPVariable value='TS' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Palo Alto Networks PA-500 series firewall' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.197.18
+Error with 192.168.197.20
+192.168.198.1,<SNMPVariable value='C3650CORE' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, IOS-XE Software, Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 03.03.03SE RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\r\nCompiled Sun 27-Apr' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.198.3
+Error with 192.168.198.4
+Error with 192.168.198.6
+Error with 192.168.198.7
+Error with 192.168.198.9
+Error with 192.168.198.12
+Error with 192.168.198.14
+Error with 192.168.198.15
+Error with 192.168.198.18
+Error with 192.168.198.19
+Error with 192.168.198.21
+Error with 192.168.198.22
+Error with 192.168.200.1
+192.168.200.2,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.200.1
+192.168.200.2,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.202.1,<SNMPVariable value='C3650CORE' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, IOS-XE Software, Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 03.03.03SE RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2014 by Cisco Systems, Inc.\r\nCompiled Sun 27-Apr' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.202.3
+Error with 192.168.202.4
+Error with 192.168.203.1
+Error with 192.168.203.2
+Error with 192.168.203.3
+Error with 192.168.203.4
+Error with 192.168.203.5
+Error with 192.168.203.7
+Error with 192.168.203.9
+Error with 192.168.203.11
+Error with 192.168.203.15
+192.168.203.254,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.211.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.214.2,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.214.11
+Error with 192.168.214.15
+Error with 192.168.214.30
+Error with 192.168.214.92
+Error with 192.168.214.99
+Error with 192.168.214.100
+Error with 192.168.214.120
+Error with 192.168.214.121
+Error with 192.168.214.122
+Error with 192.168.214.123
+Error with 192.168.214.124
+Error with 192.168.214.125
+Error with 192.168.214.133
+192.168.215.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.215.9
+Error with 192.168.215.12
+Error with 192.168.215.18
+Error with 192.168.215.24
+Error with 192.168.215.27
+Error with 192.168.215.42
+Error with 192.168.215.51
+Error with 192.168.215.140
+Error with 192.168.215.141
+Error with 192.168.215.142
+Error with 192.168.215.143
+Error with 192.168.215.144
+Error with 192.168.215.145
+Error with 192.168.215.150
+Error with 192.168.215.151
+Error with 192.168.215.184
+Error with 192.168.215.195
+Error with 192.168.215.196
+Error with 192.168.215.198
+Error with 192.168.215.199
+Error with 192.168.215.202
+192.168.218.1,<SNMPVariable value='BONITZ3560G.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C3560 Software (C3560-IPBASE-M), Version 12.2(53)SE, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2009 by Cisco Systems, Inc.\r\nCompiled Sun 13-Dec-09 15:44 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.221.1
+Error with 192.168.221.3
+Error with 192.168.221.11
+192.168.221.12,<SNMPVariable value='RRS2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.221.132
+Error with 192.168.221.200
+Error with 192.168.222.1
+192.168.222.2,<SNMPVariable value='NASH2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.222.7
+Error with 192.168.222.8
+Error with 192.168.222.24
+192.168.222.129,<SNMPVariable value='NASH2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.222.150
+192.168.222.193,<SNMPVariable value='NASH2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.223.1
+Error with 192.168.223.2
+Error with 192.168.223.10
+Error with 192.168.223.11
+Error with 192.168.223.12
+Error with 192.168.223.30
+Error with 192.168.223.31
+Error with 192.168.223.38
+Error with 192.168.224.1
+192.168.224.2,<SNMPVariable value='ATLNORX2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(2)E5, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2016 by Cisco Systems, Inc.\r\nCompiled Thu 02-Jun-16 01:31 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.224.3
+Error with 192.168.224.6
+Error with 192.168.224.7
+Error with 192.168.224.104
+Error with 192.168.224.200
+Error with 192.168.224.202
+Error with 192.168.225.1
+Error with 192.168.225.5
+192.168.225.7,<SNMPVariable value='GRVL2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.225.8,<SNMPVariable value='GRVL2960X02' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.225.10
+Error with 192.168.225.11
+Error with 192.168.225.14
+Error with 192.168.225.16
+Error with 192.168.225.17
+Error with 192.168.225.18
+192.168.225.19,<SNMPVariable value='GRVL2960X05.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(2)E5, RELEASE SOFTWARE (fc2)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2016 by Cisco Systems, Inc.\r\nCompiled Thu 02-Jun-16 01:31 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.225.21
+Error with 192.168.225.23
+Error with 192.168.225.24
+Error with 192.168.225.25
+192.168.225.26,<SNMPVariable value='GVRL2960X03.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.225.27,<SNMPVariable value='GRVL2960X04.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.225.28
+Error with 192.168.225.29
+Error with 192.168.225.31
+Error with 192.168.225.32
+192.168.226.2,<SNMPVariable value='GRVL2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.227.1
+192.168.227.2,<SNMPVariable value='CHAS2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.227.3
+192.168.227.4,<SNMPVariable value='CHAS2960X02' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.227.5
+Error with 192.168.227.7
+Error with 192.168.227.8
+Error with 192.168.227.9
+Error with 192.168.227.10
+Error with 192.168.227.11
+Error with 192.168.227.12
+Error with 192.168.227.17
+Error with 192.168.227.37
+Error with 192.168.227.47
+Error with 192.168.227.49
+Error with 192.168.230.1
+192.168.230.2,<SNMPVariable value='RAL2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.230.3,<SNMPVariable value='RAL2960X02' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.230.5
+Error with 192.168.230.9
+Error with 192.168.230.12
+Error with 192.168.230.18
+Error with 192.168.230.19
+Error with 192.168.230.21
+Error with 192.168.230.23
+Error with 192.168.230.24
+Error with 192.168.230.25
+Error with 192.168.230.26
+192.168.230.29,<SNMPVariable value='RAL2901RTR' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2900 Software (C2900-UNIVERSALK9-M), Version 15.0(1)M4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2010 by Cisco Systems, Inc.\r\nCompiled Thu 28-Oct-10 18:32 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.230.65,<SNMPVariable value='RAL2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.230.82
+Error with 192.168.230.97
+Error with 192.168.230.113
+Error with 192.168.230.124
+Error with 192.168.230.125
+192.168.230.129,<SNMPVariable value='RAL2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.236.1
+Error with 192.168.236.3
+192.168.236.5,<SNMPVariable value='CHLT2960X03.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.2(2)E6, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2016 by Cisco Systems, Inc.\r\nCompiled Fri 16-Dec-16 21:27 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.236.6,<SNMPVariable value='CHLT2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+192.168.236.7,<SNMPVariable value='CHLT2960X02.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.236.9
+Error with 192.168.236.10
+Error with 192.168.236.11
+Error with 192.168.236.12
+Error with 192.168.236.14
+Error with 192.168.236.16
+Error with 192.168.236.17
+Error with 192.168.236.18
+Error with 192.168.236.19
+Error with 192.168.236.26
+Error with 192.168.236.27
+Error with 192.168.236.28
+Error with 192.168.236.33
+Error with 192.168.236.53
+Error with 192.168.236.200
+Error with 192.168.236.201
+Error with 192.168.236.202
+Error with 192.168.236.203
+Error with 192.168.236.204
+Error with 192.168.236.205
+Error with 192.168.236.206
+Error with 192.168.236.207
+Error with 192.168.236.208
+Error with 192.168.240.1
+192.168.240.2,<SNMPVariable value='AUG2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.240.3
+Error with 192.168.240.6
+Error with 192.168.240.7
+Error with 192.168.240.10
+Error with 192.168.240.36
+Error with 192.168.242.1
+Error with 192.168.242.2
+Error with 192.168.242.4
+Error with 192.168.242.6
+Error with 192.168.242.7
+Error with 192.168.242.8
+Error with 192.168.242.12
+Error with 192.168.242.13
+Error with 192.168.242.14
+Error with 192.168.242.16
+Error with 192.168.242.25
+Error with 192.168.242.39
+Error with 192.168.248.1
+Error with 192.168.248.3
+192.168.248.4,<SNMPVariable value='WS2960X01.bonitz.biz' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.248.6
+Error with 192.168.248.7
+Error with 192.168.248.10
+Error with 192.168.248.13
+Error with 192.168.248.18
+Error with 192.168.248.108
+Error with 192.168.248.118
+Error with 192.168.250.1
+192.168.250.2,<SNMPVariable value='RICH2960X01' (oid='sysName', oid_index='0', snmp_type='OCTETSTR')>,<SNMPVariable value='Cisco IOS Software, C2960X Software (C2960X-UNIVERSALK9-M), Version 15.0(2)EX4, RELEASE SOFTWARE (fc1)\r\nTechnical Support: http://www.cisco.com/techsupport\r\nCopyright (c) 1986-2013 by Cisco Systems, Inc.\r\nCompiled Thu 14-Nov-13 11:33 by prod_rel_team' (oid='sysDescr', oid_index='0', snmp_type='OCTETSTR')>
+Error with 192.168.250.4
+Error with 192.168.250.7
+Error with 192.168.250.8
+Error with 192.168.250.9
+Error with 192.168.250.13
+Error with 192.168.250.107
+Error with 165.166.185.97

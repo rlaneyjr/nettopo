@@ -1,0 +1,402 @@
+---
+#
+# ndmtk - Network Discovery and Management Toolkit
+# Copyright (C) 2016 Paul Greenberg @greenpau
+# See LICENSE.txt for licensing details
+#
+# File: plugins/action/files/cli/os/nuage_timos.yml
+#
+
+ndmtk:
+- description: 'collects detailed version information'
+  cli: 'show system information'
+  tags: ['ref:version']
+- description: 'Collect running configuration'
+  cli: 'admin display-config'
+  tags: ['ref:conf', 'configuration']
+- description: 'Collect running configuration (extensive)'
+  cli: 'admin display-config detail'
+
+
+- description: 'Collects chassis information'
+  cli: 'show chassis'
+  tags: ['ref:version', 'inventory']
+- description: 'Collects hardware and software version'
+  cli: 'show version'
+  tags: ['ref:version']
+- description: 'Collects BOF information'
+  cli: 'show bof'
+
+- description: 'Collects cflowd service status'
+  cli: 'show cflowd status'
+- description: 'Collects cflowd interfaces'
+  cli: 'show cflowd interface'
+- description: 'Collects cflowd collector detail'
+  cli: 'show cflowd collector'
+
+
+- description: 'Collects linecard information'
+  cli: 'show card'
+  tags: ['inventory']
+- description: 'Collects Multichassis interconnect LAG information'
+  cli: 'show lag detail'
+- description: 'Collects adapter card information and statistics'
+  cli: 'show mda'
+- description: 'TBD'
+  cli: 'show mirror'
+
+
+- description: 'Collect SNMP counters'
+  cli: 'show snmp counters'
+  tags: ['snmp']
+- description: 'Collect SNMP communities'
+  cli: 'show system security communities'
+  tags: ['snmp']
+- description: 'Collect security access groups for SNMP and CLI access'
+  cli: 'show system security access-group'
+  tags: ['snmp', 'acl']
+
+- description: 'Collect LLDP service status'
+  cli: 'show system lldp'
+  tags: ['lldp']
+- description: 'Collect LLDP neighbor information'
+  cli: 'show system lldp neighbor'
+  tags: ['lldp']
+
+
+- description: 'Collect NTP service status'
+  cli: 'show system ntp all detail'
+  tags: ['ntp', 'clock']
+- description: 'Collect SNTP service status'
+  cli: 'show system sntp'
+  tags: ['ntp', 'clock']
+- description: 'Collect date and time information'
+  cli: 'show system time'
+  tags: ['clock']
+- description: 'Collect date and time information (short)'
+  cli: 'clock'
+  tags: ['clock']
+
+
+- description: 'Collect OAM service status'
+  cli: 'show test-oam oam-config-summary'
+  tags: ['oam']
+- description: 'Collect OAM statistics for various tests'
+  cli: 'show test-oam oam-perf detail'
+  tags: ['oam']
+
+
+- description: 'Collects ARP table'
+  cli: 'show router arp'
+  tags: ['arp']
+
+
+- description: 'Collect the status of routing processes'
+  cli: 'show router status'
+  tags: ['routing']
+
+- description: 'Collects the status of BGP process'
+  cli: 'show router bgp summary all'
+  tags: ['bgp']
+  derivatives:
+  - os:
+    - nuage_timos
+    regex:
+    - pattern: '-----------------'
+      flags: ['reset']
+    - pattern: '^BGP Summary'
+      flags: ['reset']
+    - pattern: '^(?P<BGP_PEER_IP>\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3})\s*$'
+      flags: ['add_cli']
+    actions:
+    - description: 'Collect detailed information about BGP neighbor <BGP_PEER_IP>'
+      cli:
+      - 'show router bgp neighbor <BGP_PEER_IP> detail'
+      required: ['BGP_PEER_IP']
+      allow_empty_response: no
+    - description: 'Collect detailed information about <BGP_PEER_FAMILY> routes received from BGP neighbor <BGP_PEER_IP>'
+      cli:
+      - 'show router bgp neighbor <BGP_PEER_IP> <BGP_PEER_FAMILY> received-routes'
+      required: ['BGP_PEER_IP', 'BGP_PEER_FAMILY']
+      allow_empty_response: no
+    - description: 'Collect detailed information about <BGP_PEER_FAMILY> routes advertised to BGP neighbor <BGP_PEER_IP>'
+      cli:
+      - 'show router bgp neighbor <BGP_PEER_IP> <BGP_PEER_FAMILY> advertised-routes'
+      required: ['BGP_PEER_IP', 'BGP_PEER_FAMILY']
+      allow_empty_response: no
+
+- description: 'Collects BGP EVPN routing table MAC address entries'
+  cli: 'show router bgp routes evpn bgp-mac'
+  tags: ['bgp']
+
+- description: 'Collects BGP IPv4 routing table'
+  cli: 'show router bgp routes '
+  tags: ['bgp']
+
+- description: 'Collects BGP IPv4 routing table (detailed)'
+  cli: 'show router bgp routes ipv4 detail'
+  tags: ['bgp']
+
+- description: 'collect MC-LAG status'
+  cli: 'show lag'
+  tags: ['lag', 'network']
+  conditions_match_any:
+  - '^\s*lag\s\d+'
+  derivatives:
+  - os:
+    - nuage_timos
+    regex:
+    - pattern: '^(?P<LAG_ID>\d+)\s+'
+      flags: ['add_cli']
+    actions:
+    - description: 'collect detailed information about MC-LAG <LAG_ID>'
+      cli: 'show lag <LAG_ID> detail'
+      required: ['LAG_ID']
+      format: 'txt'
+    - description: 'collect network utilization information about MC-LAG <LAG_ID>'
+      cli: 'show lag <LAG_ID> statistics'
+      required: ['LAG_ID']
+      format: 'txt'
+- description: 'collect information about available ports'
+  cli: 'show port'
+  tags: ['interface', 'network']
+  derivatives:
+  - os:
+    - nuage_timos
+    regex:
+    - pattern: '^(?P<PORT_ID>\S+)\s+.*(Up|Down)'
+      flags: ['add_cli']
+    actions:
+    - description: 'collect detailed information about port <PORT_ID>'
+      cli: 'show port <PORT_ID> detail'
+      required: ['PORT_ID']
+      format: 'txt'
+- description: 'collect QoS status'
+  cli: 'show qos network detail'
+  tags: ['qos', 'network']
+- description: 'collect QoS DSCP configuration'
+  cli: 'show qos dscp-table'
+  tags: ['qos', 'network']
+- description: 'collect QoS Ingress Policy configuration'
+  cli: 'show qos ingress'
+  tags: ['qos', 'network']
+- description: 'collect QoS Egress Policy configuration'
+  cli: 'show qos egress'
+  tags: ['qos', 'network']
+
+- description: 'collect QoS status'
+  cli: 'show qos network detail'
+  tags: ['qos', 'network']
+- description: 'collect QoS DSCP configuration'
+  cli: 'show qos dscp-table'
+  tags: ['qos', 'network']
+- description: 'collect QoS Ingress Policy configuration'
+  cli: 'show qos ingress'
+  tags: ['qos', 'network']
+- description: 'collect QoS Egress Policy configuration'
+  cli: 'show qos egress'
+  tags: ['qos', 'network']
+- description: 'collect DHCP statistics'
+  cli: 'show router dhcp statistics'
+  tags: ['dhcp', 'network']
+- description: 'collect ECMP routing status'
+  cli: 'show router ecmp'
+  tags: ['ecmp', 'network']
+- description: 'collect VRRP instance status'
+  cli: 'show router vrrp instance'
+  tags: ['vrrp', 'hsrp', 'network']
+- description: 'collect VRRP instance statistics'
+  cli: 'show router vrrp statistics'
+  tags: ['vrrp', 'hsrp', 'network']
+- description: 'collect VRRP instance statistics'
+  cli: 'show router vxlan'
+  tags: ['vxlan', 'network']
+- description: 'collect router interface information'
+  cli: 'show router interface'
+  tags: ['router', 'network']
+- description: 'collect router interface detailed information'
+  cli: 'show router interface detail'
+  tags: ['router', 'network']
+- description: 'collect router interface summary information'
+  cli: 'show router interface summary'
+  tags: ['router', 'network']
+- description: 'collect unicast IPv4 route table'
+  cli: 'show router route-table ipv4'
+  tags: ['route', 'network']
+- description: 'collect multicast IPv4 route table'
+  cli: 'show router route-table mcast-ipv4'
+  tags: ['route', 'multicast', 'network']
+- description: 'collect unicast IPv4 route table Summary'
+  cli: 'show router route-table ipv4 summary'
+  tags: ['route', 'network']
+- description: 'collect multicast IPv4 route table Summary'
+  cli: 'show router route-table mcast-ipv4 summary'
+  tags: ['route', 'multicast', 'network']
+- description: 'collect static ARP configuration'
+  cli: 'show router static-arp'
+  tags: ['arp', 'network']
+- description: 'collect tunnel route table'
+  cli: 'show router tunnel-table'
+  tags: ['route', 'network']
+- description: 'collect tunnel route table summary'
+  cli: 'show router tunnel-table summary'
+  tags: ['route', 'network']
+
+- description: 'collect OSPF status'
+  cli: 'show router ospf status'
+  tags: ['routing', 'ospf', 'network']
+  conditions_match_any:
+  - '^\s*ospf\s*$'
+- description: 'collect OSPF routes'
+  cli: 'show router ospf routes'
+  tags: ['routing', 'ospf', 'network']
+  conditions_match_any:
+  - '^\s*ospf\s*$'
+- description: 'collect OSPF database information'
+  cli: 'show router ospf database'
+  tags: ['routing', 'ospf', 'network']
+  conditions_match_any:
+  - '^\s*ospf\s*$'
+- description: 'collect OSPF neighbor information'
+  cli: 'show router ospf neighbor'
+  tags: ['routing', 'ospf', 'network']
+  conditions_match_any:
+  - '^\s*ospf\s*$'
+
+- description: 'collect Forwarding Database (FDB) information'
+  cli: 'show service fdb-info'
+  tags: ['service', 'network']
+- description: 'collect information about Customers'
+  cli: 'show service customer'
+  tags: ['service', 'network']
+- description: 'collect information about Service Access Points'
+  cli: 'show service sap-using'
+  tags: ['service', 'network']
+- description: 'collect information about Service Oper Group'
+  cli: 'show service oper-group'
+  tags: ['service', 'network']
+- description: 'collect information about Service Distribution Points (SDP) usage'
+  cli: 'show service sdp-using'
+  tags: ['service', 'network']
+- description: 'collect information about Services'
+  cli: 'show service service-using'
+  tags: ['service', 'network']
+- description: 'collect information about Sites'
+  cli: 'show service site-using'
+  tags: ['service', 'network']
+
+- description: 'collects TCP connections table'
+  cli: 'show system connections detail'
+  tags: ['connections', 'network']
+- description: 'collect AAA provider status'
+  cli: 'show system security authentication'
+  tags: ['security']
+- description: 'collect AAA provider statistics'
+  cli: 'show system security authentication statistics'
+  tags: ['security']
+- description: 'collect information about IPv4 management access filter'
+  cli: 'show system security management-access-filter ip-filter'
+  tags: ['security', 'firewall']
+- description: 'collect information about IPv6 management access filter'
+  cli: 'show system security management-access-filter ipv6-filter'
+  tags: ['security', 'firewall', 'ipv6']
+- description: 'collect information about MAC address management access filter'
+  cli: 'show system security management-access-filter mac-filter'
+  tags: ['security', 'firewall']
+
+- description: 'collect information about users'
+  cli: 'show system security user'
+  tags: ['security', 'users']
+  derivatives:
+  - os:
+    - nuage_timos
+    regex:
+    - pattern: '^(?P<USERNAME>\S+)\s+(y|n)\s+'
+      flags: ['add_cli']
+    actions:
+    - description: 'collect information about user <USERNAME>'
+      cli: 'show system security user "<USERNAME>" detail'
+      required: ['USERNAME']
+      format: 'txt'
+
+- description: 'Collect SSH service status'
+  cli: 'show system security ssh'
+  tags: ['security', 'ssh']
+
+
+- description: 'Collect Virtual Switch Controller summary'
+  cli: 'show vswitch-controller summary'
+  tags: ['vswitch']
+
+
+- description: 'Collect information about Applications'
+  cli: 'show vswitch-controller application detail'
+  tags: ['vswitch']
+- description: 'Collect information about vSwitches'
+  cli: 'show vswitch-controller vswitches'
+  tags: ['vswitch']
+- description: 'Collect detailed information about vSwitches'
+  cli: 'show vswitch-controller vswitches detail'
+  tags: ['vswitch']
+
+- description: 'collect information about Nuage Enterprises'
+  cli: 'show vswitch-controller enterprise'
+  tags: ['vswitch']
+  derivatives:
+  - os:
+    - nuage_timos
+    regex:
+    - pattern: '^(?P<NUAGE_VSD_ENTERPRISE>\S+)\s+\d+\s+\d+\s*$'
+      flags: ['add_cli']
+    actions:
+    - description: 'collect information about <NUAGE_VSD_ENTERPRISE> enterprise'
+      cli: 'show vswitch-controller enterprise "<NUAGE_VSD_ENTERPRISE>" domain'
+      required: ['NUAGE_VSD_ENTERPRISE']
+      format: 'txt'
+      derivatives:
+      - os:
+        - nuage_timos
+        regex:
+        - pattern: '^(?P<NUAGE_VSD_DOMAIN>\S+)\s*(?P<NUAGE_SVC_ID>\d+)\s*$'
+          flags: ['add_cli']
+        actions:
+        - description: 'collect information about IP routes in <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise'
+          cli: 'show vswitch-controller ip-routes enterprise "<NUAGE_VSD_ENTERPRISE>" domain "<NUAGE_VSD_DOMAIN>"'
+          required: ['NUAGE_VSD_ENTERPRISE', 'NUAGE_VSD_DOMAIN']
+          format: 'txt'
+        - description: 'collect information about MAC routes in <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise for Service Id <NUAGE_SVC_ID>'
+          cli: 'show vswitch-controller mac-routes svcId <NUAGE_SVC_ID>'
+          required: ['NUAGE_SVC_ID']
+          format: 'txt'
+        - description: 'collect information about ESI routes in <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise for Service Id <NUAGE_SVC_ID>'
+          cli: 'show vswitch-controller esi-routes svcId <NUAGE_SVC_ID>'
+          required: ['NUAGE_SVC_ID']
+          format: 'txt'
+        - description: 'collect information about ARP routes in <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise for Service Id <NUAGE_SVC_ID>'
+          cli: 'show vswitch-controller arp-routes svcId <NUAGE_SVC_ID>'
+          required: ['NUAGE_SVC_ID']
+          format: 'txt'
+        - description: 'collect information about EVPN flood list in <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise for Service Id <NUAGE_SVC_ID>'
+          cli: 'show vswitch-controller evpn-floodlist svcId <NUAGE_SVC_ID>'
+          required: ['NUAGE_SVC_ID']
+          format: 'txt'
+        - description: 'collect routing table information for <NUAGE_VSD_DOMAIN> domain of <NUAGE_VSD_ENTERPRISE> enterprise'
+          cli: 'show router <NUAGE_SVC_ID> route-table'
+          required: ['NUAGE_SVC_ID']
+          format: 'txt'
+    - description: 'collect detailed information about <NUAGE_VSD_ENTERPRISE> enterprise'
+      cli: 'show vswitch-controller enterprise "<NUAGE_VSD_ENTERPRISE>" domain detail'
+      required: ['NUAGE_VSD_ENTERPRISE']
+      format: 'txt'
+    - description: 'collect information about containers in <NUAGE_VSD_ENTERPRISE> enterprise'
+      cli: 'show vswitch-controller containers enterprise "<NUAGE_VSD_ENTERPRISE>"'
+      required: ['NUAGE_VSD_ENTERPRISE']
+      format: 'txt'
+    - description: 'collect detailed information about containers in <NUAGE_VSD_ENTERPRISE> enterprise'
+      cli: 'show vswitch-controller containers enterprise "<NUAGE_VSD_ENTERPRISE>" detail'
+      required: ['NUAGE_VSD_ENTERPRISE']
+      format: 'txt'
+    - description: 'collect detailed information about Bridge Virtual Ports in <NUAGE_VSD_ENTERPRISE> enterprise'
+      cli: 'show vswitch-controller bridges enterprise "<NUAGE_VSD_ENTERPRISE>"'
+      required: ['NUAGE_VSD_ENTERPRISE']
+      format: 'txt'
