@@ -4,6 +4,7 @@
 '''
 nettopo.py
 '''
+from dataclasses import dataclass
 
 __all__ = [
     'RETCODE',
@@ -12,11 +13,10 @@ __all__ = [
     'ARP',
     'DCODE',
     'NODE',
-    'DiagramDefaults',
-    'default_config',
 ]
 
 
+@dataclass
 class RETCODE:
     # module return codes
     OK = 0
@@ -24,6 +24,7 @@ class RETCODE:
     SYNTAXERR = 2
 
 
+@dataclass
 class OID:
     SYSNAME = '1.3.6.1.2.1.1.5.0'
     SYS_SERIAL = '1.3.6.1.4.1.9.3.6.3.0'
@@ -89,6 +90,7 @@ class OID:
     ERR_INST = 'No Such Instance currently exists at this OID'
 
 
+@dataclass
 class ENTPHYCLASS:
     # OID_ENTPHYENTRY_CLASS values
     OTHER = 1
@@ -105,6 +107,7 @@ class ENTPHYCLASS:
     PDU = 12
 
 
+@dataclass
 class ARP:
     # ARP TYPES
     OTHER = 1
@@ -113,6 +116,7 @@ class ARP:
     STATIC = 4
 
 
+@dataclass
 class DCODE:
     ROOT = 0x01
     ERR_SNMP = 0x02
@@ -132,8 +136,8 @@ class DCODE:
     LEAF_STR = 'L'
 
 
+@dataclass
 class NODE:
     KNOWN = 0
     NEW = 1
     NEWIP = 2
-

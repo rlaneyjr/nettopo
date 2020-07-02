@@ -15,6 +15,7 @@ logs/*
 .idea
 .ropeproject
 .ipynb_checkpoints
+**/__pycache__
 
 # Testing
 #########

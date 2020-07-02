@@ -21,3 +21,10 @@ ne_list = cdp.get_cdp_neighbors_list()
 print(ne_dict)
 print(ne_list)
 
+from nettopo.core.data import VLANData
+vlan = VLANData(22, 'flynet')
+
+vlan._as_dict()
+vlan.show()
+vlan._as_dict().items()
+

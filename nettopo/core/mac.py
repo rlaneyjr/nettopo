@@ -4,25 +4,20 @@
 '''
         mac.py
 '''
-from .snmp import SNMP
 from .config import Config
-from .util import normalize_host, mac_format_ascii
 from .constants import OID
+from .data import BaseData
+from .snmp import SNMP
+from .util import normalize_host, mac_format_ascii
 
 
-class HostMAC:
+class HostMAC(BaseData):
     def __init__(self, host, ip, vlan, mac, port):
         self.host = host
         self.ip = ip
         self.vlan = int(vlan)
         self.mac = mac
         self.port = port
-
-        def __str__(self):
-            return f"<host='{self.host}', ip='{self.ip}', vlan='{self.vlan}', mac='{self.mac}', port='{self.port}'>"
-
-        def __repr__(self):
-            return self.__str__()
 
 
 class MAC:
@@ -59,7 +54,6 @@ class MAC:
                     ret_macs.extend(vmacs)
         return ret_macs
 
-
     def get_macs_for_vlan(self, ip, vlan, snmpobj=None, system_name=None, ifname_vbtbl=None):
         '''
         Return array of MAC addresses for a single VLAN from a single node at an IP
@@ -80,7 +74,6 @@ class MAC:
         cam_vbtbl = snmpobj.get_bulk(OID.VLAN_CAM)
         portnum_vbtbl = snmpobj.get_bulk(OID.BRIDGE_PORTNUMS)
         ifindex_vbtbl = snmpobj.get_bulk(OID.IFINDEX)
-        cam_match = None
         if not cam_vbtbl:
             # error getting CAM for VLAN
             return None
@@ -103,5 +96,3 @@ class MAC:
         # restore SNMP credentials
         snmpobj.community = old_cred
         return ret_macs
-
-

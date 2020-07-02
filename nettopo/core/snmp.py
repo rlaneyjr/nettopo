@@ -13,6 +13,7 @@ except:
 
 from .constants import OID
 
+
 class SNMP:
     def __init__(self, ip='0.0.0.0', port=161):
         self.success = False
@@ -69,7 +70,6 @@ class SNMP:
                 return None
             return r
 
-
     def get_bulk(self, oid):
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
@@ -100,4 +100,3 @@ class SNMP:
         oid = objectId.getOid()
         idx = len(oid) - 1
         return oid[idx]
-

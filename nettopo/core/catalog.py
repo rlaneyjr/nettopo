@@ -4,7 +4,6 @@
 '''
     catalog.py
 '''
-
 from .config import Config
 from .exceptions import NettopoCatalogError
 from .network import Network
@@ -44,4 +43,3 @@ class Catalog:
                 # Stand Alone
                 else:
                     f.write(f"{n.name},{n.ip[0]},{n.plat},{n.ios},{n.serial},SINGLE,{n.bootfile}\n")
-

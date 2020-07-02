@@ -20,15 +20,18 @@ __all__ = [
 class NettopoError(Exception):
     pass
 
+
 class NettopoNodeError(NettopoError):
     pass
+
 
 class NettopoNetworkError(NettopoError):
     pass
 
+
 class NettopoCatalogError(NettopoError):
     pass
 
+
 class NettopoSNMPError(NettopoError):
     pass
-

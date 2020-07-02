@@ -12,12 +12,9 @@ from .config import Config
 from .exceptions import NettopoError
 from .network import Network
 from .node import Node
-from .constants import VLAN, ARP
 from .mac import MAC
-from .output import natlas_output
-from .output_diagram import natlas_output_diagram
-from .output_catalog import natlas_output_catalog
-from .constants import RETURN_ERR, RETURN_OK, RETURN_SYNTAXERR
+from .diagram import Diagram
+from .catalog import Catalog
 
 
 class Nettopo:
@@ -71,8 +68,6 @@ class Nettopo:
         self.network.discover(root_ip)
         if details:
             self.network.discover_details()
-
-        # initalize the output objects
         self.diagram = Diagram(self.network)
         self.catalog = Catalog(self.network)
 
@@ -83,8 +78,8 @@ class Nettopo:
     def query_node(self, node, **get_values):
         # see node.actions in node.py for what get_values are available
         if self.has_snmp(node):
-        for getv in get_values:
-            setattr(node.actions, getv, get_values[getv])
+            for getv in get_values:
+                setattr(node.actions, getv, get_values[getv])
         return node.query_node()
 
     def write_diagram(self, output_file, diagram_title):
@@ -99,46 +94,41 @@ class Nettopo:
             return []
         return node.get_vlans()
 
-    def get_switch_macs(self, switch_ip, node, vlan=None, mac=None, port=None, verbose=0):
+    def get_switch_macs(self, switch_ip=None, node=None, vlan=None, mac=None, port=None, verbose=0):
         '''
         Get the CAM table from a switch.
         Args:
             switch_ip           IP address of the device
             node                natlas_node from new_node()
             vlan                Filter results by VLAN
-            MAC                 Filter results by MAC address (regex)
+            mac                 Filter results by MAC address (regex)
             port                Filter results by port (regex)
             verbose             Display progress to stdout
             switch_ip or node is required
         Return:
             Array of natlas_mac objects
         '''
-        if switch_ip is None:
-            if node is None:
-                raise NettopoError('get_switch_macs() requires switch_ip or node parameter')
+        if not switch_ip:
+            if not node:
                 return None
             switch_ip = node.get_ipaddr()
-
-        mac_obj = Mac(self.config)
-
+        mac_obj = MAC(self.config)
         if vlan is None:
             # get all MACs
             macs = mac_obj.get_macs(switch_ip, verbose)
         else:
             # get MACs only for one VLAN
             macs = mac_obj.get_macs_for_vlan(switch_ip, vlan, verbose)
-
-        if mac is None & port is None:
+        if not all([mac, port]):
             return macs if macs else []
-
         # filter results
         ret = []
         for m in macs:
             if mac:
-                if re.match(mac, m.mac) == None:
+                if not re.match(mac, m.mac):
                     continue
             if port:
-                if re.match(port, m.port) == None:
+                if not re.match(port, m.port):
                     continue
             ret.append(m)
         return ret
@@ -149,7 +139,7 @@ class Nettopo:
     def get_node_ip(self, node):
         return node.get_ipaddr()
 
-    def get_arp(self, switch_ip, ip=None, mac=None, interf=None, arp_type=None):
+    def get_switch_arp(self, switch_ip, ip=None, mac=None, interf=None, arp_type=None):
         '''
         Get the ARP table from a switch.
         Args:
@@ -191,4 +181,3 @@ class Nettopo:
             neighbors.extend(node.get_cdp_neighbors())
             neighbors.extend(node.get_lldp_neighbors())
         return neighbors
-

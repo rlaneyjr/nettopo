@@ -13,12 +13,37 @@ __all__ = [
     'CacheData',
     'NodeActions',
     'BaseData',
+    'DotNode',
     'LinkData',
     'SVIData',
     'LoopBackData',
     'VLANData',
     'ARPData',
 ]
+
+
+class BaseData:
+    def _as_dict(self):
+        IGN_DEFS = ['show']
+        _dict = {}
+        for item in self.__dir__():
+            if not item.startswith('_') and item not in IGN_DEFS:
+                val = self.__getattribute__(item)
+                _dict.update({item: val})
+        return _dict
+
+    def __str__(self):
+        attrs = [f"{key.capitalize()} = {val}" for key, val in self._as_dict().items()]
+        return "\n".join(attrs)
+
+    @property
+    def show(self) -> str:
+        try:
+            attrs = [f"{key}={val}" for key, val in self._as_dict().items() if key in self.items_2_show]
+        except AttributeError:
+            attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
+        attrs = ",".join(attrs)
+        return f"<{attrs}>"
 
 
 @dataclass
@@ -38,44 +63,38 @@ class CacheData:
     vlandesc_cache = None
     arp_cache = None
 
+
 @dataclass
 class NodeActions:
-    get_name = True
-    get_ip = True
-    get_plat = True
-    get_ios = True
-    get_router = True
-    get_ospf_id = True
-    get_bgp_las = True
-    get_hsrp_pri = True
-    get_hsrp_vip = True
-    get_serial = True
-    get_stack = True
-    get_stack_details = True
-    get_vss = True
-    get_vss_details = True
-    get_svi = True
-    get_lo = True
-    get_bootf = True
-    get_chassis_info = True
-    get_vpc = True
+    get_name: bool = True
+    get_ip: bool = True
+    get_plat: bool = True
+    get_ios: bool = True
+    get_router: bool = True
+    get_ospf_id: bool = True
+    get_bgp_las: bool = True
+    get_hsrp_pri: bool = True
+    get_hsrp_vip: bool = True
+    get_serial: bool = True
+    get_stack: bool = True
+    get_stack_details: bool = True
+    get_vss: bool = True
+    get_vss_details: bool = True
+    get_svi: bool = True
+    get_lo: bool = True
+    get_bootf: bool = True
+    get_chassis_info: bool = True
+    get_vpc: bool = True
 
-class BaseData:
-    def _as_dict(self):
-        IGN_DEFS = ['show']
-        _dict = {}
-        for item in self.__dir__():
-            if not item.startswith('_') or item not in IGN_DEFS:
-                val = self.__getattribute__(item)
-                _dict.update({item: val})
-        return _dict
 
-    def __str__(self):
-        d = self._as_dict()
-        d = str(d).replace(':', ' =')
-        d = d.lstrip('{').strip('}')
-        d = d.replace(',', '\n')
-        return d
+@dataclass
+class DotNode(BaseData):
+    ntype: str = 'single'
+    shape: str = 'ellipse'
+    style: str = 'solid'
+    peripheries: int = 1
+    label: str = ''
+    vss_label: str = ''
 
 
 @dataclass
@@ -104,9 +123,7 @@ class LinkData(BaseData):
     remote_ios = None
     remote_mac = None
     discovered_proto = None
-
-    def show(self):
-        return f"<local_port={self.local_port},remote_name={self.remote_name},remote_port={self.remote_port}>"
+    items_2_show: list = ['local_port', 'remote_name', 'remote_port']
 
 
 class SVIData(BaseData):
@@ -114,26 +131,17 @@ class SVIData(BaseData):
         self.vlan = vlan
         self.ip = []
 
-    def show(self):
-        return f"<vlan={self.vlan},ip={self.ip}>"
-
 
 class LoopBackData(BaseData):
     def __init__(self, name, ips):
         self.name = name.replace('Loopback', 'lo')
         self.ips = ips
 
-    def show(self):
-        return f"<name={self.name},ips={self.ips}>"
-
 
 class VLANData(BaseData):
     def __init__(self, vid, name):
-        self.id = vid
+        self.vid = vid
         self.name = name
-
-    def show(self):
-        return f"<vlan_id={self.id},vlan_name={self.name}>"
 
 
 class ARPData(BaseData):
@@ -142,7 +150,3 @@ class ARPData(BaseData):
         self.mac = mac
         self.interf = interf
         self.arp_type = arp_type
-
-    def show(self):
-        return f"<arp_ip={self.ip},arp_mac={self.mac},arp_interf={self.interf},arp_type={self.arp_type}>"
-

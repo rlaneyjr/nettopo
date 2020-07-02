@@ -20,6 +20,7 @@ __all__ = [
     'get_port_module',
     'get_cidr',
     'get_path',
+    'format_ios_ver',
     'mac_ascii_to_hex',
     'mac_format_ascii',
     'mac_hex_to_ascii',
@@ -98,7 +99,7 @@ def normalize_port(self, port):
     port = port.replace('Po', 'po')
     return port
 
-_ef ip_2_str(_ip):
+def ip_2_str(_ip):
     ip = int(_ip, 0)
     ip = '%i.%i.%i.%i' % (((ip >> 24) & 0xFF), ((ip >> 16) & 0xFF), ((ip >> 8) & 0xFF), (ip & 0xFF))
     return ip
@@ -127,12 +128,19 @@ def get_path(pattern):
         tokens = match[1].split('|')
     except:
         return [pattern]
-    ret = []
-    for token in tokens:
-        s = pattern.replace(match[0], token)
-        ret.append(s)
-    return ret
     return [pattern.replace(match[0], token) for token in tokens]
+
+def format_ios_ver(img):
+    x = img.decode("utf-8") if isinstance(img, bytes) else img
+    try:
+        img_s = re.search('(Version:? |CCM:)([^ ,$]*)', x)
+    except:
+        return img
+    if img_s:
+        if img_s.group1 == 'CCM:':
+            return f"CCM {img_s.group(2)}"
+        return img_s.group(2)
+    return img
 
 def mac_ascii_to_hex(mac_str):
     mac_str = re.sub('[\.:]', '', mac_str)
@@ -179,7 +187,7 @@ def parse_allowed_vlans(allowed_vlans):
             a = v & (0x1 << (3 - b))
             vlan = ((i-2)*4)+b
             if a:
-                if op == 1:
+                if op:
                     group += 1
                 else:
                     if ret:
@@ -193,8 +201,8 @@ def parse_allowed_vlans(allowed_vlans):
                     group = 0
                     op = 1
             else:
-                if op == 1:
-                    if ret and group > 1:
+                if op:
+                    if ret and group:
                         ret += f"-{int(vlan - 1)}"
                     op = 0
                 group = 0
@@ -222,4 +230,3 @@ def in_acl(item, acl):
 
 def str_matches_pattern(string, pattern):
     return True if string == '*' or re.search(pattern, string) else False
-

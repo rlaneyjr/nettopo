@@ -12,6 +12,7 @@ from .util import (timethis,
                    normalize_port,
                    ip_2_str,
                    get_cidr,
+                   format_ios_ver,
                    mac_hex_to_ascii,
                    mac_format_cisco,
                    parse_allowed_vlans)
@@ -53,11 +54,8 @@ class Node(BaseData):
         self.stack = Stack()
         self.vss = VSS()
         self.cache = CacheData()
-
-    def show(self):
-        return f"<name={self.name}, ip={self.ip}, plat={self.plat}, \
-                ios={self.ios}, serial={self.serial}, router={self.router}, \
-                vss={self.vss}, stack={self.stack}>"
+        self.items_2_show = [self.name, self.ip, self.plat, self.ios,
+                             self.serial, self.router, self.vss, self.stack]
 
     @cached_property
     def link_type_cache(self):
@@ -391,20 +389,6 @@ class Node(BaseData):
     def get_system_name(self, domains):
         return normalize_host(self.snmpobj.get_val(OID.SYSNAME), domains)
 
-    def format_ios_ver(self, img):
-        x = img
-        if isinstance(img, bytes):
-            x = img.decode("utf-8")
-        try:
-            img_s = re.search('(Version:? |CCM:)([^ ,$]*)', x)
-        except:
-            return img
-        if img_s:
-            if img_s.group1 == 'CCM:':
-                return 'CCM %s' % img_s.group(2)
-            return img_s.group(2)
-        return img
-
     def get_ipaddr(self):
         ''' Returns the first matching IP:
             - Lowest Loopback interface
@@ -483,4 +467,3 @@ class Node(BaseData):
                         type_str = 'static'
                     arr.append(ARPData(ip, mac, interf, type_str))
         return arr if arr else []
-
