@@ -123,7 +123,7 @@ class LinkData(BaseData):
     remote_ios = None
     remote_mac = None
     discovered_proto = None
-    items_2_show: list = ['local_port', 'remote_name', 'remote_port']
+    items_2_show = ['local_port', 'remote_name', 'remote_port']
 
 
 class SVIData(BaseData):

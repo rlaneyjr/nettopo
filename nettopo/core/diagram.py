@@ -139,12 +139,12 @@ class Diagram:
                 # a LAG could span different devices, eg Nexus.
                 # in this case we should always break it out, otherwise we could
                 # get an unlinked node in the diagram.
-                self.__create_link(diagram, node, link, 0)
+                self.create_link(diagram, node, link, True)
             else:
                 found = [lag for lag in lags if link.local_lag == lag]
                 if not found:
                     lags.append(link.local_lag)
-                    self.__create_link(diagram, node, link, 1)
+                    self.create_link(diagram, node, link, False)
 
     def get_node(self, diagram, node):
         dot_node = DotNode()
@@ -169,7 +169,7 @@ class Diagram:
             dot_node.shape = 'diamond'
         return dot_node
 
-    def __create_link(self, diagram, node, link, draw_as_lag):
+    def create_link(self, diagram, node, link, draw_as_lag):
         link_color = 'black'
         link_style = 'solid'
         link_label = ''
@@ -184,7 +184,7 @@ class Diagram:
             link_label += f"\n{str(members)} Members"
         else:
             link_label += f"Local:{link.local_port}\nRemote:{link.remote_port}"
-        is_lag = 1 if link.local_lag != 'UNKNOWN' else 0
+        is_lag = True if link.local_lag != 'UNKNOWN' else False
         if draw_as_lag:
             # LAG as member
             if is_lag:
@@ -205,8 +205,8 @@ class Diagram:
                 link_label += f"\nLocal:{link.local_if_ip}"
             if link.remote_if_ip and link.remote_if_ip != 'UNKNOWN':
                 link_label += f"\nRemote:{link.remote_if_ip}"
+        # LAG as group
         else:
-            # LAG as grouping
             for lnk in node.links:
                 if lnk.local_lag == link.local_lag:
                     link_label += f"\nLocal:{l.local_port} | Remote:{l.remote_port}"
@@ -269,9 +269,9 @@ class Diagram:
     def devs_in_lag(lag_name, links):
         devs = []
         for link in links:
-            if link.local_lag == lag_name and link.node.name not in devs:
+            if link.local_lag == lag_name:
                 devs.append(link.node.name)
-        return len(devs)
+        return len(set(devs))
 
     def eval_if_block(self, if_cond, node):
         # evaluate condition
@@ -286,10 +286,15 @@ class Diagram:
                 return False
         return False
 
-    def format_node_text(self, diagram, node, fmt):
+    def format_node_text(self, node):
         '''
         Generate the node text given the format string 'fmt'
         '''
+        from jinja2 import Environment, Template
+        from .templates import node_template
+        env = Environment(node, self.config)
+        temp = Template(node_template)
+        return temp.render(temp)
         while True:
             if_block = re.search('<%if ([^%]*): ([^%]*)%>', fmt)
             if not if_block:

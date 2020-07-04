@@ -47,22 +47,6 @@ class DiagramDefaults:
     expand_vss = True
     expand_lag = True
     group_vpc = True
-    node_text = f'''<font point-size="10"><b>{node.name}</b></font><br />
-        {node.ip}<br />
-        <%if {node.ios}: {node.ios}<br />%>
-        <%if {node.plat}: {node.plat}<br />%>
-        <%if ("{node.serial}"!=None)&({node.vss.enabled}==0)&({node.stack.enabled}==0): {node.serial}<br />%>
-        <%if ({node.stack.enabled}==1)&({config.diagram.expand_stackwise}==1): {stack.serial}<br />%>
-        <%if {node.vss.enabled}&({config.diagram.expand_vss}==1): {vss.serial}<br />%>
-        <%if ({node.vss.enabled}==1)&({config.diagram.expand_vss}==0): VSS {node.vss.domain}<br />%>
-        <%if {node.vss.enabled}&({config.diagram.expand_vss}==0): VSS 0 - {node.vss.members[0].plat} - {node.vss.members[0].serial}<br />VSS 1 - {node.vss.members[1].plat} - {node.vss.members[1].serial}<br />%>
-        <%if {node.bgp_las}: BGP {node.bgp_las}<br />%>
-        <%if {node.ospf_id}: OSPF {node.ospf_id}<br />%>
-        <%if {node.hsrp_pri}: HSRP VIP {node.hsrp_vip}<br />HSRP Pri {node.hsrp_pri}<br />%>
-        <%if {node.stack.enabled}: Stackwise {node.stack.count}<br />%>
-        <%stack SW {stack.num} - {stack.plat} {stack.serial} ({stack.role})<br />%>
-        <%loopback {lo.name} - {lo.ip}<br />%>
-        <%svi VLAN {svi.vlan} - {svi.ip}<br />%>'''
 
 
 class Config:

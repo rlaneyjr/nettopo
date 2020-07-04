@@ -7,7 +7,7 @@
 from .config import Config
 from .exceptions import NettopoCatalogError
 from .network import Network
-from .constants import NodeActions
+from .data import NodeActions
 
 
 class Catalog:
