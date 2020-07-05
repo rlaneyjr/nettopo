@@ -5,13 +5,15 @@
     node.py
 '''
 from functools import cached_property
+from typing import Union
+from .data import LinkData, StackData
 from .snmp import SNMP
 from .util import (timethis,
                    bits_from_mask,
                    normalize_host,
                    normalize_port,
                    ip_2_str,
-                   get_cidr,
+                   ip_from_cidr,
                    format_ios_ver,
                    mac_hex_to_ascii,
                    mac_format_cisco,
@@ -24,19 +26,42 @@ from .data import (CacheData,
                    LoopBackData,
                    VLANData,
                    ARPData)
-from .stack import Stack, StackMember
-from .vss import VSS, VSSMember
+from .stack import Stack
+from .vss import VSS
 from .constants import OID, ARP, DCODE, NODE
 
 
+@dataclass
+class CacheData:
+    cdp_cache = None
+    ldp_cache = None
+    link_type_cache = None
+    lag_cache = None
+    vlan_cache = None
+    ifname_cache = None
+    ifip_cache = None
+    svi_cache = None
+    ethif_cache = None
+    trk_allowed_cache = None
+    trk_native_cache = None
+    vpc_cache = None
+    vlandesc_cache = None
+    arp_cache = None
+
+
 class Node(BaseData):
-    def __init__(self, ip):
+    def __init__(self, ip: Union[str, list]) -> None:
+        self.ip = ip if isinstance(ip, list) else [ip]
+        self.snmpobj = SNMP(self.ip[0])
+        self.cache = None
         self.actions = NodeActions()
-        self.snmpobj = SNMP()
         self.links = []
+        self.svis = []
+        self.loopbacks = []
         self.discovered = False
+        self.stack = None
+        self.vss = None
         self.name = None
-        self.ip = ip
         self.plat = None
         self.ios = None
         self.router = None
@@ -46,16 +71,22 @@ class Node(BaseData):
         self.hsrp_vip = None
         self.serial = None
         self.bootfile = None
-        self.svis = []
-        self.loopbacks = []
         self.vpc_peerlink_if = None
         self.vpc_peerlink_node = None
         self.vpc_domain = None
-        self.stack = Stack()
-        self.vss = VSS()
-        self.cache = CacheData()
         self.items_2_show = [self.name, self.ip, self.plat, self.ios,
                              self.serial, self.router, self.vss, self.stack]
+
+    @cached_property
+    def cache(self):
+        if not self.cache:
+            self.cache = CacheData()
+            if self.actions.get_stack:
+                self.cache.stack = Stack(self.snmpobj, self.actions)
+            if self.actions.get_vss:
+                self.cache.vss = VSS(self.snmpobj, self.actions)
+        else:
+            return self.cache
 
     @cached_property
     def link_type_cache(self):
@@ -84,6 +115,30 @@ class Node(BaseData):
     @cached_property
     def ifip_cache(self):
         return self.snmpobj.get_bulk(OID.IF_IP)
+
+    @cached_property
+    def svi_cache(self):
+        return self.snmpobj.get_bulk(OID.SVI_VLANIF)
+cdp_cache = None
+ldp_cache = None
+ethif_cache = None
+vpc_cache = None
+vlandesc_cache = None
+arp_cache = None
+
+    @cached_property
+    def stack_cache(self):
+        if self.actions.get_stack:
+            return Stack(self.snmpobj, self.actions)
+        else:
+            return None
+
+    @cached_property
+    def vss_cache(self):
+        if self.actions.get_vss:
+            return VSS(self.snmpobj, self.actions)
+        else:
+            return None
 
     def add_link(self, link):
         self.links.append(link)
@@ -137,7 +192,7 @@ class Node(BaseData):
         if self.actions.get_vss:
             self.vss = VSS(self.snmpobj, self.actions)
         # serial
-        if self.actions.get_serial == 1 and self.stack.count == 0 and self.vss.enabled == 0:
+        if self.actions.get_serial and not all([self.stack.count, self.vss.enabled]):
             self.serial = self.snmpobj.get_val(OID.SYS_SERIAL)
         # SVI
         if self.actions.get_svi:
@@ -189,7 +244,7 @@ class Node(BaseData):
                         ip = ".".join(t[10:])
                         mask = self.snmpobj.table_lookup(self.ifip_cache, OID.IF_IP_NETM + ip)
                         nbits = bits_from_mask(mask)
-                        cidr = '%s/%i' % (ip, nbits)
+                        cidr = f"{ip}/{nbits}"
                         ips.append(cidr)
         return ips
 
@@ -205,12 +260,12 @@ class Node(BaseData):
             print('No CDP Neighbors Found.')
             return []
         for row in self.cdp_cache:
-            for name, val in row:
-                name = str(name)
+            for oid, val in row:
+                oid = str(oid)
                 # process only if this row is a CDP_DEVID
-                if name.startswith(OID.CDP_DEVID):
+                if oid.startswith(OID.CDP_DEVID):
                     continue
-                t = name.split('.')
+                t = oid.split('.')
                 ifidx = t[14]
                 ifidx2 = t[15]
                 idx = f".{ifidx}.{ifidx2}"
@@ -254,20 +309,17 @@ class Node(BaseData):
             print('No LLDP Neighbors Found.')
             return []
         for row in self.lldp_cache:
-            for name, val in row:
-                name = str(name)
-                if not name.startswith(OID.LLDP_TYPE):
+            for oid, val in row:
+                oid = str(oid)
+                if not oid.startswith(OID.LLDP_TYPE):
                     continue
-                t = name.split('.')
+                t = oid.split('.')
                 ifidx = t[12]
                 ifidx2 = t[13]
-                rip = ''
-                for r in self.lldp_cache:
-                    for n, v in r:
-                        n = str(n)
-                        if n.startswith(OID.LLDP_DEVADDR + '.' + ifidx + '.' + ifidx2):
-                            t2 = n.split('.')
-                            rip = '.'.join(t2[16:])
+                if oid.startswith(OID.LLDP_DEVADDR + '.' + ifidx + '.' + ifidx2):
+                    rip = '.'.join(t[16:])
+                else:
+                    rip = ''
                 lport = self.get_ifname(ifidx)
                 rport = self.snmpobj.table_lookup(self.lldp_cache, OID.LLDP_DEVPORT + '.' + ifidx + '.' + ifidx2)
                 rport = normalize_port(rport)
@@ -303,7 +355,7 @@ class Node(BaseData):
         link_type = self.snmpobj.table_lookup(self.link_type_cache, OID.TRUNK_VTP + '.' + ifidx)
         native_vlan = None
         allowed_vlans = 'All'
-        if (link_type == '1'):
+        if link_type == '1':
             native_vlan = self.snmpobj.table_lookup(self.trunk_native_cache, OID.TRUNK_NATIVE + '.' + ifidx)
             allowed_vlans = self.snmpobj.table_lookup(self.trunk_allowed_cache, OID.TRUNK_ALLOW + '.' + ifidx)
             allowed_vlans = parse_allowed_vlans(allowed_vlans)
@@ -333,21 +385,21 @@ class Node(BaseData):
         #    IOS
         # Slow but reliable method by using SNMP directly.
         # Usually we will get this via CDP.
-        if self.stack.count > 0 or self.vss.enabled == 1:
+        if self.stack.count > 0 or self.vss.enabled:
             # Use actions.get_stack_details
             # or  actions.get_vss_details
             # for this.
             return
-        class_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_CLASS)
+        ent_class_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_CLASS)
         if self.actions.get_serial:
             serial_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
         if self.actions.get_plat:
             platf_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
         if self.actions.get_ios:
             ios_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
-        if not class_cache:
+        if not ent_class_cache:
             return
-        for row in class_cache:
+        for row in ent_class_cache:
             for n, v in row:
                 n = str(n)
                 if v != "ENTPHYCLASS_CHASSIS":
@@ -362,19 +414,17 @@ class Node(BaseData):
                     self.ios = self.snmpobj.table_lookup(ios_cache, OID.ENTPHYENTRY_SOFTWARE + '.' + idx)
         if self.actions.get_ios:
             # modular switches might have IOS on a module rather than chassis
-            if self.ios == '':
-                for row in class_cache:
+            if not self.ios:
+                for row in ent_class_cache:
                     for n, v in row:
                         n = str(n)
-                        if v != ENTPHYCLASS_MODULE:
+                        if v != "ENTPHYCLASS_MODULE":
                             continue
                         t = n.split('.')
                         idx = t[12]
                         self.ios = self.snmpobj.table_lookup(ios_cache, OID.ENTPHYENTRY_SOFTWARE + '.' + idx)
-                        if self.ios != '':
+                        if self.ios:
                             break
-                    if self.ios != '':
-                        break
             self.ios = self.format_ios_ver(self.ios)
         return
 
@@ -399,7 +449,7 @@ class Node(BaseData):
             ips = self.loopbacks[0].ips
             if ips:
                 ips.sort()
-                return get_cidr(ips[0])
+                return ip_from_cidr(ips[0])
         # SVIs
         ips = []
         for svi in self.svis:
@@ -407,7 +457,7 @@ class Node(BaseData):
         ips.extend(self.ip)
         if ips:
             ips.sort()
-            return get_cidr(ips[0])
+            return ip_from_cidr(ips[0])
         return ''
 
     def get_vpc(self, ifarr):

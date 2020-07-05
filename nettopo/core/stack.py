@@ -5,24 +5,7 @@
         stack.py
 '''
 from .constants import OID
-
-
-class StackMember:
-    def __init__(self):
-        self.opts   = None
-        self.num    = 0
-        self.role   = 0
-        self.pri    = 0
-        self.mac    = None
-        self.img    = None
-        self.serial = None
-        self.plat   = None
-
-    def __str__(self):
-        return f"<num={self.num},role={self.role},serial={self.serial}>"
-
-    def __repr__(self):
-        return self.__str__()
+from .data import BaseData, StackData
 
 
 class Stack:

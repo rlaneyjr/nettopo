@@ -28,30 +28,23 @@ class SNMP:
             cmdgen.UdpTransportTarget((self.ip, self.port)),
             '1.3.6.1.2.1.1.5.0')
         if errIndication:
-            return False
+            self.success = False
         else:
             self.success = True
             self.community = community
-            return True
+        return self.success
 
     def get_creds(self, snmp_creds):
         if isinstance(snmp_creds, dict):
             for cred in snmp_creds:
-                community = cred['community']
-                if self.check_community(community):
+                if self.check_community(cred['community']):
                     return True
-                else:
-                    continue
         elif isinstance(snmp_creds, list):
             for cred in snmp_creds:
                 if self.check_community(cred):
                     return True
-                else:
-                    continue
         elif isinstance(snmp_creds, str):
             if self.check_community(snmp_creds):
-                self.success = True
-                self.community = community
                 return True
         return False
 

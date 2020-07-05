@@ -4,7 +4,6 @@
 '''
         nettopo.py
 '''
-
 import sys
 import re
 
@@ -113,7 +112,7 @@ class Nettopo:
                 return None
             switch_ip = node.get_ipaddr()
         mac_obj = MAC(self.config)
-        if vlan is None:
+        if not vlan:
             # get all MACs
             macs = mac_obj.get_macs(switch_ip, verbose)
         else:

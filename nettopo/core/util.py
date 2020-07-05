@@ -18,7 +18,7 @@ __all__ = [
     'normalize_port',
     'ip_2_str',
     'get_port_module',
-    'get_cidr',
+    'ip_from_cidr',
     'get_path',
     'format_ios_ver',
     'mac_ascii_to_hex',
@@ -88,7 +88,7 @@ def normalize_host(host, domains):
     host = host.rstrip(' \r\n\0')
     return host
 
-def normalize_port(self, port):
+def normalize_port(port):
     port = port.replace('TenGigabitEthernet', 'te')
     port = port.replace('GigabitEthernet', 'gi')
     port = port.replace('FastEthernet', 'fa')
@@ -113,7 +113,7 @@ def get_port_module(port):
         pass
     return False
 
-def get_cidr(cidr):
+def ip_from_cidr(cidr):
     try:
         s = re.search('^(.*)/[0-9]{1,2}$', cidr)
         if s:

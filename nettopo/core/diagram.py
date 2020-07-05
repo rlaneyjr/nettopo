@@ -5,13 +5,14 @@
     diagram.py
 '''
 import pydot
-from dataclasses import dataclass
 import datetime
+from jinja2 import Template
 import os
 
 from .config import Config
-from .data import BaseData, DotNode
+from .data import DotNode
 from .network import Network
+from .templates import node_template, credits_template
 from .util import get_path, get_port_module
 
 
@@ -26,15 +27,8 @@ class Diagram:
         date_text_size = title_text_size - 2
         today = datetime.datetime.now()
         today = today.strftime('%Y-%m-%d %H:%M')
-        credits = f"""<table border=0>
-                        <tr>
-                          <td balign=right>
-                            <font point-size={title_text_size}><b>{title}</b></font><br />
-                            <font point-size={date_text_size}>{today}</font><br />
-                          </td>
-                        </tr>
-                      </table>"""
-
+        credits = Template(credits_template)
+        credits = credits.render(title_text_size, date_text_size, title, today)
         node_text_size = self.config.diagram.node_text_size
         link_text_size = self.config.diagram.link_text_size
         diagram = pydot.Dot(graph_type='graph', labelloc='b',
@@ -290,11 +284,8 @@ class Diagram:
         '''
         Generate the node text given the format string 'fmt'
         '''
-        from jinja2 import Environment, Template
-        from .templates import node_template
-        env = Environment(node, self.config)
         temp = Template(node_template)
-        return temp.render(temp)
+        return temp.render(node, self.config)
         while True:
             if_block = re.search('<%if ([^%]*): ([^%]*)%>', fmt)
             if not if_block:

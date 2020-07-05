@@ -20,6 +20,10 @@ class Network:
         self.config = conf
         self.verbose = True
 
+    def _print(self, stuff: str) -> None:
+        if self.verbose:
+            print(stuff)
+
     def show(self):
         return f"<root_node={self.root_node.name}, num_nodes={len(self.nodes)}>"
 
@@ -31,12 +35,6 @@ class Network:
             n.discovered = False
 
     def set_verbose(self, level):
-        '''
-        Set the verbose output level for discovery output.
-        Args:
-            Level       False = no output
-                        True = normal output
-        '''
         self.verbose = level
 
     def discover(self, ip):
@@ -46,15 +44,14 @@ class Network:
         Populates self.nodes[] as a list of discovered nodes in the
         network with self.root_node being the root.
         '''
-        if self.verbose:
-            print(f"""Discovery codes:
+        self._print(f"""Discovery codes:
                     . depth
                     {DCODE.ERR_SNMP_STR} connection error
                     {DCODE.DISCOVERED_STR} discovering node
                     {DCODE.STEP_INTO_STR} numerating adjacencies
                     {DCODE.INCLUDE_STR} include node
                     {DCODE.LEAF_STR} leaf node""")
-            print('Discovering network...')
+        print('Discovering network...')
         # Start the process of querying this node and recursing adjacencies.
         node, new_node = self.query_ip(ip, 'UNKNOWN')
         self.root_node = node
@@ -83,42 +80,37 @@ class Network:
         '''
         if not self.root_node:
             return
-        if self.verbose:
-            print('\nCollecting node details...')
+        self._print('\nCollecting node details...')
         ni = 0
         for n in self.nodes:
             ni += 1
             indicator = '+'
             if not n.snmpobj.success:
                 indicator = '!'
-            if self.verbose:
-                sys.stdout.write(f"[{ni}/{len(self.nodes)}]{indicator} {n.name} ({n.snmpobj.ip})")
-                sys.stdout.flush()
-            # set what details to discover for this node
-            n.opts.get_router = True
-            n.opts.get_ospf_id = True
-            n.opts.get_bgp_las = True
-            n.opts.get_hsrp_pri = True
-            n.opts.get_hsrp_vip = True
-            n.opts.get_serial = True
-            n.opts.get_stack = True
-            n.opts.get_stack_details = self.config.diagram.get_stack_members
-            n.opts.get_vss = True
-            n.opts.get_vss_details = self.config.diagram.get_vss_members
-            n.opts.get_svi = True
-            n.opts.get_lo = True
-            n.opts.get_vpc = True
-            n.opts.get_ios = True
-            n.opts.get_plat = True
+            self._print(f"[{ni}/{len(self.nodes)}]{indicator} {n.name} ({n.snmpobj.ip})")
+            # # set what details to discover for this node
+            # n.opts.get_router = True
+            # n.opts.get_ospf_id = True
+            # n.opts.get_bgp_las = True
+            # n.opts.get_hsrp_pri = True
+            # n.opts.get_hsrp_vip = True
+            # n.opts.get_serial = True
+            # n.opts.get_stack = True
+            # n.opts.get_stack_details = self.config.diagram.get_stack_members
+            # n.opts.get_vss = True
+            # n.opts.get_vss_details = self.config.diagram.get_vss_members
+            # n.opts.get_svi = True
+            # n.opts.get_lo = True
+            # n.opts.get_vpc = True
+            # n.opts.get_ios = True
+            # n.opts.get_plat = True
             start = timer()
             n.query_node()
             end = timer()
-            if self.verbose:
-                print(f" {end - start:.2f} sec")
+            self._print(f"Node query took: {end - start:.2f} secs")
         # There is some back fill information we can populate now that
         # we know all there is to know.
-        if self.verbose:
-            print("\nBack filling node details...")
+        self._print("\nBack filling node details...")
         for n in self.nodes:
             # Find and link VPC nodes together for easy reference later
             if n.vpc_domain and not n.vpc_peerlink_node:
@@ -128,41 +120,39 @@ class Network:
                         link.node.vpc_peerlink_node = n
                         break
 
-    def print_step(self, ip, name, depth, dcodes):
-        if not self.verbose:
-            return
-        if dcodes and DCODE.DISCOVERED:
-            sys.stdout.write(f"{len(self.nodes):-3i}")
+    def print_step(self, ip, name, dcodes, depth=0):
+        dcodes = dcodes if isinstance(dcodes, list) else list(dcodes)
+        if DCODE.DISCOVERED in dcodes:
+            self._print(f"{len(self.nodes):-3}")
         else:
-            sys.stdout.write("")
-        if dcodes and DCODE.INCLUDE:
-            # flip this off cause we didn't even try
-            dcodes = dcodes and ~DCODE.ERR_SNMP
-        if dcodes and DCODE.ROOT:
-            sys.stdout.write(DCODE.ROOT_STR)
-        elif dcodes and DCODE.CDP:
-            sys.stdout.write(DCODE.CDP_STR)
-        elif dcodes and DCODE.LLDP:
-            sys.stdout.write(DCODE.LLDP_STR)
+            self._print("")
+        if DCODE.INCLUDE in dcodes:
+            # Remove SNMP error on 'include' nodes b/c we don't attempt
+            if DCODE.ERR_SNMP in dcodes:
+                dcode.remove(DCODE.ERR_SNMP)
+            self._print(DCODE.ROOT_STR)
+        elif DCODE.CDP in dcodes:
+            self._print(DCODE.CDP_STR)
+        elif DCODE.LLDP in dcodes:
+            self._print(DCODE.LLDP_STR)
         else:
-            sys.stdout.write("")
+            self._print("")
         status = ""
-        if dcodes and DCODE.ERR_SNMP:
+        if DCODE.ERR_SNMP in dcodes:
             status += DCODE.ERR_SNMP_STR
-        if dcodes and DCODE.LEAF:
+        if DCODE.LEAF in dcodes:
             status += DCODE.LEAF_STR
-        elif dcodes and DCODE.INCLUDE:
+        elif DCODE.INCLUDE in dcodes:
             status += DCODE.INCLUDE_STR
-        if dcodes and DCODE.DISCOVERED:
+        if DCODE.DISCOVERED in dcodes:
             status += DCODE.DISCOVERED_STR
-        elif dcodes and DCODE.STEP_INTO:
+        elif DCODE.STEP_INTO in dcodes:
             status += DCODE.STEP_INTO_STR
-        sys.stdout.write(f"{status:3s}")
+        self._print(f"{status:3s}")
         for i in range(0, depth):
-            sys.stdout.write(".")
+            self._print(".")
         name = normalize_host(name, self.config.host_domains)
-        if self.verbose:
-            print(f"{name} ({ip})")
+        self._print(f"{name} ({ip})")
 
     def query_ip(self, ip, host):
         '''
@@ -190,11 +180,7 @@ class Network:
             if node.snmpobj.success:
                 # we already queried this node successfully - return it
                 return node, NODE.KNOWN
-            # existing node but we couldn't connect before
-            if node_updated:
-                state = NODE.NEWIP
-            else:
-                state = NODE.KNOWN
+            state = NODE.NEWIP if node_updated else NODE.KNOWN
             node.name = host
         if ip == 'UNKNOWN':
             return node, state
@@ -238,7 +224,8 @@ class Network:
                     continue
                 if exip == ip:
                     return ex, False
-        node = self.is_known_host(host)
+            if ex.name == host:
+                node = ex
         if node:
             if ip not in node.ip:
                 node.ip.append(ip)
@@ -264,18 +251,18 @@ class Network:
         if node.ip[0] == '0.0.0.0' or not node.snmpobj.success:
             return
         # print some info to stdout
-        dcodes = DCODE.STEP_INTO
+        dcodes = list(DCODE.STEP_INTO)
         if depth == 0:
-            dcodes += DCODE.ROOT
-        self.print_step(node.ip[0], node.name, depth, dcodes)
+            dcodes.append(DCODE.ROOT)
+        self.print_step(node.ip[0], node.name, dcodes)
         # get the cached snmp credentials
         snmpobj = node.snmpobj
         # list of valid neighbors to discover next
         valid_neighbors = []
         # get list of neighbors
-        cdp_neighbors = node.get_cdp_neighbors()
-        lldp_neighbors = node.get_lldp_neighbors()
-        neighbors = cdp_neighbors + lldp_neighbors
+        neighbors = []
+        neighbors.extend(node.get_cdp_neighbors())
+        neighbors.extend(node.get_lldp_neighbors())
         if not neighbors:
             return
         for n in neighbors:
@@ -286,20 +273,20 @@ class Network:
             acl_action = self.check_node_acl(n.remote_ip, n.remote_name)
             if acl_action == 'deny':
                 continue
-            dcodes = DCODE.DISCOVERED
+            dcodes.append(DCODE.DISCOVERED)
             child = None
             if acl_action == 'include':
                 # include this node but do not discover it
                 child = Node()
                 child.ip = [n.remote_ip]
-                dcodes += DCODE.INCLUDE
+                dcodes.append(DCODE.INCLUDE)
             else:
                 # discover this node
                 child, query_result = self.query_ip(n.remote_ip, n.remote_name)
             # if we couldn't pull info from SNMP fill in what we know
             if not child.snmpobj.success:
                 child.name = normalize_host(n.remote_name, self.config.host_domains)
-                dcodes += DCODE.ERR_SNMP
+                dcodes.append(DCODE.ERR_SNMP)
             # need to check the ACL again for extended ops (we have more info)
             acl_action = self.check_node_acl(n.remote_ip, n.remote_name, n.remote_plat, n.remote_ios, child.serial)
             if acl_action == 'deny':
@@ -307,12 +294,12 @@ class Network:
             if query_result == NODE.NEW:
                 self.nodes.append(child)
                 if acl_action == 'leaf':
-                    dcodes += DCODE.LEAF
+                    dcodes.append(DCODE.LEAF)
                 if n.discovered_proto == 'cdp':
-                    dcodes += DCODE.CDP
+                    dcodes.append(DCODE.CDP)
                 if n.discovered_proto == 'lldp':
-                    dcodes += DCODE.LLDP
-                self.print_step(n.remote_ip, n.remote_name, depth+1, dcodes)
+                    dcodes.append(DCODE.LLDP)
+                self.print_step(n.remote_ip, n.remote_name, dcodes, depth+1)
             # CDP/LLDP advertises the platform
             child.plat = n.remote_plat
             child.ios = n.remote_ios
@@ -370,19 +357,10 @@ class Network:
         else:
             for ex_link in node.links:
                 if ex_link.node.name == link.node.name and ex_link.local_port == link.local_port:
-                    if self.verbose:
-                        print(f"Discovered duplicate links for node: {ex_link.node.name} port: {ex_link.local_port}")
+                    self._print(f"Discovered duplicate links for node: {ex_link.node.name} port: {ex_link.local_port}")
                     # haven't discovered yet but somehow we have this link twice.
                     # maybe from different discovery processes?
                     return False
         node.add_link(link)
-        if self.verbose:
-            print(f"Added new link: {link} for node: {node}")
+        self._print(f"Added new link: {link} for node: {node}")
         return True
-
-    def is_known_host(self, hostname):
-        for n in self.nodes:
-            if n.name == hostname:
-                return n
-        return False
-

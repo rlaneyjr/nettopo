@@ -15,6 +15,7 @@ __all__ = [
     'BaseData',
     'DotNode',
     'LinkData',
+    'StackData',
     'SVIData',
     'LoopBackData',
     'VLANData',
@@ -62,6 +63,58 @@ class CacheData:
     vpc_cache = None
     vlandesc_cache = None
     arp_cache = None
+
+    @cached_property
+    def link_type_cache(self):
+        return self.snmpobj.get_bulk(OID.TRUNK_VTP)
+
+    @cached_property
+    def lag_cache(self):
+        return self.snmpobj.get_bulk(OID.LAG_LACP)
+
+    @cached_property
+    def vlan_cache(self):
+        return self.snmpobj.get_bulk(OID.IF_VLAN)
+
+    @cached_property
+    def ifname_cache(self):
+        return self.snmpobj.get_bulk(OID.IFNAME)
+
+    @cached_property
+    def trunk_allowed_cache(self):
+        return self.snmpobj.get_bulk(OID.TRUNK_ALLOW)
+
+    @cached_property
+    def trunk_native_cache(self):
+        return self.snmpobj.get_bulk(OID.TRUNK_NATIVE)
+
+    @cached_property
+    def ifip_cache(self):
+        return self.snmpobj.get_bulk(OID.IF_IP)
+
+    @cached_property
+    def svi_cache(self):
+        return self.snmpobj.get_bulk(OID.SVI_VLANIF)
+cdp_cache = None
+ldp_cache = None
+ethif_cache = None
+vpc_cache = None
+vlandesc_cache = None
+arp_cache = None
+
+@cached_property
+def stack_cache(self):
+    if self.actions.get_stack:
+        return Stack(self.snmpobj, self.actions)
+    else:
+        return None
+
+    @cached_property
+    def vss_cache(self):
+        if self.actions.get_vss:
+            return VSS(self.snmpobj, self.actions)
+        else:
+            return None
 
 
 @dataclass
@@ -124,6 +177,19 @@ class LinkData(BaseData):
     remote_mac = None
     discovered_proto = None
     items_2_show = ['local_port', 'remote_name', 'remote_port']
+
+
+@dataclass
+class StackData(BaseData):
+    opts = None
+    num = 0
+    role = 0
+    pri = 0
+    mac = None
+    img = None
+    serial = None
+    plat = None
+    items_2_show = ['num', 'role', 'serial']
 
 
 class SVIData(BaseData):

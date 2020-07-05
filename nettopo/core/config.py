@@ -29,7 +29,7 @@ default_config = {
         "title_text_size": 15,
         "get_stack_members": True,
         "get_vss_members": True,
-        "expand_stackwise": False,
+        "expand_stackwise": True,
         "expand_vss": True,
         "expand_lag": True,
         "group_vpc": True
