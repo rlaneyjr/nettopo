@@ -55,26 +55,15 @@ class Config:
         self.snmp_creds = []
         self.diagram = DiagramDefaults()
 
-    def load(self, filename=None):
+    def load(self, config=None, filename=None):
         # Load defaults then override with custom
-        json_config = default_config
+        json_config = self.generate_new()
+        if config:
+            json_config.update(**config)
         if filename:
             json_data = self.load_json(filename)
             json_config.update(**json_data)
-        self.host_domains = json_config['domains']
-        self.snmp_creds = json_config['snmp']
-        json_diagram = json_config.get('diagram')
-        self.diagram.node_text_size = json_diagram.get('node_text_size')
-        self.diagram.link_text_size = json_diagram.get('link_text_size')
-        self.diagram.title_text_size = json_diagram.get('title_text_size')
-        self.diagram.get_stack_members = json_diagram.get('get_stack_members')
-        self.diagram.get_vss_members = json_diagram.get('get_vss_members')
-        self.diagram.expand_stackwise = json_diagram.get('expand_stackwise')
-        self.diagram.expand_vss = json_diagram.get('expand_vss')
-        self.diagram.expand_lag = json_diagram.get('expand_lag')
-        self.diagram.group_vpc = json_diagram.get('group_vpc')
-        self.diagram.node_text = json_diagram.get('node_text', self.diagram.node_text)
-        return True
+        return json_config
 
     def load_json(self, json_file):
         with open(json_file) as jf:

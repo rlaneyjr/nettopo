@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-        natlas
+        nettopo
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -24,7 +24,7 @@
 
 import sys
 import getopt
-import natlas
+import nettopo
 
 def mod_load(mod):
     mod.name         = 'get-arp-table'
@@ -59,7 +59,7 @@ def mod_load(mod):
     return 1
 
 
-def mod_entry(natlas_obj, argv):
+def mod_entry(nettopo_obj, argv):
     opt_devip = None
     opt_community = None
     opt_type = None
@@ -83,11 +83,11 @@ def mod_entry(natlas_obj, argv):
         return
 
     # set some snmp credentials for us to use
-    natlas_obj.snmp_add_credential(2, opt_community)
+    nettopo_obj.snmp_add_credential(2, opt_community)
     
     # get the ARP table
     try:
-        arp = natlas_obj.get_arp_table(opt_devip, ip=opt_ip, mac=opt_mac, interf=opt_vlan, arp_type=opt_type)
+        arp = nettopo_obj.get_arp_table(opt_devip, ip=opt_ip, mac=opt_mac, interf=opt_vlan, arp_type=opt_type)
     except Exception as e:
         print(e)
         return

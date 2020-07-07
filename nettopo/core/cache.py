@@ -16,117 +16,132 @@ from .vss import VSS
 
 
 class Cache:
-    def __init__(self, snmp_object: SNMP, node_actions: NodeActions):
+    def __init__(self, snmp_object: SNMP, node_actions: NodeActions) -> None:
         self.snmp = snmp_object
         self.actions = node_actions
 
     @cached_property
-    def cdp(self):
-
+    def name(self):
+        return self.snmp.get_val(OID.SYSNAME)
 
     @cached_property
-    def ldp(self):
+    def cdp(self):
+        return self.snmp.get_bulk(OID.CDP)
 
+    @cached_property
+    def lldp(self):
+        return self.snmp.get_bulk(OID.LLDP)
 
     @cached_property
     def link_type(self):
         return self.snmp.get_bulk(OID.TRUNK_VTP)
 
-
     @cached_property
     def lag(self):
         return self.snmp.get_bulk(OID.LAG_LACP)
 
-
     @cached_property
     def vlan(self):
-        return self.snmp.get_bulk(OID.IF_VLAN)
+        return self.snmp.get_bulk(OID.VLANS)
 
+    @cached_property
+    def vlandesc(self):
+        return self.snmp.get_bulk(OID.VLAN_DESC)
 
     @cached_property
     def ifname(self):
         return self.snmp.get_bulk(OID.IFNAME)
 
+    @cached_property
+    def svi(self):
+        return self.snmp.get_bulk(OID.SVI_VLANIF)
 
     @cached_property
     def ifip(self):
         return self.snmp.get_bulk(OID.IF_IP)
 
-
-    @cached_property
-    def svi(self):
-        return self.snmp.get_bulk(OID.SVI_VLANIF)
-
-
     @cached_property
     def ethif(self):
-
+        return self.snmp.get_bulk(OID.ETH_IF)
 
     @cached_property
     def trunk_allowed(self):
         return self.snmp.get_bulk(OID.TRUNK_ALLOW)
 
-
     @cached_property
     def trunk_native(self):
         return self.snmp.get_bulk(OID.TRUNK_NATIVE)
 
-
     @cached_property
     def vpc(self):
-
-
-    @cached_property
-    def vlandesc(self):
-
+        return self.snmp.get_bulk(OID.VPC_PEERLINK_IF)
 
     @cached_property
     def arp(self):
-
+        return self.snmp.get_bulk(OID.ARP)
 
     @cached_property
     def stack(self):
-        if self.actions.get_stack:
-            return Stack(self.snmp, self.actions)
-        else:
-            return None
-
-    @cached_property
-    def stack_details(self):
-        if self.actions.get_stack_details:
-            return Stack(self.snmp, self.actions)
-        else:
-            return None
+        return Stack(self.snmp, self.actions)
 
     @cached_property
     def vss(self):
-        if self.actions.get_vss:
-            return VSS(self.snmp, self.actions)
-        else:
-            return None
+        return VSS(self.snmp, self.actions)
+
+    @cached_property
+    def serial(self):
+        return self.snmp.get_val(OID.SYS_SERIAL)
+
+    @cached_property
+    def bootfile(self):
+        return self.snmp.get_val(OID.SYS_BOOT)
 
     @cached_property
     def ent_class(self):
         return self.snmp.get_bulk(OID.ENTPHYENTRY_CLASS)
 
     @cached_property
-    def serial(self):
-        if self.actions.get_serial:
-            return self.snmp.get_bulk(OID.ENTPHYENTRY_SERIAL)
-        else:
-            return None
+    def ent_serial(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_SERIAL)
 
     @cached_property
-    def plat(self):
-        if self.actions.get_plat:
-            return self.snmp.get_bulk(OID.ENTPHYENTRY_PLAT)
-        else:
-            return None
+    def ent_plat(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_PLAT)
 
     @cached_property
-    def ios(self):
-        if self.actions.get_ios:
-            return self.snmp.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
-        else:
-            return None
+    def ent_ios(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
 
+    @cached_property
+    def router(self):
+        if self.snmp.get_val(OID.IP_ROUTING) == '1':
+            return True
+        else:
+            return False
+
+    @cached_property
+    def ospf(self):
+        if self.router:
+            return self.snmp.get_val(OID.OSPF)
+
+    @cached_property
+    def ospf_id(self):
+        if self.ospf:
+            return self.snmp.get_val(OID.OSPF_ID)
+
+    @cached_property
+    def bgp(self):
+        if self.router:
+            bgp_las = self.snmp.get_val(OID.BGP_LAS)
+            # 4500x reports 0 as disabled
+            return bgp_las if self.bgp_las != '0' else None
+
+    @cached_property
+    def hsrp(self):
+        if self.router:
+            return self.snmp.get_val(OID.HSRP_PRI)
+
+    @cached_property
+    def hsrp_vip(self):
+        if self.hsrp:
+            return self.snmp.get_val(OID.HSRP_VIP)

@@ -1,47 +1,57 @@
-stack.py:12:18: E221 multiple spaces before operator
-stack.py:13:17: E221 multiple spaces before operator
-stack.py:14:18: E221 multiple spaces before operator
-stack.py:15:17: E221 multiple spaces before operator
-stack.py:16:17: E221 multiple spaces before operator
-stack.py:17:17: E221 multiple spaces before operator
-stack.py:19:18: E221 multiple spaces before operator
-stack.py:30:5: E301 expected 1 blank line, found 0
-stack.py:44:22: E711 comparison to None should be 'if cond is None:'
-stack.py:47:23: E711 comparison to None should be 'if cond is None:'
-stack.py:91:1: W391 blank line at end of file
-util.py:32:1: E302 expected 2 blank lines, found 1
-util.py:38:10: E225 missing whitespace around operator
-util.py:39:10: E225 missing whitespace around operator
-util.py:40:10: E225 missing whitespace around operator
-util.py:45:1: E302 expected 2 blank lines, found 1
-util.py:56:1: E302 expected 2 blank lines, found 1
-util.py:59:11: E221 multiple spaces before operator
-util.py:61:26: E227 missing whitespace around bitwise or shift operator
-util.py:68:21: E227 missing whitespace around bitwise or shift operator
-util.py:71:1: E302 expected 2 blank lines, found 1
-util.py:82:20: W605 invalid escape sequence '\('
-util.py:82:24: W605 invalid escape sequence '\('
-util.py:82:28: W605 invalid escape sequence '\)'
-util.py:90:1: E302 expected 2 blank lines, found 1
-util.py:101:1: E302 expected 2 blank lines, found 1
-util.py:106:1: E302 expected 2 blank lines, found 1
-util.py:108:26: W605 invalid escape sequence '\d'
-util.py:108:31: W605 invalid escape sequence '\d'
-util.py:108:36: W605 invalid escape sequence '\d'
-util.py:108:40: W605 invalid escape sequence '\d'
-util.py:115:1: E302 expected 2 blank lines, found 1
-util.py:124:1: E302 expected 2 blank lines, found 1
-util.py:126:32: W605 invalid escape sequence '\}'
-util.py:137:1: E302 expected 2 blank lines, found 1
-util.py:138:24: W605 invalid escape sequence '\.'
-util.py:146:1: E302 expected 2 blank lines, found 1
-util.py:150:1: E302 expected 2 blank lines, found 1
-util.py:166:1: E302 expected 2 blank lines, found 1
-util.py:170:1: E302 expected 2 blank lines, found 1
-util.py:210:1: E302 expected 2 blank lines, found 1
-util.py:211:9: E117 over-indented
-util.py:213:45: W605 invalid escape sequence '\.'
-util.py:223:1: E302 expected 2 blank lines, found 1
+diagram.py:339:29: W605 invalid escape sequence '\.'
+diagram.py:339:60: W605 invalid escape sequence '\g'
+diagram.py:340:27: W605 invalid escape sequence '\.'
+diagram.py:340:56: W605 invalid escape sequence '\g'
+diagram.py:344:23: W605 invalid escape sequence '\$'
+diagram.py:344:34: W605 invalid escape sequence '\$'
+diagram.py:344:49: W605 invalid escape sequence '\$'
+diagram.py:344:60: W605 invalid escape sequence '\$'
+diagram.py:344:73: W605 invalid escape sequence '\g'
+diagram.py:345:23: W605 invalid escape sequence '\$'
+diagram.py:345:32: W605 invalid escape sequence '\$'
+diagram.py:345:47: W605 invalid escape sequence '\$'
+diagram.py:345:56: W605 invalid escape sequence '\$'
+diagram.py:345:67: W605 invalid escape sequence '\g'
+stack.py:13:5: E301 expected 1 blank line, found 0
+stack.py:27:22: E711 comparison to None should be 'if cond is None:'
+stack.py:30:23: E711 comparison to None should be 'if cond is None:'
+stack.py:74:1: W391 blank line at end of file
+util.py:35:1: E302 expected 2 blank lines, found 1
+util.py:41:10: E225 missing whitespace around operator
+util.py:42:10: E225 missing whitespace around operator
+util.py:43:10: E225 missing whitespace around operator
+util.py:48:1: E302 expected 2 blank lines, found 1
+util.py:59:1: E302 expected 2 blank lines, found 1
+util.py:62:11: E221 multiple spaces before operator
+util.py:64:26: E227 missing whitespace around bitwise or shift operator
+util.py:71:21: E227 missing whitespace around bitwise or shift operator
+util.py:74:1: E302 expected 2 blank lines, found 1
+util.py:85:20: W605 invalid escape sequence '\('
+util.py:85:24: W605 invalid escape sequence '\('
+util.py:85:28: W605 invalid escape sequence '\)'
+util.py:94:1: E302 expected 2 blank lines, found 1
+util.py:105:1: E302 expected 2 blank lines, found 1
+util.py:110:1: E302 expected 2 blank lines, found 1
+util.py:112:26: W605 invalid escape sequence '\d'
+util.py:112:31: W605 invalid escape sequence '\d'
+util.py:112:36: W605 invalid escape sequence '\d'
+util.py:112:40: W605 invalid escape sequence '\d'
+util.py:119:1: E302 expected 2 blank lines, found 1
+util.py:128:1: E302 expected 2 blank lines, found 1
+util.py:130:32: W605 invalid escape sequence '\}'
+util.py:136:1: E302 expected 2 blank lines, found 1
+util.py:148:1: E302 expected 2 blank lines, found 1
+util.py:149:24: W605 invalid escape sequence '\.'
+util.py:157:1: E302 expected 2 blank lines, found 1
+util.py:161:1: E302 expected 2 blank lines, found 1
+util.py:177:1: E302 expected 2 blank lines, found 1
+util.py:181:1: E302 expected 2 blank lines, found 1
+util.py:221:1: E302 expected 2 blank lines, found 1
+util.py:222:9: E117 over-indented
+util.py:224:45: W605 invalid escape sequence '\.'
+util.py:234:1: E302 expected 2 blank lines, found 1
+util.py:237:1: E302 expected 2 blank lines, found 1
+util.py:246:1: E302 expected 2 blank lines, found 1
 vss.py:12:18: E221 multiple spaces before operator
 vss.py:13:17: E221 multiple spaces before operator
 vss.py:15:18: E221 multiple spaces before operator

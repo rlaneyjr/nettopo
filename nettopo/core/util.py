@@ -28,6 +28,8 @@ __all__ = [
     'parse_allowed_vlans',
     'in_acl',
     'str_matches_pattern',
+    'lookup_table',
+    'oid_last_token',
 ]
 
 def timethis(func):
@@ -69,7 +71,7 @@ def in_cidr(ip, cidr):
     ip = ((int(o[0])<<24) + (int(o[1]) << 16) + (int(o[2]) << 8) + (int(o[3])))
     return ((cidr_ip & cidr_mb) == (ip & cidr_mb))
 
-def normalize_host(host, domains):
+def normalize_host(host, domains=None):
     # some devices (eg Motorola) report as hex strings
     if host.startswith('0x'):
         try:
@@ -81,8 +83,9 @@ def normalize_host(host, domains):
             host = host
     # Nexus appends (SERIAL) to hosts
     host = re.sub('\([^\(]*\)$', '', host)
-    for domain in domains:
-        host = host.replace(domain, '')
+    if domains:
+        for domain in domains:
+            host = host.replace(domain, '')
     # fix some stuff that can break Dot
     host = re.sub('-', '_', host)
     host = host.rstrip(' \r\n\0')
@@ -230,3 +233,17 @@ def in_acl(item, acl):
 
 def str_matches_pattern(string, pattern):
     return True if string == '*' or re.search(pattern, string) else False
+
+def lookup_table(table, name):
+    if table:
+        for row in table:
+            for n, v in row:
+                if name in str(n):
+                    return v.prettyPrint()
+    else:
+        return None
+
+def oid_last_token(objectId):
+    oid = objectId.getOid()
+    idx = len(oid) - 1
+    return oid[idx]

@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-        natlas
+        nettopo
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -25,7 +25,7 @@
 import sys
 import getopt
 import socket
-import natlas
+import nettopo
 
 def mod_load(mod):
     mod.name        = 'get-hosts'
@@ -92,7 +92,7 @@ def mod_load(mod):
                         '''
     return 1
 
-def mod_entry(natlas_obj, argv):
+def mod_entry(nettopo_obj, argv):
     opt_root_ip     = None
     opt_node_ip     = None
     opt_router_ip   = None
@@ -104,7 +104,7 @@ def mod_entry(natlas_obj, argv):
     try:
         opts, args = getopt.getopt(argv, 'r:n:o:d:C:v:p:')
     except getopt.GetoptError:
-        return natlas.RETURN_SYNTAXERR
+        return nettopo.RETURN_SYNTAXERR
     for opt, arg in opts:
         if (opt == '-r'):   opt_root_ip = arg
         if (opt == '-n'):   opt_node_ip = arg
@@ -115,12 +115,12 @@ def mod_entry(natlas_obj, argv):
         if (opt == '-p'):   opt_depth = arg
 
     if ((opt_root_ip == None) & (opt_node_ip == None)):
-        return natlas.RETURN_SYNTAXERR
+        return nettopo.RETURN_SYNTAXERR
 
     if (opt_node_ip != None):
-        return single_node(natlas_obj, opt_node_ip, opt_root_ip, opt_community, opt_vlan, opt_port, opt_output)
+        return single_node(nettopo_obj, opt_node_ip, opt_root_ip, opt_community, opt_vlan, opt_port, opt_output)
         
-    return all_nodes(natlas_obj, opt_root_ip, opt_output, opt_depth)
+    return all_nodes(nettopo_obj, opt_root_ip, opt_output, opt_depth)
 
 
 def get_arp_entry_for_mac(arps, macaddr):
@@ -141,23 +141,23 @@ def create_csv_file(filepath, colnames):
     return f
 
 
-def all_nodes(natlas_obj, opt_root_ip, opt_output, opt_depth):
+def all_nodes(nettopo_obj, opt_root_ip, opt_output, opt_depth):
     # discover the network
-    natlas_obj.set_discover_maxdepth(opt_depth)
-    natlas_obj.set_verbose(1)
-    natlas_obj.discover_network(opt_root_ip, 0)
+    nettopo_obj.set_discover_maxdepth(opt_depth)
+    nettopo_obj.set_verbose(1)
+    nettopo_obj.discover_network(opt_root_ip, 0)
 
     network_macs = [] 
     network_arps = []
 
     # iterate through each discovered node
-    natlas_nodes = natlas_obj.get_discovered_nodes()
-    for node in natlas_nodes:
+    nettopo_nodes = nettopo_obj.get_discovered_nodes()
+    for node in nettopo_nodes:
         # get the switch MAC table
-        nip = natlas_obj.get_node_ip(node)
+        nip = nettopo_obj.get_node_ip(node)
         print('Collecting MACs from %s...' % nip)
         try:
-            macs = natlas_obj.get_switch_macs(nip, verbose=1)
+            macs = nettopo_obj.get_switch_macs(nip, verbose=1)
             network_macs.extend(macs)
         except Exception as e:
             print(e)
@@ -166,7 +166,7 @@ def all_nodes(natlas_obj, opt_root_ip, opt_output, opt_depth):
         # get the ARP table for the router
         print('Collecting ARPs from %s...' % nip)
         try:
-            arps = natlas_obj.get_arp_table(nip)
+            arps = nettopo_obj.get_arp_table(nip)
             network_arps.extend(arps)
         except Exception as e:
             print(e)
@@ -201,33 +201,33 @@ def all_nodes(natlas_obj, opt_root_ip, opt_output, opt_depth):
     if (f != None):
         f.close()
 
-    return natlas.RETURN_OK
+    return nettopo.RETURN_OK
 
 
-def single_node(natlas_obj, opt_devip, opt_routerip, opt_community, opt_vlan, opt_port, opt_output):
+def single_node(nettopo_obj, opt_devip, opt_routerip, opt_community, opt_vlan, opt_port, opt_output):
     if ((opt_devip == None) | (opt_community == None)):
-        return natlas.RETURN_SYNTAXERR
+        return nettopo.RETURN_SYNTAXERR
     if (opt_routerip == None):
         opt_routerip = opt_devip
 
     # set some snmp credentials for us to use
-    natlas_obj.snmp_add_credential(2, opt_community)
+    nettopo_obj.snmp_add_credential(2, opt_community)
     
     # get the switch MAC table
     print('\nCollecting MACs from %s...' % opt_devip)
     try:
-        macs = natlas_obj.get_switch_macs(opt_devip, vlan=opt_vlan, port=opt_port, verbose=1)
+        macs = nettopo_obj.get_switch_macs(opt_devip, vlan=opt_vlan, port=opt_port, verbose=1)
     except Exception as e:
         print(e)
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
   
     # get the ARP table for the router
     print('\nCollecting ARPs from %s...' % opt_routerip)
     try:
-        arps = natlas_obj.get_arp_table(opt_routerip)
+        arps = nettopo_obj.get_arp_table(opt_routerip)
     except Exception as e:
         print(e)
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
     
     print()
     print('Found %i MAC entries' % len(macs))
@@ -260,5 +260,5 @@ def single_node(natlas_obj, opt_devip, opt_routerip, opt_community, opt_vlan, op
     if (f != None):
         f.close()
     
-    return natlas.RETURN_OK
+    return nettopo.RETURN_OK
 

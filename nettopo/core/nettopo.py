@@ -4,8 +4,10 @@
 '''
         nettopo.py
 '''
-import sys
+import os
+from glob import glob
 import re
+import sys
 
 from .config import Config
 from .exceptions import NettopoError
@@ -17,10 +19,15 @@ from .catalog import Catalog
 
 
 class Nettopo:
-    def __init__(self):
-        self.config_file = None
-        self.config = None
-        self.network = None
+    def __init__(self, conf=None, conf_file=None):
+        if conf:
+            self.config = Config().load(config=conf)
+        elif os.path.isfile(conf_file):
+            self.config = Config().load(filename=conf_file)
+        if not self.config:
+            self.config = Config().generate_new()
+
+        self.network = Network(self.config)
         self.diagram = None
         self.catalog = None
 
@@ -31,20 +38,13 @@ class Nettopo:
             raise NettopoError(f"No valid SNMP credentials for {node.ip}")
         return True
 
-    def generate_config(self):
-        return Config().generate_new()
-
-    def validate_config(self, conf_file):
-        return Config().validate_config(conf_file)
-
-    def load_config(self, conf_file):
-        self.config = None
-        c = Config()
-        c.load(conf_file)
-        self.config = c
-        self.config_file = conf_file
-        # initalize objects
-        self.network = Network(self.config)
+    def validate_config(self, config=None):
+        if config:
+            return Config().validate_config(config)
+        if self.config:
+            return Config().validate_config(self.config)
+        else:
+            raise NettopoError(f"validate_config: No config or self.config attribute")
 
     def add_snmp_credential(self, snmp_ver, snmp_community):
         if not self.config:

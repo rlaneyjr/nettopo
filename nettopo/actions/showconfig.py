@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 '''
-        natlas
-        natlas-cli.py
+        nettopo
+        nettopo-cli.py
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -27,7 +27,7 @@
 import sys
 import getopt
 import os
-import natlas
+import nettopo
 
 def mod_load(mod):
     mod.name         = 'showconfig'
@@ -41,12 +41,12 @@ def mod_load(mod):
     mod.preload_conf = 0
     return 1
 
-def mod_entry(natlas_obj, argv):
-    opt_conf = './natlas.conf'
+def mod_entry(nettopo_obj, argv):
+    opt_conf = './nettopo.conf'
     try:
         opts, args = getopt.getopt(argv, 'c:')
     except getopt.GetoptError:
-        return natlas.RETURN_SYNTAXERR
+        return nettopo.RETURN_SYNTAXERR
     for opt, arg in opts:
         if (opt == '-c'):
             opt_conf = arg
@@ -58,5 +58,5 @@ def mod_entry(natlas_obj, argv):
         return
     print('%s' % conf)
 
-    return natlas.RETURN_OK
+    return nettopo.RETURN_OK
 

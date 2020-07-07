@@ -6,33 +6,38 @@
 '''
 import pydot
 import datetime
-from jinja2 import Template
+from jinja2 import Template, Environment
 import os
 
-from .config import Config
+from .config import DiagramDefaults
 from .data import DotNode
 from .network import Network
-from .templates import node_template, credits_template
+from .templates import node_template, credits_template, link_template
 from .util import get_path, get_port_module
 
 
 class Diagram:
     def __init__(self, network: Network) -> None:
         self.network = network
-        self.config = network.config or Config().generate_new()
+        self.config = network.config.diagram or DiagramDefaults()
 
     def generate(self, dot_file, title):
         self.network.reset_discovered()
-        title_text_size = self.config.diagram.title_text_size
+        title_text_size = self.config.title_text_size
         date_text_size = title_text_size - 2
         today = datetime.datetime.now()
         today = today.strftime('%Y-%m-%d %H:%M')
         credits = Template(credits_template)
-        credits = credits.render(title_text_size, date_text_size, title, today)
-        node_text_size = self.config.diagram.node_text_size
-        link_text_size = self.config.diagram.link_text_size
-        diagram = pydot.Dot(graph_type='graph', labelloc='b',
-                            labeljust='r', fontsize=node_text_size,
+        credits = credits.render(title_text_size=title_text_size,
+                                 date_text_size=date_text_size,
+                                 title=title,
+                                 today=today)
+        node_text_size = self.config.node_text_size
+        link_text_size = self.config.link_text_size
+        diagram = pydot.Dot(graph_type='graph',
+                            labelloc='b',
+                            labeljust='r',
+                            fontsize=node_text_size,
                             label=f"<{credits}>")
         diagram.set_node_defaults(fontsize=link_text_size)
         diagram.set_edge_defaults(fontsize=link_text_size, labeljust='l')
@@ -50,13 +55,13 @@ class Diagram:
                 output_func(f)
                 print(f"Created diagram: {f}")
 
-    def build(self, diagram, node=None):
-        if not node:
-            return 0, 0
-        if node.discovered:
-            return 0, 0
-        node.discovered = 1
-        dot_node = self.get_node(diagram, node)
+    def build(self, diagram, node):
+        # if not node:
+        #     return 0, 0
+        # if node.discovered:
+        #     return 0, 0
+        # node.discovered = 1
+        dot_node = self.create_node(node)
         if dot_node.ntype == 'single':
             diagram.add_node(pydot.Node(name=node.name,
                                         label=f"<{dot_node.label}>",
@@ -67,7 +72,7 @@ class Diagram:
             cluster = pydot.Cluster(graph_name=node.name,
                                     suppress_disconnected=False,
                                     labelloc='t', labeljust='c',
-                                    fontsize=self.config.diagram.node_text_size,
+                                    fontsize=self.config.node_text_size,
                                     label=f"<<br /><b>VSS {node.vss.domain}</b>>")
             for i in range(0, 2):
                 # {vss.} vars
@@ -84,7 +89,7 @@ class Diagram:
                                     suppress_disconnected=False,
                                     labelloc='t',
                                     labeljust='c',
-                                    fontsize=self.config.diagram.node_text_size,
+                                    fontsize=self.config.node_text_size,
                                     label=f"<<br /><b>VPC {node.vpc_domain}</b>>")
             cluster.add_node(pydot.Node(
                              name=node.name,
@@ -94,8 +99,8 @@ class Diagram:
                              peripheries=dot_node.peripheries))
             if node.vpc_peerlink_node:
                 node2 = node.vpc_peerlink_node
-                node2.discovered = 1
-                dot_node2 = self.get_node(diagram, node2)
+                # node2.discovered = 1
+                dot_node2 = self.create_node(node2)
                 cluster.add_node(pydot.Node(
                                  name=node2.name,
                                  label=f"<{dot_node2.label}>",
@@ -108,7 +113,7 @@ class Diagram:
                                     suppress_disconnected=False,
                                     labelloc='t',
                                     labeljust='c',
-                                    fontsize=self.config.diagram.node_text_size,
+                                    fontsize=self.config.node_text_size,
                                     label='<<br /><b>Stackwise</b>>')
             for i in range(0, node.stack.count):
                 # {stack.} vars
@@ -127,128 +132,71 @@ class Diagram:
         for link in node.links:
             self.build(diagram, link.node)
             # determine if this link should be broken out or not
-            if self.config.diagram.expand_lag \
-                or link.local_lag == 'UNKNOWN' \
-                or self.devs_in_lag(link.local_lag, node.links) > 1:
+            if any([self.config.expand_lag,
+                    link.local_lag == 'UNKNOWN',
+                    self.lag_in_links(link.local_lag, node.links)]):
                 # a LAG could span different devices, eg Nexus.
                 # in this case we should always break it out, otherwise we could
                 # get an unlinked node in the diagram.
-                self.create_link(diagram, node, link, True)
+                edge = self.create_link(node, link, True)
             else:
-                found = [lag for lag in lags if link.local_lag == lag]
-                if not found:
+                if link.local_lag not in lags:
                     lags.append(link.local_lag)
-                    self.create_link(diagram, node, link, False)
+                    edge = self.create_link(node, link, False)
+        diagram.add_edge(edge)
 
-    def get_node(self, diagram, node):
+    def create_node(self, node):
         dot_node = DotNode()
         # get the node text
-        dot_node.label = self.format_node_text(diagram, node, self.config.diagram.node_text)
+        # env = Environment()
+        # temp = env.from_string(node_template)
+        temp = Template(node_template)
+        dot_node.label = temp.render(node=node, config=self.config)
         # set the node properties
         if node.vss.enabled:
-            if self.config.diagram.expand_vss:
+            if self.config.expand_vss:
                 dot_node.ntype = 'vss'
             else:
                 # group VSS into one diagram node
                 dot_node.peripheries = 2
-        if node.stack.count:
-            if self.config.diagram.expand_stackwise:
+        if node.stack.enabled:
+            if self.config.expand_stackwise:
                 dot_node.ntype = 'stackwise'
             else:
                 # group Stackwise into one diagram node
                 dot_node.peripheries = node.stack.count
-        if node.vpc_domain and self.config.diagram.group_vpc:
+        if node.vpc_domain and self.config.group_vpc:
             dot_node.ntype = 'vpc'
         if node.router:
             dot_node.shape = 'diamond'
         return dot_node
 
-    def create_link(self, diagram, node, link, draw_as_lag):
-        link_color = 'black'
-        link_style = 'solid'
-        link_label = ''
-        if node.vpc_peerlink_if in [link.local_port, link.local_lag]:
-            link_label += 'VPC'
-        if draw_as_lag:
-            link_label += 'LAG'
-            members = 0
-            for lnk in node.links:
-                if lnk.local_lag == link.local_lag:
-                    members += 1
-            link_label += f"\n{str(members)} Members"
-        else:
-            link_label += f"Local:{link.local_port}\nRemote:{link.remote_port}"
-        is_lag = True if link.local_lag != 'UNKNOWN' else False
-        if draw_as_lag:
-            # LAG as member
-            if is_lag:
-                local_lag_ip = ''
-                remote_lag_ip = ''
-                if len(link.local_lag_ips):
-                    local_lag_ip = f" - {link.local_lag_ips[0]}"
-                if len(link.remote_lag_ips):
-                    remote_lag_ip = f" - {link.remote_lag_ips[0]}"
-                link_label += '\nLAG Member'
-                if not all([local_lag_ip, remote_lag_ip]):
-                    link_label += f"\nLocal:{link.local_lag} | Remote:{link.remote_lag}"
-                else:
-                    link_label += f"\nLocal:{link.local_lag}{local_lag_ip}"
-                    link_label += f"\nRemote:{link.remote_lag}{remote_lag_ip}"
-            # IP Addresses
-            if link.local_if_ip and link.local_if_ip != 'UNKNOWN':
-                link_label += f"\nLocal:{link.local_if_ip}"
-            if link.remote_if_ip and link.remote_if_ip != 'UNKNOWN':
-                link_label += f"\nRemote:{link.remote_if_ip}"
-        # LAG as group
-        else:
-            for lnk in node.links:
-                if lnk.local_lag == link.local_lag:
-                    link_label += f"\nLocal:{l.local_port} | Remote:{l.remote_port}"
-            local_lag_ip = ''
-            remote_lag_ip = ''
-            if len(link.local_lag_ips):
-                local_lag_ip = f" - {link.local_lag_ips[0]}"
-            if len(link.remote_lag_ips):
-                remote_lag_ip = f" - {link.remote_lag_ips[0]}"
-            if not all([local_lag_ip, remote_lag_ip]):
-                link_label += f"\nLocal:{link.local_lag} | Remote:{link.remote_lag}"
-            else:
-                link_label += f"\nLocal:{link.local_lag}{local_lag_ip}"
-                link_label += f"\nRemote:{link.remote_lag}{remote_lag_ip}"
+    def create_link(self, node, link, is_lag):
+        lag_members = len([lnk for lnk in node.links if lnk.local_lag == link.local_lag])
+        temp = Template(link_template)
+        link_label = temp.render(node=node, link=link, is_lag=is_lag,
+                                 lag_members=lag_members)
         if link.link_type == '1':
             # Trunk = Bold/Blue
             link_color = 'blue'
             link_style = 'bold'
-            if link.local_native_vlan == link.remote_native_vlan:
-                link_label += f"\nNative Match:{link.local_native_vlan}"
-            elif not link.remote_native_vlan:
-                link_label += f"\nNative Local:{link.local_native_vlan} Remote:None"
-            else:
-                link_label += f"\nNative Local:{link.local_native_vlan} Remote:{link.remote_native_vlan}"
-            if link.local_allowed_vlans == link.remote_allowed_vlans:
-                link_label += f"\nAllowed Match:{link.local_allowed_vlans}"
-            else:
-                link_label += f"\nAllowed Local:{link.local_allowed_vlans}"
-                if link.remote_allowed_vlans:
-                    link_label += f"\nAllowed Remote:{link.remote_allowed_vlans}"
         elif not link.link_type:
             # Routed = Bold/Red
             link_color = 'red'
             link_style = 'bold'
         else:
-            # Switched access, include VLAN ID in label
-            if link.vlan:
-                link_label += f"\nVLAN {link.vlan}"
+            link_color = 'black'
+            link_style = 'solid'
         edge_src = node.name
         edge_dst = link.node.name
         lmod = get_port_module(link.local_port)
         rmod = get_port_module(link.remote_port)
-        if self.config.diagram.expand_vss:
+        if self.config.expand_vss:
             if node.vss.enabled:
                 edge_src = f"{node.name}[VSS{lmod}]"
             if link.node.vss.enabled:
                 edge_dst = f"{link.node.name}[VSS{rmod}]"
-        if self.config.diagram.expand_stackwise:
+        if self.config.expand_stackwise:
             if node.stack.count:
                 edge_src = f"{node.name}[SW{lmod}]"
             if link.node.stack.count:
@@ -257,16 +205,14 @@ class Diagram:
                           label=link_label,
                           color=link_color,
                           style=link_style)
-        diagram.add_edge(edge)
+        return edge
 
     @staticmethod
-    def devs_in_lag(lag_name, links):
-        devs = []
-        for link in links:
-            if link.local_lag == lag_name:
-                devs.append(link.node.name)
-        return len(set(devs))
+    def lag_in_links(lag_name, links):
+        devs = [link.node.name for link in links if lag_name in link.local_lag]
+        return True if devs else False
 
+"""
     def eval_if_block(self, if_cond, node):
         # evaluate condition
         if_cond_eval = if_cond.format(node=node, config=self.config).strip()
@@ -304,7 +250,7 @@ class Diagram:
                 fmt = fmt[:stack_block.span()[0]] + fmt[stack_block.span()[1]:]
             else:
                 val = ''
-                if self.config.diagram.expand_stackwise and self.config.diagram.get_stack_members:
+                if self.config.expand_stackwise and self.config.get_stack_members:
                     for smem in node.stack.members:
                         nval = stack_block[1]
                         nval = nval.replace(stack.num,    smem.num)
@@ -344,3 +290,4 @@ class Diagram:
         fmt = re.sub('\$stack2354\$(([a-zA-Z])*)\$stack2354\$', '{stack.\g<1>}', fmt)
         fmt = re.sub('\$vss2354\$(([a-zA-Z])*)\$vss2354\$', '{vss.\g<1>}', fmt)
         return fmt
+"""

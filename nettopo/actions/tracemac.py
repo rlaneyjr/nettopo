@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 '''
-        natlas
-        natlas-cli.py
+        nettopo
+        nettopo-cli.py
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -27,10 +27,10 @@
 import sys
 import getopt
 import os
-import natlas
+import nettopo
 
 HOP_LIMIT   = 1000
-gnatlas     = None
+gnettopo     = None
 visited_ips = []
 
 def mod_load(mod):
@@ -66,16 +66,16 @@ def mod_load(mod):
     mod.require_api = '0.11'
     return 1
 
-def mod_entry(natlas_obj, argv):
-    global gnatlas
-    gnatlas = natlas_obj
+def mod_entry(nettopo_obj, argv):
+    global gnettopo
+    gnettopo = nettopo_obj
 
     opt_ip = None
     opt_community = None
     try:
         opts, args = getopt.getopt(argv, 'n:m:')
     except getopt.GetoptError:
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
     for opt, arg in opts:
         if (opt == '-n'):   opt_ip = arg
         if (opt == '-m'):   opt_mac = arg
@@ -87,7 +87,7 @@ def mod_entry(natlas_obj, argv):
         node, port = trace_node(opt_ip, opt_mac, 1)
     except Exception as e:
         print('[ERROR] %s' % e)
-        return natlas.RETURN_OK
+        return nettopo.RETURN_OK
 
     print()
     if (node == None):
@@ -99,7 +99,7 @@ def mod_entry(natlas_obj, argv):
         print('  Node Name: %s' % node.name)
         print('       Port: %s' % port)
 
-    return natlas.RETURN_OK
+    return nettopo.RETURN_OK
 
 def trace_node(node_ip, macaddr, depth):
     global visited_ips
@@ -114,9 +114,9 @@ def trace_node(node_ip, macaddr, depth):
     sys.stdout.write('{:<5}  {:<15}  '.format(depth, node_ip))
     sys.stdout.flush()
 
-    node = gnatlas.new_node(node_ip)
-    macs = gnatlas.get_switch_macs(node=node)
-    gnatlas.query_node(node, get_name=True)
+    node = gnettopo.new_node(node_ip)
+    macs = gnettopo.get_switch_macs(node=node)
+    gnettopo.query_node(node, get_name=True)
 
     match = None
     for mac in macs:
@@ -133,7 +133,7 @@ def trace_node(node_ip, macaddr, depth):
         return (None, None)
 
     port = node.shorten_port_name(mac.port)
-    neighbors = gnatlas.get_neighbors(node)
+    neighbors = gnettopo.get_neighbors(node)
 
     match = None
     for n in neighbors:

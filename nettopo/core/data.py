@@ -10,9 +10,8 @@ Version:            0.1.1
 from dataclasses import dataclass
 
 __all__ = [
-    'CacheData',
-    'NodeActions',
     'BaseData',
+    'NodeActions',
     'DotNode',
     'LinkData',
     'StackData',
@@ -45,76 +44,6 @@ class BaseData:
             attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
         attrs = ",".join(attrs)
         return f"<{attrs}>"
-
-
-@dataclass
-class CacheData:
-    cdp_cache = None
-    ldp_cache = None
-    link_type_cache = None
-    lag_cache = None
-    vlan_cache = None
-    ifname_cache = None
-    ifip_cache = None
-    svi_cache = None
-    ethif_cache = None
-    trk_allowed_cache = None
-    trk_native_cache = None
-    vpc_cache = None
-    vlandesc_cache = None
-    arp_cache = None
-
-    @cached_property
-    def link_type_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_VTP)
-
-    @cached_property
-    def lag_cache(self):
-        return self.snmpobj.get_bulk(OID.LAG_LACP)
-
-    @cached_property
-    def vlan_cache(self):
-        return self.snmpobj.get_bulk(OID.IF_VLAN)
-
-    @cached_property
-    def ifname_cache(self):
-        return self.snmpobj.get_bulk(OID.IFNAME)
-
-    @cached_property
-    def trunk_allowed_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_ALLOW)
-
-    @cached_property
-    def trunk_native_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_NATIVE)
-
-    @cached_property
-    def ifip_cache(self):
-        return self.snmpobj.get_bulk(OID.IF_IP)
-
-    @cached_property
-    def svi_cache(self):
-        return self.snmpobj.get_bulk(OID.SVI_VLANIF)
-cdp_cache = None
-ldp_cache = None
-ethif_cache = None
-vpc_cache = None
-vlandesc_cache = None
-arp_cache = None
-
-@cached_property
-def stack_cache(self):
-    if self.actions.get_stack:
-        return Stack(self.snmpobj, self.actions)
-    else:
-        return None
-
-    @cached_property
-    def vss_cache(self):
-        if self.actions.get_vss:
-            return VSS(self.snmpobj, self.actions)
-        else:
-            return None
 
 
 @dataclass

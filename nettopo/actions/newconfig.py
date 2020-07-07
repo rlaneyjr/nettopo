@@ -1,8 +1,8 @@
 #!/usr/bin/python
 
 '''
-        natlas
-        natlas-cli.py
+        nettopo
+        nettopo-cli.py
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -27,7 +27,7 @@
 import sys
 import getopt
 import os
-import natlas
+import nettopo
 
 def mod_load(mod):
     mod.name         = 'newconfig'
@@ -41,6 +41,6 @@ def mod_load(mod):
     mod.preload_conf = 0
     return 1
 
-def mod_entry(natlas_obj, argv):
-    print(natlas_obj.config_generate())
-    return natlas.RETURN_OK
+def mod_entry(nettopo_obj, argv):
+    print(nettopo_obj.config_generate())
+    return nettopo.RETURN_OK

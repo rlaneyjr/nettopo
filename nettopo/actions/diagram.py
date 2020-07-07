@@ -1,16 +1,15 @@
 #!/usr/bin/python
 
 '''
-        natlas-cli.py
+        nettopo-diagram.py
 '''
 
 import sys
 import getopt
 import os
-import natlas
 
 DEFAULT_OPT_DEPTH   = 100
-DEFAULT_OPT_TITLE   = 'natlas Diagram'
+DEFAULT_OPT_TITLE   = 'Nettopo Diagram'
 
 def mod_load(mod):
     mod.name        = 'diagram'
@@ -28,7 +27,7 @@ def mod_load(mod):
     mod_help        = 'Discover and diagram the network beginning at the specified root node.'
     return 1
 
-def mod_entry(natlas_obj, argv):
+def mod_entry(nettopo_obj, argv):
     opt_root_ip = None
     opt_output  = None
     opt_catalog = None
@@ -51,7 +50,7 @@ def mod_entry(natlas_obj, argv):
         print('Invalid arguments.')
         return
 
-    print('     Config file: %s' % natlas_obj.config_file)
+    print('     Config file: %s' % nettopo_obj.config_file)
     print('     Output file: %s' % opt_output)
     print('Out Catalog file: %s' % opt_catalog)
     print('       Root node: %s' % opt_root_ip)
@@ -60,12 +59,12 @@ def mod_entry(natlas_obj, argv):
     print()
 
     # start discovery
-    natlas_obj.set_discover_maxdepth(opt_depth)
-    natlas_obj.set_verbose(1)
-    natlas_obj.discover_network(opt_root_ip, 1)
-
+    nettopo_obj.set_discover_maxdepth(opt_depth)
+    nettopo_obj.set_verbose(1)
+    nettopo_obj.discover_network(opt_root_ip, 1)
     # outputs
-    if (opt_output != None):    natlas_obj.write_diagram(opt_output, opt_title)
-    if (opt_catalog != None):   natlas_obj.write_catalog(opt_catalog)
-
+    if opt_output:
+        nettopo_obj.write_diagram(opt_output, opt_title)
+    if opt_catalog:
+        nettopo_obj.write_catalog(opt_catalog)
     return

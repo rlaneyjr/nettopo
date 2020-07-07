@@ -1,6 +1,6 @@
 #!/usr/bin/python
 '''
-        natlas
+        nettopo
 
         Michael Laforest
         mjlaforest@gmail.com
@@ -24,7 +24,7 @@
 
 import sys
 import getopt
-import natlas
+import nettopo
 
 def mod_load(mod):
     mod.name         = 'get-mac-table'
@@ -60,7 +60,7 @@ def mod_load(mod):
                         '''
     return 1
 
-def mod_entry(natlas_obj, argv):
+def mod_entry(nettopo_obj, argv):
     opt_ip = None
     opt_community = None
     opt_mac = None
@@ -69,7 +69,7 @@ def mod_entry(natlas_obj, argv):
     try:
         opts, args = getopt.getopt(argv, 'n:c:m:p:v:')
     except getopt.GetoptError:
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
     for opt, arg in opts:
         if (opt == '-n'):   opt_ip = arg
         if (opt == '-c'):   opt_community = arg
@@ -78,17 +78,17 @@ def mod_entry(natlas_obj, argv):
         if (opt == '-v'):   opt_vlan = arg
 
     if ((opt_ip == None) | (opt_community == None)):
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
 
     # set some snmp credentials for us to use
-    natlas_obj.snmp_add_credential(2, opt_community)
+    nettopo_obj.snmp_add_credential(2, opt_community)
     
     # get the switch VLANs
     try:
-        vlans = natlas_obj.get_switch_vlans(opt_ip)
+        vlans = nettopo_obj.get_switch_vlans(opt_ip)
     except Exception as e:
         print(e)
-        return natlas.RETURN_ERR
+        return nettopo.RETURN_ERR
     print('VLAN        Name')
     for vlan in vlans:
         print('{:<8}    {:}'.format(vlan.id, vlan.name))
@@ -101,11 +101,11 @@ def mod_entry(natlas_obj, argv):
                 break
         if (valid_vlan == 0):
             print('\n[ERROR] VLAN %s does not exist on this device.' % opt_vlan)
-            return natlas.RETURN_OK
+            return nettopo.RETURN_OK
    
     # get the switch MAC table
     print('\nCollecting MACs...')
-    macs = natlas_obj.get_switch_macs(opt_ip, mac=opt_mac, port=opt_port, vlan=opt_vlan, verbose=1)
+    macs = nettopo_obj.get_switch_macs(opt_ip, mac=opt_mac, port=opt_port, vlan=opt_vlan, verbose=1)
     
     # print the MAC table
     print('\n\n')
@@ -121,5 +121,5 @@ def mod_entry(natlas_obj, argv):
     print()
     print('Found %i VLANs' % len(vlans))
     print('Found %i MAC addresses' % len(macs))
-    return natlas.RETURN_OK
+    return nettopo.RETURN_OK
 

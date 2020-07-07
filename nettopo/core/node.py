@@ -6,6 +6,7 @@
 '''
 from functools import cached_property
 from typing import Union
+from .cache import Cache
 from .data import LinkData, StackData
 from .snmp import SNMP
 from .util import (timethis,
@@ -17,9 +18,10 @@ from .util import (timethis,
                    format_ios_ver,
                    mac_hex_to_ascii,
                    mac_format_cisco,
-                   parse_allowed_vlans)
-from .data import (CacheData,
-                   NodeActions,
+                   parse_allowed_vlans,
+                   lookup_table,
+                   oid_last_token)
+from .data import (NodeActions,
                    BaseData,
                    LinkData,
                    SVIData,
@@ -31,28 +33,10 @@ from .vss import VSS
 from .constants import OID, ARP, DCODE, NODE
 
 
-@dataclass
-class CacheData:
-    cdp_cache = None
-    ldp_cache = None
-    link_type_cache = None
-    lag_cache = None
-    vlan_cache = None
-    ifname_cache = None
-    ifip_cache = None
-    svi_cache = None
-    ethif_cache = None
-    trk_allowed_cache = None
-    trk_native_cache = None
-    vpc_cache = None
-    vlandesc_cache = None
-    arp_cache = None
-
-
 class Node(BaseData):
     def __init__(self, ip: Union[str, list]) -> None:
         self.ip = ip if isinstance(ip, list) else [ip]
-        self.snmpobj = SNMP(self.ip[0])
+        self.snmpobj = None
         self.cache = None
         self.actions = NodeActions()
         self.links = []
@@ -62,6 +46,7 @@ class Node(BaseData):
         self.stack = None
         self.vss = None
         self.name = None
+        self.name_raw = None
         self.plat = None
         self.ios = None
         self.router = None
@@ -74,71 +59,8 @@ class Node(BaseData):
         self.vpc_peerlink_if = None
         self.vpc_peerlink_node = None
         self.vpc_domain = None
-        self.items_2_show = [self.name, self.ip, self.plat, self.ios,
-                             self.serial, self.router, self.vss, self.stack]
-
-    @cached_property
-    def cache(self):
-        if not self.cache:
-            self.cache = CacheData()
-            if self.actions.get_stack:
-                self.cache.stack = Stack(self.snmpobj, self.actions)
-            if self.actions.get_vss:
-                self.cache.vss = VSS(self.snmpobj, self.actions)
-        else:
-            return self.cache
-
-    @cached_property
-    def link_type_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_VTP)
-
-    @cached_property
-    def lag_cache(self):
-        return self.snmpobj.get_bulk(OID.LAG_LACP)
-
-    @cached_property
-    def vlan_cache(self):
-        return self.snmpobj.get_bulk(OID.IF_VLAN)
-
-    @cached_property
-    def ifname_cache(self):
-        return self.snmpobj.get_bulk(OID.IFNAME)
-
-    @cached_property
-    def trunk_allowed_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_ALLOW)
-
-    @cached_property
-    def trunk_native_cache(self):
-        return self.snmpobj.get_bulk(OID.TRUNK_NATIVE)
-
-    @cached_property
-    def ifip_cache(self):
-        return self.snmpobj.get_bulk(OID.IF_IP)
-
-    @cached_property
-    def svi_cache(self):
-        return self.snmpobj.get_bulk(OID.SVI_VLANIF)
-cdp_cache = None
-ldp_cache = None
-ethif_cache = None
-vpc_cache = None
-vlandesc_cache = None
-arp_cache = None
-
-    @cached_property
-    def stack_cache(self):
-        if self.actions.get_stack:
-            return Stack(self.snmpobj, self.actions)
-        else:
-            return None
-
-    @cached_property
-    def vss_cache(self):
-        if self.actions.get_vss:
-            return VSS(self.snmpobj, self.actions)
-        else:
-            return None
+        self.items_2_show = ['name', 'ip', 'plat', 'ios',
+                             'serial', 'router', 'vss', 'stack']
 
     def add_link(self, link):
         self.links.append(link)
@@ -152,7 +74,7 @@ arp_cache = None
                 if ipaddr in ['0.0.0.0', 'UNKNOWN', '']:
                     continue
                 self.snmpobj.ip = ipaddr
-                if self.snmpobj.get_cred(snmp_creds):
+                if self.snmpobj.get_creds(snmp_creds):
                     return True
         return False
 
@@ -160,47 +82,44 @@ arp_cache = None
         """ Query this node.
         Set .actions and .snmp_creds before calling.
         """
-        if not self.snmpobj.ver:
-            # call get_snmp_creds() first or it failed to find good creds
-            return False
+        if not self.snmpobj:
+            self.snmpobj = SNMP(self.ip[0])
+            if not snmpobj.success:
+                # failed to find good creds
+                return False
+        if not self.cache:
+            self.cache = Cache(self.snmpobj, self.actions)
+
         if self.actions.get_name:
-            self.name = self.get_system_name([])
+            self.name_raw = self.cache.name
+            self.name = normalize_host(self.name_raw)
         # router
         if self.actions.get_router:
-            if not self.router:
-                self.router = True if self.snmpobj.get_val(OID.IP_ROUTING) == '1' else False
+            self.router = self.cache.router
             if self.router:
                 # OSPF
                 if self.actions.get_ospf_id:
-                    self.ospf_id = self.snmpobj.get_val(OID.OSPF)
-                    if self.ospf_id:
-                        self.ospf_id = self.snmpobj.get_val(OID.OSPF_ID)
+                    self.ospf_id = self.cache.ospf_id
                 # BGP
                 if self.actions.get_bgp_las:
-                    self.bgp_las = self.snmpobj.get_val(OID.BGP_LAS)
-                    if self.bgp_las == '0':       # 4500x is reporting 0 with disabled
-                        self.bgp_las = None
+                    self.bgp_las = self.cache.bgp
                 # HSRP
                 if self.actions.get_hsrp_pri:
-                    self.hsrp_pri = self.snmpobj.get_val(OID.HSRP_PRI)
-                    if self.hsrp_pri:
-                        self.hsrp_vip = self.snmpobj.get_val(OID.HSRP_VIP)
+                    self.hsrp_pri = self.cache.hsrp
+                    self.hsrp_vip = self.cache.hsrp_vip
         # stack
         if self.actions.get_stack:
-            self.stack = Stack(self.snmpobj, self.actions)
+            self.stack = self.cache.stack
         # vss
         if self.actions.get_vss:
-            self.vss = VSS(self.snmpobj, self.actions)
+            self.vss = self.cache.vss
         # serial
         if self.actions.get_serial and not all([self.stack.count, self.vss.enabled]):
-            self.serial = self.snmpobj.get_val(OID.SYS_SERIAL)
+            self.serial = self.cache.serial
         # SVI
         if self.actions.get_svi:
-            if not self.svi_cache:
-                self.svi_cache = self.snmpobj.get_bulk(OID.SVI_VLANIF)
-            if not self.ifip_cache:
-                self.ifip_cache = self.snmpobj.get_bulk(OID.IF_IP)
-            for row in self.svi_cache:
+            self.cache.svi
+            for row in self.cache.svi:
                 for n, v in row:
                     n = str(n)
                     vlan = n.split('.')[14]
@@ -210,39 +129,38 @@ arp_cache = None
                     self.svis.append(svi)
         # loopback
         if self.actions.get_lo:
-            self.ethif_cache = self.snmpobj.get_bulk(OID.ETH_IF)
-            if not self.ifip_cache:
-                self.ifip_cache = self.snmpobj.get_bulk(OID.IF_IP)
-            for row in self.ethif_cache:
+            self.cache.ethif
+            self.cache.ifip
+            for row in self.cache.ethif:
                 for n, v in row:
                     n = str(n)
                     if n.startswith(OID.ETH_IF_TYPE) and v == 24:
                         ifidx = n.split('.')[10]
-                        lo_name = self.snmpobj.table_lookup(self.ethif_cache, OID.ETH_IF_DESC + '.' + ifidx)
+                        lo_name = lookup_table(self.cache.ethif, OID.ETH_IF_DESC + '.' + ifidx)
                         lo_ips = self.get_cidrs_ifidx(ifidx)
                         lo = LoopBackData(lo_name, lo_ips)
                         self.loopbacks.append(lo)
         # bootfile
         if self.actions.get_bootf:
-            self.bootfile = self.snmpobj.get_val(OID.SYS_BOOT)
+            self.bootfile = self.cache.bootfile
         # chassis info (serial, IOS, platform)
         if self.actions.get_chassis_info:
             self.get_chassis()
         # VPC peerlink
         if self.actions.get_vpc:
-            self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.ethif_cache)
+            self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.cache.ethif)
         return True
 
     def get_cidrs_ifidx(self, ifidx):
         ips = []
-        for ifrow in self.ifip_cache:
+        for ifrow in self.cache.ifip:
             for ifn, ifv in ifrow:
                 ifn = str(ifn)
                 if ifn.startswith(OID.IF_IP_ADDR):
                     if str(ifv) == str(ifidx):
                         t = ifn.split('.')
                         ip = ".".join(t[10:])
-                        mask = self.snmpobj.table_lookup(self.ifip_cache, OID.IF_IP_NETM + ip)
+                        mask = lookup_table(self.cache.ifip, OID.IF_IP_NETM + ip)
                         nbits = bits_from_mask(mask)
                         cidr = f"{ip}/{nbits}"
                         ips.append(cidr)
@@ -255,11 +173,11 @@ arp_cache = None
         '''
         # get list of CDP neighbors
         neighbors = []
-        self.cdp_cache = self.snmpobj.get_bulk(OID.CDP)
-        if not self.cdp_cache:
+        self.cache.cdp = self.snmpobj.get_bulk(OID.CDP)
+        if not self.cache.cdp:
             print('No CDP Neighbors Found.')
             return []
-        for row in self.cdp_cache:
+        for row in self.cache.cdp:
             for oid, val in row:
                 oid = str(oid)
                 # process only if this row is a CDP_DEVID
@@ -270,24 +188,24 @@ arp_cache = None
                 ifidx2 = t[15]
                 idx = f".{ifidx}.{ifidx2}"
                 # get remote IP
-                rip = self.snmpobj.table_lookup(self.cdp_cache, f"{OID.CDP_IPADDR}{idx}")
+                rip = lookup_table(self.cache.cdp, f"{OID.CDP_IPADDR}{idx}")
                 rip = ip_2_str(rip)
                 # get local port
                 lport = self.get_ifname(ifidx)
                 # get remote port
-                rport = self.snmpobj.table_lookup(self.cdp_cache, f"{OID.CDP_DEVPORTf}{idx}")
+                rport = lookup_table(self.cache.cdp, f"{OID.CDP_DEVPORT}{idx}")
                 rport = normalize_port(rport)
                 # get remote platform
-                rplat = self.snmpobj.table_lookup(self.cdp_cache, f"{OID.CDP_DEVPLAT}{idx}")
+                rplat = lookup_table(self.cache.cdp, f"{OID.CDP_DEVPLAT}{idx}")
                 # get IOS version
-                rios = self.snmpobj.table_lookup(self.cdp_cache, f"{OID.CDP_IOS}{idx}")
+                rios = lookup_table(self.cache.cdp, f"{OID.CDP_IOS}{idx}")
                 if rios:
                     try:
                         rios = binascii.unhexlify(rios[2:])
                     except:
                         pass
-                    rios = self.format_ios_ver(rios)
-                link = self.get_link(ifidx, ifidx2)
+                    rios = format_ios_ver(rios)
+                link = self.get_link(ifidx)
                 link.remote_name = val.prettyPrint()
                 link.remote_ip = rip
                 link.discovered_proto = 'cdp'
@@ -304,11 +222,10 @@ arp_cache = None
         Will always return an array.
         """
         neighbors = []
-        self.lldp_cache = self.snmpobj.get_bulk(OID.LLDP)
-        if not self.lldp_cache:
+        if not self.cache.lldp:
             print('No LLDP Neighbors Found.')
             return []
-        for row in self.lldp_cache:
+        for row in self.cache.lldp:
             for oid, val in row:
                 oid = str(oid)
                 if not oid.startswith(OID.LLDP_TYPE):
@@ -316,29 +233,29 @@ arp_cache = None
                 t = oid.split('.')
                 ifidx = t[12]
                 ifidx2 = t[13]
-                if oid.startswith(OID.LLDP_DEVADDR + '.' + ifidx + '.' + ifidx2):
+                if oid.startswith(f"{OID.LLDP_DEVADDR}.{ifidx}.{ifidx2}"):
                     rip = '.'.join(t[16:])
                 else:
                     rip = ''
                 lport = self.get_ifname(ifidx)
-                rport = self.snmpobj.table_lookup(self.lldp_cache, OID.LLDP_DEVPORT + '.' + ifidx + '.' + ifidx2)
+                rport = lookup_table(self.cache.lldp, f"{OID.LLDP_DEVPORT}.{ifidx}.{ifidx2}")
                 rport = normalize_port(rport)
-                devid = self.snmpobj.table_lookup(self.lldp_cache, OID.LLDP_DEVID + '.' + ifidx + '.' + ifidx2)
+                devid = lookup_table(self.cache.lldp, f"{OID.LLDP_DEVID}.{ifidx}.{ifidx2}")
                 try:
                     devid = mac_format_cisco(devid)
                 except:
                     pass
-                rimg = self.snmpobj.table_lookup(self.lldp_cache, OID.LLDP_DEVDESC + '.' + ifidx + '.' + ifidx2)
+                rimg = lookup_table(self.cache.lldp, f"{OID.LLDP_DEVDESC}.{ifidx}.{ifidx2}")
                 if rimg:
                     try:
                         rimg = binascii.unhexlify(rimg[2:])
                     except:
                         pass
-                    rimg = self.format_ios_ver(rimg)
-                name = self.snmpobj.table_lookup(self.lldp_cache, OID.LLDP_DEVNAME + '.' + ifidx + '.' + ifidx2)
+                    rimg = format_ios_ver(rimg)
+                name = lookup_table(self.cache.lldp, f"{OID.LLDP_DEVNAME}.{ifidx}.{ifidx2}")
                 if name in [None, '']:
                     name = devid
-                link = self.get_link(ifidx, ifidx2)
+                link = self.get_link(ifidx)
                 link.remote_ip = rip
                 link.remote_name = name
                 link.discovered_proto = 'lldp'
@@ -350,21 +267,21 @@ arp_cache = None
                 neighbors.append(link)
         return neighbors
 
-    def get_link(self, ifidx, ifidx2):
+    def get_link(self, ifidx):
         # trunk
-        link_type = self.snmpobj.table_lookup(self.link_type_cache, OID.TRUNK_VTP + '.' + ifidx)
+        link_type = lookup_table(self.cache.link_type, f"{OID.TRUNK_VTP}.{ifidx}")
         native_vlan = None
         allowed_vlans = 'All'
         if link_type == '1':
-            native_vlan = self.snmpobj.table_lookup(self.trunk_native_cache, OID.TRUNK_NATIVE + '.' + ifidx)
-            allowed_vlans = self.snmpobj.table_lookup(self.trunk_allowed_cache, OID.TRUNK_ALLOW + '.' + ifidx)
+            native_vlan = lookup_table(self.cache.trunk_native, f"{OID.TRUNK_NATIVE}.{ifidx}")
+            allowed_vlans = lookup_table(self.cache.trunk_allowed, f"{OID.TRUNK_ALLOW}.{ifidx}")
             allowed_vlans = parse_allowed_vlans(allowed_vlans)
         # LAG membership
-        lag = self.snmpobj.table_lookup(self.lag_cache, OID.LAG_LACP + '.' + ifidx)
+        lag = lookup_table(self.cache.lag, f"{OID.LAG_LACP}.{ifidx}")
         lag_ifname = self.get_ifname(lag)
         lag_ips = self.get_cidrs_ifidx(lag)
         # VLAN info
-        vlan = self.snmpobj.table_lookup(self.vlan_cache, OID.IF_VLAN + '.' + ifidx)
+        vlan = lookup_table(self.cache.vlan, f"{OID.IF_VLAN}.{ifidx}")
         # IP address
         lifips = self.get_cidrs_ifidx(ifidx)
         link = LinkData()
@@ -385,59 +302,48 @@ arp_cache = None
         #    IOS
         # Slow but reliable method by using SNMP directly.
         # Usually we will get this via CDP.
-        if self.stack.count > 0 or self.vss.enabled:
+        if any([self.stack.count, self.vss.enabled]):
             # Use actions.get_stack_details
             # or  actions.get_vss_details
             # for this.
+            return None
+        ent_cache = self.cache.ent_class
+        if not ent_cache:
             return
-        ent_class_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_CLASS)
-        if self.actions.get_serial:
-            serial_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
-        if self.actions.get_plat:
-            platf_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
-        if self.actions.get_ios:
-            ios_cache = self.snmpobj.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
-        if not ent_class_cache:
-            return
-        for row in ent_class_cache:
+        for row in ent_cache:
             for n, v in row:
                 n = str(n)
                 if v != "ENTPHYCLASS_CHASSIS":
                     continue
                 t = n.split('.')
                 idx = t[12]
-                if self.actions.get_serial:
-                    self.serial = self.snmpobj.table_lookup(serial_cache, OID.ENTPHYENTRY_SERIAL + '.' + idx)
-                if self.actions.get_plat:
-                    self.plat = self.snmpobj.table_lookup(platf_cache, OID.ENTPHYENTRY_PLAT + '.' + idx)
-                if self.actions.get_ios:
-                    self.ios = self.snmpobj.table_lookup(ios_cache, OID.ENTPHYENTRY_SOFTWARE + '.' + idx)
+                self.serial = lookup_table(self.cache.ent_serial, f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                self.plat = lookup_table(self.cache.ent_plat, f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                self.ios = lookup_table(self.cache.ent_ios, f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
         if self.actions.get_ios:
             # modular switches might have IOS on a module rather than chassis
             if not self.ios:
-                for row in ent_class_cache:
+                for row in ent_cache:
                     for n, v in row:
                         n = str(n)
                         if v != "ENTPHYCLASS_MODULE":
                             continue
                         t = n.split('.')
                         idx = t[12]
-                        self.ios = self.snmpobj.table_lookup(ios_cache, OID.ENTPHYENTRY_SOFTWARE + '.' + idx)
+                        self.ios = lookup_table(self.cache.ent_ios, f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
                         if self.ios:
                             break
-            self.ios = self.format_ios_ver(self.ios)
+            self.ios = format_ios_ver(self.ios)
         return
 
-    def get_ifname(self, ifidx):
+    def get_ifname(self, ifidx=None):
         if not ifidx or ifidx == OID.ERR:
             return 'UNKNOWN'
-        if not self.ifname_cache:
-            self.ifname_cache = self.snmpobj.get_bulk(OID.IFNAME)
-        s = self.snmpobj.table_lookup(self.ifname_cache, OID.IFNAME + '.' + ifidx)
-        return normalize_port(s) or 'UNKNOWN'
+        res = lookup_table(self.cache.ifname, f"{OID.IFNAME}.{ifidx}")
+        return normalize_port(res) or 'UNKNOWN'
 
     def get_system_name(self, domains):
-        return normalize_host(self.snmpobj.get_val(OID.SYSNAME), domains)
+        return normalize_host(self.cache.name, domains) if domains else self.cache.name
 
     def get_ipaddr(self):
         ''' Returns the first matching IP:
@@ -464,47 +370,39 @@ arp_cache = None
         ''' If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         '''
-        if not self.vpc_cache:
-            self.vpc_cache = self.snmpobj.get_bulk(OID.VPC_PEERLINK_IF)
-        if not self.vpc_cache or not len(self.vpc_cache):
+        if not self.cache.vpc:
             return None, None
-        domain = SNMP.get_last_oid_token(self.vpc_cache[0][0][0])
-        ifidx = str(self.vpc_cache[0][0][1])
-        ifname = self.snmpobj.table_lookup(ifarr, OID.ETH_IF_DESC + '.' + ifidx)
+        domain = oid_last_token(self.cache.vpc[0][0][0])
+        ifidx = str(self.cache.vpc[0][0][1])
+        ifname = lookup_table(ifarr, OID.ETH_IF_DESC + '.' + ifidx)
         ifname = normalize_port(ifname)
         return domain, ifname
 
     def get_vlans(self):
-        if not self.vlan_cache:
-            self.vlan_cache = self.snmpobj.get_bulk(OID.VLANS)
-        if not self.vlandesc_cache:
-            self.vlandesc_cache = self.snmpobj.get_bulk(OID.VLAN_DESC)
         arr = []
         i = 0
-        for vlan_row in self.vlan_cache:
+        for vlan_row in self.cache.vlan:
             for vlan_n, vlan_v in vlan_row:
                 # get VLAN ID from OID
-                vlan = self.snmpobj.get_last_oid_token(vlan_n)
+                vlan = oid_last_token(vlan_n)
                 if vlan >= 1002:
                     continue
-                arr.append(VLANData(vlan, str(self.vlandesc_cache[i][0][1])))
+                arr.append(VLANData(vlan, str(self.cache.vlandesc[i][0][1])))
                 i += 1
-        return arr
+        return arr if arr else []
 
     def get_arp(self):
-        if not self.arp_cache:
-            self.arp_cache = self.snmpobj.get_bulk(OID.ARP)
         arr = []
-        for r in self.arp_cache:
+        for r in self.cache.arp:
             for n, v in r:
                 n = str(n)
                 if n.startswith(OID.ARP_VLAN):
                     tok = n.split('.')
                     ip = '.'.join(tok[11:])
                     interf = self.get_ifname(str(v))
-                    mach = self.snmpobj.table_lookup(self.arp_cache, OID.ARP_MAC+'.'+str(v)+'.'+ip)
+                    mach = lookup_table(self.cache.arp, f"{OID.ARP_MAC}.{str(v)}.{ip}")
                     mac = mac_hex_to_ascii(mach, 1)
-                    atype = self.snmpobj.table_lookup(self.arp_cache, OID.ARP_TYPE+'.'+str(v)+'.'+ip)
+                    atype = lookup_table(self.cache.arp, f"{OID.ARP_TYPE}.{str(v)}.{ip}")
                     atype = int(atype)
                     type_str = 'unknown'
                     if atype == ARP.TYPE_OTHER:
