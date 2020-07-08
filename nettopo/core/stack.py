@@ -6,69 +6,62 @@
 '''
 from .constants import OID
 from .data import BaseData, StackData
+from .util import lookup_table
 
 
-class Stack:
+class Stack(BaseData):
     roles = enumerate(['master', 'member', 'notMember', 'standby'], start=1)
-    def __init__(self, snmpobj, opts):
+    def __init__(self, snmpobj, actions):
         self.members = []
         self.count = 0
         self.enabled = False
-        self.opts = opts
-        self.get_members(snmpobj)
+        self.opts = actions
+        self.items_2_show = ['enabled', 'count', 'members']
+        self.cache = StackCache(snmpobj)
 
-    def __str__(self):
-        return f"<enabled={self.enabled},count={self.count},members={self.members}>"
-
-    def __repr__(self):
-        return self.__str__()
-
-    def get_members(self, snmpobj):
-        if self.opts == None:
-            return
-        stack_snmp = snmpobj.get_bulk(OID.STACK)
-        if stack_snmp == None:
-            return None
         if self.opts.get_stack_details:
-            self.count = 0
-            for row in stack_snmp:
-                for n, v in row:
-                    n = str(n)
-                    if n.startswith(OID.STACK_NUM + '.'):
-                        self.count += 1
-            if self.count == 1:
-                self.count = 0
-            return
+            self.get_members()
+
+    def get_members(self):
+        stack_cache = self.cache.stack
+        if not stack_cache:
+            return None
         if self.opts.get_serial:
-            serial_vbtbl = snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
+            serial_cache = self.cache.serial
         if self.opts.get_plat:
-            platf_vbtbl = snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
-        for row in stack_snmp:
+            platform_cache = self.cache.platform
+        for row in stack_cache:
             for n, v in row:
                 n = str(n)
-                if n.startswith(OID.STACK_NUM + '.'):
+                if n.startswith(f"{OID.STACK_NUM}."):
                     # Get info on this stack member and add to the list
-                    m = StackMember()
+                    m = StackData()
                     t = n.split('.')
                     idx = t[14]
                     m.num = v
-                    m.role = snmpobj.table_lookup(stack_snmp, OID.STACK_ROLE + '.' + idx)
-                    m.pri = snmpobj.table_lookup(stack_snmp, OID.STACK_PRI + '.' + idx)
-                    m.mac = snmpobj.table_lookup(stack_snmp, OID.STACK_MAC + '.' + idx)
-                    m.img = snmpobj.table_lookup(stack_snmp, OID.STACK_IMG + '.' + idx)
-                    if self.opts.get_serial:
-                        m.serial = snmpobj.table_lookup(serial_vbtbl, OID.ENTPHYENTRY_SERIAL + '.' + idx)
-                    if self.opts.get_plat:
-                        m.plat = snmpobj.table_lookup(platf_vbtbl, OID.ENTPHYENTRY_PLAT + '.' + idx)
+                    m.role = lookup_table(stack_cache,
+                                          f"{OID.STACK_ROLE}.{idx}")
                     for k, v in self.roles:
                         if m.role == k:
                             m.role = v
+                    m.pri = lookup_table(stack_cache,
+                                         f"{OID.STACK_PRI}.{idx}")
+                    m.img = lookup_table(stack_cache,
+                                         f"{OID.STACK_IMG}.{idx}")
+                    if serial_cache:
+                        m.serial = lookup_table(serial_cache,
+                                            f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                    if platform_cache:
+                        m.plat = lookup_table(platform_cache,
+                                              f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                    m.mac = lookup_table(stack_cache,
+                                         f"{OID.STACK_MAC}.{idx}")
                     mac_seg = [m.mac[x:x+4] for x in range(2, len(m.mac), 4)]
                     m.mac = '.'.join(mac_seg)
                     self.members.append(m)
         self.count = len(self.members)
-        if self.count == 1:
-            self.count = 0
         if self.count > 0:
             self.enabled = 1
+        if self.count == 1:
+            self.count = 0
 

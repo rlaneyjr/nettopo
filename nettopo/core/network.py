@@ -10,24 +10,26 @@ from .exceptions import NettopoNetworkError
 from .util import in_acl, str_matches_pattern
 from .node import Node
 from .constants import NODE, DCODE
+from .data import BaseData
 
 
-class Network:
+class Network(BaseData):
     def __init__(self, conf: Config):
         self.root_node = None
         self.nodes = []
+        self.num_nodes = len(self.nodes)
         self.max_depth = 0
         self.config = conf
         self.verbose = True
+        self.items_2_show = ['root_node', 'num_nodes']
 
     def _print(self, stuff: str) -> None:
         if self.verbose:
             print(stuff)
 
-    def show(self):
-        return f"<root_node={self.root_node.name}, num_nodes={len(self.nodes)}>"
-
-    def set_max_depth(self, depth):
+    @property
+    @max_depth.setter
+    def max_depth(self, depth: int=0):
         self.max_depth = depth
 
     def reset_discovered(self):
@@ -64,13 +66,13 @@ class Network:
         # we may have missed chassis info
         for n in self.nodes:
             if not any([n.serial, n.plat, n.ios]):
-                n.opts.get_chassis_info = True
+                n.actions.get_chassis_info = True
                 if not n.serial:
-                    n.opts.get_serial = True
+                    n.actions.get_serial = True
                 if not n.ios:
-                    n.opts.get_ios = True
+                    n.actions.get_ios = True
                 if not n.plat:
-                    n.opts.get_plat = True
+                    n.actions.get_plat = True
                 n.query_node()
 
     def discover_details(self):
@@ -89,21 +91,21 @@ class Network:
                 indicator = '!'
             self._print(f"[{ni}/{len(self.nodes)}]{indicator} {n.name} ({n.snmpobj.ip})")
             # # set what details to discover for this node
-            # n.opts.get_router = True
-            # n.opts.get_ospf_id = True
-            # n.opts.get_bgp_las = True
-            # n.opts.get_hsrp_pri = True
-            # n.opts.get_hsrp_vip = True
-            # n.opts.get_serial = True
-            # n.opts.get_stack = True
-            # n.opts.get_stack_details = self.config.diagram.get_stack_members
-            # n.opts.get_vss = True
-            # n.opts.get_vss_details = self.config.diagram.get_vss_members
-            # n.opts.get_svi = True
-            # n.opts.get_lo = True
-            # n.opts.get_vpc = True
-            # n.opts.get_ios = True
-            # n.opts.get_plat = True
+            # n.actions.get_router = True
+            # n.actions.get_ospf_id = True
+            # n.actions.get_bgp_las = True
+            # n.actions.get_hsrp_pri = True
+            # n.actions.get_hsrp_vip = True
+            # n.actions.get_serial = True
+            # n.actions.get_stack = True
+            # n.actions.get_stack_details = self.config.diagram.get_stack_members
+            # n.actions.get_vss = True
+            # n.actions.get_vss_details = self.config.diagram.get_vss_members
+            # n.actions.get_svi = True
+            # n.actions.get_lo = True
+            # n.actions.get_vpc = True
+            # n.actions.get_ios = True
+            # n.actions.get_plat = True
             start = timer()
             n.query_node()
             end = timer()
@@ -171,7 +173,7 @@ class Network:
         host = normalize_host(host, self.config.host_domains)
         node, node_updated = self.get_known_node(ip, host)
         if not node:
-            node = Node()
+            node = Node(ip)
             node.name = host
             node.ip = [ip]
             state = NODE.NEW
@@ -182,14 +184,10 @@ class Network:
                 return node, NODE.KNOWN
             state = NODE.NEWIP if node_updated else NODE.KNOWN
             node.name = host
-        if ip == 'UNKNOWN':
-            return node, state
         # vmware ESX reports the IP as 0.0.0.0
         # LLDP can return an empty string for IPs.
-        if ip in ['0.0.0.0', '']:
-            return node, state
-        # find valid credentials for this node
-        if not node.try_snmp_creds(self.config.snmp_creds):
+        if ip in ['0.0.0.0', 'UNKNOWN', ''] or
+                not node.get_snmp_creds(self.config.snmp_creds):
             return node, state
         node.name = node.get_system_name(self.config.host_domains)
         if node.name != host:
@@ -205,8 +203,8 @@ class Network:
         # e.g. Maybe CDP/LLDP was empty and we dont have good credentials
         # for this device.  A blank name can break Dot.
         if node.name in [None, '', 'UNKNOWN']:
-            node.name = node.get_ipaddr()
-        node.opts.get_serial = True     # CDP/LLDP does not report, need for extended ACL
+            node.name = node.get_ipaddr().replace('.', '_')
+        node.actions.get_serial = True     # CDP/LLDP does not report, need for extended ACL
         node.query_node()
         return node, state
 
@@ -263,70 +261,38 @@ class Network:
         neighbors = []
         neighbors.extend(node.get_cdp_neighbors())
         neighbors.extend(node.get_lldp_neighbors())
-        if not neighbors:
-            return
-        for n in neighbors:
-            # some neighbors may not advertise IP addresses - default them to 0.0.0.0
-            if not n.remote_ip:
-                n.remote_ip = '0.0.0.0'
-            # check the ACL
-            acl_action = self.check_node_acl(n.remote_ip, n.remote_name)
-            if acl_action == 'deny':
-                continue
-            dcodes.append(DCODE.DISCOVERED)
-            child = None
-            if acl_action == 'include':
-                # include this node but do not discover it
-                child = Node()
-                child.ip = [n.remote_ip]
-                dcodes.append(DCODE.INCLUDE)
-            else:
+        if neighbors:
+            for n in neighbors:
+                # some neighbors may not advertise IP addresses - default them to 0.0.0.0
+                if not n.remote_ip:
+                    n.remote_ip = '0.0.0.0'
+                dcodes.append(DCODE.DISCOVERED)
                 # discover this node
                 child, query_result = self.query_ip(n.remote_ip, n.remote_name)
-            # if we couldn't pull info from SNMP fill in what we know
-            if not child.snmpobj.success:
-                child.name = normalize_host(n.remote_name, self.config.host_domains)
-                dcodes.append(DCODE.ERR_SNMP)
-            # need to check the ACL again for extended ops (we have more info)
-            acl_action = self.check_node_acl(n.remote_ip, n.remote_name, n.remote_plat, n.remote_ios, child.serial)
-            if acl_action == 'deny':
-                continue
-            if query_result == NODE.NEW:
-                self.nodes.append(child)
-                if acl_action == 'leaf':
-                    dcodes.append(DCODE.LEAF)
-                if n.discovered_proto == 'cdp':
-                    dcodes.append(DCODE.CDP)
-                if n.discovered_proto == 'lldp':
-                    dcodes.append(DCODE.LLDP)
-                self.print_step(n.remote_ip, n.remote_name, dcodes, depth+1)
-            # CDP/LLDP advertises the platform
-            child.plat = n.remote_plat
-            child.ios = n.remote_ios
-            # add the discovered node to the link object and link to the parent
-            n.node = child
-            self.add_update_link(node, n)
-            # if we need to discover this node then add it to the list
-            if query_result == NODE.NEW and acl_action != 'leaf' and acl_action != 'include':
-                valid_neighbors.append(child)
+                # if we couldn't pull info from SNMP fill in what we know
+                if not child.snmpobj.success:
+                    child.name = normalize_host(n.remote_name,
+                                                self.config.host_domains)
+                    dcodes.append(DCODE.ERR_SNMP)
+                if query_result == NODE.NEW:
+                    self.nodes.append(child)
+                    if n.discovered_proto == 'cdp':
+                        dcodes.append(DCODE.CDP)
+                    if n.discovered_proto == 'lldp':
+                        dcodes.append(DCODE.LLDP)
+                    self.print_step(n.remote_ip, n.remote_name, dcodes, depth+1)
+                # CDP/LLDP advertises the platform
+                child.plat = n.remote_plat
+                child.ios = n.remote_ios
+                # add discovered node to the link object and link to the parent
+                n.node = child
+                self.add_update_link(node, n)
+                # if we need to discover this node then add it to the list
+                if query_result == NODE.NEW:
+                    valid_neighbors.append(child)
         # discover the valid neighbors
         for n in valid_neighbors:
             self.discover_node(n, depth+1)
-
-    def check_node_acl(self, ip, host, platform=None, software=None, serial=None):
-        for acl in self.config.discover_acl:
-            if acl.type == 'ip' and in_acl(ip, acl.str):
-                return acl.action
-            elif acl.type == 'host' and in_acl(host, acl.str):
-                return acl.action
-            elif platform and acl.type == 'platform' and in_acl(platform, acl.str):
-                return acl.action
-            elif software and acl.type == 'software' and in_acl(software, acl.str):
-                return acl.action
-            elif serial and acl.type == 'serial' and in_acl(serial, acl.str):
-                return acl.action
-            else:
-                return 'allow'
 
     def add_update_link(self, node, link):
         ''' Add or update a link.
@@ -342,23 +308,33 @@ class Network:
                 if n.name == link.node.name:
                     # find the existing link
                     for ex_link in n.links:
-                        if ex_link.node.name == node.name and ex_link.local_port == link.remote_port:
-                            if not link.local_if_ip == 'UNKNOWN' and not ex_link.remote_if_ip:
+                        if ex_link.node.name == node.name and
+                                ex_link.local_port == link.remote_port:
+                            if not link.local_if_ip == 'UNKNOWN' and
+                                            not ex_link.remote_if_ip:
                                 ex_link.remote_if_ip = link.local_if_ip
-                            if not link.local_lag == 'UNKNOWN' and not ex_link.remote_lag:
+                            if not link.local_lag == 'UNKNOWN' and
+                                            not ex_link.remote_lag:
                                 ex_link.remote_lag = link.local_lag
-                            if not len(link.local_lag_ips) and len(ex_link.remote_lag_ips):
+                            if not len(link.local_lag_ips) and
+                                            len(ex_link.remote_lag_ips):
                                 ex_link.remote_lag_ips = link.local_lag_ips
-                            if link.local_native_vlan and not ex_link.remote_native_vlan:
-                                ex_link.remote_native_vlan = link.local_native_vlan
-                            if link.local_allowed_vlans and not ex_link.remote_allowed_vlans:
-                                ex_link.remote_allowed_vlans = link.local_allowed_vlans
+                            if link.local_native_vlan and
+                                            not ex_link.remote_native_vlan:
+                                ex_link.remote_native_vlan \
+                                    = link.local_native_vlan
+                            if link.local_allowed_vlans and
+                                            not ex_link.remote_allowed_vlans:
+                                ex_link.remote_allowed_vlans \
+                                    = link.local_allowed_vlans
                             return False
         else:
             for ex_link in node.links:
-                if ex_link.node.name == link.node.name and ex_link.local_port == link.local_port:
-                    self._print(f"Discovered duplicate links for node: {ex_link.node.name} port: {ex_link.local_port}")
-                    # haven't discovered yet but somehow we have this link twice.
+                if ex_link.node.name == link.node.name and
+                            ex_link.local_port == link.local_port:
+                    self._print(f"Discovered duplicate links for node: \
+                                {ex_link.node.name} port: {ex_link.local_port}")
+                    # haven't discovered yet but we have this link twice.
                     # maybe from different discovery processes?
                     return False
         node.add_link(link)

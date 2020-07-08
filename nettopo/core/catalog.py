@@ -4,7 +4,6 @@
 '''
     catalog.py
 '''
-from .config import Config
 from .exceptions import NettopoCatalogError
 from .network import Network
 from .data import NodeActions
@@ -19,27 +18,29 @@ class Catalog:
                 self.network = Network(network)
             except:
                 raise NettopoCatalogError(f"{network} not a valid Nettopo Network")
-        self.config = self.network.config
 
     def generate(self, filename):
         with open(filename, 'w+') as f:
-            for n in self.network.nodes:
-                if not n.opts:
-                    n.opts = NodeActions()
-                n.query_node()
+            for node in self.network.nodes:
+                if not node.opts:
+                    node.opts = NodeActions()
+                node.query_node()
                 # StackWise
-                if n.stack.count:
-                    for mem in n.stack.members:
-                        serial = mem.serial or 'NOT CONFIGURED TO POLL'
-                        plat = mem.plat or 'NOT CONFIGURED TO POLL'
-                        f.write(f"{n.name},{n.ip[0]},{plat},{n.ios},{serial},STACK,{n.bootfile}\n")
+                if node.stack.count:
+                    for mem in node.stack.members:
+                        serial = mem.serial or 'NotPolled'
+                        plat = mem.plat or 'NotPolled'
+                        f.write(f"{node.name},{node.ip[0]},{plat},{node.ios}, \
+                                            {serial},STACK,{node.bootfile}\n")
                 # VSS
-                elif n.vss.enabled:
+                elif node.vss.enabled:
                     for i in range(0, 2):
-                        serial = n.vss.members[i].serial
-                        plat = n.vss.members[i].plat
-                        ios = n.vss.members[i].ios
-                        f.write(f"{n.name},{n.ip[0]},{plat},{ios},{serial},VSS,{n.bootfile}\n")
+                        serial = node.vss.members[i].serial
+                        plat = node.vss.members[i].plat
+                        ios = node.vss.members[i].ios
+                        f.write(f"{node.name},{node.ip[0]},{plat},{ios}, \
+\                                           {serial},VSS,{node.bootfile}\n")
                 # Stand Alone
                 else:
-                    f.write(f"{n.name},{n.ip[0]},{n.plat},{n.ios},{n.serial},SINGLE,{n.bootfile}\n")
+                    f.write(f"{node.name},{node.ip[0]},{node.plat}, \
+                            {node.ios},{node.serial},SINGLE,{node.bootfile}\n")

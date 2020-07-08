@@ -1,21 +1,82 @@
-diagram.py:339:29: W605 invalid escape sequence '\.'
-diagram.py:339:60: W605 invalid escape sequence '\g'
-diagram.py:340:27: W605 invalid escape sequence '\.'
-diagram.py:340:56: W605 invalid escape sequence '\g'
-diagram.py:344:23: W605 invalid escape sequence '\$'
-diagram.py:344:34: W605 invalid escape sequence '\$'
-diagram.py:344:49: W605 invalid escape sequence '\$'
-diagram.py:344:60: W605 invalid escape sequence '\$'
-diagram.py:344:73: W605 invalid escape sequence '\g'
-diagram.py:345:23: W605 invalid escape sequence '\$'
-diagram.py:345:32: W605 invalid escape sequence '\$'
-diagram.py:345:47: W605 invalid escape sequence '\$'
-diagram.py:345:56: W605 invalid escape sequence '\$'
-diagram.py:345:67: W605 invalid escape sequence '\g'
+diagram.py:89:80: E501 line too long (91 > 79 characters)
+diagram.py:104:80: E501 line too long (82 > 79 characters)
+diagram.py:121:80: E501 line too long (82 > 79 characters)
+diagram.py:166:80: E501 line too long (80 > 79 characters)
+diagram.py:174:80: E501 line too long (89 > 79 characters)
+diagram.py:213:1: W391 blank line at end of file
+mac.py:43:80: E501 line too long (92 > 79 characters)
+mac.py:52:80: E501 line too long (92 > 79 characters)
+mac.py:57:80: E501 line too long (93 > 79 characters)
+mac.py:59:80: E501 line too long (83 > 79 characters)
+mac.py:69:80: E501 line too long (96 > 79 characters)
+mac.py:85:80: E501 line too long (102 > 79 characters)
+mac.py:86:80: E501 line too long (81 > 79 characters)
+mac.py:89:80: E501 line too long (99 > 79 characters)
+mac.py:90:80: E501 line too long (87 > 79 characters)
+nettopo.py:47:80: E501 line too long (86 > 79 characters)
+nettopo.py:96:80: E501 line too long (100 > 79 characters)
+nettopo.py:141:80: E501 line too long (87 > 79 characters)
+network.py:28:80: E501 line too long (80 > 79 characters)
+network.py:60:80: E501 line too long (88 > 79 characters)
+network.py:90:80: E501 line too long (89 > 79 characters)
+network.py:160:80: E501 line too long (85 > 79 characters)
+network.py:168:80: E501 line too long (92 > 79 characters)
+network.py:209:80: E501 line too long (89 > 79 characters)
+network.py:269:80: E501 line too long (85 > 79 characters)
+network.py:288:80: E501 line too long (84 > 79 characters)
+network.py:291:80: E501 line too long (115 > 79 characters)
+network.py:310:80: E501 line too long (93 > 79 characters)
+network.py:316:80: E501 line too long (82 > 79 characters)
+network.py:322:80: E501 line too long (83 > 79 characters)
+network.py:324:80: E501 line too long (83 > 79 characters)
+network.py:345:80: E501 line too long (101 > 79 characters)
+network.py:346:80: E501 line too long (94 > 79 characters)
+network.py:348:80: E501 line too long (90 > 79 characters)
+network.py:350:80: E501 line too long (91 > 79 characters)
+network.py:352:80: E501 line too long (89 > 79 characters)
+network.py:353:80: E501 line too long (83 > 79 characters)
+network.py:354:80: E501 line too long (93 > 79 characters)
+network.py:355:80: E501 line too long (87 > 79 characters)
+network.py:359:80: E501 line too long (97 > 79 characters)
+network.py:360:80: E501 line too long (119 > 79 characters)
+network.py:361:80: E501 line too long (81 > 79 characters)
+node.py:153:80: E501 line too long (82 > 79 characters)
+node.py:173:5: E303 too many blank lines (2)
+node.py:209:21: E722 do not use bare 'except'
+node.py:224:5: E303 too many blank lines (2)
+node.py:253:17: E722 do not use bare 'except'
+node.py:260:21: E722 do not use bare 'except'
+node.py:280:5: E303 too many blank lines (2)
+node.py:309:5: E303 too many blank lines (2)
+node.py:348:41: E128 continuation line under-indented for visual indent
+node.py:355:5: E303 too many blank lines (2)
+node.py:362:5: E303 too many blank lines (2)
+node.py:367:5: E303 too many blank lines (2)
+node.py:389:5: E303 too many blank lines (2)
+node.py:402:5: E303 too many blank lines (2)
+node.py:416:5: E303 too many blank lines (2)
+node.py:425:80: E501 line too long (87 > 79 characters)
+node.py:427:80: E501 line too long (89 > 79 characters)
+snmp.py:11:1: E722 do not use bare 'except'
+snmp.py:55:80: E501 line too long (83 > 79 characters)
+snmp.py:58:80: E501 line too long (86 > 79 characters)
+snmp.py:70:80: E501 line too long (95 > 79 characters)
+snmp.py:73:80: E501 line too long (87 > 79 characters)
 stack.py:13:5: E301 expected 1 blank line, found 0
+stack.py:21:80: E501 line too long (84 > 79 characters)
 stack.py:27:22: E711 comparison to None should be 'if cond is None:'
 stack.py:30:23: E711 comparison to None should be 'if cond is None:'
+stack.py:55:80: E501 line too long (89 > 79 characters)
+stack.py:56:80: E501 line too long (87 > 79 characters)
+stack.py:57:80: E501 line too long (87 > 79 characters)
+stack.py:58:80: E501 line too long (87 > 79 characters)
+stack.py:60:80: E501 line too long (105 > 79 characters)
+stack.py:62:80: E501 line too long (100 > 79 characters)
 stack.py:74:1: W391 blank line at end of file
+templates.py:31:80: E501 line too long (83 > 79 characters)
+templates.py:40:80: E501 line too long (87 > 79 characters)
+templates.py:41:80: E501 line too long (87 > 79 characters)
+templates.py:122:80: E501 line too long (94 > 79 characters)
 util.py:35:1: E302 expected 2 blank lines, found 1
 util.py:41:10: E225 missing whitespace around operator
 util.py:42:10: E225 missing whitespace around operator
@@ -24,22 +85,29 @@ util.py:48:1: E302 expected 2 blank lines, found 1
 util.py:59:1: E302 expected 2 blank lines, found 1
 util.py:62:11: E221 multiple spaces before operator
 util.py:64:26: E227 missing whitespace around bitwise or shift operator
+util.py:64:80: E501 line too long (84 > 79 characters)
 util.py:71:21: E227 missing whitespace around bitwise or shift operator
 util.py:74:1: E302 expected 2 blank lines, found 1
+util.py:79:9: E722 do not use bare 'except'
 util.py:85:20: W605 invalid escape sequence '\('
 util.py:85:24: W605 invalid escape sequence '\('
 util.py:85:28: W605 invalid escape sequence '\)'
 util.py:94:1: E302 expected 2 blank lines, found 1
 util.py:105:1: E302 expected 2 blank lines, found 1
+util.py:107:80: E501 line too long (100 > 79 characters)
 util.py:110:1: E302 expected 2 blank lines, found 1
 util.py:112:26: W605 invalid escape sequence '\d'
 util.py:112:31: W605 invalid escape sequence '\d'
 util.py:112:36: W605 invalid escape sequence '\d'
 util.py:112:40: W605 invalid escape sequence '\d'
+util.py:115:5: E722 do not use bare 'except'
 util.py:119:1: E302 expected 2 blank lines, found 1
+util.py:124:5: E722 do not use bare 'except'
 util.py:128:1: E302 expected 2 blank lines, found 1
 util.py:130:32: W605 invalid escape sequence '\}'
+util.py:132:5: E722 do not use bare 'except'
 util.py:136:1: E302 expected 2 blank lines, found 1
+util.py:140:5: E722 do not use bare 'except'
 util.py:148:1: E302 expected 2 blank lines, found 1
 util.py:149:24: W605 invalid escape sequence '\.'
 util.py:157:1: E302 expected 2 blank lines, found 1
@@ -49,16 +117,14 @@ util.py:181:1: E302 expected 2 blank lines, found 1
 util.py:221:1: E302 expected 2 blank lines, found 1
 util.py:222:9: E117 over-indented
 util.py:224:45: W605 invalid escape sequence '\.'
+util.py:229:9: E722 do not use bare 'except'
 util.py:234:1: E302 expected 2 blank lines, found 1
 util.py:237:1: E302 expected 2 blank lines, found 1
 util.py:246:1: E302 expected 2 blank lines, found 1
-vss.py:12:18: E221 multiple spaces before operator
-vss.py:13:17: E221 multiple spaces before operator
-vss.py:15:18: E221 multiple spaces before operator
-vss.py:25:31: E251 unexpected spaces around keyword / parameter equals
-vss.py:25:33: E251 unexpected spaces around keyword / parameter equals
-vss.py:25:44: E251 unexpected spaces around keyword / parameter equals
-vss.py:25:46: E251 unexpected spaces around keyword / parameter equals
-vss.py:30:20: E711 comparison to None should be 'if cond is not None:'
-vss.py:59:18: E231 missing whitespace after ','
-vss.py:74:1: W391 blank line at end of file
+vss.py:17:20: E711 comparison to None should be 'if cond is not None:'
+vss.py:21:80: E501 line too long (86 > 79 characters)
+vss.py:46:18: E231 missing whitespace after ','
+vss.py:50:80: E501 line too long (97 > 79 characters)
+vss.py:55:80: E501 line too long (125 > 79 characters)
+vss.py:57:80: E501 line too long (131 > 79 characters)
+vss.py:61:1: W391 blank line at end of file

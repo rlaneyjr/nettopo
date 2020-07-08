@@ -4,70 +4,59 @@
 '''
         node_vss.py
 '''
+from .cache import VSSCache
 from .constants import OID
+from .data import BaseData, NodeActions, VSSData
+from .util import lookup_table
 
 
-class VSSMember:
-    def __init__(self):
-        self.opts   = None
-        self.ios    = None
-        self.serial = None
-        self.plat   = None
-
-    def __str__(self):
-        return f"<serial={self.serial},plat={self.plat}>"
-
-    def __repr__(self):
-        return self.__str__()
-
-
-class VSS:
-    def __init__(self, snmpobj = None, opts = None):
+class VSS(BaseData):
+    def __init__(self, snmpobj, actions: NodeActions=None):
         self.members = []
-        self.enabled = False
         self.domain = None
-        self.opts = opts
-        if snmpobj != None:
-            self.get_members(snmpobj)
+        self.actions = actions or NodeActions()
+        self.items_2_show = ['enabled', 'domain', 'members']
+        if snmpobj.cache.vss:
+            self.cache = snmpobj.cache.vss
+        else:
+            self.cache = VSSCache(snmpobj)
 
-    def __str__(self):
-        return f"<enabled={self.enabled},domain={self.domain},members={self.members}>"
+        if self.actions.get_stack_details:
+            self.get_members()
 
-    def __repr__(self):
-        return self.__str__()
-
-    def get_members(self, snmpobj):
-        if not self.opts.get_vss_details:
-            return False
+    @property
+    def enabled(self):
         # check if VSS is enabled
-        if snmpobj.get_val(OID.VSS_MODE) == '2':
-            self.enabled = True
+        if self.cache.vss_mode == '2':
+            return True
         else:
             return False
+
+    def get_members(self):
         self.domain = snmpobj.get_val(OID.VSS_DOMAIN)
         # pull some VSS-related info
-        module_vbtbl = snmpobj.get_bulk(OID.VSS_MODULES)
-        if self.opts.get_ios:
-            ios_vbtbls = snmpobj.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
-        if self.opts.get_serial:
-            serial_vbtbls = snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
-        if self.opts.get_plat:
-            plat_vbtbl = snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
+        module_cache = snmpobj.get_bulk(OID.VSS_MODULES)
+        if self.actions.get_ios:
+            ios_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
+        if self.actions.get_serial:
+            serial_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
+        if self.actions.get_plat:
+            plat_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
         # enumerate VSS modules and find chassis info
         chassis = 0
-        for row in module_vbtbl:
+        for row in module_cache:
             for n,v in row:
                 if v == 1:
                     modidx = str(n).split('.')[14]
                     # we want only chassis - line card module have no software
-                    ios = snmpobj.table_lookup(ios_vbtbl, OID.ENTPHYENTRY_SOFTWARE + '.' + modidx)
+                    ios = snmpobj.table_lookup(ios_cache, f"{OID.ENTPHYENTRY_SOFTWARE}.{modidx}")
                     if ios != '':
-                        if self.opts.get_ios:
+                        if self.actions.get_ios:
                             self.members[chassis].ios = ios
-                        if self.opts.get_plat:
-                            self.members[chassis].plat = snmpobj.table_lookup(plat_vbtbl, OID.ENTPHYENTRY_PLAT + '.' + modidx)
-                        if self.opts.get_serial:
-                            self.members[chassis].serial = snmpobj.table_lookup(serial_vbtbl, OID.ENTPHYENTRY_SERIAL + '.' + modidx)
+                        if self.actions.get_plat:
+                            self.members[chassis].plat = snmpobj.table_lookup(plat_cache, f"{OID.ENTPHYENTRY_PLAT}.{modidx}")
+                        if self.actions.get_serial:
+                            self.members[chassis].serial = snmpobj.table_lookup(serial_cache, f"{OID.ENTPHYENTRY_SERIAL}.{modidx}")
                         chassis += 1
                 if chassis > 1:
                     return

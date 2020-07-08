@@ -7,6 +7,17 @@
 Jinja2 templates
 '''
 
+credits_template = '''
+<table border=0>
+  <tr>
+    <td balign=right>
+      <font point-size={{ title_text_size }}><b>{{ title }}</b></font><br />
+      <font point-size={{ date_text_size }}>{{ today }}</font><br />
+    </td>
+  </tr>
+</table>
+'''
+
 node_template = '''
 <font point-size="10"><b>{{ node.name }}</b></font><br />
 {{ node.get_ipaddr() }}<br />
@@ -59,17 +70,6 @@ node_template = '''
         VLAN {{ svi.vlan }} - {{ svi.ip }}<br />
     {% endfor %}
 {% endif %}
-'''
-
-credits_template = '''
-<table border=0>
-  <tr>
-    <td balign=right>
-      <font point-size={{ title_text_size }}><b>{{ title }}</b></font><br />
-      <font point-size={{ date_text_size }}>{{ today }}</font><br />
-    </td>
-  </tr>
-</table>
 '''
 
 link_template = '''

@@ -9,11 +9,43 @@ import datetime
 from jinja2 import Template, Environment
 import os
 
+from .exceptions import NettopoDiagramError
 from .config import DiagramDefaults
-from .data import DotNode
 from .network import Network
 from .templates import node_template, credits_template, link_template
 from .util import get_path, get_port_module
+
+
+class DotNode:
+    def __init__(self, node, config):
+        self.node = node
+        self.config = config
+        self.ntype = 'single'
+        self.shape = 'diamond' if self.node.router else 'ellipse'
+        self.style = 'solid'
+        self.peripheries = 1
+        # set the node properties
+        if self.node.vss.enabled:
+            if self.config.expand_vss:
+                self.ntype = 'vss'
+            else:
+                # group VSS into one diagram node
+                self.peripheries = 2
+        if self.node.stack.enabled:
+            if self.config.expand_stackwise:
+                self.ntype = 'stackwise'
+            else:
+                # group Stackwise into one diagram node
+                self.peripheries = self.node.stack.count
+        if self.node.vpc_domain and self.config.group_vpc:
+            self.ntype = 'vpc'
+
+    @property
+    def label(self):
+        temp = Template(node_template)
+        # env = Environment()
+        # temp = env.from_string(node_template)
+        return temp.render(node=self.node, config=self.config)
 
 
 class Diagram:
@@ -27,11 +59,11 @@ class Diagram:
         date_text_size = title_text_size - 2
         today = datetime.datetime.now()
         today = today.strftime('%Y-%m-%d %H:%M')
-        credits = Template(credits_template)
-        credits = credits.render(title_text_size=title_text_size,
-                                 date_text_size=date_text_size,
-                                 title=title,
-                                 today=today)
+        credit_temp = Template(credits_template)
+        credits = credit_temp.render(title_text_size=title_text_size,
+                                     date_text_size=date_text_size,
+                                     title=title,
+                                     today=today)
         node_text_size = self.config.node_text_size
         link_text_size = self.config.link_text_size
         diagram = pydot.Dot(graph_type='graph',
@@ -48,20 +80,18 @@ class Diagram:
         for f in files:
             # get file extension
             _, file_ext = os.path.splitext(f)
-            output_func = getattr(diagram, 'write_' + file_ext.lstrip('.'))
-            if not output_func:
-                print(f"Error: Output type {file_ext} does not exist.")
-            else:
+            func_name = f"write_{file_ext.lstrip('.')}"
+            # write_'format'(path, prog='program')
+            if func_name in diagram.__dir__():
+                output_func = getattr(diagram, func_name)
                 output_func(f)
                 print(f"Created diagram: {f}")
+            else:
+                raise NettopoDiagramError(f"Error: Output type {file_ext} \
+                                                            does not exist.")
 
     def build(self, diagram, node):
-        # if not node:
-        #     return 0, 0
-        # if node.discovered:
-        #     return 0, 0
-        # node.discovered = 1
-        dot_node = self.create_node(node)
+        dot_node = DotNode(node, self.config)
         if dot_node.ntype == 'single':
             diagram.add_node(pydot.Node(name=node.name,
                                         label=f"<{dot_node.label}>",
@@ -69,11 +99,12 @@ class Diagram:
                                         shape=dot_node.shape,
                                         peripheries=dot_node.peripheries))
         elif dot_node.ntype == 'vss':
+            vss_label = f"<<br /><b>VSS {node.vss.domain}</b>>"
             cluster = pydot.Cluster(graph_name=node.name,
                                     suppress_disconnected=False,
                                     labelloc='t', labeljust='c',
                                     fontsize=self.config.node_text_size,
-                                    label=f"<<br /><b>VSS {node.vss.domain}</b>>")
+                                    label=vss_label)
             for i in range(0, 2):
                 # {vss.} vars
                 nlabel = dot_node.label.format(vss=node.vss.members[i])
@@ -85,12 +116,13 @@ class Diagram:
                                            peripheries=dot_node.peripheries))
             diagram.add_subgraph(cluster)
         elif dot_node.ntype == 'vpc':
+            vpc_label = f"<<br /><b>VPC {node.vpc_domain}</b>>"
             cluster = pydot.Cluster(graph_name=node.name,
                                     suppress_disconnected=False,
                                     labelloc='t',
                                     labeljust='c',
                                     fontsize=self.config.node_text_size,
-                                    label=f"<<br /><b>VPC {node.vpc_domain}</b>>")
+                                    label=vpc_label)
             cluster.add_node(pydot.Node(
                              name=node.name,
                              label=f"<{dot_node.label}>",
@@ -100,7 +132,7 @@ class Diagram:
             if node.vpc_peerlink_node:
                 node2 = node.vpc_peerlink_node
                 # node2.discovered = 1
-                dot_node2 = self.create_node(node2)
+                dot_node2 = DotNode(node2)
                 cluster.add_node(pydot.Node(
                                  name=node2.name,
                                  label=f"<{dot_node2.label}>",
@@ -128,7 +160,6 @@ class Diagram:
                                             peripheries=dot_node.peripheries))
             diagram.add_subgraph(cluster)
 
-        lags = []
         for link in node.links:
             self.build(diagram, link.node)
             # determine if this link should be broken out or not
@@ -140,39 +171,12 @@ class Diagram:
                 # get an unlinked node in the diagram.
                 edge = self.create_link(node, link, True)
             else:
-                if link.local_lag not in lags:
-                    lags.append(link.local_lag)
-                    edge = self.create_link(node, link, False)
-        diagram.add_edge(edge)
-
-    def create_node(self, node):
-        dot_node = DotNode()
-        # get the node text
-        # env = Environment()
-        # temp = env.from_string(node_template)
-        temp = Template(node_template)
-        dot_node.label = temp.render(node=node, config=self.config)
-        # set the node properties
-        if node.vss.enabled:
-            if self.config.expand_vss:
-                dot_node.ntype = 'vss'
-            else:
-                # group VSS into one diagram node
-                dot_node.peripheries = 2
-        if node.stack.enabled:
-            if self.config.expand_stackwise:
-                dot_node.ntype = 'stackwise'
-            else:
-                # group Stackwise into one diagram node
-                dot_node.peripheries = node.stack.count
-        if node.vpc_domain and self.config.group_vpc:
-            dot_node.ntype = 'vpc'
-        if node.router:
-            dot_node.shape = 'diamond'
-        return dot_node
+                edge = self.create_link(node, link, False)
+            diagram.add_edge(edge)
 
     def create_link(self, node, link, is_lag):
-        lag_members = len([lnk for lnk in node.links if lnk.local_lag == link.local_lag])
+        lag_members = len([lnk for lnk in node.links \
+                            if lnk.local_lag == link.local_lag])
         temp = Template(link_template)
         link_label = temp.render(node=node, link=link, is_lag=is_lag,
                                  lag_members=lag_members)
@@ -212,82 +216,3 @@ class Diagram:
         devs = [link.node.name for link in links if lag_name in link.local_lag]
         return True if devs else False
 
-"""
-    def eval_if_block(self, if_cond, node):
-        # evaluate condition
-        if_cond_eval = if_cond.format(node=node, config=self.config).strip()
-        try:
-            if eval(if_cond_eval):
-                return True
-        except:
-            if if_cond_eval not in ['0', 'None', '']:
-                return True
-            else:
-                return False
-        return False
-
-    def format_node_text(self, node):
-        '''
-        Generate the node text given the format string 'fmt'
-        '''
-        temp = Template(node_template)
-        return temp.render(node, self.config)
-        while True:
-            if_block = re.search('<%if ([^%]*): ([^%]*)%>', fmt)
-            if not if_block:
-                break
-            if_cond = if_block[1]
-            if_val = if_block[2]
-            if not self.eval_if_block(if_cond, node):
-                if_val = ''
-            fmt = fmt[:if_block.span()[0]] + if_val + fmt[if_block.span()[1]:]
-        ip = node.get_ipaddr()
-        fmt = fmt.replace(node.ip, ip)
-        # stackwise
-        stack_block = re.search('<%stack ([^%]*)%>', fmt)
-        if stack_block:
-            if not node.stack.count:
-                fmt = fmt[:stack_block.span()[0]] + fmt[stack_block.span()[1]:]
-            else:
-                val = ''
-                if self.config.expand_stackwise and self.config.get_stack_members:
-                    for smem in node.stack.members:
-                        nval = stack_block[1]
-                        nval = nval.replace(stack.num,    smem.num)
-                        nval = nval.replace(stack.plat,   smem.plat)
-                        nval = nval.replace(stack.serial, smem.serial)
-                        nval = nval.replace(stack.role,   smem.role)
-                        val += nval
-                fmt = fmt[:stack_block.span()[0]] + val + fmt[stack_block.span()[1]:]
-        # loopbacks
-        loop_block = re.search('<%loopback ([^%]*)%>', fmt)
-        if loop_block:
-            val = ''
-            for lo in node.loopbacks:
-                for lo_ip in lo.ips:
-                    nval = loop_block[1]
-                    nval = nval.replace(lo.name, lo.name)
-                    nval = nval.replace(lo.ip, lo_ip)
-                    val += nval
-            fmt = fmt[:loop_block.span()[0]] + val + fmt[loop_block.span()[1]:]
-        # SVIs
-        svi_block = re.search('<%svi ([^%]*)%>', fmt)
-        if svi_block:
-            val = ''
-            for svi in node.svis:
-                for svi_ip in svi.ip:
-                    nval = svi_block[1]
-                    nval = nval.replace(svi.vlan, svi.vlan)
-                    nval = nval.replace(svi.ip, svi_ip)
-                    val += nval
-            fmt = fmt[:svi_block.span()[0]] + val + fmt[svi_block.span()[1]:]
-        # replace {stack.} with magic
-        fmt = re.sub('{stack\.(([a-zA-Z])*)}', '$stack2354$\g<1>$stack2354$', fmt)
-        fmt = re.sub('{vss\.(([a-zA-Z])*)}', '$vss2354$\g<1>$vss2354$', fmt)
-        # {node.} variables
-        fmt = fmt.format(node=node)
-        # replace magics
-        fmt = re.sub('\$stack2354\$(([a-zA-Z])*)\$stack2354\$', '{stack.\g<1>}', fmt)
-        fmt = re.sub('\$vss2354\$(([a-zA-Z])*)\$vss2354\$', '{vss.\g<1>}', fmt)
-        return fmt
-"""

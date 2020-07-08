@@ -9,16 +9,12 @@ Version:            0.1.1
 '''
 from functools import cached_property
 from .constants import OID, ARP, DCODE, NODE
-from .data import NodeActions
 from .snmp import SNMP
-from .stack import Stack
-from .vss import VSS
 
 
 class Cache:
-    def __init__(self, snmp_object: SNMP, node_actions: NodeActions) -> None:
+    def __init__(self, snmp_object: SNMP) -> None:
         self.snmp = snmp_object
-        self.actions = node_actions
 
     @cached_property
     def name(self):
@@ -82,11 +78,11 @@ class Cache:
 
     @cached_property
     def stack(self):
-        return Stack(self.snmp, self.actions)
+        return StackCache(self.snmp)
 
     @cached_property
     def vss(self):
-        return VSS(self.snmp, self.actions)
+        return VSSCache(self.snmp)
 
     @cached_property
     def serial(self):
@@ -145,3 +141,57 @@ class Cache:
     def hsrp_vip(self):
         if self.hsrp:
             return self.snmp.get_val(OID.HSRP_VIP)
+
+    @cached_property
+    def stack(self):
+        return StackCache(self.snmp)
+
+    @cached_property
+    def vss(self):
+        return VSSCache(self.snmp)
+
+
+class StackCache:
+    def __init__(self, snmp_object: SNMP) -> None:
+        self.snmp = snmp_object
+
+    @cached_property
+    def stack(self):
+        return self.snmp.get_bulk(OID.STACK)
+
+    @cached_property
+    def serial(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_SERIAL)
+
+    @cached_property
+    def platform(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_PLAT)
+
+
+class VSSCache:
+    def __init__(self, snmp_object: SNMP) -> None:
+        self.snmp = snmp_object
+
+    @cached_property
+    def mode(self):
+        return self.snmp.get_val(OID.VSS_MODE)
+
+    @cached_property
+    def domain(self):
+        return self.snmp.get_val(OID.VSS_DOMAIN)
+
+    @cached_property
+    def module(self):
+        return self.snmp.get_bulk(OID.VSS_MODULES)
+
+    @cached_property
+    def ios(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
+
+    @cached_property
+    def serial(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_SERIAL)
+
+    @cached_property
+    def platform(self):
+        return self.snmp.get_bulk(OID.ENTPHYENTRY_PLAT)
