@@ -36,7 +36,7 @@ from .constants import OID, ARP, DCODE, NODE
 class Node(BaseData):
     def __init__(self, ip: Union[str, list]) -> None:
         self.ip = ip if isinstance(ip, list) else [ip]
-        self.snmpobj = None
+        self.snmpobj = SNMP(self.ip[0])
         self.cache = None
         self.actions = NodeActions()
         self.links = []
@@ -82,11 +82,9 @@ class Node(BaseData):
         """ Query this node.
         Set .actions and .snmp_creds before calling.
         """
-        if not self.snmpobj:
-            self.snmpobj = SNMP(self.ip[0])
-            if not snmpobj.success:
-                # failed to find good creds
-                return False
+        if not self.snmpobj.success:
+            # failed to find good creds
+            return False
         if not self.cache:
             self.cache = Cache(self.snmpobj)
 
@@ -356,7 +354,7 @@ class Node(BaseData):
         return normalize_port(res) or 'UNKNOWN'
 
 
-    def get_system_name(self, domains):
+    def get_system_name(self, domains=None):
         return normalize_host(self.cache.name, domains) if domains \
                                                 else self.cache.name
 
@@ -419,9 +417,11 @@ class Node(BaseData):
                     tok = n.split('.')
                     ip = '.'.join(tok[11:])
                     interf = self.get_ifname(str(v))
-                    mach = lookup_table(self.cache.arp, f"{OID.ARP_MAC}.{str(v)}.{ip}")
+                    mach = lookup_table(self.cache.arp,
+                                        f"{OID.ARP_MAC}.{str(v)}.{ip}")
                     mac = mac_hex_to_ascii(mach, 1)
-                    atype = lookup_table(self.cache.arp, f"{OID.ARP_TYPE}.{str(v)}.{ip}")
+                    atype = lookup_table(self.cache.arp,
+                                         f"{OID.ARP_TYPE}.{str(v)}.{ip}")
                     atype = int(atype)
                     type_str = 'unknown'
                     if atype == ARP.TYPE_OTHER:

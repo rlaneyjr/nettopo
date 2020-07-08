@@ -1,9 +1,14 @@
-diagram.py:89:80: E501 line too long (91 > 79 characters)
-diagram.py:104:80: E501 line too long (82 > 79 characters)
-diagram.py:121:80: E501 line too long (82 > 79 characters)
-diagram.py:166:80: E501 line too long (80 > 79 characters)
-diagram.py:174:80: E501 line too long (89 > 79 characters)
-diagram.py:213:1: W391 blank line at end of file
+catalog.py:19:13: E722 do not use bare 'except'
+catalog.py:20:80: E501 line too long (83 > 79 characters)
+catalog.py:42:1: W605 invalid escape sequence '\ '
+data.py:39:64: E502 the backslash is redundant between brackets
+data.py:40:41: E127 continuation line over-indented for visual indent
+data.py:46:77: E502 the backslash is redundant between brackets
+data.py:47:49: E127 continuation line over-indented for visual indent
+diagram.py:170:80: E501 line too long (80 > 79 characters)
+diagram.py:178:54: E502 the backslash is redundant between brackets
+diagram.py:179:29: E127 continuation line over-indented for visual indent
+diagram.py:218:1: W391 blank line at end of file
 mac.py:43:80: E501 line too long (92 > 79 characters)
 mac.py:52:80: E501 line too long (92 > 79 characters)
 mac.py:57:80: E501 line too long (93 > 79 characters)
@@ -16,63 +21,50 @@ mac.py:90:80: E501 line too long (87 > 79 characters)
 nettopo.py:47:80: E501 line too long (86 > 79 characters)
 nettopo.py:96:80: E501 line too long (100 > 79 characters)
 nettopo.py:141:80: E501 line too long (87 > 79 characters)
-network.py:28:80: E501 line too long (80 > 79 characters)
-network.py:60:80: E501 line too long (88 > 79 characters)
-network.py:90:80: E501 line too long (89 > 79 characters)
-network.py:160:80: E501 line too long (85 > 79 characters)
-network.py:168:80: E501 line too long (92 > 79 characters)
-network.py:209:80: E501 line too long (89 > 79 characters)
-network.py:269:80: E501 line too long (85 > 79 characters)
-network.py:288:80: E501 line too long (84 > 79 characters)
-network.py:291:80: E501 line too long (115 > 79 characters)
-network.py:310:80: E501 line too long (93 > 79 characters)
-network.py:316:80: E501 line too long (82 > 79 characters)
-network.py:322:80: E501 line too long (83 > 79 characters)
-network.py:324:80: E501 line too long (83 > 79 characters)
-network.py:345:80: E501 line too long (101 > 79 characters)
-network.py:346:80: E501 line too long (94 > 79 characters)
-network.py:348:80: E501 line too long (90 > 79 characters)
-network.py:350:80: E501 line too long (91 > 79 characters)
-network.py:352:80: E501 line too long (89 > 79 characters)
-network.py:353:80: E501 line too long (83 > 79 characters)
-network.py:354:80: E501 line too long (93 > 79 characters)
-network.py:355:80: E501 line too long (87 > 79 characters)
-network.py:359:80: E501 line too long (97 > 79 characters)
-network.py:360:80: E501 line too long (119 > 79 characters)
-network.py:361:80: E501 line too long (81 > 79 characters)
-node.py:153:80: E501 line too long (82 > 79 characters)
-node.py:173:5: E303 too many blank lines (2)
-node.py:209:21: E722 do not use bare 'except'
-node.py:224:5: E303 too many blank lines (2)
-node.py:253:17: E722 do not use bare 'except'
-node.py:260:21: E722 do not use bare 'except'
-node.py:280:5: E303 too many blank lines (2)
-node.py:309:5: E303 too many blank lines (2)
-node.py:348:41: E128 continuation line under-indented for visual indent
-node.py:355:5: E303 too many blank lines (2)
+network.py:34:35: E252 missing whitespace around parameter equals
+network.py:34:36: E252 missing whitespace around parameter equals
+network.py:64:80: E501 line too long (88 > 79 characters)
+network.py:94:80: E501 line too long (95 > 79 characters)
+network.py:103:80: E501 line too long (84 > 79 characters)
+network.py:105:80: E501 line too long (80 > 79 characters)
+network.py:121:80: E501 line too long (81 > 79 characters)
+network.py:162:80: E501 line too long (85 > 79 characters)
+network.py:170:80: E501 line too long (92 > 79 characters)
+network.py:203:80: E501 line too long (92 > 79 characters)
+network.py:257:80: E501 line too long (85 > 79 characters)
+network.py:306:45: E127 continuation line over-indented for visual indent
+network.py:309:45: E127 continuation line over-indented for visual indent
+network.py:312:45: E127 continuation line over-indented for visual indent
+network.py:316:45: E127 continuation line over-indented for visual indent
+network.py:325:80: E501 line too long (80 > 79 characters)
+node.py:151:80: E501 line too long (82 > 79 characters)
+node.py:171:5: E303 too many blank lines (2)
+node.py:207:21: E722 do not use bare 'except'
+node.py:222:5: E303 too many blank lines (2)
+node.py:251:17: E722 do not use bare 'except'
+node.py:258:21: E722 do not use bare 'except'
+node.py:278:5: E303 too many blank lines (2)
+node.py:307:5: E303 too many blank lines (2)
+node.py:328:45: E128 continuation line under-indented for visual indent
+node.py:330:45: E128 continuation line under-indented for visual indent
+node.py:332:45: E128 continuation line under-indented for visual indent
+node.py:332:80: E501 line too long (80 > 79 characters)
+node.py:344:45: E128 continuation line under-indented for visual indent
+node.py:344:80: E501 line too long (80 > 79 characters)
+node.py:350:5: E303 too many blank lines (2)
+node.py:357:5: E303 too many blank lines (2)
 node.py:362:5: E303 too many blank lines (2)
-node.py:367:5: E303 too many blank lines (2)
-node.py:389:5: E303 too many blank lines (2)
-node.py:402:5: E303 too many blank lines (2)
-node.py:416:5: E303 too many blank lines (2)
-node.py:425:80: E501 line too long (87 > 79 characters)
-node.py:427:80: E501 line too long (89 > 79 characters)
+node.py:384:5: E303 too many blank lines (2)
+node.py:397:5: E303 too many blank lines (2)
+node.py:411:5: E303 too many blank lines (2)
 snmp.py:11:1: E722 do not use bare 'except'
 snmp.py:55:80: E501 line too long (83 > 79 characters)
 snmp.py:58:80: E501 line too long (86 > 79 characters)
 snmp.py:70:80: E501 line too long (95 > 79 characters)
 snmp.py:73:80: E501 line too long (87 > 79 characters)
-stack.py:13:5: E301 expected 1 blank line, found 0
-stack.py:21:80: E501 line too long (84 > 79 characters)
-stack.py:27:22: E711 comparison to None should be 'if cond is None:'
-stack.py:30:23: E711 comparison to None should be 'if cond is None:'
-stack.py:55:80: E501 line too long (89 > 79 characters)
-stack.py:56:80: E501 line too long (87 > 79 characters)
-stack.py:57:80: E501 line too long (87 > 79 characters)
-stack.py:58:80: E501 line too long (87 > 79 characters)
-stack.py:60:80: E501 line too long (105 > 79 characters)
-stack.py:62:80: E501 line too long (100 > 79 characters)
-stack.py:74:1: W391 blank line at end of file
+stack.py:14:5: E301 expected 1 blank line, found 0
+stack.py:53:45: E128 continuation line under-indented for visual indent
+stack.py:67:1: W391 blank line at end of file
 templates.py:31:80: E501 line too long (83 > 79 characters)
 templates.py:40:80: E501 line too long (87 > 79 characters)
 templates.py:41:80: E501 line too long (87 > 79 characters)
@@ -121,10 +113,10 @@ util.py:229:9: E722 do not use bare 'except'
 util.py:234:1: E302 expected 2 blank lines, found 1
 util.py:237:1: E302 expected 2 blank lines, found 1
 util.py:246:1: E302 expected 2 blank lines, found 1
-vss.py:17:20: E711 comparison to None should be 'if cond is not None:'
-vss.py:21:80: E501 line too long (86 > 79 characters)
-vss.py:46:18: E231 missing whitespace after ','
-vss.py:50:80: E501 line too long (97 > 79 characters)
-vss.py:55:80: E501 line too long (125 > 79 characters)
-vss.py:57:80: E501 line too long (131 > 79 characters)
-vss.py:61:1: W391 blank line at end of file
+vss.py:14:53: E252 missing whitespace around parameter equals
+vss.py:14:54: E252 missing whitespace around parameter equals
+vss.py:48:18: E231 missing whitespace after ','
+vss.py:52:80: E501 line too long (97 > 79 characters)
+vss.py:57:80: E501 line too long (125 > 79 characters)
+vss.py:59:80: E501 line too long (131 > 79 characters)
+vss.py:63:1: W391 blank line at end of file

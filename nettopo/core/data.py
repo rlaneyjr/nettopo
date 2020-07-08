@@ -23,6 +23,9 @@ __all__ = [
 
 
 class BaseData:
+    def __repr__(self):
+        return self.show
+
     def _as_dict(self):
         IGN_DEFS = ['show']
         _dict = {}
@@ -50,25 +53,25 @@ class BaseData:
 
 @dataclass
 class NodeActions(BaseData):
-    get_name: bool = True
-    get_ip: bool = True
-    get_plat: bool = True
-    get_ios: bool = True
-    get_router: bool = True
-    get_ospf_id: bool = True
-    get_bgp_las: bool = True
-    get_hsrp_pri: bool = True
-    get_hsrp_vip: bool = True
-    get_serial: bool = True
-    get_stack: bool = True
-    get_stack_details: bool = True
-    get_vss: bool = True
-    get_vss_details: bool = True
-    get_svi: bool = True
-    get_lo: bool = True
-    get_bootf: bool = True
-    get_chassis_info: bool = True
-    get_vpc: bool = True
+    get_name = True
+    get_ip = True
+    get_plat = True
+    get_ios = True
+    get_router = True
+    get_ospf_id = True
+    get_bgp_las = True
+    get_hsrp_pri = True
+    get_hsrp_vip = True
+    get_serial = True
+    get_stack = True
+    get_stack_details = True
+    get_vss = True
+    get_vss_details = True
+    get_svi = True
+    get_lo = True
+    get_bootf = True
+    get_chassis_info = True
+    get_vpc = True
 
 
 @dataclass
@@ -76,49 +79,49 @@ class LinkData(BaseData):
     '''
     Generic link to another node.
     '''
-    node: Any = None
-    link_type: Any = None
-    remote_ip: Any = None
-    remote_name: Any = None
-    vlan: Any = None
-    local_native_vlan: Any = None
-    local_allowed_vlans: Any = None
-    remote_native_vlan: Any = None
-    remote_allowed_vlans: Any = None
-    local_port: Any = None
-    remote_port: Any = None
-    local_lag: Any = None
-    remote_lag: Any = None
-    local_lag_ips: Any = None
-    remote_lag_ips: Any = None
-    local_if_ip: Any = None
-    remote_if_ip: Any = None
-    remote_platform: Any = None
-    remote_ios: Any = None
-    remote_mac: Any = None
-    discovered_proto: Any = None
-    items_2_show: List = ['local_port', 'remote_name', 'remote_port']
+    node = None
+    link_type = None
+    remote_ip = None
+    remote_name = None
+    vlan = None
+    local_native_vlan = None
+    local_allowed_vlans = None
+    remote_native_vlan = None
+    remote_allowed_vlans = None
+    local_port = None
+    remote_port = None
+    local_lag = None
+    remote_lag = None
+    local_lag_ips = None
+    remote_lag_ips = None
+    local_if_ip = None
+    remote_if_ip = None
+    remote_platform = None
+    remote_ios = None
+    remote_mac = None
+    discovered_proto = None
+    items_2_show = ['local_port', 'remote_name', 'remote_port']
 
 
 @dataclass
 class VSSData(BaseData):
-    opts: Any = None
-    ios: Any = None
-    serial: Any = None
-    plat: Any = None
+    opts = None
+    ios = None
+    serial = None
+    plat = None
 
 
 @dataclass
 class StackData(BaseData):
-    opts: Any = None
-    num: int = 0
-    role: int = 0
-    pri: int = 0
-    mac: Any = None
-    img: Any = None
-    serial: Any = None
-    plat: Any = None
-    items_2_show: List = ['num', 'role', 'serial']
+    opts = None
+    num = 0
+    role = 0
+    pri = 0
+    mac = None
+    img = None
+    serial = None
+    plat = None
+    items_2_show = ['num', 'role', 'serial']
 
 
 class SVIData(BaseData):
