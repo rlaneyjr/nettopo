@@ -195,3 +195,31 @@ class VSSCache:
     @cached_property
     def platform(self):
         return self.snmp.get_bulk(OID.ENTPHYENTRY_PLAT)
+
+class MACCache:
+    def __init__(self, snmp_object: SNMP) -> None:
+        self.snmp = snmp_object
+
+    @cached_property
+    def sysname(self):
+        return self.snmp.get_val(OID.SYSNAME)
+
+    @cached_property
+    def vlan(self):
+        return self.snmp.get_bulk(OID.VLANS)
+
+    @cached_property
+    def ifname(self):
+        return self.snmp.get_bulk(OID.IFNAME)
+
+    @cached_property
+    def cam(self):
+        return self.snmp.get_bulk(OID.VLAN_CAM)
+
+    @cached_property
+    def portnum(self):
+        return self.snmp.get_bulk(OID.BRIDGE_PORTNUMS)
+
+    @cached_property
+    def ifindex(self):
+        return self.snmp.get_bulk(OID.IFINDEX)

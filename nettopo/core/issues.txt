@@ -1,14 +1,3 @@
-catalog.py:19:13: E722 do not use bare 'except'
-catalog.py:20:80: E501 line too long (83 > 79 characters)
-catalog.py:42:1: W605 invalid escape sequence '\ '
-data.py:39:64: E502 the backslash is redundant between brackets
-data.py:40:41: E127 continuation line over-indented for visual indent
-data.py:46:77: E502 the backslash is redundant between brackets
-data.py:47:49: E127 continuation line over-indented for visual indent
-diagram.py:170:80: E501 line too long (80 > 79 characters)
-diagram.py:178:54: E502 the backslash is redundant between brackets
-diagram.py:179:29: E127 continuation line over-indented for visual indent
-diagram.py:218:1: W391 blank line at end of file
 mac.py:43:80: E501 line too long (92 > 79 characters)
 mac.py:52:80: E501 line too long (92 > 79 characters)
 mac.py:57:80: E501 line too long (93 > 79 characters)
@@ -39,10 +28,7 @@ network.py:316:45: E127 continuation line over-indented for visual indent
 network.py:325:80: E501 line too long (80 > 79 characters)
 node.py:151:80: E501 line too long (82 > 79 characters)
 node.py:171:5: E303 too many blank lines (2)
-node.py:207:21: E722 do not use bare 'except'
 node.py:222:5: E303 too many blank lines (2)
-node.py:251:17: E722 do not use bare 'except'
-node.py:258:21: E722 do not use bare 'except'
 node.py:278:5: E303 too many blank lines (2)
 node.py:307:5: E303 too many blank lines (2)
 node.py:328:45: E128 continuation line under-indented for visual indent
@@ -57,7 +43,6 @@ node.py:362:5: E303 too many blank lines (2)
 node.py:384:5: E303 too many blank lines (2)
 node.py:397:5: E303 too many blank lines (2)
 node.py:411:5: E303 too many blank lines (2)
-snmp.py:11:1: E722 do not use bare 'except'
 snmp.py:55:80: E501 line too long (83 > 79 characters)
 snmp.py:58:80: E501 line too long (86 > 79 characters)
 snmp.py:70:80: E501 line too long (95 > 79 characters)
@@ -80,7 +65,6 @@ util.py:64:26: E227 missing whitespace around bitwise or shift operator
 util.py:64:80: E501 line too long (84 > 79 characters)
 util.py:71:21: E227 missing whitespace around bitwise or shift operator
 util.py:74:1: E302 expected 2 blank lines, found 1
-util.py:79:9: E722 do not use bare 'except'
 util.py:85:20: W605 invalid escape sequence '\('
 util.py:85:24: W605 invalid escape sequence '\('
 util.py:85:28: W605 invalid escape sequence '\)'
@@ -92,14 +76,10 @@ util.py:112:26: W605 invalid escape sequence '\d'
 util.py:112:31: W605 invalid escape sequence '\d'
 util.py:112:36: W605 invalid escape sequence '\d'
 util.py:112:40: W605 invalid escape sequence '\d'
-util.py:115:5: E722 do not use bare 'except'
 util.py:119:1: E302 expected 2 blank lines, found 1
-util.py:124:5: E722 do not use bare 'except'
 util.py:128:1: E302 expected 2 blank lines, found 1
 util.py:130:32: W605 invalid escape sequence '\}'
-util.py:132:5: E722 do not use bare 'except'
 util.py:136:1: E302 expected 2 blank lines, found 1
-util.py:140:5: E722 do not use bare 'except'
 util.py:148:1: E302 expected 2 blank lines, found 1
 util.py:149:24: W605 invalid escape sequence '\.'
 util.py:157:1: E302 expected 2 blank lines, found 1
@@ -109,7 +89,6 @@ util.py:181:1: E302 expected 2 blank lines, found 1
 util.py:221:1: E302 expected 2 blank lines, found 1
 util.py:222:9: E117 over-indented
 util.py:224:45: W605 invalid escape sequence '\.'
-util.py:229:9: E722 do not use bare 'except'
 util.py:234:1: E302 expected 2 blank lines, found 1
 util.py:237:1: E302 expected 2 blank lines, found 1
 util.py:246:1: E302 expected 2 blank lines, found 1

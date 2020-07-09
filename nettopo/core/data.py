@@ -36,15 +36,15 @@ class BaseData:
         return _dict
 
     def __str__(self):
-        attrs = [f"{key.capitalize()} = {val}" for key, val in \
-                                        self._as_dict().items()]
+        attrs = [f"{key.capitalize()} = {val}" for key, val in
+                 self._as_dict().items()]
         return "\n".join(attrs)
 
     @property
     def show(self) -> str:
         try:
-            attrs = [f"{key}={val}" for key, val in self._as_dict().items() \
-                                                if key in self.items_2_show]
+            attrs = [f"{key}={val}" for key, val in self._as_dict().items()
+                     if key in self.items_2_show]
         except AttributeError:
             attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
         attrs = ",".join(attrs)

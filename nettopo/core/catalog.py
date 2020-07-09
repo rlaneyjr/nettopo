@@ -17,7 +17,8 @@ class Catalog:
             try:
                 self.network = Network(network)
             except:
-                raise NettopoCatalogError(f"{network} not a valid Nettopo Network")
+                raise NettopoCatalogError(f"{network} not a valid Nettopo \
+                                                                    Network")
 
     def generate(self, filename):
         with open(filename, 'w+') as f:
@@ -39,7 +40,7 @@ class Catalog:
                         plat = node.vss.members[i].plat
                         ios = node.vss.members[i].ios
                         f.write(f"{node.name},{node.ip[0]},{plat},{ios}, \
-\                                           {serial},VSS,{node.bootfile}\n")
+                                           {serial},VSS,{node.bootfile}\n")
                 # Stand Alone
                 else:
                     f.write(f"{node.name},{node.ip[0]},{node.plat}, \

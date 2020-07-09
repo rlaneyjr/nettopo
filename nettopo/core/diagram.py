@@ -167,7 +167,7 @@ class Diagram:
                     link.local_lag == 'UNKNOWN',
                     self.lag_in_links(link.local_lag, node.links)]):
                 # a LAG could span different devices, eg Nexus.
-                # in this case we should always break it out, otherwise we could
+                # in this case we always break it out, otherwise we could
                 # get an unlinked node in the diagram.
                 edge = self.create_link(node, link, True)
             else:
@@ -175,8 +175,8 @@ class Diagram:
             diagram.add_edge(edge)
 
     def create_link(self, node, link, is_lag):
-        lag_members = len([lnk for lnk in node.links \
-                            if lnk.local_lag == link.local_lag])
+        lag_members = len([lnk for lnk in node.links
+                           if lnk.local_lag == link.local_lag])
         temp = Template(link_template)
         link_label = temp.render(node=node, link=link, is_lag=is_lag,
                                  lag_members=lag_members)
@@ -215,4 +215,3 @@ class Diagram:
     def lag_in_links(lag_name, links):
         devs = [link.node.name for link in links if lag_name in link.local_lag]
         return True if devs else False
-
