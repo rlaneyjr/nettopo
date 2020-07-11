@@ -53,6 +53,7 @@ class Diagram:
         self.network = network
         self.config = network.config.diagram or DiagramDefaults()
 
+
     def generate(self, dot_file, title):
         self.network.reset_discovered()
         title_text_size = self.config.title_text_size
@@ -89,6 +90,7 @@ class Diagram:
             else:
                 raise NettopoDiagramError(f"Error: Output type {file_ext} \
                                                             does not exist.")
+
 
     def build(self, diagram, node):
         dot_node = DotNode(node, self.config)
@@ -159,7 +161,6 @@ class Diagram:
                                             shape=dot_node.shape,
                                             peripheries=dot_node.peripheries))
             diagram.add_subgraph(cluster)
-
         for link in node.links:
             self.build(diagram, link.node)
             # determine if this link should be broken out or not
@@ -173,6 +174,7 @@ class Diagram:
             else:
                 edge = self.create_link(node, link, False)
             diagram.add_edge(edge)
+
 
     def create_link(self, node, link, is_lag):
         lag_members = len([lnk for lnk in node.links
@@ -210,6 +212,7 @@ class Diagram:
                           color=link_color,
                           style=link_style)
         return edge
+
 
     @staticmethod
     def lag_in_links(lag_name, links):

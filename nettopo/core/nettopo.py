@@ -30,10 +30,7 @@ class Nettopo:
             config = Config().load(filename=conf_file)
         else:
             raise NettopoError("Error creating Nettopo: NO CONFIG")
-        if self.validate_config(config):
-            self.config = config
-        else:
-            raise NettopoError("rror creating Nettopo: INVALID CONFIG")
+        self.config = config
         self.network = Network(self.config)
         self.diagram = Diagram(self.network)
         self.catalog = Catalog(self.network)
@@ -45,15 +42,6 @@ class Nettopo:
         if node.get_snmp_creds(self.config.snmp_creds):
             return True
         raise NettopoError(f"No valid SNMP credentials for {node.ip}")
-
-
-    def validate_config(self, config=None):
-        if config:
-            return Config().validate_config(config)
-        if self.config:
-            return Config().validate_config(self.config)
-        else:
-            raise NettopoError("validate_config: No config attribute")
 
 
     def add_snmp_credential(self, snmp_community, snmp_ver=2):
