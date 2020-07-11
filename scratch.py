@@ -7,7 +7,7 @@ Title:              scratch.py
 from nettopo.snmp import *
 from nettopo.oids import *
 from nettopo.hostinfo.device import HostInfo
-from nettopo.core.snmp import NettopoSNMP
+from nettopo.core.snmp import SNMP
 
 sw = NettopoSNMP(ip='10.0.0.1')
 sw.community = 'letmeSNMP'
@@ -28,3 +28,11 @@ vlan._as_dict()
 vlan.show()
 vlan._as_dict().items()
 
+from nettopo.core.nettopo import Nettopo
+from nettopo.core.config import Config
+from nettopo.core.network import Network
+c = Config()
+n = Network(c)
+net = Nettopo('10.0.0.1')
+net.config.snmp_creds.append('letmeSNMP')
+net.discover('10.0.0.1')

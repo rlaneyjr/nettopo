@@ -5,30 +5,30 @@
         stack.py
 '''
 from .constants import OID
-from .data import BaseData, StackData
+from .data import BaseData, NodeActions, StackData
 from .util import lookup_table
 
 
 class Stack(BaseData):
     roles = enumerate(['master', 'member', 'notMember', 'standby'], start=1)
-    def __init__(self, snmpobj, actions):
+    def __init__(self, snmp, actions=None):
         self.members = []
         self.count = 0
         self.enabled = False
-        self.opts = actions
+        self.actions = actions or NodeActions()
         self.items_2_show = ['enabled', 'count', 'members']
-        self.cache = StackCache(snmpobj)
+        self.cache = StackCache(snmp)
 
-        if self.opts.get_stack_details:
+        if self.actions.get_stack_details:
             self.get_members()
 
     def get_members(self):
         stack_cache = self.cache.stack
         if not stack_cache:
             return None
-        if self.opts.get_serial:
+        if self.actions.get_serial:
             serial_cache = self.cache.serial
-        if self.opts.get_plat:
+        if self.actions.get_plat:
             platform_cache = self.cache.platform
         for row in stack_cache:
             for n, v in row:
@@ -64,4 +64,3 @@ class Stack(BaseData):
             self.enabled = 1
         if self.count == 1:
             self.count = 0
-

@@ -19,6 +19,7 @@ __all__ = [
     'LoopBackData',
     'VLANData',
     'ARPData',
+    'MACData',
 ]
 
 
@@ -76,9 +77,6 @@ class NodeActions(BaseData):
 
 @dataclass
 class LinkData(BaseData):
-    '''
-    Generic link to another node.
-    '''
     node = None
     link_type = None
     remote_ip = None
@@ -105,7 +103,6 @@ class LinkData(BaseData):
 
 @dataclass
 class VSSData(BaseData):
-    opts = None
     ios = None
     serial = None
     plat = None
@@ -113,7 +110,6 @@ class VSSData(BaseData):
 
 @dataclass
 class StackData(BaseData):
-    opts = None
     num = 0
     role = 0
     pri = 0
@@ -148,3 +144,12 @@ class ARPData(BaseData):
         self.mac = mac
         self.interf = interf
         self.arp_type = arp_type
+
+
+class MACData(BaseData):
+    def __init__(self, host, ip, vlan, mac, port):
+        self.host = host
+        self.ip = ip
+        self.vlan = int(vlan)
+        self.mac = mac
+        self.port = port

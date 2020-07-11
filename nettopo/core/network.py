@@ -7,14 +7,15 @@
 from timeit import default_timer as timer
 from .config import Config
 from .exceptions import NettopoNetworkError
-from .util import in_acl, str_matches_pattern
+from .util import in_acl, str_matches_pattern, normalize_host
 from .node import Node
-from .constants import NODE, DCODE
+from .constants import NOTHING, NODE, DCODE
 from .data import BaseData
 
 
 class Network(BaseData):
     def __init__(self, conf: Config):
+        self.max_depth = 0
         self.root_node = None
         self.nodes = []
         self.num_nodes = len(self.nodes)
@@ -22,28 +23,23 @@ class Network(BaseData):
         self.verbose = True
         self.items_2_show = ['root_node', 'num_nodes']
 
+
     def _print(self, stuff: str) -> None:
         if self.verbose:
             print(stuff)
 
-    @property
-    def max_depth(self):
-        return self._depth
-
-    @max_depth.setter
-    def max_depth(self, depth: int=0):
-        self._depth = depth
 
     def reset_discovered(self):
         for n in self.nodes:
             n.discovered = False
 
+
     def set_verbose(self, level):
         self.verbose = level
 
+
     def discover(self, ip):
-        '''
-        Discover the network starting at the defined root node IP.
+        ''' Discover the network starting at the defined root node IP.
         Recursively enumerate the network tree up to self.depth.
         Populates self.nodes[] as a list of discovered nodes in the
         network with self.root_node being the root.
@@ -57,29 +53,29 @@ class Network(BaseData):
                     {DCODE.LEAF_STR} leaf node""")
         print('Discovering network...')
         # Start the process of querying this node and recursing adjacencies.
-        node, new_node = self.query_ip(ip, 'UNKNOWN')
-        self.root_node = node
-        if node:
-            self.nodes.append(node)
-            self.print_step(node.ip[0], node.name, False, DCODE.ROOT + DCODE.DISCOVERED)
-            self.discover_node(node, self.max_depth)
-        else:
+        self.root_node, new_node = self.query_ip(ip, 'UNKNOWN')
+        if not self.root_node:
             return
-        # we may have missed chassis info
-        for n in self.nodes:
-            if not any([n.serial, n.plat, n.ios]):
-                n.actions.get_chassis_info = True
-                if not n.serial:
-                    n.actions.get_serial = True
-                if not n.ios:
-                    n.actions.get_ios = True
-                if not n.plat:
-                    n.actions.get_plat = True
-                n.query_node()
+        else:
+            self.nodes.append(self.root_node)
+            self.print_step(self.root_node.ip[0], self.root_node.name, False,
+                            [DCODE.ROOT, DCODE.DISCOVERED])
+            self.discover_node(self.root_node, self.max_depth)
+        # # we may have missed chassis info
+        # for n in self.nodes:
+        #     if not any([n.serial, n.plat, n.ios]):
+        #         n.actions.get_chassis_info = True
+        #         if not n.serial:
+        #             n.actions.get_serial = True
+        #         if not n.ios:
+        #             n.actions.get_ios = True
+        #         if not n.plat:
+        #             n.actions.get_plat = True
+        #         n.query_node()
+
 
     def discover_details(self):
-        '''
-        Enumerate the discovered nodes from discover() and update the
+        ''' Enumerate the discovered nodes from discover() and update the
         nodes in the array with additional info.
         '''
         if not self.root_node:
@@ -123,6 +119,7 @@ class Network(BaseData):
                         link.node.vpc_peerlink_node = node
                         break
 
+
     def print_step(self, ip, name, dcodes, depth=0):
         dcodes = dcodes if isinstance(dcodes, list) else list(dcodes)
         if DCODE.DISCOVERED in dcodes:
@@ -157,7 +154,8 @@ class Network(BaseData):
         name = normalize_host(name, self.config.host_domains)
         self._print(f"{name} ({ip})")
 
-    def query_ip(self, ip, host):
+
+    def query_ip(self, ip, hostname='UNKNOWN'):
         ''' Query this IP.
         Return node details and if we already knew about it or if this is a new node.
         Don't save the node to the known list, just return info about it.
@@ -170,7 +168,7 @@ class Network(BaseData):
                                 NODE.NEWIP = Already knew about this node but not by this IP
                                 NODE.KNOWN = Already knew about this node
         '''
-        host = normalize_host(host, self.config.host_domains)
+        host = normalize_host(hostname, self.config.host_domains)
         node, node_updated = self.get_known_node(ip, host)
         if node:
             if node.discovered:
@@ -179,53 +177,55 @@ class Network(BaseData):
         else:
             node = Node(ip)
             state = NODE.NEW
-        node.name = host
         # vmware ESX reports the IP as 0.0.0.0
         # LLDP can return an empty string for IPs.
-        if ip in ['0.0.0.0', 'UNKNOWN', ''] or \
-                not node.get_snmp_creds(self.config.snmp_creds):
+        if ip in NOTHING or not node.get_snmp_creds(self.config.snmp_creds):
             return node, state
         node.name = node.get_system_name(self.config.host_domains)
-        if node.name != host:
+        if node.name != hostname:
             # the hostname changed (cdp/lldp vs snmp)!
             # double check we don't already know about this node
             if state == NODE.NEW:
-                node2, node_updated2 = self.get_known_node(ip, host)
-                if node2 and not node_updated2:
+                node2, node2_updated = self.get_known_node(ip, host)
+                if node2 and not node2_updated:
                     return node, NODE.KNOWN
-                elif node_updated2:
+                elif node2_updated:
                     state = NODE.NEWIP
         # Finally, if we still don't have a name, use the IP.
         # e.g. Maybe CDP/LLDP was empty and we dont have good credentials
         # for this device.  A blank name can break Dot.
-        if node.name in [None, '', 'UNKNOWN']:
+        if node.name in NOTHING:
             node.name = node.get_ipaddr().replace('.', '_')
-        node.actions.get_serial = True     # CDP/LLDP does not report, need for extended ACL
+        # CDP/LLDP does not report, need for extended ACL
+        node.actions.get_serial = True
         node.query_node()
         return node, state
 
-    def get_known_node(self, ip, host):
-        ''' Look for known nodes by IP and HOST.
-        If found by HOST, add the IP if not already known.
+
+    def get_known_node(self, ip, hostname='UNKNOWN'):
+        ''' Look for known nodes by IP and HOSTNAME.
+        If found by HOSTNAME, add the IP if not already known.
         Return:
-            node:       Node, if found. Otherwise None.
+            node:       Node, if found. Otherwise False.
             updated:    True=updated, False=not updated
         '''
-        for ex in self.nodes:
-            for exip in ex.ip:
-                if exip == '0.0.0.0':
+        current_node = None
+        for x in self.nodes:
+            for xip in x.ip:
+                if xip == '0.0.0.0':
                     continue
-                if exip == ip:
-                    return ex, False
-            if ex.name == host:
-                node = ex
-        if node:
-            if ip not in node.ip:
-                node.ip.append(ip)
-                return node, True
-            return node, False
+                if xip == ip:
+                    return x, False
+            if x.name == hostname:
+                current_node = x
+        if current_node:
+            if ip not in current_node.ip:
+                current_node.ip.append(ip)
+                return current_node, True
+            return current_node, False
         else:
-            return None, False
+            return False, False
+
 
     def discover_node(self, node, depth):
         ''' Given a node, recursively enumerate its adjacencies
@@ -283,6 +283,7 @@ class Network(BaseData):
             if query_result == NODE.NEW:
                 self.discover_node(child, depth+1)
 
+
     def add_update_link(self, node, link):
         ''' Add or update a link.
         True - Added as a new link
@@ -292,37 +293,37 @@ class Network(BaseData):
             # both nodes have been discovered,
             # so try to update existing reverse link info
             # instead of adding a new link
-            for x in self.nodes:
+            for cur_node in self.nodes:
                 # find the child, which was the original parent
-                if x.name == link.node.name:
+                if cur_node.name == link.node.name:
                     # find the existing link
-                    for ex_link in x.links:
-                        if ex_link.node.name == node.name and \
-                                ex_link.local_port == link.remote_port:
+                    for cur_link in cur_node.links:
+                        if cur_link.node.name == node.name and \
+                                cur_link.local_port == link.remote_port:
                             if not link.local_if_ip == 'UNKNOWN' and \
-                                            not ex_link.remote_if_ip:
-                                ex_link.remote_if_ip = link.local_if_ip
+                                            not cur_link.remote_if_ip:
+                                cur_link.remote_if_ip = link.local_if_ip
                             if not link.local_lag == 'UNKNOWN' and \
-                                            not ex_link.remote_lag:
-                                ex_link.remote_lag = link.local_lag
+                                            not cur_link.remote_lag:
+                                cur_link.remote_lag = link.local_lag
                             if not len(link.local_lag_ips) and \
-                                            len(ex_link.remote_lag_ips):
-                                ex_link.remote_lag_ips = link.local_lag_ips
+                                            len(cur_link.remote_lag_ips):
+                                cur_link.remote_lag_ips = link.local_lag_ips
                             if link.local_native_vlan and \
-                                            not ex_link.remote_native_vlan:
-                                ex_link.remote_native_vlan \
+                                            not cur_link.remote_native_vlan:
+                                cur_link.remote_native_vlan \
                                     = link.local_native_vlan
                             if link.local_allowed_vlans and \
-                                            not ex_link.remote_allowed_vlans:
-                                ex_link.remote_allowed_vlans \
+                                            not cur_link.remote_allowed_vlans:
+                                cur_link.remote_allowed_vlans \
                                     = link.local_allowed_vlans
                             return False
         else:
-            for ex_link in node.links:
-                if ex_link.node.name == link.node.name and \
-                            ex_link.local_port == link.local_port:
-                    self._print(f"Discovered duplicate links for node: \
-                                {ex_link.node.name} port: {ex_link.local_port}")
+            for node_link in node.links:
+                if node_link.node.name == link.node.name and \
+                    node_link.local_port == link.local_port:
+                    self._print(f"Discovered duplicate links for:\n \
+                                Node: {link.node.name} Port: {link.local_port}")
                     # haven't discovered yet but we have this link twice.
                     # maybe from different discovery processes?
                     return False

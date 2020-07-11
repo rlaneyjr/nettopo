@@ -110,37 +110,27 @@ class Cache:
 
     @cached_property
     def router(self):
-        if self.snmp.get_val(OID.IP_ROUTING) == '1':
-            return True
-        else:
-            return False
+        return self.snmp.get_val(OID.IP_ROUTING)
 
     @cached_property
     def ospf(self):
-        if self.router:
-            return self.snmp.get_val(OID.OSPF)
+        return self.snmp.get_val(OID.OSPF)
 
     @cached_property
     def ospf_id(self):
-        if self.ospf:
-            return self.snmp.get_val(OID.OSPF_ID)
+        return self.snmp.get_val(OID.OSPF_ID)
 
     @cached_property
     def bgp(self):
-        if self.router:
-            bgp_las = self.snmp.get_val(OID.BGP_LAS)
-            # 4500x reports 0 as disabled
-            return bgp_las if self.bgp_las != '0' else None
+        return  self.snmp.get_val(OID.BGP_LAS)
 
     @cached_property
     def hsrp(self):
-        if self.router:
-            return self.snmp.get_val(OID.HSRP_PRI)
+        return self.snmp.get_val(OID.HSRP_PRI)
 
     @cached_property
     def hsrp_vip(self):
-        if self.hsrp:
-            return self.snmp.get_val(OID.HSRP_VIP)
+        return self.snmp.get_val(OID.HSRP_VIP)
 
     @cached_property
     def stack(self):

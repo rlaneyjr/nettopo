@@ -11,53 +11,53 @@ from .util import lookup_table
 
 
 class VSS(BaseData):
-    def __init__(self, snmpobj, actions: NodeActions=None):
-        self.members = []
+    def __init__(self, snmp, actions=None):
         self.domain = None
+        self.members = []
         self.actions = actions or NodeActions()
         self.items_2_show = ['enabled', 'domain', 'members']
-        if snmpobj.cache.vss:
-            self.cache = snmpobj.cache.vss
-        else:
-            self.cache = VSSCache(snmpobj)
+        self.cache = VSSCache(snmp)
 
-        if self.actions.get_stack_details:
+        if self.actions.get_vss_details:
             self.get_members()
 
     @property
     def enabled(self):
         # check if VSS is enabled
-        if self.cache.vss_mode == '2':
+        if self.cache.mode == '2':
             return True
         else:
             return False
 
     def get_members(self):
-        self.domain = snmpobj.get_val(OID.VSS_DOMAIN)
+        if not self.actions.get_vss_details or not self.enabled:
+            return []
+        self.domain = self.cache.domain
         # pull some VSS-related info
-        module_cache = snmpobj.get_bulk(OID.VSS_MODULES)
-        if self.actions.get_ios:
-            ios_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_SOFTWARE)
-        if self.actions.get_serial:
-            serial_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_SERIAL)
-        if self.actions.get_plat:
-            plat_cache = snmpobj.get_bulk(OID.ENTPHYENTRY_PLAT)
+        module_cache = self.cache.module
+        ios_cache = self.cache.ios
+        serial_cache = self.cache.serial
+        plat_cache = self.cache.platform
         # enumerate VSS modules and find chassis info
         chassis = 0
         for row in module_cache:
-            for n,v in row:
+            for n, v in row:
                 if v == 1:
                     modidx = str(n).split('.')[14]
                     # we want only chassis - line card module have no software
-                    ios = snmpobj.table_lookup(ios_cache, f"{OID.ENTPHYENTRY_SOFTWARE}.{modidx}")
-                    if ios != '':
+                    ios = lookup_table(ios_cache,
+                                       f"{OID.ENTPHYENTRY_SOFTWARE}.{modidx}")
+                    if ios:
+                        member = VSSData()
                         if self.actions.get_ios:
-                            self.members[chassis].ios = ios
+                            member.ios = ios
                         if self.actions.get_plat:
-                            self.members[chassis].plat = snmpobj.table_lookup(plat_cache, f"{OID.ENTPHYENTRY_PLAT}.{modidx}")
+                            member.plat = lookup_table(plat_cache,
+                                            f"{OID.ENTPHYENTRY_PLAT}.{modidx}")
                         if self.actions.get_serial:
-                            self.members[chassis].serial = snmpobj.table_lookup(serial_cache, f"{OID.ENTPHYENTRY_SERIAL}.{modidx}")
+                            member.serial = lookup_table(serial_cache,
+                                        f"{OID.ENTPHYENTRY_SERIAL}.{modidx}")
+                        self.members.append(member)
                         chassis += 1
-                if chassis > 1:
-                    return
-
+            if chassis > 1:
+                break

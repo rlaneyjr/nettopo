@@ -7,6 +7,7 @@ nettopo.py
 from dataclasses import dataclass
 
 __all__ = [
+    'NOTHING',
     'RETCODE',
     'OID',
     'ENTPHYCLASS',
@@ -15,6 +16,7 @@ __all__ = [
     'NODE',
 ]
 
+NOTHING = [None, '0.0.0.0', 'UNKNOWN', '']
 
 @dataclass
 class RETCODE:

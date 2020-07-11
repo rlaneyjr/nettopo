@@ -36,7 +36,7 @@ from .constants import OID, ARP, DCODE, NODE
 class Node(BaseData):
     def __init__(self, ip: Union[str, list]) -> None:
         self.ip = ip if isinstance(ip, list) else [ip]
-        self.snmpobj = SNMP(self.ip[0])
+        self.snmp = SNMP(self.ip[0])
         self.cache = None
         self.actions = NodeActions()
         self.links = []
@@ -62,55 +62,60 @@ class Node(BaseData):
         self.items_2_show = ['name', 'ip', 'plat', 'ios',
                              'serial', 'router', 'vss', 'stack']
 
+
     def add_link(self, link):
         self.links.append(link)
+
 
     def get_snmp_creds(self, snmp_creds):
         """ find valid credentials for this node.
         try each known IP until one works
         """
-        if not self.snmpobj.success:
+        if not self.snmp.success:
             for ipaddr in self.ip:
                 if ipaddr in ['0.0.0.0', 'UNKNOWN', '']:
                     continue
-                self.snmpobj.ip = ipaddr
-                if self.snmpobj.get_creds(snmp_creds):
+                self.snmp.ip = ipaddr
+                if self.snmp.get_creds(snmp_creds):
                     return True
         return False
+
 
     def query_node(self):
         """ Query this node.
         Set .actions and .snmp_creds before calling.
         """
-        if not self.snmpobj.success:
+        if not self.snmp.success:
             # failed to find good creds
             return False
         if not self.cache:
-            self.cache = Cache(self.snmpobj)
-
+            self.cache = Cache(self.snmp)
         if self.actions.get_name:
             self.name_raw = self.cache.name
             self.name = normalize_host(self.name_raw)
         # router
         if self.actions.get_router:
-            self.router = self.cache.router
+            router = self.cache.router
+            self.router = True if router == '1' else False
             if self.router:
                 # OSPF
                 if self.actions.get_ospf_id:
                     self.ospf_id = self.cache.ospf_id
                 # BGP
                 if self.actions.get_bgp_las:
-                    self.bgp_las = self.cache.bgp
+                    bgp_las = self.cache.bgp
+                    # 4500x reports 0 as disabled
+                    self.bgp_las = bgp_las if bgp_las != '0' else None
                 # HSRP
                 if self.actions.get_hsrp_pri:
                     self.hsrp_pri = self.cache.hsrp
                     self.hsrp_vip = self.cache.hsrp_vip
         # stack
         if self.actions.get_stack:
-            self.stack = self.cache.stack
+            self.stack = Stack(self.snmp, self.actions)
         # vss
         if self.actions.get_vss:
-            self.vss = self.cache.vss
+            self.vss = VSS(self.snmp, self.actions)
         # serial
         if self.actions.get_serial and not all([self.stack.count,
                                                 self.vss.enabled]):
@@ -151,6 +156,7 @@ class Node(BaseData):
             self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.cache.ethif)
         return True
 
+
     def get_cidrs_ifidx(self, ifidx):
         ips = []
         for ifrow in self.cache.ifip:
@@ -175,7 +181,7 @@ class Node(BaseData):
         '''
         # get list of CDP neighbors
         neighbors = []
-        self.cache.cdp = self.snmpobj.get_bulk(OID.CDP)
+        self.cache.cdp = self.snmp.get_bulk(OID.CDP)
         if not self.cache.cdp:
             print('No CDP Neighbors Found.')
             return []
@@ -316,35 +322,34 @@ class Node(BaseData):
             # or  actions.get_vss_details
             # for this.
             ent_cache = self.cache.ent_class
-            if ent_cache:
-                for row in ent_cache:
-                    for n, v in row:
-                        n = str(n)
-                        if v != 'ENTPHYCLASS_CHASSIS':
-                            continue
-                        t = n.split('.')
-                        idx = t[12]
-                        self.serial = lookup_table(self.cache.ent_serial,
-                                            f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
-                        self.plat = lookup_table(self.cache.ent_plat,
-                                            f"{OID.ENTPHYENTRY_PLAT}.{idx}")
-                        self.ios = lookup_table(self.cache.ent_ios,
-                                            f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
-                if self.actions.get_ios:
-                    # modular switches may have IOS on module than chassis
-                    if not self.ios:
-                        for row in ent_cache:
-                            for n, v in row:
-                                n = str(n)
-                                if v != 'ENTPHYCLASS_MODULE':
-                                    continue
-                                t = n.split('.')
-                                idx = t[12]
-                                self.ios = lookup_table(self.cache.ent_ios,
-                                            f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
-                                if self.ios:
-                                    break
-                    self.ios = format_ios_ver(self.ios)
+            for row in ent_cache:
+                for n, v in row:
+                    n = str(n)
+                    if v != 'ENTPHYCLASS_CHASSIS':
+                        continue
+                    t = n.split('.')
+                    idx = t[12]
+                    self.serial = lookup_table(self.cache.ent_serial,
+                                        f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                    self.plat = lookup_table(self.cache.ent_plat,
+                                        f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                    self.ios = lookup_table(self.cache.ent_ios,
+                                        f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+            if self.actions.get_ios:
+                # modular switches may have IOS on module than chassis
+                if not self.ios:
+                    for row in ent_cache:
+                        for n, v in row:
+                            n = str(n)
+                            if v != 'ENTPHYCLASS_MODULE':
+                                continue
+                            t = n.split('.')
+                            idx = t[12]
+                            self.ios = lookup_table(self.cache.ent_ios,
+                                        f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+                            if self.ios:
+                                break
+                self.ios = format_ios_ver(self.ios)
 
 
     def get_ifname(self, ifidx=None):
@@ -405,7 +410,7 @@ class Node(BaseData):
                     continue
                 arr.append(VLANData(vlan, str(self.cache.vlandesc[i][0][1])))
                 i += 1
-        return arr if arr else []
+        return arr
 
 
     def get_arp(self):
@@ -433,4 +438,4 @@ class Node(BaseData):
                     elif atype == ARP.TYPE_STATIC:
                         type_str = 'static'
                     arr.append(ARPData(ip, mac, interf, type_str))
-        return arr if arr else []
+        return arr

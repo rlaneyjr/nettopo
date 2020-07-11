@@ -19,24 +19,33 @@ from .catalog import Catalog
 
 
 class Nettopo:
+    """ Core Nettopo class provides entrance to all Nettopo actions
+    """
     def __init__(self, conf=None, conf_file=None):
-        if conf:
-            self.config = Config().load(config=conf)
-        elif os.path.isfile(conf_file):
-            self.config = Config().load(filename=conf_file)
-        if not self.config:
-            self.config = Config().generate_new()
-
+        if not all([conf, conf_file]):
+            config = Config().generate_new()
+        elif conf:
+            config = Config().load(config=conf)
+        elif conf_file and os.path.isfile(conf_file):
+            config = Config().load(filename=conf_file)
+        else:
+            raise NettopoError("Error creating Nettopo: NO CONFIG")
+        if self.validate_config(config):
+            self.config = config
+        else:
+            raise NettopoError("rror creating Nettopo: INVALID CONFIG")
         self.network = Network(self.config)
-        self.diagram = None
-        self.catalog = None
+        self.diagram = Diagram(self.network)
+        self.catalog = Catalog(self.network)
+
 
     def has_snmp(self, node):
         if node.snmpobj.success:
             return True
-        if not node.get_snmp_creds(self.config.snmp_creds):
-            raise NettopoError(f"No valid SNMP credentials for {node.ip}")
-        return True
+        if node.get_snmp_creds(self.config.snmp_creds):
+            return True
+        raise NettopoError(f"No valid SNMP credentials for {node.ip}")
+
 
     def validate_config(self, config=None):
         if config:
@@ -44,11 +53,10 @@ class Nettopo:
         if self.config:
             return Config().validate_config(self.config)
         else:
-            raise NettopoError(f"validate_config: No config or self.config attribute")
+            raise NettopoError("validate_config: No config attribute")
 
-    def add_snmp_credential(self, snmp_ver, snmp_community):
-        if not self.config:
-            self.config = Config()
+
+    def add_snmp_credential(self, snmp_community, snmp_ver=2):
         if snmp_ver != 2:
             raise NettopoError('snmp_ver is not valid')
             return
@@ -57,11 +65,14 @@ class Nettopo:
         cred['community'] = snmp_community
         self.config.snmp_creds.append(cred)
 
-    def set_discover_maxdepth(self, depth):
+
+    def set_discover_maxdepth(self, depth=0):
         self.network.set_max_depth(int(depth))
 
-    def set_verbose(self, verbose):
+
+    def set_verbose(self, verbose=True):
         self.network.set_verbose(verbose)
+
 
     def discover_network(self, root_ip, details):
         self.network.discover(root_ip)
@@ -70,9 +81,11 @@ class Nettopo:
         self.diagram = Diagram(self.network)
         self.catalog = Catalog(self.network)
 
+
     def new_node(self, ip):
         node = Node(ip=ip)
         return node if self.has_snmp(node) else False
+
 
     def query_node(self, node, **get_values):
         # see node.actions in node.py for what get_values are available
@@ -81,11 +94,14 @@ class Nettopo:
                 setattr(node.actions, getv, get_values[getv])
         return node.query_node()
 
+
     def write_diagram(self, output_file, diagram_title):
         self.diagram.generate(output_file, diagram_title)
 
+
     def write_catalog(self, output_file):
         self.catalog.generate(output_file)
+
 
     def get_switch_vlans(self, ip):
         node = ip if isinstance(ip, Node) else Node(ip)
@@ -93,9 +109,9 @@ class Nettopo:
             return []
         return node.get_vlans()
 
+
     def get_switch_macs(self, switch_ip=None, node=None, vlan=None, mac=None, port=None, verbose=0):
-        '''
-        Get the CAM table from a switch.
+        ''' Get the CAM table from a switch.
         Args:
             switch_ip           IP address of the device
             node                natlas_node from new_node()
@@ -105,7 +121,7 @@ class Nettopo:
             verbose             Display progress to stdout
             switch_ip or node is required
         Return:
-            Array of natlas_mac objects
+            Array of MAC objects
         '''
         if not switch_ip:
             if not node:
@@ -132,11 +148,14 @@ class Nettopo:
             ret.append(m)
         return ret
 
+
     def get_discovered_nodes(self):
         return self.network.nodes
 
+
     def get_node_ip(self, node):
         return node.get_ipaddr()
+
 
     def get_switch_arp(self, switch_ip, ip=None, mac=None, interf=None, arp_type=None):
         '''
@@ -173,6 +192,7 @@ class Nettopo:
                 continue
             ret.append(a)
         return ret
+
 
     def get_neighbors(self, node):
         neighbors = []

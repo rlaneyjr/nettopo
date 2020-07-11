@@ -72,9 +72,3 @@ class Config:
 
     def generate_new(self):
         return default_config
-
-    def validate_config(self):
-        if not self.snmp_creds:
-            return False
-        else:
-            return True
