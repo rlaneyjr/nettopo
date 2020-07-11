@@ -4,6 +4,7 @@
 '''
         stack.py
 '''
+from .cache import StackCache
 from .constants import OID
 from .data import BaseData, NodeActions, StackData
 from .util import lookup_table

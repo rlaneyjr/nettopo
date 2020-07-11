@@ -9,6 +9,10 @@ import re
 import binascii
 from functools import wraps
 from timeit import default_timer as timer
+from typing import Union
+
+from .exceptions import NettopoError
+
 
 __all__ = [
     'timethis',
@@ -71,7 +75,7 @@ def in_cidr(ip, cidr):
     ip = ((int(o[0])<<24) + (int(o[1]) << 16) + (int(o[2]) << 8) + (int(o[3])))
     return ((cidr_ip & cidr_mb) == (ip & cidr_mb))
 
-def normalize_host(host, domains=None):
+def normalize_host(host: Union[str, list], domains: list=None):
     # some devices (eg Motorola) report as hex strings
     if host.startswith('0x'):
         try:
@@ -84,8 +88,13 @@ def normalize_host(host, domains=None):
     # Nexus appends (SERIAL) to hosts
     host = re.sub('\([^\(]*\)$', '', host)
     if domains:
-        for domain in domains:
-            host = host.replace(domain, '')
+        if isinstance(domains, list):
+            for domain in domains:
+                host = host.replace(domain, '')
+        elif isinstance(domains, str):
+            host = host.replace(domains, '')
+        else:
+            raise NettopoError("Unsupported type: 'domains' in normalize_host")
     # fix some stuff that can break Dot
     host = re.sub('-', '_', host)
     host = host.rstrip(' \r\n\0')

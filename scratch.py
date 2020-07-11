@@ -29,10 +29,12 @@ vlan.show()
 vlan._as_dict().items()
 
 from nettopo.core.nettopo import Nettopo
-from nettopo.core.config import Config
-from nettopo.core.network import Network
-c = Config()
-n = Network(c)
-net = Nettopo('10.0.0.1')
-net.config.snmp_creds.append('letmeSNMP')
-net.discover('10.0.0.1')
+net = Nettopo()
+net.add_snmp_credential('letmeSNMP')
+net.discover_network('10.0.0.1', True)
+
+from nettopo.core.node import Node
+sw1 = Node('10.0.0.1')
+sw1.get_snmp_creds('letmeSNMP')
+sw1.query_node()
+

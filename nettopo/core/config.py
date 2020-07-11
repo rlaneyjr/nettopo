@@ -6,6 +6,7 @@
 '''
 import json
 import sys
+from typing import Union
 
 
 default_config = {
@@ -57,18 +58,26 @@ class Config:
 
     def load(self, config=None, filename=None):
         # Load defaults then override with custom
-        json_config = self.generate_new()
+        json_config = default_config
         if config:
             json_config.update(**config)
         if filename:
             json_data = self.load_json(filename)
             json_config.update(**json_data)
-        return json_config
+        for cred in json_config['snmp']:
+            if cred['ver'] == 2:
+                self.snmp_creds.append(cred['community'])
+        for domain in json_config['domains']:
+            self.host_domains.append(domain)
 
     def load_json(self, json_file):
         with open(json_file) as jf:
-            json_data = json.load(json_data)
+            json_data = json.load(jf)
         return json_data
 
-    def generate_new(self):
-        return default_config
+    def add_creds(self, creds: Union[str, list]=None) -> None:
+        if isinstance(creds, list):
+            for cred in creds:
+                self.snmp_creds.append(cred)
+        else:
+            self.snmp_creds.append(creds)

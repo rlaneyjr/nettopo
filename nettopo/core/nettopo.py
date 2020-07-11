@@ -22,22 +22,18 @@ class Nettopo:
     """ Core Nettopo class provides entrance to all Nettopo actions
     """
     def __init__(self, conf=None, conf_file=None):
-        if not all([conf, conf_file]):
-            config = Config().generate_new()
-        elif conf:
-            config = Config().load(config=conf)
+        self.config = Config()
+        if conf:
+            self.config.load(config=conf)
         elif conf_file and os.path.isfile(conf_file):
-            config = Config().load(filename=conf_file)
-        else:
-            raise NettopoError("Error creating Nettopo: NO CONFIG")
-        self.config = config
+            self.config.load(filename=conf_file)
         self.network = Network(self.config)
-        self.diagram = Diagram(self.network)
-        self.catalog = Catalog(self.network)
+        self.diagram = None
+        self.catalog = None
 
 
     def has_snmp(self, node):
-        if node.snmpobj.success:
+        if node.snmp.success:
             return True
         if node.get_snmp_creds(self.config.snmp_creds):
             return True
@@ -48,10 +44,7 @@ class Nettopo:
         if snmp_ver != 2:
             raise NettopoError('snmp_ver is not valid')
             return
-        cred = {}
-        cred['ver'] = snmp_ver
-        cred['community'] = snmp_community
-        self.config.snmp_creds.append(cred)
+        self.config.add_creds(snmp_community)
 
 
     def set_discover_maxdepth(self, depth=0):
@@ -71,7 +64,7 @@ class Nettopo:
 
 
     def new_node(self, ip):
-        node = Node(ip=ip)
+        node = Node(ip)
         return node if self.has_snmp(node) else False
 
 
@@ -83,11 +76,15 @@ class Nettopo:
         return node.query_node()
 
 
-    def write_diagram(self, output_file, diagram_title):
+    def write_diagram(self, output_file, diagram_title: str="Nettopo Diagram"):
+        if not self.diagram:
+            raise NettopoError("You must discover_network to write_diagram")
         self.diagram.generate(output_file, diagram_title)
 
 
     def write_catalog(self, output_file):
+        if not self.catalog:
+            raise NettopoError("You must discover_network to write_catalog")
         self.catalog.generate(output_file)
 
 
@@ -98,7 +95,7 @@ class Nettopo:
         return node.get_vlans()
 
 
-    def get_switch_macs(self, switch_ip=None, node=None, vlan=None, mac=None, port=None, verbose=0):
+    def get_switch_macs(self, switch_ip=None, node=None, vlan=None, mac=None, port=None, verbose=True):
         ''' Get the CAM table from a switch.
         Args:
             switch_ip           IP address of the device
@@ -115,13 +112,13 @@ class Nettopo:
             if not node:
                 return None
             switch_ip = node.get_ipaddr()
-        mac_obj = MAC(self.config)
-        if not vlan:
-            # get all MACs
-            macs = mac_obj.get_macs(switch_ip, verbose)
+        M = MAC(self.config)
+        if vlan:
+            # get MACs for single VLAN
+            macs = M.get_macs_for_vlan(switch_ip, vlan, verbose)
         else:
-            # get MACs only for one VLAN
-            macs = mac_obj.get_macs_for_vlan(switch_ip, vlan, verbose)
+            # get all MACs
+            macs = M.get_macs(switch_ip, verbose)
         if not all([mac, port]):
             return macs if macs else []
         # filter results
@@ -137,8 +134,12 @@ class Nettopo:
         return ret
 
 
-    def get_discovered_nodes(self):
+    def get_nodes(self):
         return self.network.nodes
+
+
+    def get_discovered_nodes(self):
+        return [node for node in self.network.nodes if node.discovered]
 
 
     def get_node_ip(self, node):
@@ -158,7 +159,7 @@ class Nettopo:
             Array of arp objects
         '''
         node = Node(switch_ip)
-        if not node.get_snmp_creds(self.config.snmp_creds):
+        if not node.get_snmp_creds(self.config['snmp_creds']):
             return []
         arp = node.get_arp()
         if not arp:

@@ -14,7 +14,7 @@ from .data import BaseData
 
 
 class Network(BaseData):
-    def __init__(self, conf: Config):
+    def __init__(self, conf=Config()):
         self.max_depth = 0
         self.root_node = None
         self.nodes = []
@@ -54,13 +54,15 @@ class Network(BaseData):
         print('Discovering network...')
         # Start the process of querying this node and recursing adjacencies.
         self.root_node, new_node = self.query_ip(ip, 'UNKNOWN')
-        if not self.root_node:
-            return
-        else:
+        if self.root_node:
+            self._print(f"Discovery of {ip} successful")
             self.nodes.append(self.root_node)
-            self.print_step(self.root_node.ip[0], self.root_node.name, False,
+            self.print_step(self.root_node.ip[0], self.root_node.name,
                             [DCODE.ROOT, DCODE.DISCOVERED])
             self.discover_node(self.root_node, self.max_depth)
+        else:
+            print(f"Discovery of {ip} failed")
+            return
         # # we may have missed chassis info
         # for n in self.nodes:
         #     if not any([n.serial, n.plat, n.ios]):
@@ -85,9 +87,9 @@ class Network(BaseData):
         for node in self.nodes:
             ni += 1
             indicator = '+'
-            if not node.snmpobj.success:
+            if not node.snmp.success:
                 indicator = '!'
-            self._print(f"[{ni}/{len(self.nodes)}]{indicator} {node.name} ({node.snmpobj.ip})")
+            self._print(f"[{ni}/{len(self.nodes)}]{indicator} {node.name} ({node.snmp.ip})")
             # # set what details to discover for this node
             # node.actions.get_router = True
             # node.actions.get_ospf_id = True
@@ -181,6 +183,7 @@ class Network(BaseData):
         # LLDP can return an empty string for IPs.
         if ip in NOTHING or not node.get_snmp_creds(self.config.snmp_creds):
             return node, state
+        node.query_node()
         node.name = node.get_system_name(self.config.host_domains)
         if node.name != hostname:
             # the hostname changed (cdp/lldp vs snmp)!
@@ -240,7 +243,7 @@ class Network(BaseData):
         # vmware ESX can report IP as 0.0.0.0
         # If we are allowing 0.0.0.0/32 in the config,
         # then we added it, but don't discover it
-        if node.ip[0] == '0.0.0.0' or not node.snmpobj.success:
+        if node.ip[0] == '0.0.0.0' or not node.snmp.success:
             return
         # print some info to stdout
         dcodes = list(DCODE.STEP_INTO)
@@ -248,7 +251,7 @@ class Network(BaseData):
             dcodes.append(DCODE.ROOT)
         self.print_step(node.ip[0], node.name, dcodes)
         # get the cached snmp credentials
-        snmpobj = node.snmpobj
+        snmpobj = node.snmp
         # get list of neighbors
         neighbors = []
         neighbors.extend(node.get_cdp_neighbors())

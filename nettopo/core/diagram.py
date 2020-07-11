@@ -51,7 +51,7 @@ class DotNode:
 class Diagram:
     def __init__(self, network: Network) -> None:
         self.network = network
-        self.config = network.config.diagram or DiagramDefaults()
+        self.config = self.network.config.diagram or DiagramDefaults()
 
 
     def generate(self, dot_file, title):

@@ -429,13 +429,13 @@ class Node(BaseData):
                                          f"{OID.ARP_TYPE}.{str(v)}.{ip}")
                     atype = int(atype)
                     type_str = 'unknown'
-                    if atype == ARP.TYPE_OTHER:
+                    if atype == ARP.OTHER:
                         type_str = 'other'
-                    elif atype == ARP.TYPE_INVALID:
+                    elif atype == ARP.INVALID:
                         type_str = 'invalid'
-                    elif atype == ARP.TYPE_DYNAMIC:
+                    elif atype == ARP.DYNAMIC:
                         type_str = 'dynamic'
-                    elif atype == ARP.TYPE_STATIC:
+                    elif atype == ARP.STATIC:
                         type_str = 'static'
                     arr.append(ARPData(ip, mac, interf, type_str))
         return arr
