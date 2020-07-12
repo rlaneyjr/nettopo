@@ -11,7 +11,9 @@ from .util import lookup_table
 
 
 class Stack(BaseData):
-    roles = enumerate(['master', 'member', 'notMember', 'standby'], start=1)
+    """ Holds switch stack info and details
+    Performs all duties upon initialization
+    """
     def __init__(self, snmp, actions=None):
         self.members = []
         self.count = 0
@@ -19,9 +21,17 @@ class Stack(BaseData):
         self.actions = actions or NodeActions()
         self.items_2_show = ['enabled', 'count', 'members']
         self.cache = StackCache(snmp)
-
         if self.actions.get_stack_details:
             self.get_members()
+
+
+    @staticmethod
+    def get_role(member):
+        roles = ['master', 'member', 'notMember', 'standby']
+        for role in enumerate(roles, start=1):
+            if member.role == role[0]:
+                return role[1]
+
 
     def get_members(self):
         stack_cache = self.cache.stack
@@ -42,9 +52,7 @@ class Stack(BaseData):
                     m.num = v
                     m.role = lookup_table(stack_cache,
                                           f"{OID.STACK_ROLE}.{idx}")
-                    for k, v in self.roles:
-                        if m.role == k:
-                            m.role = v
+                    m.role = get_role(m)
                     m.pri = lookup_table(stack_cache,
                                          f"{OID.STACK_PRI}.{idx}")
                     m.img = lookup_table(stack_cache,
@@ -61,7 +69,8 @@ class Stack(BaseData):
                     m.mac = '.'.join(mac_seg)
                     self.members.append(m)
         self.count = len(self.members)
-        if self.count > 0:
-            self.enabled = 1
-        if self.count == 1:
+        if self.count > 1:
+            self.enabled = True
+        else:
+            self.enabled = False
             self.count = 0

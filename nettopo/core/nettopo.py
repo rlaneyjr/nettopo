@@ -159,7 +159,7 @@ class Nettopo:
             Array of arp objects
         '''
         node = Node(switch_ip)
-        if not node.get_snmp_creds(self.config['snmp_creds']):
+        if not node.get_snmp_creds(self.config.snmp_creds):
             return []
         arp = node.get_arp()
         if not arp:

@@ -11,23 +11,23 @@ from .util import lookup_table
 
 
 class VSS(BaseData):
+    """ Holds VSS info and details
+    Performs all duties upon initialization
+    """
     def __init__(self, snmp, actions=None):
         self.domain = None
         self.members = []
         self.actions = actions or NodeActions()
         self.items_2_show = ['enabled', 'domain', 'members']
         self.cache = VSSCache(snmp)
-
         if self.actions.get_vss_details:
             self.get_members()
 
+
     @property
     def enabled(self):
-        # check if VSS is enabled
-        if self.cache.mode == '2':
-            return True
-        else:
-            return False
+        return True if self.cache.mode == '2' else False
+
 
     def get_members(self):
         if not self.actions.get_vss_details or not self.enabled:

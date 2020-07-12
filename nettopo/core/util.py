@@ -94,22 +94,17 @@ def normalize_host(host: Union[str, list], domains: list=None):
         elif isinstance(domains, str):
             host = host.replace(domains, '')
         else:
-            raise NettopoError("Unsupported type: 'domains' in normalize_host")
+            raise NettopoError(f"normalize_host {type(domains)} unsupported")
     # fix some stuff that can break Dot
     host = re.sub('-', '_', host)
     host = host.rstrip(' \r\n\0')
     return host
 
-def normalize_port(port):
-    port = port.replace('TenGigabitEthernet', 'te')
-    port = port.replace('GigabitEthernet', 'gi')
-    port = port.replace('FastEthernet', 'fa')
-    port = port.replace('port-channel', 'po')
-    port = port.replace('Te', 'te')
-    port = port.replace('Gi', 'gi')
-    port = port.replace('Fa', 'fa')
-    port = port.replace('Po', 'po')
-    return port
+def normalize_port(port=None):
+    if port:
+        return port.lower()[:2]
+    else:
+        return None
 
 def ip_2_str(_ip):
     ip = int(_ip, 0)

@@ -112,14 +112,20 @@ class Node(BaseData):
                     self.hsrp_vip = self.cache.hsrp_vip
         # stack
         if self.actions.get_stack:
-            self.stack = Stack(self.snmp, self.actions)
+            stack = Stack(self.snmp, self.actions)
+            self.stack = stack if stack.enabled else False
         # vss
         if self.actions.get_vss:
-            self.vss = VSS(self.snmp, self.actions)
+            vss = VSS(self.snmp, self.actions)
+            self.vss = vss if vss.enabled else False
         # serial
-        if self.actions.get_serial and not all([self.stack.count,
-                                                self.vss.enabled]):
-            self.serial = self.cache.serial
+        if self.actions.get_serial:
+            if self.vss:
+                self.serial = self.vss.serial
+            elif self.stack:
+                self.serial = self.stack.serial
+            else:
+                self.serial = self.cache.serial
         # SVI
         if self.actions.get_svi:
             self.cache.svi
@@ -316,40 +322,35 @@ class Node(BaseData):
         #    Platform
         #    IOS
         # Slow but reliable method by using SNMP directly.
-        # Usually we will get this via CDP.
-        if not any([self.stack.count, self.vss.enabled]):
-            # Use actions.get_stack_details
-            # or  actions.get_vss_details
-            # for this.
-            ent_cache = self.cache.ent_class
-            for row in ent_cache:
-                for n, v in row:
-                    n = str(n)
-                    if v != 'ENTPHYCLASS_CHASSIS':
-                        continue
-                    t = n.split('.')
-                    idx = t[12]
-                    self.serial = lookup_table(self.cache.ent_serial,
-                                        f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
-                    self.plat = lookup_table(self.cache.ent_plat,
-                                        f"{OID.ENTPHYENTRY_PLAT}.{idx}")
-                    self.ios = lookup_table(self.cache.ent_ios,
-                                        f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
-            if self.actions.get_ios:
-                # modular switches may have IOS on module than chassis
-                if not self.ios:
-                    for row in ent_cache:
-                        for n, v in row:
-                            n = str(n)
-                            if v != 'ENTPHYCLASS_MODULE':
-                                continue
-                            t = n.split('.')
-                            idx = t[12]
-                            self.ios = lookup_table(self.cache.ent_ios,
-                                        f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
-                            if self.ios:
-                                break
-                self.ios = format_ios_ver(self.ios)
+        ent_cache = self.cache.ent_class
+        for row in ent_cache:
+            for n, v in row:
+                n = str(n)
+                if v != 'ENTPHYCLASS_CHASSIS':
+                    continue
+                t = n.split('.')
+                idx = t[12]
+                self.serial = lookup_table(self.cache.ent_serial,
+                                    f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                self.plat = lookup_table(self.cache.ent_plat,
+                                    f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                self.ios = lookup_table(self.cache.ent_ios,
+                                    f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+        if self.actions.get_ios:
+            # modular switches may have IOS on module than chassis
+            if not self.ios:
+                for row in ent_cache:
+                    for n, v in row:
+                        n = str(n)
+                        if v != 'ENTPHYCLASS_MODULE':
+                            continue
+                        t = n.split('.')
+                        idx = t[12]
+                        self.ios = lookup_table(self.cache.ent_ios,
+                                    f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+                        if self.ios:
+                            break
+            self.ios = format_ios_ver(self.ios)
 
 
     def get_ifname(self, ifidx=None):
