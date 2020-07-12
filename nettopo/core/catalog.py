@@ -21,34 +21,38 @@ class Catalog:
                 raise NettopoCatalogError(f"{network} not a valid Nettopo \
                                                                     Network")
 
-    def generate(self, filename=None):
+
+    def _print(lines, filename=None):
         if filename and os.path.isfile(filename):
             with open(filename, 'w+') as f:
-
-
-    def _print(f=None):
-        if f:
-            _write = f.write
+                for line in lines:
+                    return f.write(line)
         else:
-            _write = print
-                for node in self.network.nodes:
-                    node.query_node()
-                    # StackWise
-                    if node.stack:
-                        for mem in node.stack.members:
-                            serial = mem.serial or 'NotPolled'
-                            plat = mem.plat or 'NotPolled'
-                            f.write(f"{node.name},{node.ip[0]},{plat},{node.ios}, \
-                                                {serial},STACK,{node.bootfile}\n")
-                    # VSS
-                    elif node.vss:
-                        for i in range(0, 2):
-                            serial = node.vss.members[i].serial
-                            plat = node.vss.members[i].plat
-                            ios = node.vss.members[i].ios
-                            f.write(f"{node.name},{node.ip[0]},{plat},{ios}, \
-                                               {serial},VSS,{node.bootfile}\n")
-                    # Stand Alone
-                    else:
-                        f.write(f"{node.name},{node.ip[0]},{node.plat}, \
-                                {node.ios},{node.serial},SINGLE,{node.bootfile}\n")
+            for line in lines:
+                return print(line)
+
+
+    def generate(self, filename=None):
+        lines = []
+        for node in self.network.nodes:
+            # node.query_node()
+            # StackWise
+            if node.stack:
+                for mem in node.stack.members:
+                    serial = mem.serial or 'NotPolled'
+                    plat = mem.plat or 'NotPolled'
+                    lines.append(f"{node.name},{node.ip[0]},{plat},{node.ios}, \
+                                        {serial},STACK,{node.bootfile}\n")
+            # VSS
+            elif node.vss:
+                for i in range(0, 2):
+                    serial = node.vss.members[i].serial
+                    plat = node.vss.members[i].plat
+                    ios = node.vss.members[i].ios
+                    lines.append(f"{node.name},{node.ip[0]},{plat},{ios}, \
+                                       {serial},VSS,{node.bootfile}\n")
+            # Stand Alone
+            else:
+                lines.append(f"{node.name},{node.ip[0]},{node.plat}, \
+                        {node.ios},{node.serial},SINGLE,{node.bootfile}\n")
+        _print(lines, filename)
