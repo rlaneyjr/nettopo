@@ -64,7 +64,10 @@ class Node(BaseData):
 
 
     def add_link(self, link):
-        self.links.append(link)
+        if isinstance(link, LinkData):
+            self.links.append(link)
+        else:
+            self.links.append(LinkData(link))
 
 
     def get_snmp_creds(self, snmp_creds):
@@ -130,9 +133,9 @@ class Node(BaseData):
         if self.actions.get_svi:
             self.cache.svi
             for row in self.cache.svi:
-                for n, v in row:
-                    n = str(n)
-                    vlan = n.split('.')[14]
+                for k, v in row:
+                    k = str(k)
+                    vlan = k.split('.')[14]
                     svi = SVIData(vlan)
                     svi_ips = self.get_cidrs_ifidx(v)
                     svi.ip.extend(svi_ips)
@@ -142,10 +145,10 @@ class Node(BaseData):
             self.cache.ethif
             self.cache.ifip
             for row in self.cache.ethif:
-                for n, v in row:
-                    n = str(n)
-                    if n.startswith(OID.ETH_IF_TYPE) and v == 24:
-                        ifidx = n.split('.')[10]
+                for k, v in row:
+                    k = str(k)
+                    if k.startswith(OID.ETH_IF_TYPE) and v == 24:
+                        ifidx = k.split('.')[10]
                         lo_name = lookup_table(self.cache.ethif,
                                                f"{OID.ETH_IF_DESC}.{ifidx}")
                         lo_ips = self.get_cidrs_ifidx(ifidx)

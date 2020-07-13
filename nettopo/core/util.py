@@ -101,10 +101,29 @@ def normalize_host(host: Union[str, list], domains: list=None):
     return host
 
 def normalize_port(port=None):
-    if port:
-        return port.lower()[:2]
-    else:
+    if not port:
         return None
+    else:
+        p_name, p_port = port.split(
+        if port.lower().startswith('vlan'):
+            return port.lower()
+        else:
+            return port.lower()[:2]
+
+def shorten_port_name(port):
+    if (port == OID_ERR):
+        return 'UNKNOWN'
+    if (port != None):
+        port = port.replace('TenGigabitEthernet', 'te')
+        port = port.replace('GigabitEthernet', 'gi')
+        port = port.replace('FastEthernet', 'fa')
+        port = port.replace('port-channel', 'po')
+        port = port.replace('Te', 'te')
+        port = port.replace('Gi', 'gi')
+        port = port.replace('Fa', 'fa')
+        port = port.replace('Po', 'po')
+    return port
+
 
 def ip_2_str(_ip):
     ip = int(_ip, 0)
