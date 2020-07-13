@@ -47,12 +47,12 @@ class Nettopo:
         self.config.add_creds(snmp_community)
 
 
-    def set_discover_maxdepth(self, depth=0):
-        self.network.set_max_depth(int(depth))
+    def set_discover_maxdepth(self, depth: int=0):
+        self.network.max_depth = depth
 
 
     def set_verbose(self, verbose=True):
-        self.network.set_verbose(verbose)
+        self.network.verbose = verbose
 
 
     def discover_network(self, root_ip, details):

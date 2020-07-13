@@ -22,16 +22,6 @@ class Catalog:
                                                                     Network")
 
 
-    def _print(lines, filename=None):
-        if filename and os.path.isfile(filename):
-            with open(filename, 'w+') as f:
-                for line in lines:
-                    return f.write(line)
-        else:
-            for line in lines:
-                return print(line)
-
-
     def generate(self, filename=None):
         lines = []
         for node in self.network.nodes:
@@ -55,4 +45,10 @@ class Catalog:
             else:
                 lines.append(f"{node.name},{node.ip[0]},{node.plat}, \
                         {node.ios},{node.serial},SINGLE,{node.bootfile}\n")
-        _print(lines, filename)
+        if filename and os.path.isfile(filename):
+            with open(filename, 'w+') as f:
+                for line in lines:
+                    f.write(line)
+        else:
+            for line in lines:
+                print(line)

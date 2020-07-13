@@ -52,7 +52,7 @@ class Stack(BaseData):
                     m.num = v
                     m.role = lookup_table(stack_cache,
                                           f"{OID.STACK_ROLE}.{idx}")
-                    m.role = get_role(m)
+                    m.role = self.get_role(m)
                     m.pri = lookup_table(stack_cache,
                                          f"{OID.STACK_PRI}.{idx}")
                     m.img = lookup_table(stack_cache,

@@ -34,10 +34,6 @@ class Network(BaseData):
             n.discovered = False
 
 
-    def set_verbose(self, level):
-        self.verbose = level
-
-
     def discover(self, ip):
         ''' Discover the network starting at the defined root node IP.
         Recursively enumerate the network tree up to self.depth.
