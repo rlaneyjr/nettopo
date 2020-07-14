@@ -23,32 +23,38 @@ __all__ = [
 
 
 class BaseData:
-    def __repr__(self):
-        return self.show
-
-    def _as_dict(self):
-        IGN_DEFS = ['show']
-        _dict = {}
-        for item in self.__dir__():
-            if not item.startswith('_') and item not in IGN_DEFS:
-                val = self.__getattribute__(item)
-                _dict.update({item: val})
-        return _dict
-
-    def __str__(self):
-        attrs = [f"{key.capitalize()} = {val}" for key, val in
-                 self._as_dict().items()]
-        return "\n".join(attrs)
+    """ Base Data class that all other classes inherit from
+    Provides:
+    :property:  show - Show the items_2_show
+    """
+    def _items_2_show(self) -> list:
+        IGNORED_METHODS = ['_', 'get', 'add', 'show']
+        attrs = []
+        meths = self.__dir__()
+        for meth in meths:
+            if not any(map(meth.startswith(), IGNORED_METHODS)):
+                attrs.append(item)
+        return attrs
 
     @property
     def show(self) -> str:
-        try:
-            attrs = [f"{key}={val}" for key, val in self._as_dict().items()
-                     if key in self.items_2_show]
-        except AttributeError:
-            attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
+        attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
         attrs = ",".join(attrs)
         return f"<{attrs}>"
+
+    def _as_dict(self) -> dict:
+        _dict = {}
+        for attr in self._items_2_show():
+            val = self.__getattribute__(attr)
+            _dict.update({attr: val})
+        return _dict
+
+    def __str__(self) -> str:
+        attrs = [f"{key} = {val}" for key, val in self._as_dict().items()]
+        return '\n'.join(attrs)
+
+    def __repr__(self):
+        return self.show
 
 
 class NodeActions(BaseData):

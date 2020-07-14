@@ -98,7 +98,7 @@ class Node(BaseData):
             return False
         if self.actions.get_name:
             self.name_raw = self.cache.name
-            self.name = normalize_host(self.name_raw)
+            self.name = self.get_system_name()
         # router
         if self.actions.get_router:
             router = self.cache.router
@@ -366,8 +366,9 @@ class Node(BaseData):
 
 
     def get_system_name(self, domains=None):
-        return normalize_host(self.cache.name, domains) if domains \
-                                                else self.cache.name
+        if not self.queried:
+            self.query_node()
+        return normalize_host(self.name_raw, domains)
 
 
     def get_ipaddr(self):

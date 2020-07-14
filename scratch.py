@@ -28,6 +28,12 @@ vlan._as_dict()
 vlan.show()
 vlan._as_dict().items()
 
+from nettopo.core.nettopo import Nettopo
+net = Nettopo()
+net.add_snmp_credential('letmeSNMP')
+net.set_discover_maxdepth(100)
+net.discover_network('10.0.0.1', True)
+
 from nettopo.core.node import Node
 sw1 = Node('10.0.0.1')
 sw2 = Node('10.0.0.2')
@@ -35,11 +41,4 @@ sw1.get_snmp_creds('letmeSNMP')
 sw2.get_snmp_creds('letmeSNMP')
 sw1.query_node()
 sw2.query_node()
-
-from nettopo.core.nettopo import Nettopo
-net = Nettopo()
-net.add_snmp_credential('letmeSNMP')
-net.set_discover_maxdepth(100)
-net.discover_network('10.0.0.1', True)
-
 
