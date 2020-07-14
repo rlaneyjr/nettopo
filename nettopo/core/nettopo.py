@@ -139,7 +139,7 @@ class Nettopo:
 
 
     def get_discovered_nodes(self):
-        return [node for node in self.network.nodes if node.discovered]
+        return [node for node in self.network.nodes if node.queried]
 
 
     def get_node_ip(self, node):

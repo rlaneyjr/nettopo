@@ -77,14 +77,6 @@ class Cache:
         return self.snmp.get_bulk(OID.ARP)
 
     @cached_property
-    def stack(self):
-        return StackCache(self.snmp)
-
-    @cached_property
-    def vss(self):
-        return VSSCache(self.snmp)
-
-    @cached_property
     def serial(self):
         return self.snmp.get_val(OID.SYS_SERIAL)
 
@@ -131,14 +123,6 @@ class Cache:
     @cached_property
     def hsrp_vip(self):
         return self.snmp.get_val(OID.HSRP_VIP)
-
-    @cached_property
-    def stack(self):
-        return StackCache(self.snmp)
-
-    @cached_property
-    def vss(self):
-        return VSSCache(self.snmp)
 
 
 class StackCache:

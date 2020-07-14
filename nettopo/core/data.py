@@ -7,7 +7,6 @@ Description:        data.py
 Author:             Ricky Laney
 Version:            0.1.1
 '''
-from dataclasses import dataclass
 from typing import Any, List
 
 __all__ = [
@@ -52,72 +51,72 @@ class BaseData:
         return f"<{attrs}>"
 
 
-@dataclass
 class NodeActions(BaseData):
-    get_name = True
-    get_ip = True
-    get_plat = True
-    get_ios = True
-    get_router = True
-    get_ospf_id = True
-    get_bgp_las = True
-    get_hsrp_pri = True
-    get_hsrp_vip = True
-    get_serial = True
-    get_stack = True
-    get_stack_details = True
-    get_vss = True
-    get_vss_details = True
-    get_svi = True
-    get_lo = True
-    get_bootf = True
-    get_chassis_info = True
-    get_vpc = True
+    def __init__(self, init: bool=True):
+        self.get_name = init
+        self.get_ip = init
+        self.get_plat = init
+        self.get_ios = init
+        self.get_router = init
+        self.get_ospf_id = init
+        self.get_bgp_las = init
+        self.get_hsrp_pri = init
+        self.get_hsrp_vip = init
+        self.get_serial = init
+        self.get_stack = init
+        self.get_stack_details = init
+        self.get_vss = init
+        self.get_vss_details = init
+        self.get_svi = init
+        self.get_lo = init
+        self.get_bootf = init
+        self.get_chassis_info = init
+        self.get_vpc = init
 
 
-@dataclass
 class LinkData(BaseData):
-    node = None
-    link_type = None
-    remote_ip = None
-    remote_name = None
-    vlan = None
-    local_native_vlan = None
-    local_allowed_vlans = None
-    remote_native_vlan = None
-    remote_allowed_vlans = None
-    local_port = None
-    remote_port = None
-    local_lag = None
-    remote_lag = None
-    local_lag_ips = None
-    remote_lag_ips = None
-    local_if_ip = None
-    remote_if_ip = None
-    remote_platform = None
-    remote_ios = None
-    remote_mac = None
-    discovered_proto = None
-    items_2_show = ['local_port', 'remote_name', 'remote_port']
+    def __init__(self):
+        self.node = None
+        self.link_type = None
+        self.remote_ip = None
+        self.remote_name = None
+        self.vlan = None
+        self.local_native_vlan = None
+        self.local_allowed_vlans = None
+        self.remote_native_vlan = None
+        self.remote_allowed_vlans = None
+        self.local_port = None
+        self.remote_port = None
+        self.local_lag = None
+        self.remote_lag = None
+        self.local_lag_ips = None
+        self.remote_lag_ips = None
+        self.local_if_ip = None
+        self.remote_if_ip = None
+        self.remote_platform = None
+        self.remote_ios = None
+        self.remote_mac = None
+        self.discovered_proto = None
+        self.items_2_show = ['local_port', 'remote_name', 'remote_port']
 
 
-@dataclass
 class VSSData(BaseData):
-    ios = None
-    serial = None
-    plat = None
+    def __init__(self):
+        self.ios = None
+        self.serial = None
+        self.plat = None
 
 
-@dataclass
 class StackData(BaseData):
-    num = 0
-    role = 0
-    pri = 0
-    mac = None
-    img = None
-    serial = None
-    plat = None
-    items_2_show = ['num', 'role', 'serial']
+    def __init__(self):
+        self.num = 0
+        self.role = None
+        self.pri = None
+        self.mac = None
+        self.img = None
+        self.serial = None
+        self.plat = None
+        self.items_2_show = ['num', 'role', 'serial']
 
 
 class SVIData(BaseData):
@@ -128,13 +127,13 @@ class SVIData(BaseData):
 
 class LoopBackData(BaseData):
     def __init__(self, name, ips):
-        self.name = name.replace('Loopback', 'lo')
+        self.name = name
         self.ips = ips
 
 
 class VLANData(BaseData):
     def __init__(self, vid, name):
-        self.vid = vid
+        self.vid = int(vid)
         self.name = name
 
 

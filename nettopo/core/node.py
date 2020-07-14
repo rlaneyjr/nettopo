@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
     node.py
-'''
+"""
 from functools import cached_property
 from typing import Union
 from .cache import Cache
@@ -34,15 +34,15 @@ from .constants import OID, ARP, DCODE, NODE
 
 
 class Node(BaseData):
-    def __init__(self, ip: Union[str, list]) -> None:
+    def __init__(self, ip: Union[str, list], immediate_query: bool=False) -> None:
         self.ip = ip if isinstance(ip, list) else [ip]
         self.snmp = SNMP(self.ip[0])
-        self.cache = None
+        self.cache = Cache(self.snmp)
         self.actions = NodeActions()
         self.links = []
         self.svis = []
         self.loopbacks = []
-        self.discovered = False
+        self.queried = False
         self.stack = None
         self.vss = None
         self.name = None
@@ -61,38 +61,41 @@ class Node(BaseData):
         self.vpc_domain = None
         self.items_2_show = ['name', 'ip', 'plat', 'ios',
                              'serial', 'router', 'vss', 'stack']
+        if immediate_query:
+            self.query_node()
 
 
     def add_link(self, link):
-        if isinstance(link, LinkData):
+        if not isinstance(link, LinkData):
+            link = LinkData(link)
+        if link not in self.links:
             self.links.append(link)
-        else:
-            self.links.append(LinkData(link))
 
 
     def get_snmp_creds(self, snmp_creds):
         """ find valid credentials for this node.
         try each known IP until one works
         """
-        if not self.snmp.success:
+        if self.snmp.success:
+            return True
+        else:
             for ipaddr in self.ip:
                 if ipaddr in ['0.0.0.0', 'UNKNOWN', '']:
                     continue
                 self.snmp.ip = ipaddr
                 if self.snmp.get_creds(snmp_creds):
                     return True
-        return False
+            return False
 
 
     def query_node(self):
         """ Query this node.
-        Set .actions and .snmp_creds before calling.
+        Builds the cache for this node.
         """
+        self.queried = True
         if not self.snmp.success:
             # failed to find good creds
             return False
-        if not self.cache:
-            self.cache = Cache(self.snmp)
         if self.actions.get_name:
             self.name_raw = self.cache.name
             self.name = normalize_host(self.name_raw)
@@ -163,7 +166,6 @@ class Node(BaseData):
         # VPC peerlink
         if self.actions.get_vpc:
             self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.cache.ethif)
-        return True
 
 
     def get_cidrs_ifidx(self, ifidx):
@@ -184,10 +186,10 @@ class Node(BaseData):
 
 
     def get_cdp_neighbors(self):
-        ''' Get a list of CDP neighbors.
+        """ Get a list of CDP neighbors.
         Returns a list of LinkData's.
         Will always return an array.
-        '''
+        """
         # get list of CDP neighbors
         neighbors = []
         self.cache.cdp = self.snmp.get_bulk(OID.CDP)
@@ -369,10 +371,10 @@ class Node(BaseData):
 
 
     def get_ipaddr(self):
-        ''' Returns the first matching IP:
+        """ Returns the first matching IP:
             - Lowest Loopback interface
             - Lowest SVI address/known IP
-        '''
+        """
         # Loopbacks
         if self.loopbacks:
             ips = self.loopbacks[0].ips
@@ -391,9 +393,9 @@ class Node(BaseData):
 
 
     def get_vpc(self, ifarr):
-        ''' If VPC is enabled,
+        """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
-        '''
+        """
         if not self.cache.vpc:
             return None, None
         domain = oid_last_token(self.cache.vpc[0][0][0])

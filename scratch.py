@@ -39,6 +39,7 @@ sw2.query_node()
 from nettopo.core.nettopo import Nettopo
 net = Nettopo()
 net.add_snmp_credential('letmeSNMP')
+net.set_discover_maxdepth(100)
 net.discover_network('10.0.0.1', True)
 
 

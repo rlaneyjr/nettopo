@@ -31,7 +31,7 @@ class Network(BaseData):
 
     def reset_discovered(self):
         for n in self.nodes:
-            n.discovered = False
+            n.queried = False
 
 
     def discover(self, ip):
@@ -162,14 +162,14 @@ class Network(BaseData):
             host:               Hostname of this known (if known from CDP/LLDP)
         Returns:
             Node:        Node of this object
-            int:                NODE.NEW = Newly discovered node
+            int:                NODE.NEW = Newly queried node
                                 NODE.NEWIP = Already knew about this node but not by this IP
                                 NODE.KNOWN = Already knew about this node
         '''
         host = normalize_host(hostname, self.config.host_domains)
         node, node_updated = self.get_known_node(ip, host)
         if node:
-            if node.discovered:
+            if node.queried:
                 return node, NODE.KNOWN
             state = NODE.NEWIP if node_updated else NODE.KNOWN
         else:
@@ -233,9 +233,9 @@ class Network(BaseData):
             node:   Node object to enumerate.
             depth:  The depth left that we can go further away from the root.
         '''
-        if depth >= self.max_depth or node.discovered:
+        if depth >= self.max_depth or node.queried:
             return
-        node.discovered = True
+        node.queried = True
         # vmware ESX can report IP as 0.0.0.0
         # If we are allowing 0.0.0.0/32 in the config,
         # then we added it, but don't discover it
@@ -288,8 +288,8 @@ class Network(BaseData):
         True - Added as a new link
         False - Found an existing link and updated it
         '''
-        if link.node.discovered:
-            # both nodes have been discovered,
+        if link.node.queried:
+            # both nodes have been queried,
             # so try to update existing reverse link info
             # instead of adding a new link
             for cur_node in self.nodes:
@@ -323,7 +323,7 @@ class Network(BaseData):
                     node_link.local_port == link.local_port:
                     self._print(f"Discovered duplicate links for:\n \
                                 Node: {link.node.name} Port: {link.local_port}")
-                    # haven't discovered yet but we have this link twice.
+                    # haven't queried yet but we have this link twice.
                     # maybe from different discovery processes?
                     return False
         node.add_link(link)

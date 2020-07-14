@@ -24,7 +24,7 @@ node_template = '''
 {% if node.ios %}
     {{ node.ios }}<br />
 {% endif %}
-{% if node.stack.enabled %}
+{% if node.stack %}
     {% if config.expand_stackwise and config.get_stack_members %}
         {% for member in node.stack.members %}
             Switch {{ member.stack.num }} of {{ member.stack.count }}<br />
@@ -34,7 +34,7 @@ node_template = '''
     {% else %}
         {{ node.stack.serial }}<br />
     {% endif %}
-{% elif node.vss.enabled %}
+{% elif node.vss %}
     {% if config.expand_vss %}
         VSS {{ node.vss.domain }}<br />
         VSS 0 - {{ node.vss.members[0].plat }} - {{ node.vss.members[0].serial }}<br />

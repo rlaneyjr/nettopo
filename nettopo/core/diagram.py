@@ -133,7 +133,7 @@ class Diagram:
                              peripheries=dot_node.peripheries))
             if node.vpc_peerlink_node:
                 node2 = node.vpc_peerlink_node
-                # node2.discovered = 1
+                # node2.queried = 1
                 dot_node2 = DotNode(node2)
                 cluster.add_node(pydot.Node(
                                  name=node2.name,

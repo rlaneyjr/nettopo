@@ -90,9 +90,11 @@ def normalize_host(host: Union[str, list], domains: list=None):
     if domains:
         if isinstance(domains, list):
             for domain in domains:
+                domain = domain if domain.startswith('.') else f".{domain}"
                 host = host.replace(domain, '')
         elif isinstance(domains, str):
-            host = host.replace(domains, '')
+            domain = domains if domains.startswith('.') else f".{domains}"
+            host = host.replace(domain, '')
         else:
             raise NettopoError(f"normalize_host {type(domains)} unsupported")
     # fix some stuff that can break Dot
@@ -100,30 +102,20 @@ def normalize_host(host: Union[str, list], domains: list=None):
     host = host.rstrip(' \r\n\0')
     return host
 
-def normalize_port(port=None):
+def normalize_port(port: str=None):
     if not port:
-        return None
-    else:
-        p_name, p_port = port.split(
-        if port.lower().startswith('vlan'):
-            return port.lower()
-        else:
-            return port.lower()[:2]
-
-def shorten_port_name(port):
-    if (port == OID_ERR):
         return 'UNKNOWN'
-    if (port != None):
+    else:
         port = port.replace('TenGigabitEthernet', 'te')
         port = port.replace('GigabitEthernet', 'gi')
         port = port.replace('FastEthernet', 'fa')
         port = port.replace('port-channel', 'po')
+        port = port.replace('Loopback', 'lo')
         port = port.replace('Te', 'te')
         port = port.replace('Gi', 'gi')
         port = port.replace('Fa', 'fa')
         port = port.replace('Po', 'po')
     return port
-
 
 def ip_2_str(_ip):
     ip = int(_ip, 0)
@@ -177,10 +169,6 @@ def mac_ascii_to_hex(mac_str):
         mac_hex += chr(int(mac_str[i:i+2], 16))
         return mac_hex
 
-def mac_format_ascii(mac_hex, inc_dots):
-    v = mac_hex.prettyPrint()
-    return mac_hex_to_ascii(v, inc_dots)
-
 def mac_hex_to_ascii(mac_hex, inc_dots):
     ''' Format a hex MAC string to ASCII
     Args:
@@ -196,6 +184,10 @@ def mac_hex_to_ascii(mac_hex, inc_dots):
         if inc_dots and (i+4) < len(v):
             ret += '.'
     return ret
+
+def mac_format_ascii(mac_hex, inc_dots):
+    v = mac_hex.prettyPrint()
+    return mac_hex_to_ascii(v, inc_dots)
 
 def mac_format_cisco(devid):
     mac_seg = [devid[x:x+4] for x in xrange(2, len(devid), 4)]
