@@ -31,7 +31,7 @@ __all__ = [
 ]
 
 
-VALID_VERSIONS = ('2c', '3')
+VALID_VERSIONS = ('2', '2c', '3')
 VALID_V3_LEVELS = ('authNoPriv', 'authPriv')
 VALID_INTEGRITY_ALGO = ('md5', 'sha')
 VALID_PRIVACY_ALGO = ('des', '3des', 'aes', 'aes192', 'aes256')

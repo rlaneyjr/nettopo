@@ -1,12 +1,12 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
 Title:              snmp.py
 Description:        SNMP
 Author:             Ricky Laney
 Version:            0.1.1
-'''
+"""
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 from nettopo.snmp.constants import (
@@ -54,8 +54,7 @@ class SnmpHandler:
                 try:
                     port = int(kwargs[key])
                 except:
-                    raise ArgumentError('Port must be an integer between 1 and 65535')
-
+                    raise ArgumentError('Port must be an integer')
                 if 1 <= port <= 65535:
                     self.port = port
                 else:
@@ -85,35 +84,30 @@ class SnmpHandler:
                 self.authkey = kwargs[key]
             if key == 'privkey':
                 self.privkey = kwargs[key]
-
-        if self.host is False:
+        if not self.host:
             raise ArgumentError('Host not defined')
-
         if self.version not in VALID_VERSIONS:
             raise ArgumentError('No valid SNMP version defined')
-
-        if self.version == "2c":
+        if self.version.startswith("2"):
             self.snmp_auth = cmdgen.CommunityData(self.community)
-
-        if self.version == "3":
-            if self.username is False:
+        elif self.version == "3":
+            if not self.username:
                 raise ArgumentError('No username specified')
-            if self.level is False:
+            if not self.level:
                 raise ArgumentError('No security level specified')
-            if self.integrity is False:
+            if not self.integrity:
                 raise ArgumentError('No integrity protocol specified')
-            if self.authkey is False:
+            if not self.authkey:
                 raise ArgumentError('No authkey specified')
-
             if self.level == 'authNoPriv':
                 self.snmp_auth = cmdgen.UsmUserData(
                     self.username,
                     authKey=self.authkey,
                     authProtocol=INTEGRITY_ALGO[self.integrity])
             elif self.level == 'authPriv':
-                if self.privacy is False:
+                if not self.privacy:
                     raise ArgumentError('No privacy protocol specified')
-                if self.privkey is False:
+                if not self.privkey:
                     raise ArgumentError('No privacy key specified')
                 self.snmp_auth = cmdgen.UsmUserData(
                     self.username,
@@ -123,93 +117,62 @@ class SnmpHandler:
                     privProtocol=PRIVACY_ALGO[self.privacy])
 
     def get(self, *oidlist):
-
-        snmp_query = []
-        for oid in oidlist:
-            snmp_query.append(oid,)
-
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
             self.snmp_auth,
             cmdgen.UdpTransportTarget((self.host, self.port),
                                       timeout=self.timeout,
                                       retries=self.retries),
-            *snmp_query,
-            lookupMib=False
+            *oidlist,
+            lookupMib=False,
         )
-
         if errorIndication or errorStatus:
-            current_error = errorIndication._ErrorIndication__descr
-            raise SnmpError(current_error)
-
+            raise SnmpError(errorIndication._ErrorIndication__descr)
         pretty_varbinds = []
         for oid, value in varBinds:
             pretty_varbinds.append([oid.prettyPrint(),
                                    return_pretty_val(value)])
-
         return pretty_varbinds
 
     def get_value(self, *oidlist):
-
-        snmp_query = []
-        for oid in oidlist:
-            snmp_query.append(oid,)
-
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
             self.snmp_auth,
             cmdgen.UdpTransportTarget((self.host, self.port)),
-            *snmp_query,
+            *oidlist,
             lookupMib=False
         )
-
         if errorIndication or errorStatus:
-            current_error = errorIndication._ErrorIndication__descr
-            raise SnmpError(current_error)
-
+            raise SnmpError(errorIndication._ErrorIndication__descr)
         values = []
         for oid, value in varBinds:
             values.append(return_pretty_val(value))
-
         if len(values) == 1:
-            values = values[0]
-
         return values
 
     def getnext(self, *oidlist):
-
-        snmp_query = []
-        for oid in oidlist:
-            snmp_query.append(oid,)
-
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varTable = cmdGen.nextCmd(
             self.snmp_auth,
             cmdgen.UdpTransportTarget((self.host, self.port)),
-            *snmp_query,
+            *oidlist,
             lookupMib=False
         )
-
         if errorIndication or errorStatus:
-            current_error = errorIndication._ErrorIndication__descr
-            raise SnmpError(current_error)
-
+            raise SnmpError(errorIndication._ErrorIndication__descr)
         pretty_vartable = []
-
         for varbinds in varTable:
             pretty_varbinds = []
             for oid, value in varbinds:
                 pretty_varbinds.append([oid.prettyPrint(),
                                        return_pretty_val(value)])
             pretty_vartable.append(pretty_varbinds)
-
         return pretty_vartable
 
     def set(self, oid=None, value=None, value_type=None, multi=None):
-
         if multi is None:
             data = return_snmp_data(value, value_type)
-            snmp_sets = (oid, data),
+            snmp_sets = (oid, data)
         else:
             snmp_sets = []
             for snmp_set in multi:
@@ -223,8 +186,7 @@ class SnmpHandler:
                     value = snmp_set[1]
                     value_type = snmp_set[2]
                     data = return_snmp_data(value, value_type)
-                snmp_sets.append((oid, data),)
-
+                snmp_sets.append((oid, data))
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varTable = cmdGen.setCmd(
             self.snmp_auth,
@@ -232,8 +194,5 @@ class SnmpHandler:
             *snmp_sets,
             lookupMib=False
         )
-
         if errorIndication or errorStatus:
-            current_error = errorIndication._ErrorIndication__descr
-            raise SnmpError(current_error)
-
+            raise SnmpError(errorIndication._ErrorIndication__descr)
