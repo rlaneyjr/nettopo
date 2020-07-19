@@ -8,7 +8,6 @@ Author:             Ricky Laney
 Version:            0.1.1
 '''
 from typing import Any, List
-from .util import is_valid_attr
 
 __all__ = [
     'BaseData',
@@ -29,29 +28,22 @@ class BaseData:
     :property:  show - Show the items_2_show
     """
     def _as_dict(self) -> dict:
+        _ignores = ['_', 'get', 'add', 'show']
         _dict = {}
-        for attr in self.__dir__():
-            if is_valid_attr(attr):
-                val = self.__getattribute__(attr)
-                _dict.update({attr: val})
+        for item in self.__dir__():
+            if not any([item.startswith(x) for x in _ignores]):
+                val = self.__getattribute__(item)
+                _dict.update({item: val})
         return _dict
 
-    @property
-    def show(self):
-        return self.show
-
-    @show.setter
-    def show(self) -> str:
-        attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
-        attrs = ",".join(attrs)
-        self.show = f"<{attrs}>"
-
     def __str__(self) -> str:
-        attrs = self.show.lstrip('<').rstrip('>').replace('=', ' = ')
-        return attrs.replace(',', '\n')
+        items = [f"{key} = {val}" for key, val in self._as_dict().items()]
+        return  "\n".join(items)
 
     def __repr__(self):
-        return self.show
+        items = [f"{key}={val}" for key, val in self._as_dict().items()]
+        items = ",".join(items)
+        return f"<{items}>"
 
 
 class NodeActions(BaseData):
