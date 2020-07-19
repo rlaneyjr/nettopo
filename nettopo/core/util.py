@@ -15,6 +15,7 @@ from .exceptions import NettopoError
 
 
 __all__ = [
+    'is_valid_attr',
     'timethis',
     'bits_from_mask',
     'in_cidr',
@@ -35,6 +36,13 @@ __all__ = [
     'lookup_table',
     'oid_last_token',
 ]
+
+
+def is_valid_attr(attr: str) -> bool:
+    for x in ['_', 'get', 'add', 'show']:
+        if attr.startswith(x):
+            return False
+        return True
 
 def timethis(func):
     @wraps(func)

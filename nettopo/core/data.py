@@ -8,6 +8,7 @@ Author:             Ricky Laney
 Version:            0.1.1
 '''
 from typing import Any, List
+from .util import is_valid_attr
 
 __all__ = [
     'BaseData',
@@ -27,31 +28,27 @@ class BaseData:
     Provides:
     :property:  show - Show the items_2_show
     """
-    def _items_2_show(self) -> list:
-        IGNORED_METHODS = ['_', 'get', 'add', 'show']
-        attrs = []
-        meths = self.__dir__()
-        for meth in meths:
-            if not any(map(meth.startswith(), IGNORED_METHODS)):
-                attrs.append(item)
-        return attrs
+    def _as_dict(self) -> dict:
+        _dict = {}
+        for attr in self.__dir__():
+            if is_valid_attr(attr):
+                val = self.__getattribute__(attr)
+                _dict.update({attr: val})
+        return _dict
 
     @property
+    def show(self):
+        return self.show
+
+    @show.setter
     def show(self) -> str:
         attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
         attrs = ",".join(attrs)
-        return f"<{attrs}>"
-
-    def _as_dict(self) -> dict:
-        _dict = {}
-        for attr in self._items_2_show():
-            val = self.__getattribute__(attr)
-            _dict.update({attr: val})
-        return _dict
+        self.show = f"<{attrs}>"
 
     def __str__(self) -> str:
-        attrs = [f"{key} = {val}" for key, val in self._as_dict().items()]
-        return '\n'.join(attrs)
+        attrs = self.show.lstrip('<').rstrip('>').replace('=', ' = ')
+        return attrs.replace(',', '\n')
 
     def __repr__(self):
         return self.show
