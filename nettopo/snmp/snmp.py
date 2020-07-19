@@ -148,7 +148,7 @@ class SnmpHandler:
         for oid, value in varBinds:
             values.append(return_pretty_val(value))
         if len(values) == 1:
-        return values
+            return values
 
     def getnext(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()

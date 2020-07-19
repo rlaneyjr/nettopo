@@ -5,6 +5,7 @@
 '''
     cdp.py
 '''
+from easysnmp import Session
 from nettopo.snmp import SnmpHandler
 from nettopo.vendors.cisco.oids import CiscoOids
 o = CiscoOids()
@@ -12,8 +13,12 @@ o = CiscoOids()
 
 class CdpNeighbors(object):
     def __init__(self, snmp=None):
-        if not isinstance(snmp, SnmpHandler):
-            raise ValueError('Must pass a Nelmon SnmpHandler')
+        if isinstance(snmp, SnmpHandler):
+            self.getnext = snmp.getnext
+        elif isinstance(snmp, Session):
+            self.getnext = snmp.get_next
+        else:
+            raise ValueError('Must pass a SnmpHandler or Session')
         self._snmp = snmp
         self._raw_data = {}
         self.interface = {}
@@ -21,14 +26,14 @@ class CdpNeighbors(object):
     def _get_interface_names(self):
         cdp_interfaces = []
         for interface in self._raw_data['neighbor_interfaces']:
-            cdp_interfaces.append('%s.%s' % (o.ifDescr, interface))
+            cdp_interfaces.append(f"{o.ifDescr}.{interface}")
         varbinds = self._snmp.get(*cdp_interfaces)
         for oid, value in varbinds:
             interface = oid.split('.')[-1]
             self.interface[interface] = value
 
     def _get_neighbors_data(self):
-        vartable = self._snmp.getnext(o.cdpCacheEntry)
+        vartable = self.getnext(o.cdpCacheEntry)
         neighbors = {}
         local_cdp_interfaces = []
         for varbind in vartable:
