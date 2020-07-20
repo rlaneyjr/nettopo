@@ -41,8 +41,16 @@ net.add_snmp_credential('letmeSNMP')
 net.set_discover_maxdepth(100)
 net.discover_network('10.0.0.1', True)
 
+def pptable(table):
+    ppt_items = []
+    for thing in table:
+        for item in thing:
+            print(item.prettyPrint())
+            ppt_items.append(item.prettyPrint())
+    return ppt_items
 
 import ipdb
+import binascii
 from nettopo.core.constants import *
 from nettopo.core.util import *
 def get_cdp_neighbors(switch):
@@ -95,3 +103,35 @@ def get_cdp_neighbors(switch):
                 link.remote_ios = rios
                 neighbors.append(link)
         return neighbors
+
+
+from nettopo.core.data import *
+def get_link(switch, ifidx):
+    # ipdb.set_trace()
+    link = LinkData()
+    # trunk
+    link.link_type = lookup_table(switch.cache.link_type,
+                                  f"{OID.TRUNK_VTP}.{ifidx}")
+    if link.link_type == '1':
+        native_vlan = lookup_table(switch.cache.trunk_native,
+                                   f"{OID.TRUNK_NATIVE}.{ifidx}")
+        allowed_vlans = lookup_table(switch.cache.trunk_allowed,
+                                     f"{OID.TRUNK_ALLOW}.{ifidx}")
+        allowed_vlans = parse_allowed_vlans(allowed_vlans)
+    else:
+        native_vlan = None
+        allowed_vlans = 'All'
+    link.local_native_vlan = native_vlan
+    link.local_allowed_vlans = allowed_vlans
+    # LAG membership
+    lag = lookup_table(switch.cache.lag, f"{OID.LAG_LACP}.{ifidx}")
+    link.local_lag = switch.get_ifname(lag)
+    link.local_lag_ips = switch.get_cidrs_ifidx(lag)
+    # VLAN info
+    link.vlan = lookup_table(switch.cache.vlan, f"{OID.IF_VLAN}.{ifidx}")
+    # IP address
+    lifips = switch.get_cidrs_ifidx(ifidx)
+    link.local_if_ip = lifips[0] if lifips else None
+    link.remote_lag_ips = []
+    return link
+

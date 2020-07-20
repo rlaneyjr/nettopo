@@ -4,6 +4,7 @@
 """
     node.py
 """
+import binascii
 from functools import cached_property
 from typing import Union
 from .cache import Cache
