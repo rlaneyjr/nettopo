@@ -13,3 +13,5 @@ PyX
 PyYAML
 scapy
 virlutils
+# dev
+ipdb
