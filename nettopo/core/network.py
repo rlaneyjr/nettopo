@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
         network.py
-'''
+"""
 from timeit import default_timer as timer
 from .config import Config
 from .exceptions import NettopoNetworkError
@@ -15,7 +15,7 @@ from .data import BaseData
 
 class Network(BaseData):
     def __init__(self, conf=Config()):
-        self.max_depth = 0
+        self.max_depth = 100
         self.root_node = None
         self.nodes = []
         self.num_nodes = len(self.nodes)
@@ -35,11 +35,11 @@ class Network(BaseData):
 
 
     def discover(self, ip):
-        ''' Discover the network starting at the defined root node IP.
+        """ Discover the network starting at the defined root node IP.
         Recursively enumerate the network tree up to self.depth.
         Populates self.nodes[] as a list of discovered nodes in the
         network with self.root_node being the root.
-        '''
+        """
         self._print(f"""Discovery codes:
                     . depth
                     {DCODE.ERR_SNMP_STR} connection error
@@ -59,183 +59,30 @@ class Network(BaseData):
         else:
             print(f"Discovery of {ip} failed")
             return
-        # # we may have missed chassis info
-        # for n in self.nodes:
-        #     if not any([n.serial, n.plat, n.ios]):
-        #         n.actions.get_chassis_info = True
-        #         if not n.serial:
-        #             n.actions.get_serial = True
-        #         if not n.ios:
-        #             n.actions.get_ios = True
-        #         if not n.plat:
-        #             n.actions.get_plat = True
-        #         n.query_node()
+        # we may have missed chassis info
+        for n in self.nodes:
+            if not any([n.serial, n.plat, n.ios]):
+                n.actions.get_chassis_info = True
+                if not n.serial:
+                    n.actions.get_serial = True
+                if not n.ios:
+                    n.actions.get_ios = True
+                if not n.plat:
+                    n.actions.get_plat = True
+                n.query_node()
 
 
-    def discover_details(self):
-        ''' Enumerate the discovered nodes from discover() and update the
-        nodes in the array with additional info.
-        '''
-        if not self.root_node:
-            return
-        self._print('\nCollecting node details...')
-        ni = 0
-        for node in self.nodes:
-            ni += 1
-            indicator = '+'
-            if not node.snmp.success:
-                indicator = '!'
-            self._print(f"[{ni}/{len(self.nodes)}]{indicator} {node.name} ({node.snmp.ip})")
-            # # set what details to discover for this node
-            # node.actions.get_router = True
-            # node.actions.get_ospf_id = True
-            # node.actions.get_bgp_las = True
-            # node.actions.get_hsrp_pri = True
-            # node.actions.get_hsrp_vip = True
-            # node.actions.get_serial = True
-            # node.actions.get_stack = True
-            # node.actions.get_stack_details = self.config.diagram.get_stack_members
-            # node.actions.get_vss = True
-            # node.actions.get_vss_details = self.config.diagram.get_vss_members
-            # node.actions.get_svi = True
-            # node.actions.get_lo = True
-            # node.actions.get_vpc = True
-            # node.actions.get_ios = True
-            # node.actions.get_plat = True
-            start = timer()
-            node.query_node()
-            end = timer()
-            self._print(f"Node query took: {end - start:.2f} secs")
-            # There is some back fill information we can populate now that
-            # we know all there is to know.
-            self._print("Back filling node details...")
-            # Find and link VPC nodes together for easy reference later
-            if node.vpc_domain and not node.vpc_peerlink_node:
-                for link in node.links:
-                    if node.vpc_peerlink_if in [link.local_port, link.local_lag]:
-                        node.vpc_peerlink_node = link.node
-                        link.node.vpc_peerlink_node = node
-                        break
-
-
-    def print_step(self, ip, name, dcodes, depth=0):
-        dcodes = dcodes if isinstance(dcodes, list) else list(dcodes)
-        if DCODE.DISCOVERED in dcodes:
-            self._print(f"{len(self.nodes):-3}")
-        else:
-            self._print("")
-        if DCODE.INCLUDE in dcodes:
-            # Remove SNMP error on 'include' nodes b/c we don't attempt
-            if DCODE.ERR_SNMP in dcodes:
-                dcode.remove(DCODE.ERR_SNMP)
-            self._print(DCODE.ROOT_STR)
-        elif DCODE.CDP in dcodes:
-            self._print(DCODE.CDP_STR)
-        elif DCODE.LLDP in dcodes:
-            self._print(DCODE.LLDP_STR)
-        else:
-            self._print("")
-        status = ""
-        if DCODE.ERR_SNMP in dcodes:
-            status += DCODE.ERR_SNMP_STR
-        if DCODE.LEAF in dcodes:
-            status += DCODE.LEAF_STR
-        elif DCODE.INCLUDE in dcodes:
-            status += DCODE.INCLUDE_STR
-        if DCODE.DISCOVERED in dcodes:
-            status += DCODE.DISCOVERED_STR
-        elif DCODE.STEP_INTO in dcodes:
-            status += DCODE.STEP_INTO_STR
-        self._print(f"{status:3s}")
-        for i in range(0, depth):
-            self._print(".")
-        name = normalize_host(name, self.config.host_domains)
-        self._print(f"{name} ({ip})")
-
-
-    def query_ip(self, ip, hostname='UNKNOWN'):
-        ''' Query this IP.
-        Return node details and if we already knew about it or if this is a new node.
-        Don't save the node to the known list, just return info about it.
-        Args:
-            ip:                 IP Address of the node.
-            host:               Hostname of this known (if known from CDP/LLDP)
-        Returns:
-            Node:        Node of this object
-            int:                NODE.NEW = Newly queried node
-                                NODE.NEWIP = Already knew about this node but not by this IP
-                                NODE.KNOWN = Already knew about this node
-        '''
-        host = normalize_host(hostname, self.config.host_domains)
-        node, node_updated = self.get_known_node(ip, host)
-        if node:
-            if node.queried:
-                return node, NODE.KNOWN
-            state = NODE.NEWIP if node_updated else NODE.KNOWN
-        else:
-            node = Node(ip)
-            state = NODE.NEW
-        # vmware ESX reports the IP as 0.0.0.0
-        # LLDP can return an empty string for IPs.
-        if ip in NOTHING or not node.get_snmp_creds(self.config.snmp_creds):
-            return node, state
-        node.query_node()
-        node.name = node.get_system_name(self.config.host_domains)
-        if node.name != hostname:
-            # the hostname changed (cdp/lldp vs snmp)!
-            # double check we don't already know about this node
-            if state == NODE.NEW:
-                node2, node2_updated = self.get_known_node(ip, host)
-                if node2 and not node2_updated:
-                    return node, NODE.KNOWN
-                elif node2_updated:
-                    state = NODE.NEWIP
-        # Finally, if we still don't have a name, use the IP.
-        # e.g. Maybe CDP/LLDP was empty and we dont have good credentials
-        # for this device.  A blank name can break Dot.
-        if node.name in NOTHING:
-            node.name = node.get_ipaddr().replace('.', '_')
-        # CDP/LLDP does not report, need for extended ACL
-        node.actions.get_serial = True
-        node.query_node()
-        return node, state
-
-
-    def get_known_node(self, ip, hostname='UNKNOWN'):
-        ''' Look for known nodes by IP and HOSTNAME.
-        If found by HOSTNAME, add the IP if not already known.
-        Return:
-            node:       Node, if found. Otherwise False.
-            updated:    True=updated, False=not updated
-        '''
-        current_node = None
-        for x in self.nodes:
-            for xip in x.ip:
-                if xip == '0.0.0.0':
-                    continue
-                if xip == ip:
-                    return x, False
-            if x.name == hostname:
-                current_node = x
-        if current_node:
-            if ip not in current_node.ip:
-                current_node.ip.append(ip)
-                return current_node, True
-            return current_node, False
-        else:
-            return False, False
-
-
-    def discover_node(self, node, depth):
-        ''' Given a node, recursively enumerate its adjacencies
+    def discover_node(self, node, depth=None):
+        """ Given a node, recursively enumerate its adjacencies
         until we reach the specified depth (>0).
         Args:
-            node:   Node object to enumerate.
-            depth:  The depth left that we can go further away from the root.
-        '''
-        if depth >= self.max_depth or node.queried:
+        node:   Node object to enumerate.
+        depth:  The depth left that we can go further away from the root.
+        """
+        if not depth:
+            depth = self.max_depth
+        if depth > self.max_depth or node.queried:
             return
-        node.queried = True
         # vmware ESX can report IP as 0.0.0.0
         # If we are allowing 0.0.0.0/32 in the config,
         # then we added it, but don't discover it
@@ -283,11 +130,165 @@ class Network(BaseData):
                 self.discover_node(child, depth+1)
 
 
+    def discover_details(self):
+        """ Enumerate the discovered nodes from discover() and update the
+        nodes in the array with additional info.
+        """
+        if not self.root_node:
+            return
+        self._print('\nCollecting node details...')
+        ni = 0
+        for node in self.nodes:
+            ni += 1
+            indicator = '+'
+            if not node.snmp.success:
+                indicator = '!'
+            self._print(f"[{ni}/{len(self.nodes)}]{indicator} {node.name} ({node.snmp.ip})")
+            # # set what details to discover for this node
+            # node.actions.get_router = True
+            # node.actions.get_ospf_id = True
+            # node.actions.get_bgp_las = True
+            # node.actions.get_hsrp_pri = True
+            # node.actions.get_hsrp_vip = True
+            # node.actions.get_serial = True
+            # node.actions.get_stack = True
+            # node.actions.get_stack_details = self.config.diagram.get_stack_members
+            # node.actions.get_vss = True
+            # node.actions.get_vss_details = self.config.diagram.get_vss_members
+            # node.actions.get_svi = True
+            # node.actions.get_lo = True
+            # node.actions.get_vpc = True
+            # node.actions.get_ios = True
+            # node.actions.get_plat = True
+            start = timer()
+            node.query_node()
+            end = timer()
+            self._print(f"Node query took: {end - start:.2f} secs")
+            # There is some back fill information we can populate now that
+            # we know all there is to know.
+            self._print("Back filling node details...")
+            # Find and link VPC nodes together for easy reference later
+            if node.vpc_domain and not node.vpc_peerlink_node:
+                for link in node.links:
+                    if node.vpc_peerlink_if in [link.local_port, link.local_lag]:
+                        node.vpc_peerlink_node = link.node
+                        link.node.vpc_peerlink_node = node
+                        break
+
+
+    def query_ip(self, ip, hostname='UNKNOWN'):
+        """ Query this IP.
+        Return node details and if we already knew about it or if this is a new node.
+        Don't save the node to the known list, just return info about it.
+        Args:
+        ip:                 IP Address of the node.
+        host:               Hostname of this known (if known from CDP/LLDP)
+        Returns:
+        Node:        Node of this object
+        int:                NODE.NEW = Newly queried node
+        NODE.NEWIP = Already knew about this node but not by this IP
+        NODE.KNOWN = Already knew about this node
+        """
+        host = normalize_host(hostname, self.config.host_domains)
+        node, node_updated = self.get_known_node(ip, host)
+        if node:
+            if node.queried:
+                return node, NODE.KNOWN
+            state = NODE.NEWIP if node_updated else NODE.KNOWN
+        else:
+            node = Node(ip)
+            state = NODE.NEW
+        # vmware ESX reports the IP as 0.0.0.0
+        # LLDP can return an empty string for IPs.
+        if ip in NOTHING or not node.get_snmp_creds(self.config.snmp_creds):
+            return node, state
+        node.query_node()
+        node.name = node.get_system_name(self.config.host_domains)
+        if node.name != hostname:
+            # the hostname changed (cdp/lldp vs snmp)!
+            # double check we don't already know about this node
+            if state == NODE.NEW:
+                node2, node2_updated = self.get_known_node(ip, host)
+                if node2 and not node2_updated:
+                    return node, NODE.KNOWN
+                elif node2_updated:
+                    state = NODE.NEWIP
+        # Finally, if we still don't have a name, use the IP.
+        # e.g. Maybe CDP/LLDP was empty and we dont have good credentials
+        # for this device.  A blank name can break Dot.
+        if node.name in NOTHING:
+            node.name = node.get_ipaddr().replace('.', '_')
+        # CDP/LLDP does not report, need for extended ACL
+        node.actions.get_serial = True
+        node.query_node()
+        return node, state
+
+
+    def get_known_node(self, ip, hostname='UNKNOWN'):
+        """ Look for known nodes by IP and HOSTNAME.
+        If found by HOSTNAME, add the IP if not already known.
+        Return:
+        node:       Node, if found. Otherwise False.
+        updated:    True=updated, False=not updated
+        """
+        current_node = None
+        for x in self.nodes:
+            for xip in x.ip:
+                if xip == '0.0.0.0':
+                    continue
+                if xip == ip:
+                    return x, False
+            if x.name == hostname:
+                current_node = x
+        if current_node:
+            if ip not in current_node.ip:
+                current_node.ip.append(ip)
+                return current_node, True
+            return current_node, False
+        else:
+            return False, False
+
+
+    def print_step(self, ip, name, dcodes, depth=0):
+        dcodes = dcodes if isinstance(dcodes, list) else list(dcodes)
+        if DCODE.DISCOVERED in dcodes:
+            self._print(f"{len(self.nodes):-3}")
+        else:
+            self._print("")
+        if DCODE.INCLUDE in dcodes:
+            # Remove SNMP error on 'include' nodes b/c we don't attempt
+            if DCODE.ERR_SNMP in dcodes:
+                dcode.remove(DCODE.ERR_SNMP)
+            self._print(DCODE.ROOT_STR)
+        elif DCODE.CDP in dcodes:
+            self._print(DCODE.CDP_STR)
+        elif DCODE.LLDP in dcodes:
+            self._print(DCODE.LLDP_STR)
+        else:
+            self._print("")
+        status = ""
+        if DCODE.ERR_SNMP in dcodes:
+            status += DCODE.ERR_SNMP_STR
+        if DCODE.LEAF in dcodes:
+            status += DCODE.LEAF_STR
+        elif DCODE.INCLUDE in dcodes:
+            status += DCODE.INCLUDE_STR
+        if DCODE.DISCOVERED in dcodes:
+            status += DCODE.DISCOVERED_STR
+        elif DCODE.STEP_INTO in dcodes:
+            status += DCODE.STEP_INTO_STR
+        self._print(f"{status:3s}")
+        for i in range(0, depth):
+            self._print(".")
+        name = normalize_host(name, self.config.host_domains)
+        self._print(f"{name} ({ip})")
+
+
     def add_update_link(self, node, link):
-        ''' Add or update a link.
+        """ Add or update a link.
         True - Added as a new link
         False - Found an existing link and updated it
-        '''
+        """
         if link.node.queried:
             # both nodes have been queried,
             # so try to update existing reverse link info

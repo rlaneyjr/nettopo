@@ -143,7 +143,7 @@ class Nettopo:
 
 
     def get_node_ip(self, node):
-        return node.get_ipaddr()
+        return node.get_ips()
 
 
     def get_switch_arp(self, switch_ip, ip=None, mac=None, interf=None, arp_type=None):

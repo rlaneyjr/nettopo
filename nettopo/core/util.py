@@ -36,6 +36,7 @@ __all__ = [
     'oid_last_token',
 ]
 
+
 def timethis(func):
     @wraps(func)
     def run_func(*args, **kwargs):

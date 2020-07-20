@@ -7,6 +7,7 @@
 from functools import cached_property
 from typing import Union
 from .cache import Cache
+from .constants import NOTHING
 from .data import LinkData, StackData
 from .snmp import SNMP
 from .util import (timethis,
@@ -34,15 +35,16 @@ from .constants import OID, ARP, DCODE, NODE
 
 
 class Node(BaseData):
-    def __init__(self, ip: Union[str, list], immediate_query: bool=False) -> None:
-        self.ip = ip if isinstance(ip, list) else [ip]
-        self.snmp = SNMP(self.ip[0])
+    def __init__(self, ip: str, immediate_query: bool=False) -> None:
+        self.ip = ip
+        self.snmp = SNMP(self.ip)
         self.cache = Cache(self.snmp)
         self.actions = NodeActions()
-        self.links = []
-        self.svis = []
-        self.loopbacks = []
         self.queried = False
+        self.ips = None
+        self.links = None
+        self.svis = None
+        self.loopbacks = None
         self.stack = None
         self.vss = None
         self.name = None
@@ -79,13 +81,18 @@ class Node(BaseData):
         if self.snmp.success:
             return True
         else:
-            for ipaddr in self.ip:
-                if ipaddr in ['0.0.0.0', 'UNKNOWN', '']:
-                    continue
-                self.snmp.ip = ipaddr
-                if self.snmp.get_creds(snmp_creds):
-                    return True
-            return False
+            if self.ip in NOTHING:
+                self.snmp.ip = self.get_ips()
+            if self.snmp.get_creds(snmp_creds):
+                self.ip = self.snmp.ip
+                return True
+            else:
+                for ip in self.ips:
+                    self.snmp.ip = ip
+                    if self.snmp.get_creds(snmp_creds):
+                        self.ip = self.snmp.ip
+                        return True
+        return False
 
 
     def query_node(self):
@@ -98,7 +105,7 @@ class Node(BaseData):
             return False
         if self.actions.get_name:
             self.name_raw = self.cache.name
-            self.name = normalize_host(self.name_raw)
+            self.name = self.get_system_name()
         # router
         if self.actions.get_router:
             router = self.cache.router
@@ -134,17 +141,18 @@ class Node(BaseData):
                 self.serial = self.cache.serial
         # SVI
         if self.actions.get_svi:
+            self.svis = []
             self.cache.svi
             for row in self.cache.svi:
                 for k, v in row:
                     k = str(k)
                     vlan = k.split('.')[14]
                     svi = SVIData(vlan)
-                    svi_ips = self.get_cidrs_ifidx(v)
-                    svi.ip.extend(svi_ips)
+                    svi.ips = self.get_cidrs_ifidx(v)
                     self.svis.append(svi)
         # loopback
         if self.actions.get_lo:
+            self.loopbacks = []
             self.cache.ethif
             self.cache.ifip
             for row in self.cache.ethif:
@@ -366,30 +374,28 @@ class Node(BaseData):
 
 
     def get_system_name(self, domains=None):
-        return normalize_host(self.cache.name, domains) if domains \
-                                                else self.cache.name
+        if not self.queried:
+            self.query_node()
+        return normalize_host(self.name_raw, domains)
 
 
-    def get_ipaddr(self):
-        """ Returns the first matching IP:
-            - Lowest Loopback interface
-            - Lowest SVI address/known IP
+    def get_ips(self):
+        """ Collects and stores all the IPs for Node
+        Return the lowest numbered IP of all interfaces
         """
+        self.ips = list(self.ip)
+        if not self.queried:
+            self.query_node()
         # Loopbacks
         if self.loopbacks:
-            ips = self.loopbacks[0].ips
-            if ips:
-                ips.sort()
-                return ip_from_cidr(ips[0])
+            for lb in self.loopbacks:
+                self.ips.append(lb.ip)
         # SVIs
-        ips = []
-        for svi in self.svis:
-            ips.extend(svi.ip)
-        ips.extend(self.ip)
-        if ips:
-            ips.sort()
-            return ip_from_cidr(ips[0])
-        return self.ip[0]
+        if self.svis:
+            for svi in self.svis:
+                self.ips.extend(svi.ips)
+        self.ips.sort()
+        return ip_from_cidr(self.ips[0])
 
 
     def get_vpc(self, ifarr):

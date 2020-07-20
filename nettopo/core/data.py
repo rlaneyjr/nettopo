@@ -22,33 +22,42 @@ __all__ = [
 ]
 
 
-class BaseData:
-    def __repr__(self):
-        return self.show
 
-    def _as_dict(self):
-        IGN_DEFS = ['show']
+
+class BaseData:
+    """ Base Data class that all other classes inherit from
+    Provides:
+    :property:  show - Show the items_2_show
+    """
+    def _as_dict(self) -> dict:
+        _ignores = ['_', 'get', 'add', 'actions', 'cache',
+                    'query_node', 'snmp', 'show']
         _dict = {}
-        for item in self.__dir__():
-            if not item.startswith('_') and item not in IGN_DEFS:
+        for item in dir(self):
+            if not any([item.startswith(x) for x in _ignores]):
                 val = self.__getattribute__(item)
                 _dict.update({item: val})
         return _dict
 
-    def __str__(self):
-        attrs = [f"{key.capitalize()} = {val}" for key, val in
-                 self._as_dict().items()]
-        return "\n".join(attrs)
-
     @property
-    def show(self) -> str:
+    def show(self) -> dict:
+        _dict = {}
         try:
-            attrs = [f"{key}={val}" for key, val in self._as_dict().items()
-                     if key in self.items_2_show]
+            for item in self.items_2_show:
+                val = self.__getattribute__(item)
+                _dict.update({item: val})
+            return _dict
         except AttributeError:
-            attrs = [f"{key}={val}" for key, val in self._as_dict().items()]
-        attrs = ",".join(attrs)
-        return f"<{attrs}>"
+            return self._as_dict()
+
+    def __str__(self) -> str:
+        items = [f"{key} = {val}" for key, val in self.show.items()]
+        return  "\n".join(items)
+
+    def __repr__(self):
+        items = [f"{key}={val}" for key, val in self.show.items()]
+        items = ",".join(items)
+        return f"<{items}>"
 
 
 class NodeActions(BaseData):
@@ -122,7 +131,7 @@ class StackData(BaseData):
 class SVIData(BaseData):
     def __init__(self, vlan):
         self.vlan = vlan
-        self.ip = []
+        self.ips = None
 
 
 class LoopBackData(BaseData):
