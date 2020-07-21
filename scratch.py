@@ -49,7 +49,8 @@ def pptable(table):
             ppt_items.append(item.prettyPrint())
     return ppt_items
 
-import ipdb
+# import ipdb
+# ipdb.set_trace()
 import binascii
 from nettopo.core.constants import *
 from nettopo.core.util import *
@@ -61,7 +62,6 @@ def get_cdp_neighbors(switch):
     # get list of CDP neighbors
     neighbors = []
     switch.cache.cdp = switch.snmp.get_bulk(OID.CDP)
-    ipdb.set_trace()
     if not switch.cache.cdp:
         print('No CDP Neighbors Found.')
         return []
@@ -106,6 +106,8 @@ def get_cdp_neighbors(switch):
 
 
 from nettopo.core.data import *
+from nettopo.core.constants import *
+from nettopo.core.util import *
 def get_link(switch, ifidx):
     # ipdb.set_trace()
     link = LinkData()
@@ -135,3 +137,21 @@ def get_link(switch, ifidx):
     link.remote_lag_ips = []
     return link
 
+
+from nettopo.core.constants import *
+from nettopo.core.util import *
+def get_cidrs_ifidx(switch, ifidx):
+    ips = []
+    for ifrow in switch.cache.ifip:
+        for ifn, ifv in ifrow:
+            ifn = str(ifn)
+            if ifn.startswith(OID.IF_IP_ADDR):
+                if str(ifv) == str(ifidx):
+                    t = ifn.split('.')
+                    ip = ".".join(t[10:])
+                    mask = lookup_table(switch.cache.ifip,
+                                        f"{OID.IF_IP_NETM}{ip}")
+                    nbits = bits_from_mask(mask)
+                    cidr = f"{ip}/{nbits}"
+                    ips.append(cidr)
+        return ips

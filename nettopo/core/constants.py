@@ -3,6 +3,15 @@
 
 '''
 nettopo.py
+
+1 - ISO assigned OIDs
+1.3 - ISO Identified Organization
+1.3.6 - US Department of Defense
+1.3.6.1 - OID assignments from 1.3.6.1 - Internet
+1.3.6.1.2 - IETF Management
+1.3.6.1.2.1 - SNMP MIB-2
+1.3.6.1.2.1.4 - ip
+1.3.6.1.2.1.4.21 - ipRouteTable
 '''
 from dataclasses import dataclass
 
@@ -81,6 +90,19 @@ class DCODE:
 
 @dataclass
 class OID:
+    """
+    1 - ISO assigned OIDs
+    1.3 - ISO Identified Organization
+    1.3.6 - US Department of Defense
+    1.3.6.1 - OID assignments from 1.3.6.1 - Internet
+    1.3.6.1.2 - IETF Management
+    1.3.6.1.2.1 - SNMP MIB-2
+    1.3.6.1.2.1.4 - ip
+    1.3.6.1.2.1.4.21 - ipRouteTable
+    """
+    SNMP_MIB_2: str = '1.3.6.1.2.1'
+    IP: str = '1.3.6.1.2.1.4'
+    IP_ROUTE_TABLE: str = '1.3.6.1.2.1.4.21'
     SYSNAME: str = '1.3.6.1.2.1.1.5.0'
     SYS_SERIAL: str = '1.3.6.1.4.1.9.3.6.3.0'
     SYS_BOOT: str = '1.3.6.1.4.1.9.2.1.73.0'

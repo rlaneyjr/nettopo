@@ -22,8 +22,6 @@ __all__ = [
 ]
 
 
-
-
 class BaseData:
     """ Base Data class that all other classes inherit from
     Provides:
@@ -60,7 +58,7 @@ class BaseData:
         return f"<{items}>"
 
 
-class NodeActions(BaseData):
+class NodeActions:
     def __init__(self, init: bool=True):
         self.get_name = init
         self.get_ip = init
@@ -135,9 +133,9 @@ class SVIData(BaseData):
 
 
 class LoopBackData(BaseData):
-    def __init__(self, name, ips):
+    def __init__(self, name, ip):
         self.name = name
-        self.ips = ips
+        self.ip = ip
 
 
 class VLANData(BaseData):

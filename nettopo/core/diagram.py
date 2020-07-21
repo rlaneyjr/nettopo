@@ -25,13 +25,13 @@ class DotNode:
         self.style = 'solid'
         self.peripheries = 1
         # set the node properties
-        if self.node.vss.enabled:
+        if self.node.vss:
             if self.config.expand_vss:
                 self.ntype = 'vss'
             else:
                 # group VSS into one diagram node
                 self.peripheries = 2
-        if self.node.stack.enabled:
+        if self.node.stack:
             if self.config.expand_stackwise:
                 self.ntype = 'stackwise'
             else:
@@ -198,9 +198,9 @@ class Diagram:
         lmod = get_port_module(link.local_port)
         rmod = get_port_module(link.remote_port)
         if self.config.expand_vss:
-            if node.vss.enabled:
+            if node.vss:
                 edge_src = f"{node.name}[VSS{lmod}]"
-            if link.node.vss.enabled:
+            if link.node.vss:
                 edge_dst = f"{link.node.name}[VSS{rmod}]"
         if self.config.expand_stackwise:
             if node.stack.count:

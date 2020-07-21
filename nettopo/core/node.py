@@ -10,6 +10,7 @@ from typing import Union
 from .cache import Cache
 from .constants import NOTHING
 from .data import LinkData, StackData
+from .exceptions import NettopoSNMPError, NettopoNodeError
 from .snmp import SNMP
 from .util import (timethis,
                    bits_from_mask,
@@ -96,14 +97,45 @@ class Node(BaseData):
         return False
 
 
-    def query_node(self):
+    def query(self) -> None:
+        self.queried = True
+        if not self.snmp.success:
+            raise NettopoNodeError(f"FAILED: SNMP credentials")
+        self.cache.name
+        self.cache.cdp
+        self.cache.lldp
+        self.cache.link_type
+        self.cache.lag
+        self.cache.vlan
+        self.cache.vlandesc
+        self.cache.ifname
+        self.cache.svi
+        self.cache.ifip
+        self.cache.ethif
+        self.cache.trunk_allowed
+        self.cache.trunk_native
+        self.cache.vpc
+        self.cache.arp
+        self.cache.serial
+        self.cache.bootfile
+        self.cache.ent_class
+        self.cache.ent_serial
+        self.cache.ent_plat
+        self.cache.ent_ios
+        self.cache.router
+        self.cache.ospf
+        self.cache.ospf_id
+        self.cache.bgp
+        self.cache.hsrp
+        self.cache.hsrp_vip
+
+
+    def query_node(self) -> None:
         """ Query this node.
         Builds the cache for this node.
         """
-        self.queried = True
-        if not self.snmp.success:
-            # failed to find good creds
-            return False
+        if not self.queried:
+            self.query()
         if self.actions.get_name:
             self.name_raw = self.cache.name
             self.name = self.get_system_name()
@@ -163,8 +195,8 @@ class Node(BaseData):
                         ifidx = k.split('.')[10]
                         lo_name = lookup_table(self.cache.ethif,
                                                f"{OID.ETH_IF_DESC}.{ifidx}")
-                        lo_ips = self.get_cidrs_ifidx(ifidx)
-                        lo = LoopBackData(lo_name, lo_ips)
+                        lo_ip = self.get_cidrs_ifidx(ifidx)
+                        lo = LoopBackData(lo_name, lo_ip)
                         self.loopbacks.append(lo)
         # bootfile
         if self.actions.get_bootf:
@@ -177,21 +209,24 @@ class Node(BaseData):
             self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.cache.ethif)
 
 
-    def get_cidrs_ifidx(self, ifidx):
+    def get_cidrs_ifidx(self, idx):
         ips = []
-        for ifrow in self.cache.ifip:
-            for ifn, ifv in ifrow:
-                ifn = str(ifn)
-                if ifn.startswith(OID.IF_IP_ADDR):
-                    if str(ifv) == str(ifidx):
-                        t = ifn.split('.')
+        for row in self.cache.ifip:
+            for n, v in row:
+                n = str(n)
+                if n.startswith(OID.IF_IP_ADDR):
+                    if str(v) == str(idx):
+                        t = n.split('.')
                         ip = ".".join(t[10:])
                         mask = lookup_table(self.cache.ifip,
                                             f"{OID.IF_IP_NETM}{ip}")
-                        nbits = bits_from_mask(mask)
-                        cidr = f"{ip}/{nbits}"
+                        mask = bits_from_mask(mask)
+                        cidr = f"{ip}/{mask}"
                         ips.append(cidr)
-        return ips
+        if ips:
+            return ips if len(ips) > 1 else ips[0]
+        else:
+            return None
 
 
     def get_cdp_neighbors(self):
@@ -390,11 +425,13 @@ class Node(BaseData):
         # Loopbacks
         if self.loopbacks:
             for lb in self.loopbacks:
-                self.ips.append(lb.ip)
+                if lb.ip:
+                    self.ips.append(lb.ip)
         # SVIs
         if self.svis:
             for svi in self.svis:
-                self.ips.extend(svi.ips)
+                if svi.ips:
+                    self.ips.extend(svi.ips)
         self.ips.sort()
         return ip_from_cidr(self.ips[0])
 

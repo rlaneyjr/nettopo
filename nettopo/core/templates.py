@@ -20,7 +20,7 @@ credits_template = '''
 
 node_template = '''
 <font point-size="10"><b>{{ node.name }}</b></font><br />
-{{ node.get_ipaddr() }}<br />
+{{ node.get_ips() }}<br />
 {% if node.ios %}
     {{ node.ios }}<br />
 {% endif %}
