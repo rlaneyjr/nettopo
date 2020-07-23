@@ -1,0 +1,187 @@
+Capability Codes: R - Router, T - Trans Bridge, B - Source Route Bridge
+                  S - Switch, H - Host, I - IGMP, r - Repeater, P - Phone,
+                  D - Remote, C - CVTA, M - Two-port Mac Relay
+
+Device ID        Local Intrfce     Holdtme    Capability  Platform  Port ID
+SEP84B51708B63E  Gig 1/0/11        124             H P M  IP Phone  Port 1
+switch2.icloudmon.local
+                 Gig 1/0/24        175             R S I  WS-C3750X Gig 1/0/48
+switch2.icloudmon.local
+                 Gig 1/0/23        157             R S I  WS-C3750X Gig 1/0/47
+
+Total cdp entries displayed : 3
+Capability codes:
+    (R) Router, (B) Bridge, (T) Telephone, (C) DOCSIS Cable Device
+    (W) WLAN Access Point, (P) Repeater, (S) Station, (O) Other
+
+Device ID           Local Intf     Hold-time  Capability      Port ID
+SEP84B51708B63E     Gi1/0/11       180        B,T             84B51708B63E:P1
+switch2.icloudmon.loGi1/0/24       120        B,R             Gi1/0/48
+switch2.icloudmon.loGi1/0/23       120        B,R             Gi1/0/47
+
+Total entries displayed: 3
+
+Codes: L - local, C - connected, S - static, R - RIP, M - mobile, B - BGP
+       D - EIGRP, EX - EIGRP external, O - OSPF, IA - OSPF inter area
+       N1 - OSPF NSSA external type 1, N2 - OSPF NSSA external type 2
+       E1 - OSPF external type 1, E2 - OSPF external type 2
+       i - IS-IS, su - IS-IS summary, L1 - IS-IS level-1, L2 - IS-IS level-2
+       ia - IS-IS inter area, * - candidate default, U - per-user static route
+       o - ODR, P - periodic downloaded static route, H - NHRP, l - LISP
+       a - application route
+       + - replicated route, % - next hop override, p - overrides from PfR
+
+Gateway of last resort is 10.0.0.5 to network 0.0.0.0
+
+S*    0.0.0.0/0 [1/0] via 10.0.0.5
+      1.0.0.0/32 is subnetted, 1 subnets
+C        1.1.1.3 is directly connected, Loopback0
+      10.0.0.0/8 is variably subnetted, 56 subnets, 4 masks
+C        10.0.0.0/27 is directly connected, Vlan100
+L        10.0.0.1/32 is directly connected, Vlan100
+C        10.0.11.0/24 is directly connected, Vlan11
+L        10.0.11.1/32 is directly connected, Vlan11
+C        10.0.20.0/24 is directly connected, Vlan20
+L        10.0.20.1/32 is directly connected, Vlan20
+C        10.0.21.0/24 is directly connected, Vlan21
+L        10.0.21.1/32 is directly connected, Vlan21
+C        10.0.23.0/24 is directly connected, Vlan23
+L        10.0.23.1/32 is directly connected, Vlan23
+C        10.0.24.0/24 is directly connected, Vlan24
+L        10.0.24.1/32 is directly connected, Vlan24
+C        10.0.25.0/24 is directly connected, Vlan25
+L        10.0.25.1/32 is directly connected, Vlan25
+C        10.0.26.0/24 is directly connected, Vlan26
+L        10.0.26.1/32 is directly connected, Vlan26
+C        10.0.27.0/24 is directly connected, Vlan27
+L        10.0.27.1/32 is directly connected, Vlan27
+C        10.0.28.0/24 is directly connected, Vlan28
+L        10.0.28.1/32 is directly connected, Vlan28
+C        10.0.29.0/24 is directly connected, Vlan29
+L        10.0.29.1/32 is directly connected, Vlan29
+C        10.0.30.0/24 is directly connected, Vlan30
+L        10.0.30.1/32 is directly connected, Vlan30
+C        10.0.31.0/24 is directly connected, Vlan31
+L        10.0.31.1/32 is directly connected, Vlan31
+C        10.0.32.0/24 is directly connected, Vlan32
+L        10.0.32.1/32 is directly connected, Vlan32
+C        10.0.33.0/24 is directly connected, Vlan33
+L        10.0.33.1/32 is directly connected, Vlan33
+C        10.0.34.0/24 is directly connected, Vlan34
+L        10.0.34.1/32 is directly connected, Vlan34
+C        10.0.35.0/24 is directly connected, Vlan35
+L        10.0.35.1/32 is directly connected, Vlan35
+C        10.0.36.0/24 is directly connected, Vlan36
+L        10.0.36.1/32 is directly connected, Vlan36
+C        10.0.37.0/24 is directly connected, Vlan37
+L        10.0.37.1/32 is directly connected, Vlan37
+C        10.0.124.0/24 is directly connected, Vlan124
+L        10.0.124.1/32 is directly connected, Vlan124
+C        10.0.125.0/24 is directly connected, Vlan125
+L        10.0.125.1/32 is directly connected, Vlan125
+C        10.0.126.0/24 is directly connected, Vlan126
+L        10.0.126.1/32 is directly connected, Vlan126
+C        10.0.127.0/24 is directly connected, Vlan127
+L        10.0.127.1/32 is directly connected, Vlan127
+C        10.0.128.0/24 is directly connected, Vlan128
+L        10.0.128.1/32 is directly connected, Vlan128
+C        10.0.129.0/24 is directly connected, Vlan129
+L        10.0.129.1/32 is directly connected, Vlan129
+C        10.0.130.0/24 is directly connected, Vlan130
+L        10.0.130.1/32 is directly connected, Vlan130
+C        10.10.0.0/16 is directly connected, Vlan104
+L        10.10.0.1/32 is directly connected, Vlan104
+C        10.20.0.0/16 is directly connected, Vlan105
+L        10.20.0.1/32 is directly connected, Vlan105
+      172.16.0.0/16 is variably subnetted, 8 subnets, 2 masks
+C        172.16.1.0/24 is directly connected, Vlan101
+L        172.16.1.1/32 is directly connected, Vlan101
+C        172.16.2.0/24 is directly connected, Vlan102
+L        172.16.2.1/32 is directly connected, Vlan102
+C        172.16.3.0/24 is directly connected, Vlan103
+L        172.16.3.1/32 is directly connected, Vlan103
+C        172.16.10.0/24 is directly connected, Vlan110
+L        172.16.10.1/32 is directly connected, Vlan110
+
+Cisco IOS XE Software, Version 16.06.04a
+Cisco IOS Software [Everest], Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 16.6.4a, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Fri 26-Oct-18 18:32 by mcpre
+
+
+Cisco IOS-XE software, Copyright (c) 2005-2018 by cisco Systems, Inc.
+All rights reserved.  Certain components of Cisco IOS-XE software are
+licensed under the GNU General Public License ("GPL") Version 2.0.  The
+software code licensed under GPL Version 2.0 is free software that comes
+with ABSOLUTELY NO WARRANTY.  You can redistribute and/or modify such
+GPL code under the terms of GPL Version 2.0.  For more details, see the
+documentation or "License Notice" file accompanying the IOS-XE software,
+or the applicable URL provided on the flyer accompanying the IOS-XE
+software.
+
+
+ROM: IOS-XE ROMMON
+BOOTLDR: CAT3K_CAA Boot Loader (CAT3K_CAA-HBOOT-M) Version 4.68, RELEASE SOFTWARE (P)
+
+switch1 uptime is 3 weeks, 23 hours, 29 minutes
+Uptime for this control processor is 3 weeks, 23 hours, 32 minutes
+System returned to ROM by Power Failure or Unknown at 14:37:27 EDT Fri Dec 23 2016
+System restarted at 22:56:58 EDT Tue Jun 30 2020
+System image file is "flash:packages.conf"
+Last reload reason: Power Failure or Unknown
+
+
+
+This product contains cryptographic features and is subject to United
+States and local country laws governing import, export, transfer and
+use. Delivery of Cisco cryptographic products does not imply
+third-party authority to import, export, distribute or use encryption.
+Importers, exporters, distributors and users are responsible for
+compliance with U.S. and local country laws. By using this product you
+agree to comply with applicable laws and regulations. If you are unable
+to comply with U.S. and local laws, return this product immediately.
+
+A summary of U.S. laws governing Cisco cryptographic products may be found at:
+http://www.cisco.com/wwl/export/crypto/tool/stqrg.html
+
+If you require further assistance please contact us by sending email to
+export@cisco.com.
+
+
+Technology Package License Information:
+
+-----------------------------------------------------------------
+Technology-package                   Technology-package
+Current             Type             Next reboot
+------------------------------------------------------------------
+ipservicesk9        Permanent        ipservicesk9
+
+cisco WS-C3850-24T (MIPS) processor (revision S0) with 853116K/6147K bytes of memory.
+Processor board ID FCW1912D0BY
+34 Virtual Ethernet interfaces
+28 Gigabit Ethernet interfaces
+4 Ten Gigabit Ethernet interfaces
+2048K bytes of non-volatile configuration memory.
+4194304K bytes of physical memory.
+250456K bytes of Crash Files at crashinfo:.
+1609272K bytes of Flash at flash:.
+0K bytes of WebUI ODM Files at webui:.
+
+Base Ethernet MAC Address          : 88:90:8d:1b:17:80
+Motherboard Assembly Number        : 73-14443-08
+Motherboard Serial Number          : FOC19121FAJ
+Model Revision Number              : S0
+Motherboard Revision Number        : A0
+Model Number                       : WS-C3850-24T
+System Serial Number               : FCW1912D0BY
+
+
+Switch Ports Model              SW Version        SW Image              Mode
+------ ----- -----              ----------        ----------            ----
+*    1 32    WS-C3850-24T       16.6.4a           CAT3K_CAA-UNIVERSALK9 INSTALL
+
+
+Configuration register is 0x102
+
+
