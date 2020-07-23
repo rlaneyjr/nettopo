@@ -15,9 +15,9 @@ o = GeneralOids()
 
 class HostInfo:
 
-    def __init__(self, Snmp, contact=None, description=None, location=None,
+    def __init__(self, snmp, contact=None, description=None, location=None,
             os=None, vendor=None, sysobjectid=None):
-        if not isinstance(Snmp, SnmpHandler):
+        if not isinstance(snmp, SnmpHandler):
             raise NettopoSNMPError('Must pass a Nettopo SnmpHandler')
 
         self.contact = contact
@@ -28,7 +28,7 @@ class HostInfo:
         self.vendor = vendor
         self.version = None
         self.uptime = None
-        self._snmp = Snmp
+        self._snmp = snmp
 
     def _parse_data(self, data):
         for oid, value in data:

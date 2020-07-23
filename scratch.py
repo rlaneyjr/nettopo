@@ -41,6 +41,24 @@ net.add_snmp_credential('letmeSNMP')
 net.set_discover_maxdepth(100)
 net.discover_network('10.0.0.1', True)
 
+from snimpy.manager import Manager, load
+from nettopo.sysdescrparser import sysdescrparser
+mibs = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'ENTITY-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
+for i in mibs:
+    try:
+        load(i)
+    except:
+        print(f"Unable to load {i}")
+
+sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
+print(sw1.sysDescr)
+sw1_sys = sysdescrparser(str(sw1.sysDescr))
+print(sw1_sys.vendor)
+print(sw1_sys.model)
+print(sw1_sys.version)
+print(sw1_sys.os)
+
+
 def pptable(table):
     ppt_items = []
     for thing in table:
@@ -155,3 +173,16 @@ def get_cidrs_ifidx(switch, ifidx):
                     cidr = f"{ip}/{nbits}"
                     ips.append(cidr)
         return ips
+
+def snmp_extract(snmp_data):
+    '''
+    Unwrap the SNMP response data and return in a readable format
+    Assumes only a single list element is returned
+    '''
+    if len(snmp_data) > 1:
+        raise ValueError("snmp_extract only allows a single element")
+    if len(snmp_data) == 0:
+        return None
+    else:
+        # Unwrap the data which is returned as a tuple wrapped in a list
+        return snmp_data[0][1].prettyPrint()

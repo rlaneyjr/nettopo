@@ -7,12 +7,26 @@ Description:        Node
 Author:             Ricky Laney
 '''
 
-from net import NtIPAddress, NtIPNetwork
+from nettopo.net import NtIPAddress, NtIPNetwork
+from nettopo.sysdescrparser import sysdescrparser
 from netmiko
+from snimpy.manager import Manager, load
+from nettopo.sysdescrparser import sysdescrparser
 from typing import Union, Dict, List
 
 DL = Union[Dict, List]
 IP = Union[NtIPNetwork, NtIPAddress]
+
+mibs = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
+for i in mibs:
+    try:
+        load(i)
+    except:
+        print(f"Unable to load {i}")
+
+sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
+print(sw1.sysDescr)
+sw1_sys = sysdescrparser(str(sw1.sysDescr))
 
 class NettopoNode:
     ''' A NettopoNode is an NtIPAddress that we have at least one of the following

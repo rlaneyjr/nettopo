@@ -2,4 +2,4 @@
 
 """Sysdescrparser."""
 
-from nettopo.sysdescrparser import sysdescrparser
+from .sysdescrparser import sysdescrparser

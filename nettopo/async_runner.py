@@ -28,11 +28,9 @@ class NetworkDevice():
 
     def login(self):
         self.loop = asyncio.new_event_loop()
-
         def f(loop):
             asyncio.set_event_loop(loop)
             loop.run_forever()
-
         thread = Thread(target=f, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_login(), self.loop)
@@ -54,13 +52,10 @@ class NetworkDevice():
     def send_config(self, config):
         if not self.session:
             raise Exception('No session found, login first!')
-
         self.loop = asyncio.new_event_loop()
-
         def f(loop):
             asyncio.set_event_loop(loop)
             loop.run_forever()
-
         thread = Thread(target=f, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_send_config(config),
@@ -74,21 +69,21 @@ class NetworkDevice():
     def send_commands(self, commands):
         if not self.session:
             raise Exception('No session found, login first!')
-
         self.loop = asyncio.new_event_loop()
-
         def f(loop):
             asyncio.set_event_loop(loop)
             loop.run_forever()
-
         thread = Thread(target=f, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_send_commands(commands),
                                          self.loop)
 
     async def async_send_commands(self, commands):
-        for command in commands:
-            self.exec_output.append(self.con.send_command(command))
+        if isinstance(commands, list):
+            for command in commands:
+                self.exec_output.append(self.con.send_command(command))
+        else:
+            self.exec_output.append(self.con.send_command(commands))
         self.exec_done = True
         self.loop.call_soon_threadsafe(self.loop.stop)
 
