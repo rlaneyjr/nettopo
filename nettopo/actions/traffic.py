@@ -79,7 +79,7 @@ class CalcStats(object):
                 return 2 ** 32 - octets1 + octets2
             elif octets1 < 2 ** 64:
                 # 64-bit counter
-                return 2 ** 32 - octets1 + octets2
+                return 2 ** 64 - octets1 + octets2
             else:
                 raise ValueError("Invalid value for octets1: %s" % octets1)
         else:
