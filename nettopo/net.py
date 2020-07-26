@@ -17,11 +17,17 @@ SNIMPY_MIBS = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', '
 class NtIPAddress(IPAddress):
     ''' Represents a ip we will discover
     '''
+    def __init__(self, ip: str) -> None:
+        self.ip = ip
+        super(NtIPAddress).__init__(self.ip)
 
 
 class NtNetwork(IPNetwork):
     ''' Represents a network we will discover
     '''
+    def __init__(self, net: str) -> None:
+        self.net = net
+        super(NtNetwork).__init__(self.net)
 
 
 def load_mibs(mibs: list=SNIMPY_MIBS) -> None:
@@ -49,8 +55,5 @@ class PossibleNetDevice:
     open and accessible.
     """
     def __init__(self, ip: Union[str, IPAddress], ports: list=None) -> None:
+        pass
 
-sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
-print(sw1.sysName)
-print(sw1.sysDescr)
-sw1_sys = sysdescrparser(str(sw1.sysDescr))

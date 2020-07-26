@@ -23,22 +23,38 @@ class My:
     ... ('flymon.icloudmon.local', ['22.22.0.10.in-addr.arpa'], ['10.0.22.22'])
     """
     @cached_property
-    def ip(self):
-        try:
-            return socket.gethostbyname(self.name)
-        except:
-            raise NettopoNetworkError("Unable to get Hostname and IP")
-
-    @cached_property
     def name(self):
         try:
             return socket.gethostname()
         except:
-            raise NettopoNetworkError("Unable to get Hostname")
+            raise NettopoNetworkError("Unable to get My Hostname")
 
-dns = socket.gethostbyaddr(ip)[0]
+    @cached_property
+    def ip(self):
+        try:
+            return socket.gethostbyname(self.name)
+        except:
+            raise NettopoNetworkError("Unable to get My IP")
 
-from dataclasses import dataclass
+    @cached_property
+    def fqdn(self):
+        try:
+            return socket.getfqdn()
+        except:
+            raise NettopoNetworkError("Unable to get My FQDN")
+
+
+@dataclass
+class Nslookup:
+    ip: str
+    @cached_property
+    def dns(self) -> str:
+        try:
+            return socket.gethostbyaddr(self.ip)[0]
+        except:
+            return "UNKNOWN"
+
+
 @dataclass
 class Port:
     port: int
@@ -49,48 +65,49 @@ class Port:
         except:
             return "UNKNOWN"
 
-class HostMaybe:
-    def __init__(self, ip: str) -> None:
-        self.ip = ip
-
-    def arp_scan(self) -> list:
-        """ Arp for a single IP and return list of MACs responded
-        """
-        arp_request = scapy.ARP(pdst=self.ip)
-        broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-        arp_request_broadcast = broadcast/arp_request
-        answered_list = scapy.srp(arp_request_broadcast, timeout=1,
-                                  verbose=False)[0]
-        self.macs = []
-        for element in answered_list:
-            # client_dict = {"ip": element[1].psrc, "mac": element[1].hwsrc}
-            self.macs.append(element[1].hwsrc)
-        if len(self.macs) > 0:
-        return self.macs
-
 
 class ArpScan:
-    def __init__(self, net: Union[NtNetwork, NtIPAddress]=None) -> None:
-        if net:
-            if isinstance(net, NtNetwork):
-                self.network = net
-                self.ip = None
-            elif isinstance(net, NtIPAddress):
-                self.ip = net
-                self.network = None
-        else:
-            self.network = None
-            self.ip = None
+    """ Arp scan an entire network building objects from results.
+    """
+    def __init__(self, net: Union[NtNetwork, NtIPAddress],
+                 prefix_min: int=24) -> None:
+        # Store original values for debugging
+        self._net = net
+        self._prefix_min = prefix_min
+        # Store my own IP details
+        self._me = My()
+        if isinstance(net, NtIPAddress):
+            # Prevent scanning large networks with *prefix_min*
+            net = NtNetwork(f"{net}/{prefix_min}")
+        if net._prefixlen < prefix_min:
+            net._prefixlen = prefix_min
+        self.network = net
+        self.hosts = None
 
     def scan(self) -> Union[list, dict]:
-        if self.network:
-            for ip in self.network.iter_hosts():
-                host = HostMaybe(ip)
-                macs = host.arp_scan()
+        if self.hosts:
+            return print(f"Scan has been ran already for {self.network}")
+        self.hosts = []
+        self.num_hosts = 0
+        for ip in self.network.iter_hosts():
+            if not ip == self._me.ip:
+                results = self.do_arp_scan(ip)
+                for element in results:
+                    self.num_hosts += 1
+                    host_dict = {"ip": element[1].psrc, "mac": element[1].hwsrc}
+                    self.hosts.append(host_dict)
 
+    def do_arp_scan(self, ip) -> list:
+        """ Arp for a single IP and return list potential hosts
+        """
+        arp_request = scapy.ARP(pdst=ip)
+        broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
+        arp_request_broadcast = broadcast/arp_request
+        return scapy.srp(arp_request_broadcast, timeout=1,
+                         verbose=False)[0]
 
-    def print_result(results_list):
+    def print_result(self):
         print("IP\t\t\tMAC Address")
-        print("----------------------------------------------------")
-        for client in results_list:
-            print(client["ip"] + "\t\t" + client["mac"])
+        print("-" * 52)
+        for client in self.hosts:
+            print(f"{client['ip']}\t\t{client['mac']}")
