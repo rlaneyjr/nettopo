@@ -186,3 +186,19 @@ def snmp_extract(snmp_data):
     else:
         # Unwrap the data which is returned as a tuple wrapped in a list
         return snmp_data[0][1].prettyPrint()
+
+from snimpy.manager import Manager, load
+SNIMPY_MIBS = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
+def load_mibs(mibs: list=SNIMPY_MIBS) -> None:
+    for i in mibs:
+        try:
+            load(i)
+        except:
+            print(f"Unable to load {i}")
+
+load_mibs()
+sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
+print(sw1.sysName)
+print(sw1.sysDescr)
+from nettopo.sysdescrparser import sysdescrparser
+sw1_sys = sysdescrparser(str(sw1.sysDescr))
