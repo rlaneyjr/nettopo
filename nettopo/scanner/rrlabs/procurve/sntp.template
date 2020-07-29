@@ -1,4 +1,0 @@
-Value Required host (\S+)
-
-Start
-  ^sntp server ${host} -> Record

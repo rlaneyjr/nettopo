@@ -5,80 +5,21 @@
 Title:              general.py
 Description:        General OIDs
 Author:             Ricky Laney
-Version:            0.1.1
+Version:            0.1.4
+
+1 - ISO assigned OIDs
+1.3 - ISO Identified Organization
+1.3.6 - US Department of Defense
+1.3.6.1 - OID assignments from 1.3.6.1 - Internet
+1.3.6.1.2 - IETF Management
+1.3.6.1.2.1 - SNMP MIB-2
+1.3.6.1.2.1.4 - ip
+1.3.6.1.2.1.4.21 - ipRouteTable
 '''
-
-from dataclasses import dataclass
-
-
-@dataclass
-class OIDs:
-    SYSNAME = '1.3.6.1.2.1.1.5.0'
-    SYS_SERIAL = '1.3.6.1.4.1.9.3.6.3.0'
-    SYS_BOOT = '1.3.6.1.4.1.9.2.1.73.0'
-    IFNAME = '1.3.6.1.2.1.31.1.1.1.1'                  # + ifidx (BULK)
-    CDP = '1.3.6.1.4.1.9.9.23.1.2.1.1'              # (BULK)
-    CDP_IPADDR = '1.3.6.1.4.1.9.9.23.1.2.1.1.4'
-    CDP_IOS = '1.3.6.1.4.1.9.9.23.1.2.1.1.5'
-    CDP_DEVID = '1.3.6.1.4.1.9.9.23.1.2.1.1.6'            # + .ifidx.53
-    CDP_DEVPORT = '1.3.6.1.4.1.9.9.23.1.2.1.1.7'
-    CDP_DEVPLAT = '1.3.6.1.4.1.9.9.23.1.2.1.1.8'
-    CDP_INT = '1.3.6.1.4.1.9.9.23.1.1.1.1.'             # 6.ifidx
-    LLDP = '1.0.8802.1.1.2.1.4'
-    LLDP_TYPE = '1.0.8802.1.1.2.1.4.1.1.4.0'
-    LLDP_DEVID = '1.0.8802.1.1.2.1.4.1.1.5.0'
-    LLDP_DEVPORT = '1.0.8802.1.1.2.1.4.1.1.7.0'
-    LLDP_DEVNAME = '1.0.8802.1.1.2.1.4.1.1.9.0'
-    LLDP_DEVDESC = '1.0.8802.1.1.2.1.4.1.1.10.0'
-    LLDP_DEVADDR = '1.0.8802.1.1.2.1.4.2.1.5.0'
-    TRUNK_ALLOW = '1.3.6.1.4.1.9.9.46.1.6.1.1.4'            # + ifidx (Allowed VLANs)
-    TRUNK_NATIVE = '1.3.6.1.4.1.9.9.46.1.6.1.1.5'            # + ifidx (Native VLAN)
-    TRUNK_VTP = '1.3.6.1.4.1.9.9.46.1.6.1.1.14'           # + ifidx (VTP Status)
-    LAG_LACP = '1.2.840.10006.300.43.1.2.1.1.12'         # + ifidx (BULK)
-    IP_ROUTING = '1.3.6.1.2.1.4.1.0'
-    IF_VLAN = '1.3.6.1.4.1.9.9.68.1.2.2.1.2'            # + ifidx (BULK)
-    IF_IP = '1.3.6.1.2.1.4.20.1'                      # (BULK)
-    IF_IP_ADDR = '1.3.6.1.2.1.4.20.1.2'                    # + a.b.c.d = ifid
-    IF_IP_NETM = '1.3.6.1.2.1.4.20.1.3.'                   # + a.b.c.d
-    SVI_VLANIF = '1.3.6.1.4.1.9.9.128.1.1.1.1.3'           # cviRoutedVlanIfIndex
-    ETH_IF = '1.3.6.1.2.1.2.2.1'                       # ifEntry
-    ETH_IF_TYPE = '1.3.6.1.2.1.2.2.1.3'                     # ifEntry.ifType        24=loopback
-    ETH_IF_DESC = '1.3.6.1.2.1.2.2.1.2'                     # ifEntry.ifDescr
-    OSPF = '1.3.6.1.2.1.14.1.2.0'
-    OSPF_ID = '1.3.6.1.2.1.14.1.1.0'
-    BGP_LAS = '1.3.6.1.2.1.15.2.0'
-    HSRP_PRI = '1.3.6.1.4.1.9.9.106.1.2.1.1.3.1.10'
-    HSRP_VIP = '1.3.6.1.4.1.9.9.106.1.2.1.1.11.1.10'
-    STACK = '1.3.6.1.4.1.9.9.500'
-    STACK_NUM = '1.3.6.1.4.1.9.9.500.1.2.1.1.1'
-    STACK_ROLE = '1.3.6.1.4.1.9.9.500.1.2.1.1.3'
-    STACK_PRI = '1.3.6.1.4.1.9.9.500.1.2.1.1.4'
-    STACK_MAC = '1.3.6.1.4.1.9.9.500.1.2.1.1.7'
-    STACK_IMG = '1.3.6.1.4.1.9.9.500.1.2.1.1.8'
-    VSS_MODULES = '1.3.6.1.4.1.9.9.388.1.4.1.1.1'           # .modidx = 1
-    VSS_MODE = '1.3.6.1.4.1.9.9.388.1.1.4.0'
-    VSS_DOMAIN = '1.3.6.1.4.1.9.9.388.1.1.1.0'
-    ENTPHYENTRY_CLASS = '1.3.6.1.2.1.47.1.1.1.1.5'               # + .modifx (3=chassis) (9=module)
-    ENTPHYENTRY_SOFTWARE = '1.3.6.1.2.1.47.1.1.1.1.9'               # + .modidx
-    ENTPHYENTRY_SERIAL = '1.3.6.1.2.1.47.1.1.1.1.11'              # + .modidx
-    ENTPHYENTRY_PLAT = '1.3.6.1.2.1.47.1.1.1.1.13'              # + .modidx
-    VPC_PEERLINK_IF = '1.3.6.1.4.1.9.9.807.1.4.1.1.2'
-    VLANS = '1.3.6.1.4.1.9.9.46.1.3.1.1.2'
-    VLAN_DESC = '1.3.6.1.4.1.9.9.46.1.3.1.1.4'
-    VLAN_CAM = '1.3.6.1.2.1.17.4.3.1.1'
-    BRIDGE_PORTNUMS = '1.3.6.1.2.1.17.4.3.1.2'
-    IFINDEX = '1.3.6.1.2.1.17.1.4.1.2'
-    ARP = '1.3.6.1.2.1.4.22.1'
-    ARP_VLAN = '1.3.6.1.2.1.4.22.1.1'
-    ARP_MAC = '1.3.6.1.2.1.4.22.1.2'
-    ARP_IP = '1.3.6.1.2.1.4.22.1.3'
-    ARP_TYPE = '1.3.6.1.2.1.4.22.1.4'
-    ERR = 'No Such Object currently exists at this OID'
-    ERR_INST = 'No Such Instance currently exists at this OID'
+from enum import Enum
 
 
-@dataclass
-class GeneralOids:
+class GeneralOids(Enum):
     """Statically define general oids
     """
     # From SNMPv2-MIB
@@ -128,3 +69,94 @@ class GeneralOids:
     entPhysicalMfgName = "1.3.6.1.2.1.47.1.1.1.1.12"
     entPhysicalModelName = "1.3.6.1.2.1.47.1.1.1.1.13"
 
+
+class Oids(Enum):
+    """ Oids defined for core classes
+    """
+    SNMP_MIB_2: str = '1.3.6.1.2.1'
+    IP: str = '1.3.6.1.2.1.4'
+    # ipRouteTable (.1.3.6.1.2.1.4.21) from the RFC1213-MIB
+    IP_ROUTE_TABLE: str = '1.3.6.1.2.1.4.21'
+    SYSNAME: str = '1.3.6.1.2.1.1.5.0'
+    SYS_SERIAL: str = '1.3.6.1.4.1.9.3.6.3.0'
+    SYS_BOOT: str = '1.3.6.1.4.1.9.2.1.73.0'
+    # IFNAME + ifidx (BULK)
+    IFNAME: str = '1.3.6.1.2.1.31.1.1.1.1'
+    # CDP (BULK)
+    CDP: str = '1.3.6.1.4.1.9.9.23.1.2.1.1'
+    CDP_IPADDR: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.4'
+    CDP_IOS: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.5'
+    # CDP_DEVID + .ifidx.53
+    CDP_DEVID: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.6'
+    CDP_DEVPORT: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.7'
+    CDP_DEVPLAT: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.8'
+    # CDP_INT 6.ifidx
+    CDP_INT: str = '1.3.6.1.4.1.9.9.23.1.1.1.1.'
+    LLDP: str = '1.0.8802.1.1.2.1.4'
+    LLDP_TYPE: str = '1.0.8802.1.1.2.1.4.1.1.4.0'
+    LLDP_DEVID: str = '1.0.8802.1.1.2.1.4.1.1.5.0'
+    LLDP_DEVPORT: str = '1.0.8802.1.1.2.1.4.1.1.7.0'
+    LLDP_DEVNAME: str = '1.0.8802.1.1.2.1.4.1.1.9.0'
+    LLDP_DEVDESC: str = '1.0.8802.1.1.2.1.4.1.1.10.0'
+    LLDP_DEVADDR: str = '1.0.8802.1.1.2.1.4.2.1.5.0'
+    # TRUNK_ALLOW + ifidx (Allowed VLANs)
+    TRUNK_ALLOW: str = '1.3.6.1.4.1.9.9.46.1.6.1.1.4'
+    # TRUNK_NATIVE + ifidx (Native VLAN)
+    TRUNK_NATIVE: str = '1.3.6.1.4.1.9.9.46.1.6.1.1.5'
+    # TRUNK_VTP + ifidx (VTP Status)
+    TRUNK_VTP: str = '1.3.6.1.4.1.9.9.46.1.6.1.1.14'
+    # LAG_LACP + ifidx (BULK)
+    LAG_LACP: str = '1.2.840.10006.300.43.1.2.1.1.12'
+    IP_ROUTING: str = '1.3.6.1.2.1.4.1.0'
+    # IF_VLAN + ifidx (BULK)
+    IF_VLAN: str = '1.3.6.1.4.1.9.9.68.1.2.2.1.2'
+    # IF_IP (BULK)
+    IF_IP: str = '1.3.6.1.2.1.4.20.1'
+    # IF_IP_ADDR + a.b.c.d = ifid
+    IF_IP_ADDR: str = '1.3.6.1.2.1.4.20.1.2'
+    # IF_IP_NETM + a.b.c.d
+    IF_IP_NETM: str = '1.3.6.1.2.1.4.20.1.3.'
+    # SVI_VLANIF cviRoutedVlanIfIndex
+    SVI_VLANIF: str = '1.3.6.1.4.1.9.9.128.1.1.1.1.3'
+    # ETH_IF ifEntry
+    ETH_IF: str = '1.3.6.1.2.1.2.2.1'
+    # ETH_IF_TYPE ifEntry.ifType 24=loopback
+    ETH_IF_TYPE: str = '1.3.6.1.2.1.2.2.1.3'
+    # ETH_IF_DESC ifEntry.ifDescr
+    ETH_IF_DESC: str = '1.3.6.1.2.1.2.2.1.2'
+    OSPF: str = '1.3.6.1.2.1.14.1.2.0'
+    OSPF_ID: str = '1.3.6.1.2.1.14.1.1.0'
+    BGP_LAS: str = '1.3.6.1.2.1.15.2.0'
+    HSRP_PRI: str = '1.3.6.1.4.1.9.9.106.1.2.1.1.3.1.10'
+    HSRP_VIP: str = '1.3.6.1.4.1.9.9.106.1.2.1.1.11.1.10'
+    STACK: str = '1.3.6.1.4.1.9.9.500'
+    STACK_NUM: str = '1.3.6.1.4.1.9.9.500.1.2.1.1.1'
+    STACK_ROLE: str = '1.3.6.1.4.1.9.9.500.1.2.1.1.3'
+    STACK_PRI: str = '1.3.6.1.4.1.9.9.500.1.2.1.1.4'
+    STACK_MAC: str = '1.3.6.1.4.1.9.9.500.1.2.1.1.7'
+    STACK_IMG: str = '1.3.6.1.4.1.9.9.500.1.2.1.1.8'
+    # VSS_MODULES .modidx = 1
+    VSS_MODULES: str = '1.3.6.1.4.1.9.9.388.1.4.1.1.1'
+    VSS_MODE: str = '1.3.6.1.4.1.9.9.388.1.1.4.0'
+    VSS_DOMAIN: str = '1.3.6.1.4.1.9.9.388.1.1.1.0'
+    # ENTPHYENTRY_CLASS + .modifx (3=chassis) (9=module)
+    ENTPHYENTRY_CLASS: str = '1.3.6.1.2.1.47.1.1.1.1.5'
+    # ENTPHYENTRY_SOFTWARE + .modidx
+    ENTPHYENTRY_SOFTWARE: str = '1.3.6.1.2.1.47.1.1.1.1.9'
+    # ENTPHYENTRY_SERIAL + .modidx
+    ENTPHYENTRY_SERIAL: str = '1.3.6.1.2.1.47.1.1.1.1.11'
+    # ENTPHYENTRY_PLAT + .modidx
+    ENTPHYENTRY_PLAT: str = '1.3.6.1.2.1.47.1.1.1.1.13'
+    VPC_PEERLINK_IF: str = '1.3.6.1.4.1.9.9.807.1.4.1.1.2'
+    VLANS: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.2'
+    VLAN_DESC: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.4'
+    VLAN_CAM: str = '1.3.6.1.2.1.17.4.3.1.1'
+    BRIDGE_PORTNUMS: str = '1.3.6.1.2.1.17.4.3.1.2'
+    IFINDEX: str = '1.3.6.1.2.1.17.1.4.1.2'
+    ARP: str = '1.3.6.1.2.1.4.22.1'
+    ARP_VLAN: str = '1.3.6.1.2.1.4.22.1.1'
+    ARP_MAC: str = '1.3.6.1.2.1.4.22.1.2'
+    ARP_IP: str = '1.3.6.1.2.1.4.22.1.3'
+    ARP_TYPE: str = '1.3.6.1.2.1.4.22.1.4'
+    ERR: str = 'No Such Object currently exists at this OID'
+    ERR_INST: str = 'No Such Instance currently exists at this OID'

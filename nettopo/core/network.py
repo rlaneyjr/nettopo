@@ -176,7 +176,7 @@ class Network(BaseData):
                         break
 
 
-    def query_ip(self, ip, hostname='UNKNOWN'):
+    def query_ip(self, ip, hostname: str='UNKNOWN'):
         """ Query this IP.
         Return node details and if we already knew about it or if this is a new node.
         Don't save the node to the known list, just return info about it.

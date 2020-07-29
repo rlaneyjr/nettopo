@@ -11,15 +11,38 @@ from nettopo.core.snmp import SNMP
 
 sw = NettopoSNMP(ip='10.0.0.1')
 sw.community = 'letmeSNMP'
-snmp = SnmpHandler(host=sw.ip, community=sw.community)
 
+from nettopo.snmp.snmp import SnmpHandler
 from nettopo.cdp import CdpNeighbors
 
+snmp = SnmpHandler(host='10.0.0.1', community='letmeSNMP')
 cdp = CdpNeighbors(snmp)
 ne_dict = cdp.get_cdp_neighbors_dict()
 ne_list = cdp.get_cdp_neighbors_list()
 print(ne_dict)
 print(ne_list)
+
+vartable = cdp.getnext(o.cdpCacheEntry)
+neighbors = {}
+local_cdp_interfaces = []
+for varbind in vartable:
+    for oid, value in varbind:
+        entry = oid.rsplit('.', 2)[-1]
+        print(f"{oid}: {entry}")
+        interface = oid.rsplit('.', 2)[-2]
+        print(f"{oid}: {interface}")
+        if entry not in neighbors.keys():
+            neighbors[entry] = {}
+            if interface not in local_cdp_interfaces:
+                local_cdp_interfaces.append(interface)
+                if interface not in neighbors[entry].keys():
+                    neighbors[entry][interface] = {}
+                if o.cdpCacheDeviceId in oid:
+                    neighbors[entry][interface]['cdpCacheDeviceId'] = value
+                if o.cdpCacheDevicePort in oid:
+                    neighbors[entry][interface]['cdpCacheDevicePort'] = value
+        print(neighbors)
+        print(local_cdp_interfaces)
 
 from nettopo.core.data import VLANData
 vlan = VLANData(22, 'flynet')

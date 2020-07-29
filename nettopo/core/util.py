@@ -10,8 +10,7 @@ import binascii
 from functools import wraps
 from timeit import default_timer as timer
 from typing import Union
-
-from .exceptions import NettopoError
+from nettopo.core.exceptions import NettopoError
 
 
 __all__ = [

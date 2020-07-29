@@ -7,16 +7,12 @@ Description:        Cisco OIDs
 Author:             Ricky Laney
 Version:            0.1.1
 '''
-
-from dataclasses import dataclass
 from nettopo.oids.general import GeneralOids
 
 
-@dataclass
 class CiscoOids(GeneralOids):
-    """Statically define Cisco OIDs and inherit general oids
+    """Statically define Cisco OIDs and inherit general oids along with Enum
     """
-    # general = GeneralOids()
     # From CISCO-ENVMON-MIB
     ciscoEnvMonMIB = '1.3.6.1.4.1.9.9.13'
     ciscoEnvMonObjects = '1.3.6.1.4.1.9.9.13.1'
@@ -172,4 +168,3 @@ class CiscoOids(GeneralOids):
     cpsIfInvalidSrcRateLimitEnable = "1.3.6.1.4.1.9.9.315.1.2.1.1.16"
     cpsIfInvalidSrcRateLimitValue = "1.3.6.1.4.1.9.9.315.1.2.1.1.17"
     cpsIfSecureLastMacAddrVlanId = "1.3.6.1.4.1.9.9.315.1.2.1.1.18"
-

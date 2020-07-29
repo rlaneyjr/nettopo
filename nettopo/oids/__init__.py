@@ -5,9 +5,8 @@
 Author:             Ricky Laney
 Version:            0.1.1
 '''
-
-from nettopo.oids.general import OIDs, GeneralOids
+from nettopo.oids.general import Oids, GeneralOids
 from nettopo.oids.cisco import CiscoOids
 
-__all__ = [ 'OIDs', 'GeneralOids', 'CiscoOids' ]
-
+# Lift all classes defined in 'oids' directory
+__all__ = [ 'Oids', 'GeneralOids', 'CiscoOids' ]

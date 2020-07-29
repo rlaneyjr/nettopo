@@ -11,7 +11,19 @@ from netaddr import IPAddress, IPNetwork
 from snimpy.manager import Manager, load
 from typing import Union, Dict, List
 
-SNIMPY_MIBS = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
+SNIMPY_MIBS = [
+    'SNMPv2-MIB',
+    'IF-MIB',
+    'IP-MIB',
+    'IP-FORWARD-MIB',
+    'NHRP-MIB',
+    'POWER-ETHERNET-MIB',
+    'TUNNEL-MIB',
+    'VRRP-MIB',
+    'ENTITY-MIB',
+    'INET-ADDRESS-MIB',
+    'RFC1213-MIB',
+]
 
 
 class NtIPAddress(IPAddress):

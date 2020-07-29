@@ -3,7 +3,7 @@
 
 '''
 Title:              exceptions.py
-Description:        exceptions.py
+Description:        Custom Exception Classes
 Author:             Ricky Laney
 Version:            0.1.1
 '''
@@ -18,25 +18,10 @@ __all__ = [
 ]
 
 
-class NettopoError(Exception):
-    pass
-
-
-class NettopoNodeError(NettopoError):
-    pass
-
-
-class NettopoNetworkError(NettopoError):
-    pass
-
-
-class NettopoCatalogError(NettopoError):
-    pass
-
-
-class NettopoDiagramError(NettopoError):
-    pass
-
-
-class NettopoSNMPError(NettopoError):
-    pass
+class NettopoError(Exception): pass
+class NettopoNodeError(NettopoError): pass
+class NettopoNetworkError(NettopoError): pass
+class NettopoCatalogError(NettopoError): pass
+class NettopoConfigError(NettopoError): pass
+class NettopoDiagramError(NettopoError): pass
+class NettopoSNMPError(NettopoError): pass

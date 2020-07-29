@@ -1,4 +1,0 @@
-Value Required contact ([^"]+)
-
-Start
-  ^snmp-server contact "${contact}" -> Record

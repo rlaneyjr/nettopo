@@ -33,7 +33,10 @@ from .data import (NodeActions,
                    ARPData)
 from .stack import Stack
 from .vss import VSS
-from .constants import OID, ARP, DCODE, NODE
+from .constants import ARP, DCODE, NODE
+from ..oids import Oids, CiscoOids
+o = Oids()
+# c = CiscoOids()
 
 
 class Node(BaseData):
@@ -80,20 +83,22 @@ class Node(BaseData):
         """ find valid credentials for this node.
         try each known IP until one works
         """
+        orig_snmp_ip = self.snmp.ip
         if self.snmp.success:
             return True
-        else:
-            if self.ip in NOTHING:
-                self.snmp.ip = self.get_ips()
+        if self.ip in NOTHING:
+            self.snmp.ip = self.get_ips()
+        if self.snmp.get_creds(snmp_creds):
+            self.ip = self.snmp.ip
+            return True
+        for ip in self.ips:
+            self.snmp.ip = ip
             if self.snmp.get_creds(snmp_creds):
                 self.ip = self.snmp.ip
                 return True
-            else:
-                for ip in self.ips:
-                    self.snmp.ip = ip
-                    if self.snmp.get_creds(snmp_creds):
-                        self.ip = self.snmp.ip
-                        return True
+        if self.snmp.ip != orig_snmp_ip:
+            print(f"Reseting SNMP IP {self.snmp.ip} back to {orig_snmp_ip}")
+            self.snmp.ip = orig_snmp_ip
         return False
 
 
@@ -191,10 +196,10 @@ class Node(BaseData):
             for row in self.cache.ethif:
                 for k, v in row:
                     k = str(k)
-                    if k.startswith(OID.ETH_IF_TYPE) and v == 24:
+                    if k.startswith(o.ETH_IF_TYPE) and v == 24:
                         ifidx = k.split('.')[10]
                         lo_name = lookup_table(self.cache.ethif,
-                                               f"{OID.ETH_IF_DESC}.{ifidx}")
+                                               f"{o.ETH_IF_DESC}.{ifidx}")
                         lo_ip = self.get_cidrs_ifidx(ifidx)
                         lo = LoopBackData(lo_name, lo_ip)
                         self.loopbacks.append(lo)
@@ -214,12 +219,12 @@ class Node(BaseData):
         for row in self.cache.ifip:
             for n, v in row:
                 n = str(n)
-                if n.startswith(OID.IF_IP_ADDR):
+                if n.startswith(o.IF_IP_ADDR):
                     if str(v) == str(idx):
                         t = n.split('.')
                         ip = ".".join(t[10:])
                         mask = lookup_table(self.cache.ifip,
-                                            f"{OID.IF_IP_NETM}{ip}")
+                                            f"{o.IF_IP_NETM}{ip}")
                         mask = bits_from_mask(mask)
                         cidr = f"{ip}/{mask}"
                         ips.append(cidr)
@@ -236,7 +241,7 @@ class Node(BaseData):
         """
         # get list of CDP neighbors
         neighbors = []
-        self.cache.cdp = self.snmp.get_bulk(OID.CDP)
+        self.cache.cdp = self.snmp.get_bulk(o.CDP)
         if not self.cache.cdp:
             print('No CDP Neighbors Found.')
             return []
@@ -244,24 +249,24 @@ class Node(BaseData):
             for oid, val in row:
                 oid = str(oid)
                 # process only if this row is a CDP_DEVID
-                if oid.startswith(OID.CDP_DEVID):
+                if oid.startswith(o.CDP_DEVID):
                     continue
                 t = oid.split('.')
                 ifidx = t[14]
                 ifidx2 = t[15]
                 idx = f".{ifidx}.{ifidx2}"
                 # get remote IP
-                rip = lookup_table(self.cache.cdp, f"{OID.CDP_IPADDR}{idx}")
+                rip = lookup_table(self.cache.cdp, f"{o.CDP_IPADDR}{idx}")
                 rip = ip_2_str(rip)
                 # get local port
                 lport = self.get_ifname(ifidx)
                 # get remote port
-                rport = lookup_table(self.cache.cdp, f"{OID.CDP_DEVPORT}{idx}")
+                rport = lookup_table(self.cache.cdp, f"{o.CDP_DEVPORT}{idx}")
                 rport = normalize_port(rport)
                 # get remote platform
-                rplat = lookup_table(self.cache.cdp, f"{OID.CDP_DEVPLAT}{idx}")
+                rplat = lookup_table(self.cache.cdp, f"{o.CDP_DEVPLAT}{idx}")
                 # get IOS version
-                rios = lookup_table(self.cache.cdp, f"{OID.CDP_IOS}{idx}")
+                rios = lookup_table(self.cache.cdp, f"{o.CDP_IOS}{idx}")
                 if rios:
                     try:
                         rios = binascii.unhexlify(rios[2:])
@@ -292,27 +297,27 @@ class Node(BaseData):
         for row in self.cache.lldp:
             for oid, val in row:
                 oid = str(oid)
-                if not oid.startswith(OID.LLDP_TYPE):
+                if not oid.startswith(o.LLDP_TYPE):
                     continue
                 t = oid.split('.')
                 ifidx = t[12]
                 ifidx2 = t[13]
-                if oid.startswith(f"{OID.LLDP_DEVADDR}.{ifidx}.{ifidx2}"):
+                if oid.startswith(f"{o.LLDP_DEVADDR}.{ifidx}.{ifidx2}"):
                     rip = '.'.join(t[16:])
                 else:
                     rip = ''
                 lport = self.get_ifname(ifidx)
                 rport = lookup_table(self.cache.lldp,
-                                     f"{OID.LLDP_DEVPORT}.{ifidx}.{ifidx2}")
+                                     f"{o.LLDP_DEVPORT}.{ifidx}.{ifidx2}")
                 rport = normalize_port(rport)
                 devid = lookup_table(self.cache.lldp,
-                                     f"{OID.LLDP_DEVID}.{ifidx}.{ifidx2}")
+                                     f"{o.LLDP_DEVID}.{ifidx}.{ifidx2}")
                 try:
                     devid = mac_format_cisco(devid)
                 except:
                     pass
                 rimg = lookup_table(self.cache.lldp,
-                                    f"{OID.LLDP_DEVDESC}.{ifidx}.{ifidx2}")
+                                    f"{o.LLDP_DEVDESC}.{ifidx}.{ifidx2}")
                 if rimg:
                     try:
                         rimg = binascii.unhexlify(rimg[2:])
@@ -320,7 +325,7 @@ class Node(BaseData):
                         pass
                     rimg = format_ios_ver(rimg)
                 name = lookup_table(self.cache.lldp,
-                                    f"{OID.LLDP_DEVNAME}.{ifidx}.{ifidx2}")
+                                    f"{o.LLDP_DEVNAME}.{ifidx}.{ifidx2}")
                 if name in [None, '']:
                     name = devid
                 link = self.get_link(ifidx)
@@ -340,12 +345,12 @@ class Node(BaseData):
         link = LinkData()
         # trunk
         link.link_type = lookup_table(self.cache.link_type,
-                                      f"{OID.TRUNK_VTP}.{ifidx}")
+                                      f"{o.TRUNK_VTP}.{ifidx}")
         if link.link_type == '1':
             native_vlan = lookup_table(self.cache.trunk_native,
-                                       f"{OID.TRUNK_NATIVE}.{ifidx}")
+                                       f"{o.TRUNK_NATIVE}.{ifidx}")
             allowed_vlans = lookup_table(self.cache.trunk_allowed,
-                                         f"{OID.TRUNK_ALLOW}.{ifidx}")
+                                         f"{o.TRUNK_ALLOW}.{ifidx}")
             allowed_vlans = parse_allowed_vlans(allowed_vlans)
         else:
             native_vlan = None
@@ -353,11 +358,11 @@ class Node(BaseData):
         link.local_native_vlan = native_vlan
         link.local_allowed_vlans = allowed_vlans
         # LAG membership
-        lag = lookup_table(self.cache.lag, f"{OID.LAG_LACP}.{ifidx}")
+        lag = lookup_table(self.cache.lag, f"{o.LAG_LACP}.{ifidx}")
         link.local_lag = self.get_ifname(lag)
         link.local_lag_ips = self.get_cidrs_ifidx(lag)
         # VLAN info
-        link.vlan = lookup_table(self.cache.vlan, f"{OID.IF_VLAN}.{ifidx}")
+        link.vlan = lookup_table(self.cache.vlan, f"{o.IF_VLAN}.{ifidx}")
         # IP address
         lifips = self.get_cidrs_ifidx(ifidx)
         link.local_if_ip = lifips[0] if lifips else None
@@ -380,11 +385,11 @@ class Node(BaseData):
                 t = n.split('.')
                 idx = t[12]
                 self.serial = lookup_table(self.cache.ent_serial,
-                                    f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                                    f"{o.ENTPHYENTRY_SERIAL}.{idx}")
                 self.plat = lookup_table(self.cache.ent_plat,
-                                    f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                                    f"{o.ENTPHYENTRY_PLAT}.{idx}")
                 self.ios = lookup_table(self.cache.ent_ios,
-                                    f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+                                    f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         if self.actions.get_ios:
             # modular switches may have IOS on module than chassis
             if not self.ios:
@@ -396,16 +401,16 @@ class Node(BaseData):
                         t = n.split('.')
                         idx = t[12]
                         self.ios = lookup_table(self.cache.ent_ios,
-                                    f"{OID.ENTPHYENTRY_SOFTWARE}.{idx}")
+                                    f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
                         if self.ios:
                             break
             self.ios = format_ios_ver(self.ios)
 
 
     def get_ifname(self, ifidx=None):
-        if not ifidx or ifidx == OID.ERR:
+        if not ifidx or ifidx == o.ERR:
             return 'UNKNOWN'
-        res = lookup_table(self.cache.ifname, f"{OID.IFNAME}.{ifidx}")
+        res = lookup_table(self.cache.ifname, f"{o.IFNAME}.{ifidx}")
         return normalize_port(res) or 'UNKNOWN'
 
 
@@ -444,7 +449,7 @@ class Node(BaseData):
             return None, None
         domain = oid_last_token(self.cache.vpc[0][0][0])
         ifidx = str(self.cache.vpc[0][0][1])
-        ifname = lookup_table(ifarr, f"{OID.ETH_IF_DESC}.{ifidx}")
+        ifname = lookup_table(ifarr, f"{o.ETH_IF_DESC}.{ifidx}")
         ifname = normalize_port(ifname)
         return domain, ifname
 
@@ -468,15 +473,15 @@ class Node(BaseData):
         for r in self.cache.arp:
             for n, v in r:
                 n = str(n)
-                if n.startswith(OID.ARP_VLAN):
+                if n.startswith(o.ARP_VLAN):
                     tok = n.split('.')
                     ip = '.'.join(tok[11:])
                     interf = self.get_ifname(str(v))
                     mach = lookup_table(self.cache.arp,
-                                        f"{OID.ARP_MAC}.{str(v)}.{ip}")
+                                        f"{o.ARP_MAC}.{str(v)}.{ip}")
                     mac = mac_hex_to_ascii(mach, 1)
                     atype = lookup_table(self.cache.arp,
-                                         f"{OID.ARP_TYPE}.{str(v)}.{ip}")
+                                         f"{o.ARP_TYPE}.{str(v)}.{ip}")
                     atype = int(atype)
                     type_str = 'unknown'
                     if atype == ARP.OTHER:

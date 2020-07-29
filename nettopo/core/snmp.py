@@ -21,7 +21,7 @@ class SNMP:
         self.ip = str(ip) if isinstance(ip, IPAddress) else ip
         self.port = port
 
-    def check_community(self, community):
+    def check_community(self, community: str) -> bool:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
             cmdgen.CommunityData(community),

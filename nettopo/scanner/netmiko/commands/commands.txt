@@ -1,6 +1,0 @@
-ip access-list extended 101
-remark **** Ports  ****
-10 permit tcp any any eq 80
-20 permit tcp any any eq 8080
-remark **** RDP Port  ****
-30 permit tcp any any eq 443

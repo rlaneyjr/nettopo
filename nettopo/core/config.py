@@ -4,9 +4,12 @@
 '''
     config.py
 '''
+from netaddr import IPNetwork
 import json
 import sys
 from typing import Union
+
+from .exceptions import NettopoConfigError
 
 
 default_config = {
@@ -55,6 +58,7 @@ class Config:
         self.host_domains = []
         self.snmp_creds = []
         self.diagram = DiagramDefaults()
+        self.acl = {'permit': [], 'deny': []}
 
     def load(self, config=None, filename=None):
         # Load defaults then override with custom
@@ -69,6 +73,16 @@ class Config:
                 self.snmp_creds.append(cred['community'])
         for domain in json_config['domains']:
             self.host_domains.append(domain)
+        for line in json_config['discover']:
+            if line.startswith('permit'):
+                net = IPNetwork(line.split(' ip ')[1])
+                self.acl['permit'].append(net)
+            elif line.startswith('deny'):
+                net = IPNetwork(line.split(' ip ')[1])
+                self.acl['deny'].append(net)
+            else:
+                raise NettopoConfigError(
+                    f"Line in discover ACL has no permit or deny: {line}")
 
     def load_json(self, json_file):
         with open(json_file) as jf:
@@ -81,3 +95,39 @@ class Config:
                 self.snmp_creds.append(cred)
         else:
             self.snmp_creds.append(creds)
+
+    def ip_passes_acl(self, ip: str) -> bool:
+        """ Check to see if this IP is allowed to be discovered
+        """
+        # Check deny first
+        for denies in self.acl['deny']:
+            if ip in denies:
+                return False
+        for allows in self.acl['permit']:
+            if ip in allows:
+                return True
+        else:
+            return False
+
+    def net_passes_acl(self, net: Union[str, IPNetwork]) -> bool:
+        """ Check to see if this IP is allowed to be discovered
+        """
+        if '/' not in net:
+            return self.ip_passes_acl(net)
+        if not isinstance(net, IPNetwork):
+            net = IPNetwork(net)
+        if net.prefixlen == 32:
+            host_wild = IPNetwork("0.0.0.0/32")
+            if host_wild in self.acl['deny']:
+                return False
+            elif host_wild in self.acl['permit']:
+                return True
+            else:
+                ip = str(net).split('/')[0]
+                return self.ip_passes_acl(ip)
+        if net in self.acl['deny']:
+            return False
+        elif net in self.acl['permit']:
+            return True
+        else:
+            return self.ip_passes_acl(net)

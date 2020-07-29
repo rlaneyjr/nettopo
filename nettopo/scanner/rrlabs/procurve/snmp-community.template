@@ -1,4 +1,0 @@
-Value Required community ([^"]+)
-
-Start
-  ^snmp-server community "${community}" .* -> Record

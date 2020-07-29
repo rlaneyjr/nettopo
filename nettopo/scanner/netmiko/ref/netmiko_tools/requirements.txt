@@ -1,2 +1,0 @@
-netmiko>=1.0.0
-pyyaml

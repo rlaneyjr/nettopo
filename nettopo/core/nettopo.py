@@ -16,6 +16,7 @@ from .node import Node
 from .mac import MAC
 from .diagram import Diagram
 from .catalog import Catalog
+from ..net import NtNetwork, NtIPAddress
 
 
 class Nettopo:
@@ -51,7 +52,7 @@ class Nettopo:
         self.network.max_depth = depth
 
 
-    def set_verbose(self, verbose=True):
+    def set_verbose(self, verbose: bool=True):
         self.network.verbose = verbose
 
 
@@ -95,23 +96,22 @@ class Nettopo:
         return node.get_vlans()
 
 
-    def get_switch_macs(self, switch_ip=None, node=None, vlan=None, mac=None, port=None, verbose=True):
+    def get_switch_macs(self, switch_ip_or_node, *, vlan=None, mac=None, port=None, verbose=True):
         ''' Get the CAM table from a switch.
         Args:
-            switch_ip           IP address of the device
-            node                natlas_node from new_node()
-            vlan                Filter results by VLAN
-            mac                 Filter results by MAC address (regex)
-            port                Filter results by port (regex)
-            verbose             Display progress to stdout
-            switch_ip or node is required
-        Return:
-            Array of MAC objects
+            *switch_ip* or *node* is required
+        :param: switch_ip       IP address of the device
+        :param: node            Node() class object
+        :param: vlan            Filter results by VLAN
+        :param: mac             Filter results by MAC address (regex)
+        :param: port            Filter results by port (regex)
+        :param: verbose         Display progress to stdout
+        :return:                Array of MAC objects
         '''
-        if not switch_ip:
-            if not node:
-                return None
-            switch_ip = node.get_ipaddr()
+        if isinstance(switch_ip_or_node, Node):
+            switch_ip = switch_ip_or_node.get_ips()
+        elif isinstance(switch_ip_or_node, str):
+            switch_ip = switch_ip_or_node
         M = MAC(self.config)
         if vlan:
             # get MACs for single VLAN
@@ -142,11 +142,11 @@ class Nettopo:
         return [node for node in self.network.nodes if node.queried]
 
 
-    def get_node_ip(self, node):
+    def get_node_ip(self, node: Node):
         return node.get_ips()
 
 
-    def get_switch_arp(self, switch_ip, ip=None, mac=None, interf=None, arp_type=None):
+    def get_switch_arp(self, switch_ip, *, ip=None, mac=None, interf=None, arp_type=None):
         '''
         Get the ARP table from a switch.
         Args:
@@ -167,7 +167,6 @@ class Nettopo:
         if not all([ip, mac, interf, arp_type]):
             # no filtering
             return arp
-        interf = str(interf) if vlan else None
         # filter the result table
         ret = []
         for a in arp:
@@ -175,7 +174,7 @@ class Nettopo:
                 continue
             if mac and not re.match(mac, a.mac):
                 continue
-            if interf and not re.match(interf, str(a.interf)):
+            if interf and not re.match(str(interf), str(a.interf)):
                 continue
             if arp_type and not re.match(arp_type, a.arp_type):
                 continue
@@ -183,7 +182,7 @@ class Nettopo:
         return ret
 
 
-    def get_neighbors(self, node):
+    def get_neighbors(self, node: Node) -> list:
         neighbors = []
         if self.has_snmp(node):
             neighbors.extend(node.get_cdp_neighbors())
