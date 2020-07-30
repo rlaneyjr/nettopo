@@ -6,20 +6,46 @@ Title:              node.py
 Description:        Node
 Author:             Ricky Laney
 '''
-
-from nettopo.net import NtIPAddress, NtIPNetwork
 from netmiko
 from typing import Union, Dict, List
 
 DL = Union[Dict, List]
-IP = Union[NtIPNetwork, NtIPAddress]
+IP = Union[IPNetwork, IPAddress]
+NS = Union[IPNetwork, str]
+AS = Union[IPAddress, str]
+
+
+class NettopoHost:
+    ''' A NettopoHost is an IPAddress and associated
+    MAC address that replys to ping. End-user stations, laptops, printers, etc.
+    Basically, anything NOT a network device.
+
+    :param: ip = IPAddress of node (required)
+    :param: mac = MAC address of node (required)
+    :param: net_device = The NettopoNode this host is connected to
+    :paraqm: port = The port on the NettopoNode this host is connected to
+    :return: None
+    '''
+    def __init__(self, ip: AS, mac: str, net_device: NettopoNode=None, port=None) -> None:
+    self.ip = ip
+    self.mac = mac
+    self.net_device = net_device if net_device else self.get_net_device()
+    self.port = port if port else self.get_port()
+
+    def get_net_device(self):
+        mac_trac = trace_mac(self.mac)
+        return mac_trace.net_device
+
+    def get_port(self):
+        mac_trac = trace_mac(self.mac)
+        return mac_trace.port
 
 
 class NettopoNode:
-    ''' A NettopoNode is an NtIPAddress that we have at least one of the following
-    ports open: 22,23,80,443,161
+    ''' A NettopoNode is an network device that we have at least one of the
+    following ports open: 22,23,161
 
-    :param: ip = NtIPAddress of node (required)
+    :param: ip = IPAddress of node (required)
     :param: ports = list of open ports (required)
     :return: None
     '''
@@ -52,26 +78,4 @@ class NettopoNode:
         self.rib_table = []
 
     def get_neighbors(self):
-
-class NettopoHost:
-    ''' A NettopoHost is an NtIPAddress and associated
-    MAC address that replys to ping.
-
-    :param: ip = NtIPAddress of node (required)
-    :param: mac = MAC address of node (required)
-    :return: None
-    '''
-    def __init__(self, ip, mac, net_device=None, port=None):
-        self._ip = ip
-        self._mac = mac
-        self._net_device = net_device if net_device else self.get_net_device()
-        self._port = port if port else self.get_port()
-
-    def get_net_device(self):
-        mac_trac = trace_mac(self._mac)
-        return mac_trace.net_device
-
-    def get_port(self):
-        mac_trac = trace_mac(self._mac)
-        return mac_trace.port
 

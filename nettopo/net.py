@@ -26,22 +26,6 @@ SNIMPY_MIBS = [
 ]
 
 
-class NtIPAddress(IPAddress):
-    ''' Represents a ip we will discover
-    '''
-    def __init__(self, ip: str) -> None:
-        self.ip = ip
-        super(NtIPAddress).__init__(self.ip)
-
-
-class NtNetwork(IPNetwork):
-    ''' Represents a network we will discover
-    '''
-    def __init__(self, net: str) -> None:
-        self.net = net
-        super(NtNetwork).__init__(self.net)
-
-
 def load_mibs(mibs: list=SNIMPY_MIBS) -> None:
     for i in mibs:
         try:
@@ -51,7 +35,7 @@ def load_mibs(mibs: list=SNIMPY_MIBS) -> None:
 
 
 class Discover:
-    def __init__(self, network: NtNetwork=None) -> None:
+    def __init__(self, network: IPNetwork=None) -> None:
         self.network = network
 
     def discover(self) -> None:

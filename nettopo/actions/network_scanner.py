@@ -68,8 +68,20 @@ class Port:
 
 class ArpScan:
     """ Arp scan an entire network building objects from results.
+
+    # Create a network with the NtNetwork object:
+    >>> net = NtNetwork('10.0.22.0/24')
+
+    # Create an ArpScan object:
+    >>> arp = ArpScan(net)
+
+    # Now tell it to scan:
+    >>> arp.scan
+    >>> for host in arp.hosts:
+    ...     print(host)
+
     """
-    def __init__(self, net: Union[NtNetwork, NtIPAddress],
+    def __init__(self, net: Union[str, NtNetwork, NtIPAddress],
                  prefix_min: int=24) -> None:
         # Store original values for debugging
         self._net = net
@@ -79,6 +91,8 @@ class ArpScan:
         if isinstance(net, NtIPAddress):
             # Prevent scanning large networks with *prefix_min*
             net = NtNetwork(f"{net}/{prefix_min}")
+        elif isinstance(net, str):
+            net = NtNetwork(net)
         if net._prefixlen < prefix_min:
             net._prefixlen = prefix_min
         self.network = net
