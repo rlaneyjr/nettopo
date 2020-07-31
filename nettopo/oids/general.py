@@ -16,10 +16,9 @@ Version:            0.1.4
 1.3.6.1.2.1.4 - ip
 1.3.6.1.2.1.4.21 - ipRouteTable
 '''
-from enum import Enum
 
 
-class GeneralOids(Enum):
+class GeneralOids:
     """Statically define general oids
     """
     # From SNMPv2-MIB
@@ -70,7 +69,7 @@ class GeneralOids(Enum):
     entPhysicalModelName = "1.3.6.1.2.1.47.1.1.1.1.13"
 
 
-class Oids(Enum):
+class Oids:
     """ Oids defined for core classes
     """
     SNMP_MIB_2: str = '1.3.6.1.2.1'

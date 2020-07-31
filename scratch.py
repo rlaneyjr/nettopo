@@ -52,10 +52,11 @@ vlan._as_dict().items()
 
 from nettopo.core.node import Node
 sw1 = Node('10.0.0.1')
-sw2 = Node('10.0.0.2')
 sw1.get_snmp_creds('letmeSNMP')
-sw2.get_snmp_creds('letmeSNMP')
 sw1.query_node()
+
+sw2 = Node('10.0.0.2')
+sw2.get_snmp_creds('letmeSNMP')
 sw2.query_node()
 
 from nettopo.core.nettopo import Nettopo
@@ -63,23 +64,6 @@ net = Nettopo()
 net.add_snmp_credential('letmeSNMP')
 net.set_discover_maxdepth(100)
 net.discover_network('10.0.0.1', True)
-
-from snimpy.manager import Manager, load
-from nettopo.sysdescrparser import sysdescrparser
-mibs = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'ENTITY-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
-for i in mibs:
-    try:
-        load(i)
-    except:
-        print(f"Unable to load {i}")
-
-sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
-print(sw1.sysDescr)
-sw1_sys = sysdescrparser(str(sw1.sysDescr))
-print(sw1_sys.vendor)
-print(sw1_sys.model)
-print(sw1_sys.version)
-print(sw1_sys.os)
 
 
 def pptable(table):
@@ -96,11 +80,6 @@ import binascii
 from nettopo.core.constants import *
 from nettopo.core.util import *
 def get_cdp_neighbors(switch):
-    """ Get a list of CDP neighbors.
-    Returns a list of LinkData's.
-    Will always return an array.
-    """
-    # get list of CDP neighbors
     neighbors = []
     switch.cache.cdp = switch.snmp.get_bulk(OID.CDP)
     if not switch.cache.cdp:
@@ -210,18 +189,21 @@ def snmp_extract(snmp_data):
         # Unwrap the data which is returned as a tuple wrapped in a list
         return snmp_data[0][1].prettyPrint()
 
-from snimpy.manager import Manager, load
-SNIMPY_MIBS = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
-def load_mibs(mibs: list=SNIMPY_MIBS) -> None:
-    for i in mibs:
-        try:
-            load(i)
-        except:
-            print(f"Unable to load {i}")
 
-load_mibs()
-sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
-print(sw1.sysName)
-print(sw1.sysDescr)
+from snimpy.manager import Manager, load
 from nettopo.sysdescrparser import sysdescrparser
+mibs = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'ENTITY-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
+for i in mibs:
+    try:
+        load(i)
+    except:
+        print(f"Unable to load {i}")
+
+sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
+print(sw1.sysDescr)
 sw1_sys = sysdescrparser(str(sw1.sysDescr))
+print(sw1_sys.vendor)
+print(sw1_sys.model)
+print(sw1_sys.version)
+print(sw1_sys.os)
+

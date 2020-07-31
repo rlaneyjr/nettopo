@@ -1,24 +1,19 @@
-# Wrapper around pysnmp for easy access to snmp-based information
-# (c)2008-2010 Dennis Kaarsemaker
-#
-# Latest version can be found on http://github.com/seveas/python-snmpclient
-# 
-# This script is free software; you can redistribute it and/or
-# modify it under the terms of the GNU General Public License
-# version 3, as published by the Free Software Foundation.
-# 
-# This program is distributed in the hope that it will be useful,
-# but WITHOUT ANY WARRANTY; without even the implied warranty of
-# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-# GNU General Public License for more details.
-# 
-# You should have received a copy of the GNU General Public License along
-# with this program; if not, write to the Free Software Foundation, Inc.,
-# 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+# -*- coding: utf-8 -*-
+# vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
+"""
+Completely stolen from Dennis (below) with some minor modifications for my needs.
+
+Wrapper around pysnmp for easy access to snmp-based information
+(c)2008-2010 Dennis Kaarsemaker
+Latest version can be found on http://github.com/seveas/python-snmpclient
+"""
+from functools import cached_property
 import pysnmp.entity.rfc3413.oneliner.cmdgen as cmdgen
 from pysnmp.smi import builder, view
 from pysnmp.smi.error import SmiError
+
+from ..sysdescrparser import sysdescrparser
 
 __all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs',
            'nodeinfo', 'nodename', 'nodeid', 'SnmpClient', 'cmdgen']
@@ -40,7 +35,7 @@ def load_mibs(*modules):
     for m in modules:
         try:
             __mibBuilder.loadModules(m)
-        except SmiError, e:
+        except SmiError as e:
             if 'already exported' in str(e):
                 continue
             raise
@@ -52,7 +47,7 @@ def nodeinfo(oid):
     """Translate dotted-decimal oid to a tuple with symbolic info"""
     if isinstance(oid, basestring):
         oid = tuple([int(x) for x in oid.split('.') if x])
-    return (__mibViewController.getNodeLocation(oid), 
+    return (__mibViewController.getNodeLocation(oid),
             __mibViewController.getNodeName(oid))
 
 def nodename(oid):
@@ -63,7 +58,7 @@ def nodename(oid):
     if noid:
         name += '.' + noid
     return name
-        
+
 def nodeid(oid):
     """Translate named oid to dotted-decimal format"""
     ids = oid.split('.')
@@ -73,32 +68,63 @@ def nodeid(oid):
     oid = mibnode.getName() + ids
     return oid
 
-class SnmpClient(object):
-    """Easy access to an snmp deamon on a host"""
+class SnmpClient:
+    """ Easy access to an snmp deamon on a host
+    """
+    DEFAULT_AUTHS = ['public', 'private', 'letmeSNMP', 'snmp', 'cisco']
 
-    def __init__(self, host, port, authorizations):
+    def __init__(self, host: str, authorizations: list=None, *, port: int=161):
         """Set up the client and detect the community to use"""
         self.host = host
         self.port = port
+        self.target = (self.host, self.port)
         self.alive = False
+        if not authorizations:
+            self._try_auths(self.DEFAULT_AUTHS)
+        else:
+            self._try_auths(authorizations)
+            if not self.alive:
+                last_try = authorizations.extend(self.DEFAULT_AUTHS)
+                self._try_auths(set(last_try))
 
-        # Which community to use
+        if not self.alive:
+            raise RuntimeError("No authentications succeeded!")
+
+    def _try_auths(self, auths: list) -> None:
         noid = nodeid('SNMPv2-MIB::sysName.0')
-        for auth in authorizations:
+        nodescr = nodeid('SNMPv2-MIB::sysDescr.0')
+        for auth in auths:
+            _auth = cmdgen.CommunityData(auth)
             (errorIndication, errorStatus, errorIndex, varBinds) = \
-                cmdgen.CommandGenerator().getCmd(auth, cmdgen.UdpTransportTarget((self.host, self.port)), noid)
-            if errorIndication == 'requestTimedOut':
+                cmdgen.CommandGenerator().getCmd(_auth,
+                cmdgen.UdpTransportTarget(self.target), noid)
+            if errorIndication or errorStatus:
                 continue
             else:
                 self.alive = True
-                self.auth = auth
+                self.auth = _auth
                 break
+
+    @cached_property
+    def name(self) -> str:
+        return self.get('SNMPv2-MIB::sysName.0')
+
+    @cached_property
+    def descr(self) -> str:
+        return self.get('SNMPv2-MIB::sysDescr.0')
+
+    def parse_descr(self) -> None:
+        sys = sysdescrparser(self.descr)
+        self.vendor = sys.vendor
+        self.model = sys.model
+        self.os = sys.os
+        self.version = sys.version
 
     def get(self, oid):
         """Get a specific node in the tree"""
         noid = nodeid(oid)
         (errorIndication, errorStatus, errorIndex, varBinds) = \
-            cmdgen.CommandGenerator().getCmd(self.auth, cmdgen.UdpTransportTarget((self.host, self.port)), noid)
+            cmdgen.CommandGenerator().getCmd(self.auth, cmdgen.UdpTransportTarget(self.target), noid)
         if errorIndication:
             raise RuntimeError("SNMPget of %s on %s failed" % (oid, self.host))
         return varBinds[0][1]
@@ -107,7 +133,7 @@ class SnmpClient(object):
         """Get a complete subtable"""
         noid = nodeid(oid)
         (errorIndication, errorStatus, errorIndex, varBinds) = \
-            cmdgen.CommandGenerator().nextCmd(self.auth, cmdgen.UdpTransportTarget((self.host, self.port)), noid)
+            cmdgen.CommandGenerator().nextCmd(self.auth, cmdgen.UdpTransportTarget(self.target), noid)
         if errorIndication:
             raise RuntimeError("SNMPget of %s on %s failed" % (oid, self.host))
         return [x[0] for x in varBinds]

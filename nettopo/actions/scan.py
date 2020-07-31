@@ -6,14 +6,14 @@ Title:              scanner.py
 Description:        Network ARP Scanner
 Author:             Ricky Laney
 '''
-from nettopo.net import NtNetwork, NtIPAddress
-from nettopo.core.exceptions import NettopoNetworkError
+from netaddr import IPNetwork, IPAddress
 from dataclasses import dataclass
 from functools import cached_property
 import scapy.all as scapy
 import socket
 from typing import Union, Dict, List
 
+from nettopo.core.exceptions import NettopoNetworkError
 
 class My:
     """ Use this class to store local network details and ensure we don't
@@ -69,10 +69,11 @@ class Port:
 class ArpScan:
     """ Arp scan an entire network building objects from results.
 
-    # Create a network with the NtNetwork object:
-    >>> net = NtNetwork('10.0.22.0/24')
+    # Create a network with the IPNetwork object:
+    >>> net = IPNetwork('10.0.22.0/24')
 
-    # Create an ArpScan object:
+    # Create an ArpScan object with the IPNetwork above:
+    (IPAddress, or string with '/' cidr can be used as well)
     >>> arp = ArpScan(net)
 
     # Now tell it to scan:
@@ -81,24 +82,24 @@ class ArpScan:
     ...     print(host)
 
     """
-    def __init__(self, net: Union[str, NtNetwork, NtIPAddress],
-                 prefix_min: int=24) -> None:
+    def __init__(self, net: Union[str, IPNetwork, IPAddress],
+                 default_prefix: int=24) -> None:
         # Store original values for debugging
         self._net = net
-        self._prefix_min = prefix_min
+        self._default_prefix = default_prefix
         # Store my own IP details
         self._me = My()
-        if isinstance(net, NtIPAddress):
-            # Prevent scanning large networks with *prefix_min*
-            net = NtNetwork(f"{net}/{prefix_min}")
+        if isinstance(net, IPAddress):
+            # Prevent scanning large networks with *default_prefix*
+            net = IPNetwork(f"{net}/{default_prefix}")
         elif isinstance(net, str):
-            net = NtNetwork(net)
-        if net._prefixlen < prefix_min:
-            net._prefixlen = prefix_min
+            net = IPNetwork(net)
+        if net._prefixlen < default_prefix:
+            net._prefixlen = default_prefix
         self.network = net
         self.hosts = None
 
-    def scan(self) -> Union[list, dict]:
+    def scan(self) -> None:
         if self.hosts:
             return print(f"Scan has been ran already for {self.network}")
         self.hosts = []

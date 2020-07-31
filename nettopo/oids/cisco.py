@@ -11,7 +11,7 @@ from nettopo.oids.general import GeneralOids
 
 
 class CiscoOids(GeneralOids):
-    """Statically define Cisco OIDs and inherit general oids along with Enum
+    """ Statically define Cisco OIDs and inherit general oids
     """
     # From CISCO-ENVMON-MIB
     ciscoEnvMonMIB = '1.3.6.1.4.1.9.9.13'
