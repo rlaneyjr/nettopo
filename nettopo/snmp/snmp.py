@@ -7,6 +7,10 @@ Description:        SNMP
 Author:             Ricky Laney
 Version:            0.1.1
 """
+import json
+from queue import Queue
+from threading import Thread
+from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 from nettopo.snmp.constants import (
@@ -23,6 +27,55 @@ from nettopo.snmp.utils import (
     return_pretty_val,
     return_snmp_data,
 )
+
+comms = ['public', 'private', 'letmeSNMP']
+
+
+class Worker(Thread):
+    def __init__(self, requests, responses):
+        Thread.__init__(self)
+        self.snmpEngine = SnmpEngine()
+        self.requests = requests
+        self.responses = responses
+        self.setDaemon(True)
+        self.start()
+
+    def run(self):
+        while True:
+            authData, transportTarget, varBinds = self.requests.get()
+            self.responses.append(
+                next(
+                    getCmd(
+                        self.snmpEngine,
+                        authData, transportTarget, ContextData(), *varBinds
+                    )
+                )
+            )
+            if hasattr(self.requests, 'task_done'):  # 2.5+
+                self.requests.task_done()
+
+
+class ThreadPool:
+    def __init__(self, num_threads):
+        self.requests = Queue(num_threads)
+        self.responses = []
+        for _ in range(num_threads):
+            Worker(self.requests, self.responses)
+
+    def addRequest(self, authData, transportTarget, varBinds):
+        self.requests.put((authData, transportTarget, varBinds))
+
+    def getResponses(self): return self.responses
+
+    def waitCompletion(self):
+        if hasattr(self.requests, 'join'):
+            self.requests.join()  # 2.5+
+        else:
+            from time import sleep
+            # this is a lame substitute for missing .join()
+            # adding an explicit synchronization might be a better solution
+            while not self.requests.empty():
+                sleep(1)
 
 
 class SnmpHandler:
@@ -43,7 +96,7 @@ class SnmpHandler:
         self._parse_args(**kwargs)
 
     def _parse_args(self, **kwargs):
-        for key in kwargs:
+        for key in kwargs.keys():
             if key == 'version':
                 self.version = kwargs[key]
             if key == 'community':

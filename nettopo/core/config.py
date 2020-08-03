@@ -68,11 +68,10 @@ class Config:
         if filename:
             json_data = self.load_json(filename)
             json_config.update(**json_data)
-        for cred in json_config['snmp']:
-            if cred['ver'] == 2:
-                self.snmp_creds.append(cred['community'])
-        for domain in json_config['domains']:
-            self.host_domains.append(domain)
+        creds = [cred['community'] for cred in json_config['snmp']]
+        self.snmp_creds.extend(creds)
+        domains = [domain for domain in json_config['domains']]
+        self.host_domains.extend(domains)
         for line in json_config['discover']:
             if line.startswith('permit'):
                 net = IPNetwork(line.split(' ip ')[1])
@@ -80,6 +79,8 @@ class Config:
             elif line.startswith('deny'):
                 net = IPNetwork(line.split(' ip ')[1])
                 self.acl['deny'].append(net)
+            elif line.startswith('#'):
+                continue
             else:
                 raise NettopoConfigError(
                     f"Line in discover ACL has no permit or deny: {line}")
