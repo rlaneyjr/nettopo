@@ -49,21 +49,21 @@ class SnmpSession:
     later call one of the several methods defined on this class
     """
     def __init__(self, oidlist=None, version=None, targets=None,
-                 community=None, maxreps=None,):
+                 community=None, maxreps=None):
         self.oidlist = ['sysDescr'] if oidlist is None else oidlist
         self.version = 2 if version is None else version
-        self.targets = [''] if targets is None else targets
+        self.targets = [] if targets is None else targets
         self.community = 'public' if community is None else community
         self.maxreps = 8 if maxreps is None else maxreps
         self.results = []
 
-    def snmpwalk(self, workers = 1):
+    def snmpwalk(self, workers=1):
         """ This is the most basic walk. It runs the default
         snmpwalk from netsnmp's python bindings
         """
         return self._run_queries(worker_snmpwalk, workers)
 
-    def snmpbulkwalk(self, workers = 1):
+    def snmpbulkwalk(self, workers=1):
         """ Bulkwalk is essentially a series of getBulk operations, just
         like walk is a series of get(getNext) operations.
         This is where the power and speed of fastsnmpy shows, as native

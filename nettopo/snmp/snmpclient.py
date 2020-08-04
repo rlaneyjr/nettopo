@@ -8,19 +8,24 @@ Wrapper around pysnmp for easy access to snmp-based information
 (c)2008-2010 Dennis Kaarsemaker
 Latest version can be found on http://github.com/seveas/python-snmpclient
 """
+from dataclasses import dataclass
+import datetime
 from functools import cached_property
+from glob import glob
 import pysnmp.entity.rfc3413.oneliner.cmdgen as cmdgen
 from pysnmp.smi import builder, view
 from pysnmp.smi.error import SmiError
 
 from ..sysdescrparser import sysdescrparser
 
-__all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs',
+__all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs', 'load_default_mibs',
            'nodeinfo', 'nodename', 'nodeid', 'SnmpClient', 'cmdgen']
 
 # Snmp version constants
 V1 = 0
 V2 = V2C = 1
+
+SYS_MIBS = (("SNMPv2-MIB", "sysDescr"), ("SNMPv2-MIB", "sysObjectID"), ("SNMPv2-MIB", "sysUpTime"), ("SNMPv2-MIB", "sysContact"), ("SNMPv2-MIB", "sysName"), ("SNMPv2-MIB", "sysLocation"), ("SNMPv2-MIB", "sysServices"), ("SNMPv2-MIB", "sysORLastChange"), ("SNMPv2-MIB", "sysORID"), ("SNMPv2-MIB", "sysORUpTime"), ("SNMPv2-MIB", "sysORDescr"))
 
 # The internal mib builder
 __mibBuilder = builder.MibBuilder()
@@ -40,8 +45,17 @@ def load_mibs(*modules):
                 continue
             raise
 
-# Load basic mibs that come with pysnmp
-load_mibs('SNMPv2-MIB','IF-MIB','IP-MIB','HOST-RESOURCES-MIB','FIBRE-CHANNEL-FE-MIB')
+def load_default_mibs():
+    # Load basic mibs that come with pysnmp
+    load_mibs('SNMPv2-MIB','IF-MIB','IP-MIB','HOST-RESOURCES-MIB','FIBRE-CHANNEL-FE-MIB')
+    # Load all mibs that come with net-snmp
+    netsnmp_path = '/usr/share/snmp/mibs'
+    mib_files = add_mib_path(netsnmp_path)
+    mib_files = glob(f"{netsnmp_path}/*")
+    for mib_file in mib_files:
+        netsnmp_mib = mib_file.split('/')[-1].rstrip('.txt')
+        load_mibs(netsnmp_mib)
+
 
 def nodeinfo(oid):
     """Translate dotted-decimal oid to a tuple with symbolic info"""
@@ -107,11 +121,11 @@ class SnmpClient:
 
     @cached_property
     def name(self) -> str:
-        return self.get('SNMPv2-MIB::sysName.0')
+        return self.get('SNMPv2-MIB::sysName.0').prettyPrint()
 
     @cached_property
     def descr(self) -> str:
-        return self.get('SNMPv2-MIB::sysDescr.0')
+        return self.get('SNMPv2-MIB::sysDescr.0').prettyPrint()
 
     def parse_descr(self) -> None:
         sys = sysdescrparser(self.descr)
@@ -119,6 +133,18 @@ class SnmpClient:
         self.model = sys.model
         self.os = sys.os
         self.version = sys.version
+
+    def parse_sys(self):
+        self.sys = SystemSNMP(self)
+        # for item in SYS_MIBS:
+        #     mib, prop = item
+        #     sys_prop = f"{mib}::{prop}.0"
+        #     attr = prop.lower()
+        #     value = self.get(sys_prop).prettyPrint()
+        #     if attr == 'sysuptime':
+        #         secs = int(value)/100
+        #         value = str(datetime.timedelta(seconds=secs))
+        #     self.__setattr__(attr, value)
 
     def get(self, oid):
         """Get a specific node in the tree"""
@@ -163,3 +189,18 @@ class SnmpClient:
                 index = oid_to_index[oid[-indexlen:]]
                 result[index].append(value)
         return result
+
+
+class SystemSNMP:
+    def __init__(self, snmp_client: SnmpClient):
+        self.snmp = snmp_client
+        self.mibs = SYS_MIBS
+        for item in self.mibs:
+            mib, prop = item
+            sys_prop = f"{mib}::{prop}.0"
+            value = self.snmp.get(sys_prop).prettyPrint()
+            attr = prop.lstrip('sys').lower()
+            if attr == 'uptime':
+                secs = int(value)/100
+                value = str(datetime.timedelta(seconds=secs))
+            self.__setattr__(attr, value)

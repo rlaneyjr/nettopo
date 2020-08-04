@@ -207,3 +207,9 @@ print(sw1_sys.model)
 print(sw1_sys.version)
 print(sw1_sys.os)
 
+from nettopo.snmp.snmpclient import *
+load_default_mibs()
+sw1 = SnmpClient('10.0.0.1')
+sw1.parse_descr()
+sw1.parse_sys()
+
