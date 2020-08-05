@@ -13,7 +13,7 @@ sw = NettopoSNMP(ip='10.0.0.1')
 sw.community = 'letmeSNMP'
 
 from nettopo.snmp.snmp import SnmpHandler
-from nettopo.cdp import CdpNeighbors
+from nettopo.actions.cdp import CdpNeighbors
 
 snmp = SnmpHandler(host='10.0.0.1', community='letmeSNMP')
 cdp = CdpNeighbors(snmp)
@@ -206,10 +206,4 @@ print(sw1_sys.vendor)
 print(sw1_sys.model)
 print(sw1_sys.version)
 print(sw1_sys.os)
-
-from nettopo.snmp.snmpclient import *
-load_default_mibs()
-sw1 = SnmpClient('10.0.0.1')
-sw1.parse_descr()
-sw1.parse_sys()
 
