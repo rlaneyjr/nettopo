@@ -19,7 +19,7 @@ from pysnmp.smi.error import SmiError
 from ..sysdescrparser import sysdescrparser
 
 __all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs', 'load_default_mibs',
-           'nodeinfo', 'nodename', 'nodeid', 'SnmpClient', 'cmdgen']
+           'nodeinfo', 'nodename', 'nodeid', 'SnmpClient']
 
 # Snmp version constants
 V1 = 0
@@ -55,7 +55,6 @@ def load_default_mibs():
     for mib_file in mib_files:
         netsnmp_mib = mib_file.split('/')[-1].rstrip('.txt')
         load_mibs(netsnmp_mib)
-
 
 def nodeinfo(oid):
     """Translate dotted-decimal oid to a tuple with symbolic info"""
@@ -115,6 +114,7 @@ class SnmpClient:
             if errorIndication or errorStatus:
                 continue
             else:
+                self.community = auth
                 self.alive = True
                 self.auth = _auth
                 break

@@ -1,26 +1,3 @@
-# -*- coding: utf-8 -*-
-# vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
-
-'''
-Title:              scratch.py
-'''
-from nettopo.snmp import *
-from nettopo.oids import *
-from nettopo.hostinfo.device import HostInfo
-from nettopo.core.snmp import SNMP
-
-sw = NettopoSNMP(ip='10.0.0.1')
-sw.community = 'letmeSNMP'
-
-from nettopo.snmp.snmp import SnmpHandler
-from nettopo.actions.cdp import CdpNeighbors
-
-snmp = SnmpHandler(host='10.0.0.1', community='letmeSNMP')
-cdp = CdpNeighbors(snmp)
-ne_dict = cdp.get_cdp_neighbors_dict()
-ne_list = cdp.get_cdp_neighbors_list()
-print(ne_dict)
-print(ne_list)
 
 vartable = cdp.getnext(o.cdpCacheEntry)
 neighbors = {}
@@ -44,27 +21,6 @@ for varbind in vartable:
         print(neighbors)
         print(local_cdp_interfaces)
 
-from nettopo.core.data import VLANData
-vlan = VLANData(22, 'flynet')
-vlan._as_dict()
-vlan.show()
-vlan._as_dict().items()
-
-from nettopo.core.node import Node
-sw1 = Node('10.0.0.1')
-sw1.get_snmp_creds('letmeSNMP')
-sw1.query_node()
-
-sw2 = Node('10.0.0.2')
-sw2.get_snmp_creds('letmeSNMP')
-sw2.query_node()
-
-from nettopo.core.nettopo import Nettopo
-net = Nettopo()
-net.add_snmp_credential('letmeSNMP')
-net.set_discover_maxdepth(100)
-net.discover_network('10.0.0.1', True)
-
 
 def pptable(table):
     ppt_items = []
@@ -73,6 +29,7 @@ def pptable(table):
             print(item.prettyPrint())
             ppt_items.append(item.prettyPrint())
     return ppt_items
+
 
 # import ipdb
 # ipdb.set_trace()
@@ -176,6 +133,7 @@ def get_cidrs_ifidx(switch, ifidx):
                     ips.append(cidr)
         return ips
 
+
 def snmp_extract(snmp_data):
     '''
     Unwrap the SNMP response data and return in a readable format
@@ -189,21 +147,4 @@ def snmp_extract(snmp_data):
         # Unwrap the data which is returned as a tuple wrapped in a list
         return snmp_data[0][1].prettyPrint()
 
-
-from snimpy.manager import Manager, load
-from nettopo.sysdescrparser import sysdescrparser
-mibs = ['SNMPv2-MIB', 'IF-MIB', 'IP-MIB', 'ENTITY-MIB', 'IP-FORWARD-MIB', 'NHRP-MIB', 'POWER-ETHERNET-MIB', 'TUNNEL-MIB', 'VRRP-MIB', 'ENTITY-MIB', 'INET-ADDRESS-MIB']
-for i in mibs:
-    try:
-        load(i)
-    except:
-        print(f"Unable to load {i}")
-
-sw1 = Manager('10.0.0.1', 'letmeSNMP', retries=2, timeout=3)
-print(sw1.sysDescr)
-sw1_sys = sysdescrparser(str(sw1.sysDescr))
-print(sw1_sys.vendor)
-print(sw1_sys.model)
-print(sw1_sys.version)
-print(sw1_sys.os)
 
