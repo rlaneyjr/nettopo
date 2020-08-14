@@ -13,6 +13,29 @@ DL = Union[Dict, List]
 IP = Union[IPNetwork, IPAddress]
 NS = Union[IPNetwork, str]
 AS = Union[IPAddress, str]
+NODES = List[NettopoNode]
+LINKS = List[NettopoLink]
+DEVICE = Union[NettopoHost, NettopoNode]
+
+
+class NettopoLink:
+    """ Represents a connection between two entities.
+    """
+    def __init__(self, local_device: DEVICE, local_port: str,
+                 remote_device: DEVICE, remote_port: str) -> None:
+        self.local = local_device
+        self.local_port = local_port
+        self.local_ip = self.local.ip
+        self.remote = remote_device
+        self.remote_port = remote_port
+        self.remote_ip = self.remote.ip
+
+    @property
+    def local_mac(self):
+        if is instance(self.local, NettopoHost):
+            return self.local.mac
+        elif is instance(self.local, NettopoNode):
+            return self.local.get_port_mac(self.local_port)
 
 
 class NettopoHost:
@@ -26,11 +49,11 @@ class NettopoHost:
     :paraqm: port = The port on the NettopoNode this host is connected to
     :return: None
     '''
-    def __init__(self, ip: AS, mac: str, net_device: NettopoNode=None, port=None) -> None:
+    def __init__(self, ip: AS, mac: str, net_devices: NODES=None, links: =None) -> None:
     self.ip = ip
     self.mac = mac
-    self.net_device = net_device if net_device else self.get_net_device()
-    self.port = port if port else self.get_port()
+    self.net_devices = net_devices if net_devices else self.get_net_device()
+    self.links = links if links else self.get_links()
 
     def get_net_device(self):
         mac_trac = trace_mac(self.mac)
@@ -42,15 +65,14 @@ class NettopoHost:
 
 
 class NettopoNode:
-    ''' A NettopoNode is an network device that we have at least one of the
-    following ports open: 22,23,161
+    ''' A NettopoNode is a network device
 
     :param: ip = IPAddress of node (required)
-    :param: ports = list of open ports (required)
     :return: None
     '''
-    def __init__(self, ip: IP, ports: List[int]) -> None:
-        self.mgmt_ip = ip
+    def __init__(self, ip: IP, ports: List[int]=None) -> None:
+        self.ip = ip
+        self.ports = ports
         self.name = name if name else str(ip)
         self.neighbors = []
         self.upstream = []
@@ -78,4 +100,8 @@ class NettopoNode:
         self.rib_table = []
 
     def get_neighbors(self):
+        if not self.neighbors:
+            self.neighbors.extend(self.get_cdp_neighbors())
+            self.neighbors.extend(self.get_lldp_neighbors())
+        return self.neighbors
 

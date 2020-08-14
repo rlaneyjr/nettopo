@@ -10,13 +10,13 @@ from queue import Queue
 from threading import Thread
 from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
+from typing import Union, Dict, List
 try:
     from netaddr import IPAddress
 except:
     from ipaddress import ip_address as IPAddress
 
 from .constants import OID
-from .node import Node
 
 DEFAULT_COMMS = ['public', 'private', 'letmeSNMP']
 DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
@@ -107,7 +107,7 @@ class SNMP:
 class SnmpHandler:
 
     def __init__(self, host, **kwargs):
-        if isinstance(host, Node):
+        if hasattr(host, 'ip'):
             self.host = host.ip
         else:
             self.host = host

@@ -34,9 +34,8 @@ from .data import (NodeActions,
 from .stack import Stack
 from .vss import VSS
 from .constants import ARP, DCODE, NODE
-from ..oids import Oids, CiscoOids
+from ..oids import Oids
 o = Oids()
-# c = CiscoOids()
 
 
 class Node(BaseData):
@@ -241,7 +240,6 @@ class Node(BaseData):
         """
         # get list of CDP neighbors
         neighbors = []
-        self.cache.cdp = self.snmp.get_bulk(o.CDP)
         if not self.cache.cdp:
             print('No CDP Neighbors Found.')
             return []
@@ -376,8 +374,7 @@ class Node(BaseData):
         #    Platform
         #    IOS
         # Slow but reliable method by using SNMP directly.
-        ent_cache = self.cache.ent_class
-        for row in ent_cache:
+        for row in self.cache.ent_class:
             for n, v in row:
                 n = str(n)
                 if v != 'ENTPHYCLASS_CHASSIS':
@@ -393,7 +390,7 @@ class Node(BaseData):
         if self.actions.get_ios:
             # modular switches may have IOS on module than chassis
             if not self.ios:
-                for row in ent_cache:
+                for row in self.cache.ent_class:
                     for n, v in row:
                         n = str(n)
                         if v != 'ENTPHYCLASS_MODULE':

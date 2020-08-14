@@ -37,11 +37,11 @@ def prep_mibs():
         mibs.append(dataPoints[item]['mib'])
     return mibs
 
-def send_query(mibs):
+def send_query(host, community, mibs):
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.bulkCmd(
-        cmdgen.CommunityData(SNMP_COMMUNITY),
-        cmdgen.UdpTransportTarget((SNMP_HOST, 161),timeout=2,retries=3),
+        cmdgen.CommunityData(community),
+        cmdgen.UdpTransportTarget(host, timeout=2,retries=3),
         0, 32,
         *mibs)
     if errorIndication:
@@ -67,15 +67,15 @@ if __name__ == "__main__":
         if opt in ("-h",   "--help"):
             usage(0)
         elif opt in ("-C", "--community"):
-            SNMP_COMMUNITY = arg
+            community = arg
         elif opt in ("-H", "--host"):
-            SNMP_HOST = arg
+            host = arg
     #require parameters
     if not SNMP_COMMUNITY or not SNMP_HOST:
         usage(2)
     else:
         mibs = prep_mibs()
-        vbt = send_query(mibs)
+        vbt = send_query(host, community, mibs)
         print_vbt(vbt)
 
 
@@ -109,12 +109,12 @@ for port in dataPoints['lldpRemSysName']['port']:
         continue
 
     print(f"""
-{SNMP_HOST},
-{dataPoints['ifDescr']['port'][port]}
-<=connects-to=>
-{dataPoints['lldpRemPortId']['port'][port]},
-{dataPoints['lldpRemPortDesc']['port'][port]},
-{dataPoints['lldpRemSysName']['port'][port]}
+# {SNMP_HOST},
+# {dataPoints['ifDescr']['port'][port]}
+# <=connects-to=>
+# {dataPoints['lldpRemPortId']['port'][port]},
+# {dataPoints['lldpRemPortDesc']['port'][port]},
+# {dataPoints['lldpRemSysName']['port'][port]}
 """)
 
 exit(return_code)

@@ -155,7 +155,7 @@ def format_ios_ver(img):
     except:
         return img
     if img_s:
-        if img_s.group1 == 'CCM:':
+        if img_s.group(1) == 'CCM:':
             return f"CCM {img_s.group(2)}"
         return img_s.group(2)
     return img

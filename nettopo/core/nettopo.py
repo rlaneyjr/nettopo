@@ -16,7 +16,6 @@ from .node import Node
 from .mac import MAC
 from .diagram import Diagram
 from .catalog import Catalog
-from ..net import NtNetwork, NtIPAddress
 
 
 class Nettopo:
