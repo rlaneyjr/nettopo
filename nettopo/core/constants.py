@@ -26,20 +26,20 @@ __all__ = [
 NOTHING = [None, '0.0.0.0', 'UNKNOWN', '']
 
 
-class RETCODE(Enum):
+class RETCODE:
     # return codes
-    OK = auto()
-    ERR = auto()
-    SYNTAXERR = auto()
+    OK: int = 1
+    ERR: int = 2
+    SYNTAXERR: int = 3
 
 
-class NODE(Enum):
-    KNOWN = auto()
-    NEW = auto()
-    NEWIP = auto()
+class NODE:
+    KNOWN: int = 1
+    NEW: int = 2
+    NEWIP: int = 3
 
 
-class ARP(Enum):
+class ARP:
     # ARP TYPES
     OTHER: int = 1
     INVALID: int = 2
@@ -47,7 +47,7 @@ class ARP(Enum):
     STATIC: int = 4
 
 
-class ENTPHYCLASS(Enum):
+class ENTPHYCLASS:
     # OID_ENTPHYENTRY_CLASS values
     OTHER: int = 1
     UNKNOWN: int = 2
@@ -63,7 +63,7 @@ class ENTPHYCLASS(Enum):
     PDU: int = 12
 
 
-class DCODE(Enum):
+class DCODE:
     ROOT: int = 0x01
     ERR_SNMP: int = 0x02
     DISCOVERED: int = 0x04

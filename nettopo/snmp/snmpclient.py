@@ -8,7 +8,6 @@ Wrapper around pysnmp for easy access to snmp-based information
 (c)2008-2010 Dennis Kaarsemaker
 Latest version can be found on http://github.com/seveas/python-snmpclient
 """
-from dataclasses import dataclass
 import datetime
 from functools import cached_property
 from glob import glob
@@ -135,16 +134,21 @@ class SnmpClient:
         self.version = sys.version
 
     def parse_sys(self):
-        self.sys = SystemSNMP(self)
-        # for item in SYS_MIBS:
-        #     mib, prop = item
-        #     sys_prop = f"{mib}::{prop}.0"
-        #     attr = prop.lower()
-        #     value = self.get(sys_prop).prettyPrint()
-        #     if attr == 'sysuptime':
-        #         secs = int(value)/100
-        #         value = str(datetime.timedelta(seconds=secs))
-        #     self.__setattr__(attr, value)
+        self.mibs = SYS_MIBS
+        for item in self.mibs:
+            mib, prop = item
+            sys_prop = f"{mib}::{prop}.0"
+            value = self.get(sys_prop).prettyPrint()
+            if not value or value.startswith('No Such'):
+                continue
+            attr = prop.lstrip('sys').lower()
+            if attr == 'uptime':
+                secs = int(value)/100
+                value = str(datetime.timedelta(seconds=secs))
+            if attr in dir(self):
+                if self.__getattribute__(attr) == value:
+                    continue
+            self.__setattr__(attr, value)
 
     def get(self, oid):
         """Get a specific node in the tree"""
@@ -189,18 +193,3 @@ class SnmpClient:
                 index = oid_to_index[oid[-indexlen:]]
                 result[index].append(value)
         return result
-
-
-class SystemSNMP:
-    def __init__(self, snmp_client: SnmpClient):
-        self.snmp = snmp_client
-        self.mibs = SYS_MIBS
-        for item in self.mibs:
-            mib, prop = item
-            sys_prop = f"{mib}::{prop}.0"
-            value = self.snmp.get(sys_prop).prettyPrint()
-            attr = prop.lstrip('sys').lower()
-            if attr == 'uptime':
-                secs = int(value)/100
-                value = str(datetime.timedelta(seconds=secs))
-            self.__setattr__(attr, value)
