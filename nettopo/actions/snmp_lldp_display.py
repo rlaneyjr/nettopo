@@ -41,7 +41,7 @@ def send_query(host, community, mibs):
     cmdGen = cmdgen.CommandGenerator()
     errorIndication, errorStatus, errorIndex, varBindTable = cmdGen.bulkCmd(
         cmdgen.CommunityData(community),
-        cmdgen.UdpTransportTarget(host, timeout=2,retries=3),
+        cmdgen.UdpTransportTarget((host, 161), timeout=2,retries=3),
         0, 32,
         *mibs)
     if errorIndication:

@@ -9,6 +9,7 @@ Author:             Ricky Laney
 from netaddr import IPNetwork, IPAddress
 from dataclasses import dataclass
 from functools import cached_property
+import netifaces
 import scapy.all as scapy
 import socket
 from typing import Union, Dict, List
@@ -42,6 +43,11 @@ class My:
             return socket.getfqdn()
         except:
             raise NettopoNetworkError("Unable to get My FQDN")
+
+    @cached_property
+    def default_gateway(self):
+        gws = netifaces.gateways()
+        return gws['default'][netifaces.AF_INET][0]
 
 
 @dataclass
@@ -106,20 +112,24 @@ class ArpScan:
         self.num_hosts = 0
         for ip in self.network.iter_hosts():
             if not ip == self._me.ip:
-                results = self.do_arp_scan(ip)
-                for element in results:
+                arp_request = scapy.ARP(pdst=ip)
+                broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
+                arp_request_broadcast = broadcast/arp_request
+                results = scapy.srp(arp_request_broadcast, timeout=1,
+                                    verbose=False)
+                for element in results[0]:
                     self.num_hosts += 1
                     host_dict = {"ip": element[1].psrc, "mac": element[1].hwsrc}
                     self.hosts.append(host_dict)
-
-    def do_arp_scan(self, ip) -> list:
-        """ Arp for a single IP and return list potential hosts
-        """
-        arp_request = scapy.ARP(pdst=ip)
-        broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-        arp_request_broadcast = broadcast/arp_request
-        return scapy.srp(arp_request_broadcast, timeout=1,
-                         verbose=False)[0]
+    #
+    # def do_arp_scan(self, ip) -> list:
+    #     """ Arp for a single IP and return list potential hosts
+    #     """
+    #     arp_request = scapy.ARP(pdst=ip)
+    #     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
+    #     arp_request_broadcast = broadcast/arp_request
+    #     return scapy.srp(arp_request_broadcast, timeout=1,
+    #                      verbose=False)[0]
 
     def print_result(self):
         print("IP\t\t\tMAC Address")

@@ -59,8 +59,24 @@ print(sw1_sys.vendor)
 print(sw1_sys.model)
 print(sw1_sys.version)
 print(sw1_sys.os)
+if_des = sw1.ifDescr
+for item in if_des.items():
+    k = item[0]
+    v = item[1]
+    if not v.startswith('unrouted'):
+        print(f"{k}: {v}")
+
 
 from nettopo.snmp.snmpclient import SnmpClient
 sw1 = SnmpClient('10.0.0.1')
 sw1.parse_descr()
 sw1.parse_sys()
+
+from nettopo.pyconfig import *
+from nettopo import quicksnmp
+from pysnmp.hlapi import CommunityData
+com = CommunityData('letmeSNMP')
+rawInterfacesTable = quicksnmp.get('10.0.0.1', interfaces_table_named_oid, com)
+for row in rawInterfacesTable:
+    for item in row:
+        print(' = '.join([x.prettyPrint() for x in item]))
