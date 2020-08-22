@@ -80,3 +80,9 @@ rawInterfacesTable = quicksnmp.get('10.0.0.1', interfaces_table_named_oid, com)
 for row in rawInterfacesTable:
     for item in row:
         print(' = '.join([x.prettyPrint() for x in item]))
+
+
+from nettopo.actions.scan import Scan
+net = Scan('10.0.22.0/24')
+net.arp_scan()
+net.hosts

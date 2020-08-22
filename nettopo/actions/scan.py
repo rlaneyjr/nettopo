@@ -33,11 +33,23 @@ class My:
             raise NettopoNetworkError("Unable to get My Hostname")
 
     @cached_property
-    def ip(self):
+    def dns_ip(self):
         try:
             return socket.gethostbyname(self.name)
         except:
             raise NettopoNetworkError("Unable to get My IP")
+
+    @cached_property
+    def if_addrs(self):
+        return netifaces.ifaddresses(self.default_interface)
+
+    @cached_property
+    def ip(self):
+        return self.if_addrs[netifaces.AF_INET][0]['addr']
+
+    @cached_property
+    def ips(self):
+        return [self.ip, self.dns_ip]
 
     @cached_property
     def fqdn(self):
@@ -48,8 +60,7 @@ class My:
 
     @cached_property
     def netmask(self):
-        addrs = netifaces.ifaddresses(self.default_interface)
-        return addrs[netifaces.AF_INET][0]['netmask']
+        return self.if_addrs[netifaces.AF_INET][0]['netmask']
 
     @cached_property
     def network(self):
@@ -90,6 +101,37 @@ class Port:
             return "UNKNOWN"
 
 
+class Scan:
+    """ Factory class for all scanning operations on a single network
+    """
+    def __init__(self, net: N, prefix: int=24) -> None:
+        self.net = net
+        self.me = My()
+        self.hosts = []
+        self.num_hosts = 0
+
+        if isinstance(net, IPAddress):
+            # Prevent scanning large networks with *default_prefix*
+            self.network = IPNetwork(f"{self.net}/{self.prefix}")
+        elif isinstance(net, str):
+            self.network = IPNetwork(self.net)
+
+        if self.network.prefixlen > prefix:
+            self.prefix = self.network.prefixlen
+        else:
+            self.prefix = prefix
+
+    def is_local(self, net: str=None) -> bool:
+        if not net:
+            return self.me.network == self.network
+        else:
+            return IPNetwork(net) == self.network
+
+    def arp_scan(self) -> None:
+        arp = ArpScan(self)
+        arp.do_scan()
+
+
 class ArpScan:
     """ Arp scan an entire network building objects from results.
 
@@ -106,57 +148,39 @@ class ArpScan:
     ...     print(host)
 
     """
-    def __init__(self, net: N, prefix: int=24) -> None:
-        self.net = net
-        self.prefix = prefix
-        self.me = My()
-        if isinstance(net, IPAddress):
-            # Prevent scanning large networks with *default_prefix*
-            net = IPNetwork(f"{self.net}/{self.prefix}")
-        elif isinstance(net, str):
-            net = IPNetwork(self.net)
-        if net._prefixlen < self.prefix:
-            net._prefixlen = self.prefix
-        self.network = net
-        self.hosts = None
+    def __init__(self, cls: Scan) -> None:
+        self.scan = cls
 
-    def is_local(self, net: str=None) -> bool:
-        if not net:
-            return self.me.network == self.network
-        else:
-            return IPNetwork(net) == self.network
-
-    def scan(self) -> None:
-        if self.hosts:
-            return print(f"Scan has been ran already for {self.network}")
-        self.hosts = []
-        self.num_hosts = 0
-        for ip in self.network.iter_hosts():
-            if not ip == self._me.ip:
+    def do_scan(self) -> None:
+        if self.scan.hosts:
+            return print(f"Scan has been ran already for \
+                         {str(self.scan.network)}")
+        for host in self.scan.network.iter_hosts():
+            ip = host.format()
+            if ip not in self.scan.me.ips:
                 try:
-                    # send ARP requests to gather MAC address
-                    responses, unanswered = scapy.arping(ip)
-                    # use the MAC address from the first response
-                    for iface, macaddr in responses:
-                        if iface == self._me.default_interface:
-                            mac = macaddr[scapy.Ether].src
-                            self.num_hosts += 1
-                            host_dict = {"ip": ip, "mac": mac}
-                            self.hosts.append(host_dict)
+                    host_dict = self.do_arp_scan(ip)
+                    if host_dict:
+                        self.scan.num_hosts += 1
+                        self.scan.hosts.append(host_dict)
                 except:
                     continue
+        return self.print_result()
 
-    # def do_arp_scan(self, ip) -> list:
-    #     """ Arp for a single IP and return list potential hosts
-    #     """
-    #     arp_request = scapy.ARP(pdst=ip)
-    #     broadcast = scapy.Ether(dst="ff:ff:ff:ff:ff:ff")
-    #     arp_request_broadcast = broadcast/arp_request
-    #     return scapy.srp(arp_request_broadcast, timeout=1,
-    #                      verbose=False)[0]
+    def do_arp_scan(self, ip) -> dict:
+        """ Arp for a single IP and return a dict of IP and MAC
+        """
+        # send ARP requests to gather MAC address
+        responses, unanswered = scapy.arping(ip, timeout=0.05)
+        # use the MAC address from the first response
+        for _, macaddr in responses:
+            dst_ip = macaddr[scapy.Ether].psrc
+            dst_mac = macaddr[scapy.Ether].hwsrc
+            return {"ip": dst_ip, "mac": dst_mac}
 
     def print_result(self):
         print("IP\t\t\tMAC Address")
         print("-" * 52)
-        for client in self.hosts:
-            print(f"{client['ip']}\t\t{client['mac']}")
+        for host in self.scan.hosts:
+            print(f"{host['ip']}\t\t{host['mac']}")
+        return print(f"Found {self.scan.num_hosts} for {str(self.scan.network)}")
