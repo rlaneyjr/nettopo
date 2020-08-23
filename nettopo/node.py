@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
 '''
@@ -6,23 +7,24 @@ Title:              node.py
 Description:        Node
 Author:             Ricky Laney
 '''
-from netmiko
-from typing import Union, Dict, List
+from netaddr import IPNetwork, IPAddress
+from netmiko import ConnectHandler
+from typing import Any, Union, Dict, List
+# My Stuff
+from nettopo.utils import build_uuid
 
 DL = Union[Dict, List]
 IP = Union[IPNetwork, IPAddress]
 NS = Union[IPNetwork, str]
 AS = Union[IPAddress, str]
-NODES = List[NettopoNode]
-LINKS = List[NettopoLink]
-DEVICE = Union[NettopoHost, NettopoNode]
 
 
 class NettopoLink:
     """ Represents a connection between two entities.
     """
-    def __init__(self, local_device: DEVICE, local_port: str,
-                 remote_device: DEVICE, remote_port: str) -> None:
+    def __init__(self, local_device, local_port: str,
+                 remote_device, remote_port: str) -> None:
+        self.myid = build_uuid()
         self.local = local_device
         self.local_port = local_port
         self.local_ip = self.local.ip
@@ -32,9 +34,9 @@ class NettopoLink:
 
     @property
     def local_mac(self):
-        if is instance(self.local, NettopoHost):
+        if isinstance(self.local, NettopoHost):
             return self.local.mac
-        elif is instance(self.local, NettopoNode):
+        elif isinstance(self.local, NettopoNode):
             return self.local.get_port_mac(self.local_port)
 
 
@@ -49,11 +51,11 @@ class NettopoHost:
     :paraqm: port = The port on the NettopoNode this host is connected to
     :return: None
     '''
-    def __init__(self, ip: AS, mac: str, net_devices: NODES=None, links: =None) -> None:
-    self.ip = ip
-    self.mac = mac
-    self.net_devices = net_devices if net_devices else self.get_net_device()
-    self.links = links if links else self.get_links()
+    def __init__(self, ip: AS, mac: str, net_devices=None, links=None) -> None:
+        self.ip = ip
+        self.mac = mac
+        self.net_devices = net_devices if net_devices else self.get_net_device()
+        self.links = links if links else self.get_links()
 
     def get_net_device(self):
         mac_trac = trace_mac(self.mac)
