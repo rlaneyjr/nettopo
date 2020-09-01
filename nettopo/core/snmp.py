@@ -10,13 +10,13 @@ from queue import Queue
 from threading import Thread
 from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from typing import Union, Dict, List
+from typing import Union, Dict, List, Any
 try:
     from netaddr import IPAddress
 except:
     from ipaddress import ip_address as IPAddress
 
-from .constants import OID
+from nettopo.oids import Oids as o
 
 DEFAULT_COMMS = ['public', 'private', 'letmeSNMP']
 DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
@@ -68,7 +68,7 @@ class SNMP:
             return None
         else:
             r = varBinds[0][1].prettyPrint()
-            if r is any((OID.ERR, OID.ERR_INST)):
+            if r is any((o.ERR, o.ERR_INST)):
                 return None
             return r
 
@@ -111,7 +111,6 @@ class SnmpHandler:
             self.host = host.ip
         else:
             self.host = host
-        self.threaded = False
         self.port = 161
         self.timeout = 2
         self.retries = 3
@@ -127,8 +126,6 @@ class SnmpHandler:
 
     def _parse_args(self, **kwargs):
         for key in kwargs.keys():
-            if key == 'threaded':
-                self.threaded = kwargs[key]
             if key == 'version':
                 self.version = kwargs[key]
             if key == 'community':
@@ -285,7 +282,7 @@ class SnmpHandler:
 
 class Worker(Thread):
     def __init__(self, requests, responses):
-        super(Thread, self).__init__(self)
+        Thread.__init__(self)
         self.snmpEngine = SnmpEngine()
         self.requests = requests
         self.responses = responses
@@ -330,25 +327,74 @@ class ThreadPool:
                 sleep(1)
 
 
-def multi_node_bulk_query(hosts: list, varBinds=DEFAULT_VARBINDS):
+def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
     pool = ThreadPool(4)
     for host in hosts:
-        trans = UdpTransportTarget((host, 161))
+        if not isinstance(host, (SNMP, SnmpHandler)):
+            raise Exception(f"Must pass in a object of type SNMP or SnmpHandler")
+        trans = UdpTransportTarget((host.ip, 161))
         # SNMPv2c over IPv4/UDP
-        authv2 = CommunityData(host.snmp.community)
+        authv2 = CommunityData(host.community)
         pool.addRequest(authv2, trans, varBinds)
         # SNMPv1 over IPv4/UDP
-        authv1 = CommunityData(host.snmp.community, mpModel=0)
+        authv1 = CommunityData(host.community, mpModel=0)
         pool.addRequest(authv1, trans, varBinds)
     # Wait for responses or errors
     pool.waitCompletion()
     # Walk through responses
     for errorIndication, errorStatus, errorIndex, varBinds in pool.getResponses():
         if errorIndication or errorStatus:
-            print(f"ERROR: {host}, {transportTarget}\n")
+            print(f"ERROR: {host}, {trans}\n")
         else:
-            print(f'SUCCESS: {host}, {transportTarget}\n')
+            print(f'SUCCESS: {host}, {trans}\n')
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)
+
+from nettopo.core.snmp import multi_node_bulk_query, SnmpHandler, SNMP
+sw1 = SNMP('10.0.0.1')
+sw2 = SNMP('10.0.0.2')
+sw1.community = 'letmeSNMP'
+sw2.community = 'letmeSNMP'
+hosts = [sw1,sw2]
+multi_node_bulk_query(hosts)
+
+"""
+SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
+
+SNMPv2-MIB::sysName.0 = switch1.icloudmon.local
+----------------------------------------------------------------------------------------------------
+SNMPv2-MIB::sysDescr.0 = Cisco IOS Software [Everest], Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 16.6.4a, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Fri 26-Oct-18 18:32
+----------------------------------------------------------------------------------------------------
+SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
+
+SNMPv2-MIB::sysName.0 = switch1.icloudmon.local
+----------------------------------------------------------------------------------------------------
+SNMPv2-MIB::sysDescr.0 = Cisco IOS Software [Everest], Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 16.6.4a, RELEASE SOFTWARE (fc3)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Fri 26-Oct-18 18:32
+----------------------------------------------------------------------------------------------------
+SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
+
+SNMPv2-MIB::sysName.0 = switch2.icloudmon.local
+----------------------------------------------------------------------------------------------------
+SNMPv2-MIB::sysDescr.0 = Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(4)E7, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Tue 18-Sep-18 12:50 by prod_rel_team
+----------------------------------------------------------------------------------------------------
+SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
+
+SNMPv2-MIB::sysName.0 = switch2.icloudmon.local
+----------------------------------------------------------------------------------------------------
+SNMPv2-MIB::sysDescr.0 = Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(4)E7, RELEASE SOFTWARE (fc2)
+Technical Support: http://www.cisco.com/techsupport
+Copyright (c) 1986-2018 by Cisco Systems, Inc.
+Compiled Tue 18-Sep-18 12:50 by prod_rel_team
+----------------------------------------------------------------------------------------------------
+"""
 

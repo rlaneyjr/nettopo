@@ -7,34 +7,38 @@
 import binascii
 from functools import cached_property
 from typing import Union
-from .cache import Cache
-from .constants import NOTHING
-from .data import LinkData, StackData
-from .exceptions import NettopoSNMPError, NettopoNodeError
-from .snmp import SNMP
-from .util import (timethis,
-                   bits_from_mask,
-                   normalize_host,
-                   normalize_port,
-                   ip_2_str,
-                   ip_from_cidr,
-                   format_ios_ver,
-                   mac_hex_to_ascii,
-                   mac_format_cisco,
-                   parse_allowed_vlans,
-                   lookup_table,
-                   oid_last_token)
-from .data import (NodeActions,
-                   BaseData,
-                   LinkData,
-                   SVIData,
-                   LoopBackData,
-                   VLANData,
-                   ARPData)
-from .stack import Stack
-from .vss import VSS
-from .constants import ARP, DCODE, NODE
-from ..oids import Oids
+from nettopo.core.cache import Cache
+from nettopo.core.constants import NOTHING
+from nettopo.core.data import LinkData, StackData
+from nettopo.core.exceptions import NettopoSNMPError, NettopoNodeError
+from nettopo.core.snmp import SNMP
+from nettopo.core.util import (
+    timethis,
+    bits_from_mask,
+    normalize_host,
+    normalize_port,
+    ip_2_str,
+    ip_from_cidr,
+    format_ios_ver,
+    mac_hex_to_ascii,
+    mac_format_cisco,
+    parse_allowed_vlans,
+    lookup_table,
+    oid_last_token
+)
+from nettopo.core.data import (
+    NodeActions,
+    BaseData,
+    LinkData,
+    SVIData,
+    LoopBackData,
+    VLANData,
+    ARPData
+)
+from nettopo.core.stack import Stack
+from nettopo.core.vss import VSS
+from nettopo.core.constants import ARP, DCODE, NODE
+from nettopo.oids import Oids
 o = Oids()
 
 
