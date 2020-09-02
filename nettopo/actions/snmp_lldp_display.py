@@ -6,9 +6,6 @@ import re
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 verbose = False
-SNMP_VERSION = 2
-SNMP_COMMUNITY = 0
-SNMP_HOST = 0
 skip=0
 return_code=0
 
@@ -71,7 +68,7 @@ if __name__ == "__main__":
         elif opt in ("-H", "--host"):
             host = arg
     #require parameters
-    if not SNMP_COMMUNITY or not SNMP_HOST:
+    if not community or not host:
         usage(2)
     else:
         mibs = prep_mibs()

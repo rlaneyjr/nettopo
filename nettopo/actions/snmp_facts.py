@@ -1,12 +1,13 @@
 #!/usr/bin/env python
 
-
+from sysdescrparser import sysdescrparser
 from collections import defaultdict
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 class DefineOid(object):
-
-    def __init__(self,dotprefix=False):
+    """ Define Oids with or without dot prefix
+    """
+    def __init__(self, dotprefix=False):
         if dotprefix:
             dp = "."
         else:
@@ -37,7 +38,6 @@ class DefineOid(object):
 
 
 def decode_hex(hexstring):
-
     if len(hexstring) < 3:
         return hexstring
     if hexstring[:2] == "0x":
@@ -46,7 +46,6 @@ def decode_hex(hexstring):
         return hexstring
 
 def decode_mac(hexstring):
-
     if len(hexstring) != 14:
         return hexstring
     if hexstring[:2] == "0x":
@@ -80,20 +79,34 @@ def lookup_operstatus(int_operstatus):
     else:
         return ""
 
-def main():
-    module = AnsibleModule(
-        argument_spec=dict(
-            host=dict(required=True),
-            version=dict(required=True, choices=['v2', 'v2c', 'v3']),
-            community=dict(required=False, default=False),
-            username=dict(required=False),
-            level=dict(required=False, choices=['authNoPriv', 'authPriv']),
-            integrity=dict(required=False, choices=['md5', 'sha']),
-            privacy=dict(required=False, choices=['des', 'aes']),
-            authkey=dict(required=False),
-            privkey=dict(required=False),
-            removeplaceholder=dict(required=False)),
-            required_together = ( ['username','level','integrity','authkey'],['privacy','privkey'],),
+class SnmpFacts:
+    def __init__(self, host: str, community: str='public', version: str='v2c', **kwargs):
+        self.host = host
+        if version not in ['v2', 'v2c', 'v3']:
+            raise Exception(f"Wrong version supplied: {version}")
+        self.version = version
+        self.community = community
+        if self.version == 'v3':
+            if not kwargs:
+                raise Exception(f"No kwargs with v3 specified")
+            self._parse_kwargs(kwargs)
+
+    def _parse_kwargs(self, **kwargs):
+        if all(['username', 'level', 'integrity', 'authkey']) in kwargs.keys():
+            for key, val in kwargs.items():
+                if key == 'username':
+                    self.username = val
+        if kwargs['level'] == "authPriv" and kwargs['privacy'] == None:
+            raise Exception('Privacy algorithm not set when using authPriv')
+                self.level=dict(required=False, choices=['authNoPriv', 'authPriv']),
+                self.integrity=dict(required=False, choices=['md5', 'sha']),
+                self.privacy=dict(required=False, choices=['des', 'aes']),
+                self.authkey=dict(required=False),
+                self.privkey=dict(required=False),
+                removeplaceholder=dict(required=False)),
+        elif all(['privacy','privkey']) in kwargs.keys():
+        else:
+            raise Exception(f"Not all the required kwargs were passed")
         supports_check_mode=False)
 
     m_args = module.params
@@ -103,17 +116,7 @@ def main():
 
     cmdGen = cmdgen.CommandGenerator()
 
-    # Verify that we receive a community when using snmp v2
-    if m_args['version'] == "v2" or m_args['version'] == "v2c":
-        if m_args['community'] == False:
-            module.fail_json(msg='Community not set when using snmp version 2')
 
-    if m_args['version'] == "v3":
-        if m_args['username'] == None:
-            module.fail_json(msg='Username not set when using snmp version 3')
-
-        if m_args['level'] == "authPriv" and m_args['privacy'] == None:
-            module.fail_json(msg='Privacy algorithm not set when using authPriv')
 
 
         if m_args['integrity'] == "sha":
