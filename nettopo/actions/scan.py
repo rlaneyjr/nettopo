@@ -153,7 +153,7 @@ class ArpScan:
 
     def do_scan(self) -> None:
         if self.scan.hosts:
-            return print(f"Scan has been ran already for \
+            return print(f"Scan has already been ran for \
                          {str(self.scan.network)}")
         for host in self.scan.network.iter_hosts():
             ip = host.format()
