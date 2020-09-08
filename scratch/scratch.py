@@ -88,6 +88,6 @@ net.arp_scan()
 net.hosts
 
 
-from nettopo.actions.snmp_facts import SnmpFacts
+from nettopo.snmp_facts import SnmpFacts
 sw = SnmpFacts('10.0.0.1', community='letmeSNMP')
 sw.get_facts()

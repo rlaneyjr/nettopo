@@ -49,10 +49,10 @@ from pysnmp.proto import rfc1902  # provides snmp data types
 """
 
 
-class snmp_tool(object):
-    """Provides snmp get and set methods, 
+class SnmpTool(object):
+    """Provides snmp get and set methods,
     and a method for copying Cisco configuration files.
-    
+
     Instantiate object with a hostname/ip address
     Optionally a community string, udp port number and source address of snmp server can be provided.
     These default to 'private' and 161, respectively.
@@ -72,7 +72,7 @@ class snmp_tool(object):
             raise OSError(errorIndication)
         if errorStatus:
             error_message = 'SNMP error %s at %s' % (
-                errorStatus.prettyPrint(), 
+                errorStatus.prettyPrint(),
                 errorIndex and varBinds[int(errorIndex)-1] or '?'
                 )
             raise OSError(error_message)
@@ -124,7 +124,7 @@ class snmp_tool(object):
         self._delete_table_entry(mib)
         return 'snmp copy result: ' + result
 
-    def copy(self, source=None, destination=None, server=None, filename=None, 
+    def copy(self, source=None, destination=None, server=None, filename=None,
             username=None, password=None, protocol=None):
         mib = CiscoCopyMib()
         self.mibby = mib
@@ -160,7 +160,7 @@ class snmp_tool(object):
 class CiscoCopyMib(object):
     """Python object implementation of the Cisco Config Copy MIB
     ftp://ftp.cisco.com/pub/mibs/v2/CISCO-CONFIG-COPY-MIB.my
-    
+
     The included methods return an oid when no argument is given,
     or a tulple that includes and oid and an rfc1902 typed value.
     """
@@ -195,11 +195,11 @@ class CiscoCopyMib(object):
             return oid
         else:
             options = [
-                'active', 
-                'not_in_service', 
-                'not_ready', 
-                'create_and_go', 
-                'create_and_wait', 
+                'active',
+                'not_in_service',
+                'not_ready',
+                'create_and_go',
+                'create_and_wait',
                 'destroy',
                 ]
             index = options.index(arg) + 1
@@ -208,11 +208,11 @@ class CiscoCopyMib(object):
             return (oid, value)
 
     def protocol(self, arg=None):
-        """Protocol to use to transfer file.  
-        
+        """Protocol to use to transfer file.
+
         Not required when source and destination are the localhost.
         These are the valid options:
-        tftp:  Transfer File Transfer Protocol 
+        tftp:  Transfer File Transfer Protocol
         ftp:   File Transfer protocol  # NOT SUPPORTED ???
         rcp:   Remote Copy Protocol
         scp:   Secure Copy Protocol
@@ -234,10 +234,10 @@ class CiscoCopyMib(object):
             return oid
         else:
             options = [
-                'network_file', 
-                'ios_file', 
-                'startup', 
-                'running', 
+                'network_file',
+                'ios_file',
+                'startup',
+                'running',
                 'terminal',
                 ]
             index = options.index(arg) + 1
@@ -251,10 +251,10 @@ class CiscoCopyMib(object):
             return oid
         else:
             options = [
-                'network_file', 
-                'ios_file', 
-                'startup', 
-                'running', 
+                'network_file',
+                'ios_file',
+                'startup',
+                'running',
                 'terminal',
                 ]
             index = options.index(arg) + 1
@@ -263,10 +263,10 @@ class CiscoCopyMib(object):
 
     def server_address(self, arg=None):
         """Set server IP address when copying to/from a remote server.
-        
+
         This object can just hold only IPv4 Transport
-        type, it is deprecated and replaced by 
-        ccCopyServerAddressRev1." 
+        type, it is deprecated and replaced by
+        ccCopyServerAddressRev1."
         """
         oid = self.base_oid + '5.' + self.row
         if arg is None:
