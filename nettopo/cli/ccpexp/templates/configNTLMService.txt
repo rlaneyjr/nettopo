@@ -1,0 +1,2 @@
+ip admission name IP-ADM-NTLM-AUTH ntlm
+ip admission name IP-ADM-NTLM-AUTH method-list authentication NTLM-AUTH authorization NTLM-AUTH

@@ -1,0 +1,5 @@
+$noHost hostname $hostNameInput
+$noDomain ip domain name $domainName
+$clockInfo
+$ntpServer
+$ntpMaster

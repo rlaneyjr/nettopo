@@ -1,0 +1,3 @@
+interface $disassociateInterface
+no switchport access vlan $vlanID
+exit

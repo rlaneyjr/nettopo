@@ -1,0 +1,3 @@
+interface $natInterface
+ip nat outside
+exit

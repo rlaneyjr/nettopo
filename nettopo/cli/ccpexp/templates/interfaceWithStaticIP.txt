@@ -1,0 +1,4 @@
+interface $interfaceName
+ no shutdown
+  ip address $ipv4Address $ipv4Mask
+ exit

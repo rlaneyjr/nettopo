@@ -1,0 +1,2 @@
+no ip access-list $type $aclname
+exit

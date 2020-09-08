@@ -1,0 +1,8 @@
+interface ATM$atmSubInterfaceTag point-to-point
+ no shutdown
+  no ipv6 address
+  ipv6 address prefix-from-provider $ipv6Prefix/$ipv6Mask $eui64
+  ipv6 enable
+  pvc $vpi/$vci
+  exit
+ exit

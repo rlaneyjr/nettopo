@@ -1,0 +1,34 @@
+<% if(removeDhcp){%>
+<% if(oldWan=="primaryInt"){%>
+
+<% if(isBackupExist){%>
+no ipv6 route ::/0 {{interfaceName}} 1 track 1
+<%}else{%>
+no ipv6 route ::/0 {{interfaceName}}
+<%}%>
+<%}else if(oldWan=="backupInt"){%>
+<%if(isPrimaryDHCP){%>
+no ipv6 route ::/0 {{primaryipv6Dialer}} 1 track 1
+ipv6 route ::/0 {{primaryipv6Dialer}}
+<%}%>
+no ipv6 route ::/0 {{backupipv6Dialer}} 253
+<%}%>
+<%}%>
+ 
+<% if(isDHCP){%>
+<% if(intWanConfig=="primaryInt"){%>
+<% if(isBackupExist){%>
+ipv6 route ::/0 {{interfaceName}} 1 track 1
+<%}else{%>
+ipv6 route ::/0 {{interfaceName}}
+<%}%>
+<%}else if(intWanConfig=="backupInt"){%>
+<%if(isPrimaryDHCP){%>
+no ipv6 route ::/0 {{primaryipv6Dialer}}
+ipv6 route ::/0 {{primaryipv6Dialer}} 1 track 1
+<%}%>
+ipv6 route ::/0 {{interfaceName}} 253
+<%}%>
+<%}%>
+
+

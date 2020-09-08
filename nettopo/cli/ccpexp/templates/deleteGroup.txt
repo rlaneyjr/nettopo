@@ -1,0 +1,1 @@
+no aaa attribute list $groupName

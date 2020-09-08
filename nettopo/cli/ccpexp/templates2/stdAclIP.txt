@@ -1,0 +1,2 @@
+ip access-list standard $aclName
+$Rule $stdIPAddr $stdAclWildMask

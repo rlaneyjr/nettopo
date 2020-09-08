@@ -1,0 +1,12 @@
+interface $interfaceTunnelName 
+$tunnelConf
+no ip redirects
+ip mtu 1440
+ip nhrp map multicast dynamic
+ip nhrp network-id $networkId
+no ip split-horizon eigrp $eigrp
+no ip next-hop-self eigrp $eigrp
+tunnel source $wanInterfaceName
+tunnel mode gre multipoint
+zone-member security VPN
+tunnel protection ipsec profile $hub_profile

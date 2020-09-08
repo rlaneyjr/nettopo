@@ -1,0 +1,1 @@
+ interface {{interfaceName}} no shutdownphysical-layer {{syncMode}}encapsulation {{encMode}}<%if(encMode==='ppp'){%>ip mtu {{mtuSize}} ip tcp adjust-mss {{mssSize}} ppp mtu adaptive<%}%>  exit

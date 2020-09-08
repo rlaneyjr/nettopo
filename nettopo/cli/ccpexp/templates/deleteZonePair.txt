@@ -1,0 +1,1 @@
+no zone-pair security $zonepairName source $sourceZone destination $destZone

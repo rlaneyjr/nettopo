@@ -1,0 +1,2 @@
+cws whitelisting
+whitelist acl name INTRANET-WHITELIST

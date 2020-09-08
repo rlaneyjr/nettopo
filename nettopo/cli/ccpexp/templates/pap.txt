@@ -1,0 +1,28 @@
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6" ){%>
+	<% if(isPPP){%>
+		interface {{interfaceName}}
+	<%} else {%>
+		interface Dialer{{wanipv4dialerTag}}
+	<%}%>
+ppp authentication pap callin
+	ppp pap sent-username {{papChapUsername}} password 0 {{papChapPassword}}
+	<% if(ipcpdns=="on"  ){%>
+	 ppp ipcp dns request
+	 <%}%>
+ exit
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6" ){%>
+	<% if(isPPP){%>
+		interface {{interfaceName}}
+	<%} else {%>
+		interface Dialer{{wanipv6dialerTag}}
+	<%}%>
+	<% if(papSelectipv6==="papSelectipv6"){%>
+	ppp authentication pap callin
+	ppp pap sent-username {{papChapUsernameipv6}} password 0 {{papChapPasswordipv6}}
+	<%}%>
+	<% if(ipcpdnsipv6=="on"  ){%>
+	 ppp ipcp dns request
+	 <%}%>
+	exit
+<%}%>

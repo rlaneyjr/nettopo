@@ -1,0 +1,4 @@
+interface ATM$atmSubInterfaceTag point-to-point
+ shutdown
+exit
+default interface ATM$atmSubInterfaceTag 

@@ -1,0 +1,22 @@
+###
+show processes memory
+<?xml version="1.0" encoding="UTF-8"?>
+<ODMSpec>
+<Command>
+<Name>show processes memory</Name>
+</Command>
+<OS>ios</OS>
+<DataModel>
+<Container name="ShowProcessMemory">
+<Container name="Processor Pool">
+<Property name="Total" distance = "1" length = "1" type = "Integer"/>
+<Property name="Used" distance = "1" length = "1" type = "Integer"/>
+<Property name="Free" distance = "1" length = "1" type = "Integer"/>
+</Container>
+<Property name="Total" distance = "1" length = "1" type = "Integer"/>
+<Property name="Used" distance = "1" length = "1" type = "Integer"/>
+<Property name="Free" distance = "1" length = "1" type = "Integer"/>
+<Property name=" Total" alias = "TotalProcessMemory" distance = "-1" length = "1" type = "String"/>
+</Container>
+</DataModel>
+</ODMSpec>

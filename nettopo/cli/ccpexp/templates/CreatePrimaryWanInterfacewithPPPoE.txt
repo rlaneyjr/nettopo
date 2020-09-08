@@ -1,0 +1,46 @@
+interface {{interfaceName}}
+ no shutdown
+ exit
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv4dialerTag}}
+exit
+ip nat inside source list nat-list interface Dialer{{wanipv4dialerTag}} overload
+<% if(isBackupExist===true){%>
+ip route 0.0.0.0 0.0.0.0 Dialer{{wanipv4dialerTag}} 1 track 1
+<%}else{%>
+ip route 0.0.0.0 0.0.0.0 Dialer{{wanipv4dialerTag}}
+<%}%>
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv6dialerTag}}
+exit 
+<% if(isBackupExist===true){%>
+ipv6 route ::/0 Dialer{{wanipv6dialerTag}} 1 track 1
+<%}else{%>
+ipv6 route ::/0 Dialer{{wanipv6dialerTag}}
+<%}%>
+<%}%>
+<% if(isBackupExist===true){%>
+no ip sla 1
+no route-map track-primary-if permit 1
+no route-map nat2primary permit 1
+no route-map nat2backup permit 1
+ip sla 1
+ icmp-echo {{backupipsla}} source-interface {{ipv4DialerOrInterface}}
+ timeout 5000
+ frequency 60
+ threshold 5000
+ exit
+route-map track-primary-if permit 1
+ match ip address 197
+ set interface {{backupipv4Dialer}}
+ exit
+route-map nat2backup permit 1
+match ip address nat-list
+match interface {{backupipv4Dialer}}
+exit
+route-map nat2primary permit 1
+match ip address nat-list
+match interface {{ipv4DialerOrInterface}}
+exit
+<%}%>

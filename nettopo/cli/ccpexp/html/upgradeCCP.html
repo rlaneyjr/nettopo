@@ -1,0 +1,187 @@
+<div class="ccpexpCSSReplaceClass122" id="hideAll">
+</div>
+<div class="demo containerCenter">
+  <div class="ui-widget">
+    <form id="upgradeCCPForm" method="get" action="">
+      <div id="upgradeCCPFiledset">
+        <div class="headingQuad">
+          <div id="upgradeCCPLegend" class="titleTxt">
+            Upgrade CCP Express
+          </div>
+        </div>
+        <div id="contentReload">
+            <div class="alert alert-danger displayNone" id="reloadErrorDiv"></div>
+			<!-- SonarQube analysis -->
+			<!-- replacing i tag by span -->
+            <div class="reloadScreen"><h3 class="doubleLineHeader increaseWidth"><span class="doubleLineHeaderSpan"><span class="fa fa-location-arrow"></span> <span class="selectDefaultFile">Select Default configuration</span></span></h3></div>
+            <div class="reloadScreen"><span class="selectFrom">Select from:</span> <input type="radio" name="fileSource" id="sourceRouter" checked="checked"> <span id="routerSource">Router (flash:)</span><input type="radio" name="fileSource" id="sourceDesktop"> <span id="desktopSource">Desktop</span></div>
+            <div class="reloadScreen uploadConfigB"><button class="uploadConfigButton"><span class="fa  fa-file-text-o"></span>  <span id="uploadConfigButtonText">Select default configuration File</span></button>
+            <div class="facebook loaderReload"><div></div><div></div><div></div><span class="loadingReloadTitle">Please wait checking file</span></div>
+            <div class="reloadResetMsg alert"></div>
+            <input id="fileUpload" type="file" name="fileUpload" style="display: none"></div>
+            <div class="fileWindow"><div class="fileWindowHeader"><span id="filesDetected">Files detected on router flash:</span></div><div class="reloadScreen configFiles"></div></div>
+            <div class="reloadScreen noteFactory"><span style="color:red">* </span><span id="factoryNote">Please note on factory reset one-time user will be created with credentials - Username : cisco and Password : cisco</span></div>
+            <div class="reloadScreen"><div class="reloadButton disableButton"><span class="fa  fa-gears"></span>  <span id="reloadButtonText">Reset your device</span></div></div>
+        </div>
+        <div id="contentUpgrade">
+            <h3 class="doubleLineHeader">
+                <span class="doubleLineHeaderSpan">
+					<span class="fa fa-location-arrow">
+					</span> 
+					<span id="upgradestep1">
+					Download from CCO
+					</span>
+				</span>
+            </h3>
+          <ul class="upgradeListCCP">
+            <li>
+              <span id="upgradeListCCPItem1">
+                Clicking on below button will launch CCO page from which you can download the image.
+              </span>
+            </li>
+            <li class="noList">
+              <a href="https://software.cisco.com/download/release.html?mdfid=281795035&softwareid=282159854&relind=AVAILABLE&rellifecycle=&reltype=latest" target="_blank">
+                <span id="downloadVersion">
+                  Click here to download latest CCP Express Version
+                </span>
+                <span id="versionNo" class="hideIt">
+                  3.1
+                </span>
+              </a>
+              <br/>
+            </li>
+            <li>
+              <span id="upgradeListCCPItem2">
+                If you do not have CCO login account, please register in the CCO page.
+              </span>
+            </li>
+            <li>
+              <span id="upgradeListCCPItem3">
+                If you already have a zip/Admin-tar available in your PC, then please skip this step.
+              </span>
+            </li>
+          </ul>
+            <h3 class="doubleLineHeader">
+                <span class="doubleLineHeaderSpan">
+					<span class="fa fa-location-arrow">
+					</span> 
+					<span id="upgradestep2">
+					Upload and Install
+					</span>
+				</span>
+            </h3>
+
+          <div class="alert alert-danger" id="installErrorDiv">
+          </div>
+          <ul class="upgradeListCCP">
+            <li>
+              <span id="upgradeListCCPItem4">
+                Please extract the downloaded zip file from CCO on your PC. If you already have the extracted Admin-tar available in your PC, then please skip this step.
+              </span>
+            </li>
+            <li>
+              <span id="upgradeListCCPItem5">
+                Click on Select CCP Express Tar file button and choose the tar file from the folder where it is placed/extracted.
+              </span>
+            </li>
+          </ul>
+          <button class="uploadTarButton">
+            <span class="fa  fa-file-text-o">
+            </span>
+            <span id="uploadTarButtonText">
+              Select CCP Express tar File
+            </span>
+          </button>
+          <div class="facebook loaderUpgrade">
+            <div>
+            </div>
+            <div>
+            </div>
+            <div>
+            </div>
+            <span class="loadingUpgradeTitle">
+              Please wait checking tar file
+            </span>
+          </div>
+          <div class="uploadMsg alert">
+          </div>
+          <input id="tarUpload" type="file" name="tarUpload" class="ccpexpCSSReplaceClass123">
+          <!--
+          <div class="chooseDirCCPUpgrade">
+          <input type="checkbox" checked="checked" id="useDefaultDir">
+          <span id="chooseDir">
+          Use default directory (flash:/)
+          </span>
+          <button id="chooseCustomDir">
+          Choose Directory
+          </button>
+          </div>
+          -->
+          <div class="chooseDirCCPUpgrade">
+            <input type="checkbox" checked="checked" id="deleteTarAfterInstallation">
+            <span id="deleteTar">
+              Delete tar from router after installation
+            </span>
+          </div>
+          <div class="upgradeButton disableButton">
+            <span class="fa  fa-upload">
+            </span>
+            <span id="upgradeButtonText">
+              Upgrade CCP Express
+            </span>
+          </div>
+        </div>
+        <div class="reloadDiv">
+          <div class="reloadMsgH">
+          </div>
+          <div class="reloadNote">
+            Please do not refresh or navigate away from the browser.
+          </div>
+          <div class="spinner">
+          </div>
+        </div>
+		<div id="uploadSupportDiv" class="alert alert-danger" area-hidden="true">
+                <span id="uploadSupport">
+                </span>
+         </div>
+        <div class="errorMsgHDiv">
+          <div>
+            <div class="errorMsgH">
+				CCP Express installation has failed.
+			</div>
+            <div class="errorNote">
+				<span id="errorMessageSpan">Error Message:</span> 
+				<span id="errorMessageCustomSpan">CCP Express tar upload failed</span>
+			</div>
+            <div class="upgradeScreenButton" id="tryAgain">
+				<span class="fa fa-chevron-right"></span> 
+				<span id="errorDivTryAgain">Try Again</span>
+			</div>
+            <div class="upgradeScreenButton" id="goBack">
+				<span class="fa fa-reply"></span> 
+				<span id="errorDivBack">Go Back</span>
+			</div>
+          </div>
+      </div>
+    </div>
+    </form>  
+</div>
+</div>
+<div id="confirmUpgrade" title="Alert">
+  <div class="demo">
+    <div id="confirmUpgradeText">
+    </div>
+  </div>
+</div>
+<div id="lowVersionWarning" title="Alert">
+  <div class="demo">
+    <div id="lowVersionText">
+    </div>
+  </div>
+</div>
+<div id="confirmReset" title="Alert">
+  <div class="demo">
+    <div id="confirmResetText">
+    </div>
+  </div>
+</div>

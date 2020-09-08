@@ -1,0 +1,20 @@
+interface {{interfaceName}}
+ no shutdown
+exit
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv4dialerTag}}
+ no shutdown
+ exit
+
+dialer-list {{wanipv4dialerGroupTag}} protocol ip permit
+ 
+ip nat inside source list nat-list interface Dialer{{wanipv4dialerTag}} overload
+ip route 0.0.0.0 0.0.0.0 Dialer{{wanipv4dialerTag}}
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv6dialerTag}}
+ no shutdown
+ exit
+dialer-list {{wanipv6dialerGroupTag}} protocol ip permit
+ipv6 route ::/0 Dialer{{wanipv6dialerTag}}
+<%}%>

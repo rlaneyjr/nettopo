@@ -1,0 +1,2 @@
+object-group network $policyName_network
+$ipType $ipOrRange 

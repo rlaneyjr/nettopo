@@ -1,0 +1,5 @@
+commands exec include show cellular $cellularTag all
+commands exec include show cellular $cellularTag hardware
+commands exec include show cellular $cellularTag network  
+commands exec include show controllers cellular $cellularTag details 
+commands exec include show cellular $cellularTag radio

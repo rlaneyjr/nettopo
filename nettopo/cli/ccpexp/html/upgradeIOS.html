@@ -1,0 +1,212 @@
+<div class="ccpexpCSSReplaceClass122" id="hideAll">
+</div>
+<div class="demo containerCenter">
+  <div class="ui-widget">
+    <form id="upgradeCCPForm" method="get" action="">
+      <div id="upgradeCCPFiledset">
+        <div class="headingQuad">
+          <div id="upgradeIOSLegend" class="titleTxt">
+            Update IOS
+          </div>
+        </div>
+        <div id="contentUpdate">
+			<div class="iosScreen padding8px"><span class="selectFromIos">Select from:</span> <input type="radio" name="fileSourceIos" id="sourceRouterIos" checked="checked"> <span id="routerSourceIos">Router(flash:)</span><input type="radio" name="fileSourceIos" id="sourceDesktopIos"> <span id="desktopSourceIos">Desktop</span></div>
+			
+			<div id="contentFlash">
+			<div id="selectFromRouter">
+            <div class="reloadScreen"><h3 class="doubleLineHeader increaseWidth"><span class="doubleLineHeaderSpan"><em class="fa fa-location-arrow"></em> <span class="selectIosFileSpan">Select IOS File</span></span></h3></div>
+            <div class="fileWindow"><div class="fileWindowHeader"><span id="filesDetectedIos">IOS Files detected on router flash:</span></div><div class="iosScreen iosFileTable"></div></div>
+			<div>
+			<div class="bootOptionsHeader">
+			<span id="bootList">Boot</span><span class="padding5px" id="iconInfo"><span class="fa  fa-info-circle"></span></span>
+			</div>
+			<div class="iosOptionsDiv">
+			<span>
+            <input type="radio" name="iosChoice" id="moveFirstRadio" checked="true">
+            <span id="moveFirst">
+            First in boot order
+            </span>
+			</span>
+			<span>
+            <input type="radio" name="iosChoice" id="deleteBootList">
+            <span id="deleteIosList">
+            Delete all entries in boot list
+            </span>
+            </span>
+          </div>
+		  </div>
+		  
+		  <div class="upgradeApplyButton disableButton">
+            <span class="fa  fa-upload"></span>
+            <span id="upgradeIOSButtonText">
+              Apply 
+            </span>
+          </div>
+        </div>
+		</div>
+		
+		<div id="contentDesktop">
+            <h3 class="doubleLineHeader">
+                <span class="doubleLineHeaderSpan">
+					<span class="fa fa-location-arrow">
+					</span>				
+					<span id="upgradestep1">
+					Download from CCO
+					</span>
+				</span>
+            </h3>
+          <ul class="upgradeListCCP">
+            <li>
+              <span id="upgradeListIOSItem1">
+                Clicking on below button will launch CCO page from which you can download the image.
+              </span>
+            </li>
+            <li class="noList">
+              <a href="https://software.cisco.com/download/navigator.html?mdfid=286255075&i=rm" target="_blank">
+                <span id="downloadVersionIOS">
+                  Click here to download latest IOS Version for your device
+                </span>
+                <span id="versionNo" class="hideIt">
+                  3.1
+                </span>
+              </a>
+              <br/>
+            </li>
+            <li>
+              <span id="upgradeListIOSItem2">
+                If you do not have CCO login account, please register in the CCO page.
+              </span>
+            </li>
+            <li>
+              <span id="upgradeListIOSItem3">
+                If you already have an IOS file available in your PC, then please skip this step.
+              </span>
+            </li>
+          </ul>
+            <h3 class="doubleLineHeader">
+                <span class="doubleLineHeaderSpan">
+					<span class="fa fa-location-arrow">
+					</span> 
+					<span id="upgradestep2ios">
+					Upload and Install
+					</span>
+				</span>
+            </h3>
+          <ul class="upgradeListCCP">
+            <li>
+              <span id="upgradeListIOSItem4">
+                Please extract the downloaded zip file from CCO on your PC. If you already have the extracted IOS file available in your PC, then please skip this step.
+              </span>
+            </li>
+            <li>
+              <span id="upgradeListIOSItem5">
+                Click on Select IOS file button and choose the IOS file from the folder where it is placed/extracted.
+              </span>
+            </li>
+          </ul>
+		  <div class="alert alert-danger" id="installErrorDiv">
+          </div>
+		  <div id="warningIos" class="alert alert-info">
+				<div id="warningDiv">
+					<span id="iosWarning">
+					</span>
+				</div>
+         </div>
+		 <div>
+          <button class="uploadIosButton">
+            <span class="fa  fa-file-text-o">
+            </span>
+            <span id="uploadIosButtonText">
+              Select IOS File
+            </span>
+          </button>
+          <div class="facebook loaderUpgrade">
+            <div>
+            </div>
+            <div>
+            </div>
+            <div>
+            </div>
+            <span class="loadingUpgradeTitleIOS">
+              Please wait checking IOS file
+            </span>
+          </div>
+          <div class="uploadMsg alert">
+          </div>
+          <input id="iosUpload" type="file" name="iosUpload" class="ccpexpCSSReplaceClass123">
+		  </div>
+		  <div class="upgradeButton disableButton">
+            <span class="fa  fa-upload"></span>
+            <span id="uploadIOSButtonText">
+              Upload IOS 
+            </span>
+          </div>
+        </div>
+		</div>
+		<div id="uploadSupportDiv" class="alert alert-danger" area-hidden="true">
+                <span id="uploadSupport">
+                </span>
+         </div>
+        <div class="reloadDiv">
+          <div class="reloadMsgH">
+          </div>
+          <div class="reloadNote">
+            Please do not refresh or navigate away from the browser.
+          </div>
+          <div class="spinner">
+          </div>
+        </div>
+        <div class="errorMsgHDiv">
+          <div>
+            <div class="errorMsgHIos">
+				IOS upload has failed.
+			</div>
+            <div class="errorNote">
+				<span id="errorMessageSpan">Error Message:</span> 
+				<span id="errorMessageCustomSpan">IOS file upload failed</span>
+			</div>
+            <div class="upgradeScreenButton" id="tryAgainIos">
+				<span class="fa fa-chevron-right"></span> 
+				<span id="errorDivTryAgain">Try Again</span>
+			</div>
+            <div class="upgradeScreenButton" id="goBackIos">
+				<span class="fa fa-reply"></span> 
+				<span id="errorDivBack">Go Back</span>
+			</div>
+          </div>
+      </div>
+       </div>
+    </form>
+ 
+</div>
+</div>
+<div id="confirmUpgradeIos">
+  <div class="demo">
+    <div id="confirmUpgradeTextIos">
+    </div>
+  </div>
+</div>
+<div id="confirmApplyIos">
+  <div class="demo">
+    <div id="confirmApplyTextIos">
+    </div>
+  </div>
+</div>
+<div id="lowVersionWarning" title="Alert">
+  <div class="demo">
+    <div id="lowVersionText">
+    </div>
+  </div>
+</div>
+<div id="confirmReset" title="Alert">
+  <div class="demo">
+    <div id="confirmResetText">
+    </div>
+  </div>
+</div>
+<div id="confirmIosDelete" title="Alert">
+  <div class="demo">
+    <div id="confirmIosDeleteText">
+    </div>
+  </div>
+</div>

@@ -1,0 +1,7 @@
+username $eUserHostname privilege 15 view enduserview password 0 $eUserPassword
+aaa new-model
+enable secret $eUserSecret
+aaa authentication login default local
+aaa authorization exec default local
+scheduler max-task-time 5000
+cns trusted-server all-agents yourname

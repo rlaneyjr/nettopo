@@ -1,0 +1,541 @@
+<!--Copyright (c) 2015-2016 by Cisco Systems, Inc.-->
+<html>
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>
+      Cisco Configuration Professional Express
+    </title>
+    <!-- Add only the required .js and .css files -->
+    <link href="../external/development-bundle/themes/flick/jquery-ui-1.10.3.custom.css1" rel="stylesheet"/>
+    <link href="ccpExpress.css1" rel="stylesheet" />
+    <link href="nv.d3.css" rel="stylesheet" />
+    <link href="jquery.steps.css" rel="stylesheet" type="text/css"/>
+    <!--AWT Added-->
+    <!--<link href='http://fonts.googleapis.com/css?family=Open+Sans:400,300,600' rel='stylesheet' type='text/css' />-->
+    <link href="font-awesome.min.css1" rel="stylesheet" />
+    <script src="../external/jQueryFramework.js">
+    </script>
+    <script src="../external/js/jquery-ui-1.10.4.custom.min.js">
+    </script>
+    <script src="../external/underscore.js">
+    </script>
+    <script src="../js/ccpExpressFeatures.js">
+    </script>
+    <script src="../js/frames.js">
+    </script>
+   <!--  Libs -->
+  
+
+
+  </head>
+  <body id="ccpFrames" class="ccpexpCSSReplaceClass36">
+    <div class="expand-down-frames">
+      <ul>
+        <div id="logo" class="utmSprite logo framesLogo">
+          <!--
+          <li>
+            <img src="images/logo.png" />
+          </li>
+          -->
+        </div>
+        <div class="pull-right ccpexpCSSReplaceClass37" >
+          <!--
+          <div id="feedback" class="slide1">
+          <a href="https://www.ciscofeedback.vovici.com/se.ashx?s=6A5348A77E0CDC49" target="_blank">
+          <em id="feedbackimg" class="fa fa-envelope-o">
+          </em>
+          <div id="display" class="ccpexpCSSReplaceClass38">
+          Provide feedback
+          <br/>
+          </div>
+          </a>
+          </div>
+          -->
+	  <div class="slide versionBoxClass pull-left">
+	    <span id="versionBoxNo">Version</span><span id="versionBoxNoShort">Version</span> <span id="buildVersionNumber">3.3</span>
+	  </div>
+	  <div id="homePage" class="slide frameHomeIcon pull-left">
+            <li>
+              <a href="ccpExpress.html">
+                <span class="fa fa-home pointerCursor">
+                </span>
+              </a>
+            </li>
+          </div>
+          <div id="runningConfigBackup" class="slide frameDownloadIcon pull-left" title="Running Config Download">
+            <li>
+              <a href="javascript:void(0)" id="runningConfigDownload">
+                <span class="fa fa-download pointerCursor">
+                </span>
+              </a>
+            </li>
+          </div>
+          <div id="framesSlide" class="slide framesSlideIcon pull-left">
+            <li>
+              <a href="javascript:void(0)" id="moreMenuOptions">
+                <span class="fa fa-th pointerCursor">
+                </span>
+              </a>
+            </li>
+          </div>
+          
+          <!--
+          <div id="framesSlide" class="slide">
+          <li>
+          <a href="http://www.cisco.com/c/en/us/td/docs/net_mgmt/cisco_configuration_professional_express/v3_3/guides/featureguide/ccp_express_Feature_Guide.html" target="_blank">
+          <em class="fa fa-question pointerCursor">
+          </em>
+          </a>
+          </li>
+          </div>
+          -->
+          <!--
+          <div id="framesSlide" class="slide">
+          <li>
+          <a href="javascript:void(0)" id="upgradeCCP">
+          <em class="fa fa-download pointerCursor">
+          </em>
+          </a>
+          </li>
+          </div>
+          -->
+        </div>
+
+        <!--
+        <ul id="bottomnav" class="pull-left">
+          <li id="bottomnav-1">
+            <a href="javascript:void(0)">
+              <span id="ifcs">
+                Interfaces
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-2">
+            <a href="javascript:void(0)">
+              <span id="dhcpDnsHname">
+                Dhcp/Dns
+              </span>
+              <span id="HDname">
+                Hostname
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-3">
+            <a href="javascript:void(0)">
+              <span id="UserMngmt">
+                Identity
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-4">
+            <a href="javascript:void(0)">
+              <span id="SR">
+                Static Routing
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-5">
+            <a href="javascript:void(0)">
+              <span id="DB">
+                Dashboard
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-6">
+            <a href="javascript:void(0)">
+              <span id="CNS">
+                Plug &amp; Play Server
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-7">
+            <a href="javascript:void(0)">
+              <span id="Troubleshoot">
+                Troubleshoot
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-8">
+            <a href="javascript:void(0)">
+              <span id="ConfigCLI">
+                Configure CLI
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-9" class="ccpexpCSSReplaceClass39">
+            <a href="javascript:void(0)">
+              <span id="Wireless">
+                Wi-Fi
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-10">
+            <a href="javascript:void(0)">
+              <span id="PhoneHome">
+                Cisco Active Advisor
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-11" class="ccpexpCSSReplaceClass40">
+            <a href="javascript:void(0)">
+              <span id="Security">
+                Security
+              </span>
+            </a>
+          </li>
+        </ul>
+        -->
+        
+        <ul id="bottomnav" class="pull-left">
+          <li id="bottomnav-2">
+            <a href="javascript:void(0)">
+              <em class="fa fa-cog"></em>
+              <span id="dhcpDnsHname">
+                Basic Settings
+              </span>
+              <!--<span id="dhcpDnsHname1">
+              </span>-->
+            </a>
+          </li>
+          <li id="bottomnav-1">
+            <a href="javascript:void(0)">
+              <em class="fa fa-laptop"></em>
+              <span id="ifcs">
+                Interfaces
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-3">
+            <a href="javascript:void(0)">
+              <em class="fa fa-users"></em>
+              <span id="UserMngmt">
+                Identity
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-4">
+            <a href="javascript:void(0)">
+              <em class="fa fa-random"></em>
+              <span id="SR">
+                Static Routing
+              </span>
+              <span id="SR1">
+              </span>
+	    </a>
+          </li>
+          <li id="bottomnav-5">
+            <a href="javascript:void(0)">
+              <em class="fa fa-dashboard"></em>
+              <span id="DB">
+                Dashboard
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-7">
+            <a href="javascript:void(0)">
+              <em class="fa fa-spinner"></em>
+              <span id="Troubleshoot">
+                Troubleshoot
+              </span>
+              <span id="Troubleshoot1">
+              </span>
+	    </a>
+          </li>
+<!--
+	  <li id="bottomnav-6">
+            <a href="javascript:void(0)">
+              <em class="fa fa-plug"></em>
+              <span id="CNS">
+                Plug &amp; Play Server
+              </span>
+	      <span id="CNS1">
+              </span>
+            </a>
+          </li>
+-->
+          <li id="bottomnav-8">
+            <a href="javascript:void(0)">
+              <em class="fa fa-terminal"></em>
+              <span id="ConfigCLI">
+                Configure CLI
+              </span>
+            </a>
+          </li>
+          <li id="bottomnav-9" >
+            <a href="javascript:void(0)" class="ccpexpCSSReplaceClass39">
+              <em class="fa fa-wifi"></em>
+              <span id="Wireless">
+                Wi-Fi
+              </span>
+            </a>
+          </li>
+
+          <li id="bottomnav-10">
+            <a href="javascript:void(0)">
+              <em class="fa fa-cloud-upload"></em>
+              <span id="PhoneHome">
+                Cisco Active Advisor
+              </span>
+            </a>
+          </li>
+
+          <li id="bottomnav-11">
+            <a href="javascript:void(0)">
+              <em class="fa fa-shield"></em>
+              <span id="Security">
+                Security
+              </span>
+            </a>
+          </li>
+	  <li id="bottomnav-12">
+            <a href="javascript:void(0)">
+              <em class="fa fa-lock"></em>
+              <span id="Acl">
+                ACL
+              </span>
+            </a>
+          </li>
+        </ul>
+
+        <!--
+        <div class="wideBox">
+        <p>
+        &copy; Elated.com | 
+        <a href="http://www.elated.com/articles/snazzy-animated-pie-chart-html5-jquery/">
+        Back to Tutorial
+        </a>
+        </p>
+        <p class="ccpexpCSSReplaceClass41">
+        <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">
+        <img alt="Creative Commons License" class="ccpexpCSSReplaceClass42" src="http://i.creativecommons.org/l/by/3.0/88x31.png" />
+        </a>
+        <br />
+        This 
+        <span xmlns:dc="http://purl.org/dc/elements/1.1/" href="http://purl.org/dc/dcmitype/Text" rel="dc:type">
+        work
+        </span>
+         by 
+        <a xmlns:cc="http://creativecommons.org/ns#" href="http://www.elated.com/" property="cc:attributionName" rel="cc:attributionURL">
+        http://www.elated.com/
+        </a>
+         is licensed under a 
+        <a rel="license" href="http://creativecommons.org/licenses/by/3.0/">
+        Creative Commons Attribution 3.0 Unported License
+        </a>
+        .
+        </p>
+        </div>
+        -->
+      </ul>
+    </div>
+    <div id="content">
+    </div>
+    <div id="googleAnalytics" title="Analytics Notification" class="ccpexpCSSReplaceClass43 hideIt">
+      <div class="demo">
+        <div id="analyticsInfo">
+          <p>
+            <span id="analyticsInfoMessOne">
+              In order to better serve our customers and to understand the use of Cisco Device Manager, Cisco is seeking your permission to allow collection of anonymous Cisco Device Manager usage data. By opting in, your selection will stay valid for one year, and will be sent to Cisco using Google Analytics. To learn about Google Analytic's usage of data, please visit:
+            </span>
+            <a href="http://www.google.com/policies/privacy/partners/" target="_blank" id="analyticsInfoMessTwo">
+              How Google uses data when you use our partners' sites or apps?
+            </a>
+          </p>
+          <p>
+            <span id="analyticsInfoMessThree">
+              Cisco only collects information related to the usage patterns of Cisco Device Manager and does not collect any network specific information or configuration data.Your jurisdiction may have different definitions for personally identifiable information. Any data collected will be governed by the Cisco privacy statement and may be used for the purpose specified herein, without limitation, notification, attribution or payment. Please refer to the 
+            </span>
+            <a target="_blank" href="http://www.cisco.com/web/siteassets/legal/privacy.html" id="analyticsInfoMessFour">
+              Cisco Privacy Statement.
+            </a>
+          </p>
+          <p id="analyticsInfoMessFive">
+            Allow anonymous usage data to be sent to Cisco?
+          </p>
+        </div>
+      </div>
+    </div>
+    <div class="popUpMenuDiv">
+      <div class="popUpMenuContainer">
+        <div class="popMenuHeader">
+          <h3>
+            <span class="moreOptions">
+              More Options
+            </span>
+            <span class="popUpMenuVersion hideIt">
+              Version 3.1
+            </span>
+          </h3>
+        </div>
+        <div class="popUpMenuItemContainer">
+          <div class="popUpMenuItem" data="upgrade">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-upload">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Upgrade CCP Express
+            </div>
+          </div>
+          <div class="popUpMenuItem" data="reset">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-cogs">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Factory Reset
+            </div>
+          </div>
+          <div class="popUpMenuItem" data="preference">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-th-list">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Preferences
+            </div>
+          </div>
+        </div>
+        <div class="popUpMenuItemContainer">
+          <div class="popUpMenuItem  displayNone" data="caa">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-cloud-upload">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Active Advisor
+            </div>
+          </div>
+		   <div class="popUpMenuItem" data="updateIOS">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-cloud-download">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Update IOS
+            </div>
+          </div>
+          <div class="popUpMenuItem" data="feedback">
+            <div class="popUpMenuIcon">
+              <em class="fa fa-envelope">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Feedback
+            </div>
+          </div>
+          <div class="popUpMenuItem" data="help">
+            <div class="popUpMenuIcon">
+              <em class="fa  fa-question">
+              </em>
+            </div>
+            <div class="popUpMenuText">
+              Help
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="preferencesDialog" title="Preferences" class="hideIt">
+      <div class="demo">
+        <div>
+          <table class="preferenceTable">
+            <tr>
+              <td class="prefName">
+                <span id="analysisTitle">
+                  Enable Usage Activity Collection 
+                </span>
+                <em class="fa fa-question-circle">
+                </em>
+              </td>
+              <td>
+                <label class="switch switch-flat">
+                  <input class="switch-input" type="checkbox" id="analyticsCheck" />
+                  <span class="switch-label" data-on="On" data-off="Off">
+                  </span>
+                  <span class="switch-handle">
+                  </span>
+                </label>
+              </td>
+            </tr>
+	    <tr id="ipsJapDisable" class="displayNone">
+	      <td class="prefName">
+		<span id="ipsFeatureSupportTitle">
+		  IPS Feature Support 
+		</span>
+		<em class="fa fa-question-circle">
+		</em>
+	      </td>
+	      <td>
+		<label class="switch switch-flat">
+		  <input class="switch-input" type="checkbox" id="ipsFeatureJapDisableCheck" />
+		  <span class="switch-label" data-on="On" data-off="Off">
+		  </span>
+		  <span class="switch-handle">
+		  </span>
+		</label>
+	      </td>
+	    </tr>
+
+              <tr id="recommendedSecuritySettings">
+                <td class="prefName">
+                  <span id="recSecSettingsTitle">
+                    Cisco Recommended Security Settings
+                  </span>
+                  <em class="fa fa-question-circle">
+                  </em>
+                </td>
+                <td>
+                  <label class="switch switch-flat">
+                    <input class="switch-input" type="checkbox" id="recommmendedSecuritySettingsCheck" />
+                    <span class="switch-label" data-on="On" data-off="Off">
+                    </span>
+                    <span class="switch-handle">
+                    </span>
+                  </label>
+                </td>
+              </tr>
+
+
+            <tr class="displayNone">
+              <td class="prefName">
+                <span id="updateTitle">
+                  Check automatically for updates 
+                </span>
+                <em class="fa fa-question-circle">
+                </em>
+              </td>
+              <td>
+                <label class="switch switch-flat">
+                  <input class="switch-input" type="checkbox" id="updatesCheck" />
+                  <span class="switch-label" data-on="On" data-off="Off">
+                  </span>
+                  <span class="switch-handle">
+                  </span>
+                </label>
+              </td>
+            </tr>
+            <tr class="displayNone"  id="logsOption">
+              <td class="prefName">
+                <span id="logsTitle">
+                  Enable CCP Express logs 
+                </span>
+                <em class="fa fa-question-circle">
+                </em>
+              </td>
+              <td>
+                <label class="switch switch-flat">
+                  <input class="switch-input" type="checkbox" id="logsCheck" />
+                  <span class="switch-label" data-on="On" data-off="Off">
+                  </span>
+                  <span class="switch-handle">
+                  </span>
+                </label>
+              </td>
+            </tr>
+          </table>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>

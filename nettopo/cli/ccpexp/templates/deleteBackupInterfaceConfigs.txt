@@ -1,0 +1,21 @@
+no route-map track-primary-if permit 1
+no route-map nat2backup permit 1
+no route-map nat2primary permit 1
+no track 1 ip sla 1 reachability
+<% if(backupRout=="wanipv4" || backupRout=="wanipv4and6"){%>
+no ip route 0.0.0.0 0.0.0.0 {{routeInterface}} 253
+no ip nat inside source route-map nat2backup interface {{routeInterface}}  overload
+no ip nat inside source route-map nat2primary interface {{primaryInterface}} overload
+ip route 0.0.0.0 0.0.0.0 {{primaryInterface}}
+no ip route 0.0.0.0 0.0.0.0 {{primaryInterface}} 1 track 1
+
+<%}%>
+<% if(backupRout=="wanipv6" || backupRout=="wanipv4and6"){%>
+	no ipv6 route ::/0 {{routeInterface}} 253
+	ipv6 route ::/0 {{primaryInterface}}
+	no ipv6 route ::/0  {{primaryInterface}} 1 track 1
+<%}%>
+no access-list 197 permit icmp any $slaIP 0.0.0.0
+no access-list 198 permit ip any any
+no ip access-list extended nat-list
+no ip sla 1

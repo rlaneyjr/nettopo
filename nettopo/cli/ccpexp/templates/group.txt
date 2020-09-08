@@ -1,0 +1,3 @@
+aaa new-model
+aaa attribute list $groupName
+attribute type supplicant-group $groupName

@@ -1,0 +1,4 @@
+interface $interfaceName 
+ no shutdown
+  no pppoe-client dial-pool-number $dialerPoolTag
+  exit

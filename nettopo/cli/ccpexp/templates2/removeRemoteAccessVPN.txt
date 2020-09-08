@@ -1,0 +1,29 @@
+interface $interfaceName
+ no crypto map CRYP_MAP
+exit
+
+no interface Virtual-Template1
+
+no ip local pool $poolName $remoteAddressPoolFrom $remoteAddressPoolTo
+
+no crypto map CRYP_MAP 6000 ipsec-isakmp dynamic DYN_MAP
+
+no crypto dynamic-map DYN_MAP 10
+
+no crypto ipsec transform-set TS1 esp-aes esp-sha-hmac
+
+no crypto isakmp keepalive 3600
+
+no crypto isakmp policy 1
+
+no crypto keyring L2TP
+
+no vpdn-group L2TP
+no vpdn enable
+
+no aaa authentication ppp VPDN_AUTH local
+
+no aaa authentication ppp default local
+
+no aaa new-model
+

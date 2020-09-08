@@ -1,0 +1,9 @@
+interface {{interfaceName}}
+ exit
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+no ip nat inside source list nat-list interface {{interfaceName}} overload
+no ip nat inside source list nat-list interface {{ipv4dialer}} overload
+no ip access-list extended nat-list
+ 
+<%}%>
+ 

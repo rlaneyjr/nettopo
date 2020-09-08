@@ -1,0 +1,6 @@
+interface ATM$atmSubInterfaceTag point-to-point
+ no shutdown
+ pvc $vpi/$vci
+  no pppoe-client dial-pool-number $dialerPoolTag
+  exit
+ exit

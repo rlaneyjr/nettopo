@@ -1,0 +1,2 @@
+zone-pair security $zonepairName source $sourceZone destination $destZone
+service-policy type inspect $policy_zpName

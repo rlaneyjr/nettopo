@@ -1,0 +1,16 @@
+no ip host $hostNamewithout $hostIP
+no ip host $hostName $hostIP
+no cns trusted-server all-agents $hostName
+no cns trusted-server all-agents $hostIP
+no cns trusted-server all-agents $hostNamewithout
+no cns id hardware-serial
+no cns id hardware-serial event
+no cns id hardware-serial image
+no cns id udi
+no cns id udi event
+no cns id udi image
+no cns event $hostName
+no cns config partial $hostName 80
+no cns config initial $hostName 80
+no cns exec 80
+no cns image server  http://$hostName/cns/HttpMsgDispatcher status  http://$hostName/cns/HttpMsgDispatcher

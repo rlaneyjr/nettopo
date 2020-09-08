@@ -1,0 +1,2 @@
+no chat-script hspa-R7
+chat-script hspa-R7 "" "AT!SCACT=1,1" TIMEOUT 60 "OK"

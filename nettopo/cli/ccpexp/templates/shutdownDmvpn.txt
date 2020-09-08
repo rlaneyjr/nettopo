@@ -1,0 +1,3 @@
+no interface $interfaceTunnelName
+interface $interfaceTunnelName
+shut

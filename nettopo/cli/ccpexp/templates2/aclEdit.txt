@@ -1,0 +1,3 @@
+ip access-list $type $aclname
+no $seq
+exit

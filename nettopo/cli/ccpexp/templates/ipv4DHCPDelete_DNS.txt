@@ -1,0 +1,2 @@
+ip dhcp pool $ipv4PoolName
+no dns-server

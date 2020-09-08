@@ -1,0 +1,22 @@
+crypto keyring isakmp-keyring  
+$spokeConf
+crypto isakmp policy 1
+encryption 3des
+authentication pre-share
+group 2
+crypto isakmp identity dn
+crypto isakmp profile isakmp-profile
+keyring isakmp-keyring
+self-identity address
+$spokeMatchId
+crypto ipsec profile $hub_profile
+set isakmp-profile isakmp-profile
+crypto ipsec transform-set trans esp-aes esp-sha-hmac 
+mode tunnel
+crypto ipsec profile $hub_profile
+set transform-set trans
+crypto isakmp keepalive 10 2 periodic
+
+
+
+

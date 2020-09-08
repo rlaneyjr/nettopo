@@ -1,0 +1,2 @@
+ip dhcp pool $ipv4PoolName 
+network $ipv4PoolNetwork $SubnetMask

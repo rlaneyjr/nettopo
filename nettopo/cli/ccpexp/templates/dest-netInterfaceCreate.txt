@@ -1,0 +1,1 @@
+ip route $prefix $Mask $interface $metric

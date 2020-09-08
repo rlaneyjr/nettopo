@@ -1,0 +1,5 @@
+interface $interface
+ shutdown
+ exit
+default interface $interface
+no interface $interface

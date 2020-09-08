@@ -1,0 +1,12 @@
+interface $interfaceTunnelName
+ $backupTunnel
+ $ipAddressString
+ tunnel source $tunnelSourceName
+ tunnel mode ipsec ipv4
+ tunnel destination $peerAddress
+ tunnel protection ipsec profile test_profile
+ zone-member security VPN
+$ipRouteString
+object-group network vpn_remote_subnets
+$objGroupdIpRoute
+exit

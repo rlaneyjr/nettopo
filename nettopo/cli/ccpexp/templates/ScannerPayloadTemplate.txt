@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<inventory>
+	<userId>$userid</userId>
+	<devices>
+		<device>
+			<ciscoDevice>1</ciscoDevice>
+			<method>CC</method>
+			<os>IOS</os>
+			<location>$location</location>
+			<protoVersion>$protoVersion</protoVersion>
+			<hVersion>$hVersion</hVersion>
+			<scannerMethod>$scannerMethod</scannerMethod>
+			<deviceType><![CDATA[$deviceType]]></deviceType>
+			<ipAddress><![CDATA[$ipAddress]]></ipAddress>
+			<deviceClass><![CDATA[router]]></deviceClass>
+			<macAddress><![CDATA[$macAddress]]></macAddress>
+			<firmware><![CDATA[$firmware]]></firmware>
+			<serialNo><![CDATA[$serialNo]]></serialNo>
+			<productID><![CDATA[$productID]]></productID>
+			<pidvid><![CDATA[$pidvid]]></pidvid>
+			<hostname><![CDATA[$hostname]]></hostname>
+			<sysDescription><![CDATA[$sysDescription]]></sysDescription>
+			<sysUptime><![CDATA[$sysUptime]]></sysUptime>
+			<bootReason><![CDATA[$bootReason]]></bootReason>
+			<totalVisibleMemorySize><![CDATA[$totalVisibleMemorySize]]></totalVisibleMemorySize>
+			<imageName><![CDATA[$imageName]]></imageName>
+			<runningConfig><![CDATA[$runningConfig]]></runningConfig>
+			<snmp><![CDATA[$snmp]]></snmp>
+			<inventory><![CDATA[$inventory]]></inventory>
+			<version><![CDATA[$version]]></version>
+			<ipInterfaceBrief><![CDATA[$ipInterfaceBrief]]></ipInterfaceBrief>
+			<interfaceDesc><![CDATA[$interfaceDesc]]></interfaceDesc>
+			<macAddressTable><![CDATA[$macAddrTable]]></macAddressTable>
+			<cdpNeighbors><![CDATA[$cdpNeighbors]]></cdpNeighbors>
+			<healthMonitor><![CDATA[$healthMonitor]]></healthMonitor>
+		</device>
+	</devices>
+</inventory>

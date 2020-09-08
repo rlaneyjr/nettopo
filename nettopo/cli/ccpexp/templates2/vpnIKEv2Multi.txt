@@ -1,0 +1,8 @@
+crypto ikev2 keyring key
+ peer $nameOfKey
+ address $addressOfPeer
+ identity address $peerAddress
+ pre-shared-key $key
+
+crypto ikev2 profile prof
+ match identity remote address $peerAddrNew $siteToSiteSubnetMask 

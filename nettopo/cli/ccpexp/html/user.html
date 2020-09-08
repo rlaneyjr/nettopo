@@ -1,0 +1,717 @@
+<div class="ccpexpCSSReplaceClass124" id="hideAll">
+</div>
+<div>
+  <div id="userError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass125" >
+    <p>
+      <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass126" >
+      </span>
+      <span id="userErrorMessage">
+      </span>
+    </p>
+  </div>
+  <div class="demo">
+    <div id="tabs">
+      <ul>
+        <li>
+          <a href="#tabs-4" id="authTab">
+            Authentication
+          </a>
+        </li>
+        <li>
+          <a href="#tabs-3" id="createGroupsTab">
+            Groups
+          </a>
+        </li>
+        <li>
+          <a href="#tabs-1" id="userTab">
+            Users
+          </a>
+        </li>
+        <li>
+          <a href="#tabs-2" id="endUserViewTab">
+            EndUser View
+          </a>
+        </li>
+      </ul>
+      <div id="tabs-1">
+        <div class="demo containerCenter">
+          <div class="ui-widget">
+            <div id="userFiledset">
+              <div class="headingQuad">
+                <div class="titleTxt">
+                  <div id="userLegend">
+                    User Management
+                  </div>
+                </div>
+              </div>
+              <div id="userFielddiv">
+                <div>
+                  <div class="pull-left">
+                     <span class="posRelative">
+                    <a id="two">
+                      <input id="TableSlideSearch" type="text" placeholder="Search User(s)" class="searchTbx"/>
+                      <span class="utmSprite search-icon userSearchIconPosition">&nbsp;</span>
+                    </a>
+                     </span>
+                  </div>
+                  <div id="userButtonBar" class="text-right">
+                    <button id="add-user">
+                      ADD
+                    </button>
+                    <button id="delete-user">
+                      DELETE
+                    </button>
+                  </div>
+                </div>
+                <div>
+                  &nbsp;
+                </div>
+                <div id="users-table" class="ui-widget">
+                  <table id="userTable" class="ui-widget ui-widget-content tblCm tbColor tblClick">
+                    <thead>
+                      <tr class="ui-widget-header ">
+                        <th scope="col">
+                          <input id="usertablechkbx" type="checkbox" class="displayNone"/>
+                        </th>
+                        <th id="UserName">
+                          UserName
+                        </th>
+                        <th id="Password">
+                          Password
+                        </th>
+                        <th id="PrivilegeLevel">
+                          Privilege Level
+                        </th>
+                        <th id="withParser">
+                          Parser View
+                        </th>
+                        <th id="withGroup">
+                          Group
+                        </th>
+                        <th id="usertbAction">
+                          Action
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tabs-2">
+        <div class="demo containerCenter">
+          <div class="ui-widget">
+            <form id="parserForm" method="get" action="">
+              <div id="parserFiledset">
+                <div class="headingQuad">
+                  <div id="parserCLILegend" class="titleTxt">
+                    Create EndUser View
+                  </div>
+                </div>
+                <table id="parserTable" class="tblform" width="100%">
+                  <tr>
+                    <td id="EndUserUserName" width="140">
+                      EndUser UserName 
+                      <span class="ccpexpCSSReplaceClass127">
+                        *
+                      </span>
+                      :
+                    </td>
+                    <td>
+                      <input type="text" name="EndUserUserName" id="eUserUserName" class="required txtMid" placeholder="EndUser UserName"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="EndUserPassword" width="130">
+                      EndUser Password 
+                      <span class="ccpexpCSSReplaceClass128">
+                        *
+                      </span>
+                      :
+                    </td>
+                    <td>
+                      <input type="text" name="EndUserPassword" id="eUserPassword" class="required txtMid" placeholder="EndUser Password"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="parserViewNote" colspan="5" >
+                      NOTE:The above UserName and Password has to be disclosed to the EndUser.
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <hr />
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="EnableSecret">
+                      Enable Secret 
+                      <span class="ccpexpCSSReplaceClass129">
+                        *
+                      </span>
+                      :
+                    </td>
+                    <td>
+                      <input type="password" name="Secret" id="SecretInput" class="required txtMid" minlength="1" maxlength = "25" placeholder="Enable Secret"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td id="ConfirmSecret">
+                      Confirm Secret 
+                      <span class="ccpexpCSSReplaceClass130">
+                        *
+                      </span>
+                      :
+                    </td>
+                    <td>
+                      <input type="password" name="ConfirmSecret" id="ConfirmSecretInput" class="required txtMid" minlength="1" maxlength = "25" equalTo="#SecretInput" placeholder="Confirm Secret"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <br>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td colspan="5">
+                      <hr />
+                    </td>
+                  </tr>
+                </table>
+                <table id="parserIntTable">
+                  <tbody>
+                  </tbody>
+                </table>
+                <div>
+                  &nbsp;
+                </div>
+                <table>
+                  <tr id="buttons">
+                    <td>
+                      <button id="Apply">
+                        Apply
+                      </button>
+                      <button id="DeleteView">
+                        Delete View
+                      </button>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </form>
+          </div>
+        </div>
+      </div>
+      <div id="tabs-3">
+        <div class="demo containerCenter">
+          <div class="ui-widget">
+            <div id="groupFieldset">
+              <div class="headingQuad">
+                <div class="titleTxt pull-left" id="groupLegend">
+                  Group Management
+                </div>
+                <div id="groupButtonBar" class="text-right">
+                  <button id="add-group">
+                    ADD
+                  </button>
+                  <button id="delete-group">
+                    DELETE
+                  </button>
+                </div>
+              </div>
+              <div id="groups-table" class="ui-widget">
+                <div class="headingQuad ccpexpCSSReplaceClass131"  id="noGroupMessage">
+                  <div class="pull-left titleText ccpexpCSSReplaceClass132"  id="noGroupAval">
+                    No groups available
+                  </div>
+                </div>
+                <table id="groupTable" class="ui-widget ui-widget-content tblCm tbColor tblClick">
+                  <thead>
+                    <tr class="ui-widget-header" width="40px">
+                      <th scope="col" width="40px">
+                        <input id="GPchkbox" type="checkbox"/>
+                      </th>
+                      <th id="GroupName">
+                        Group Name
+                      </th>
+                      <th id="GPaction">
+                        Action
+                      </th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div id="tabs-4">
+        <div class="demo containerCenter">
+          <div class="ui-widget">
+            <div id="ldapFiledset">
+              <div id="ldapFielddiv">
+                <div id="ldap-table" class="ui-widget">
+                  <div>
+                    &nbsp;
+                  </div>
+                  <fieldset class="customfieldset ccpexpCSSReplaceClass369" style="display: block;">
+                    <legend class="ccpexpCSSReplaceClass134">
+                      <h3 id="userAuthenticServerTitle">
+                        Authentication Servers
+                      </h3>
+                    </legend>
+                    <div class="ccpexpCSSReplaceClass135">
+                      <input type="checkbox" name="local" value="local" id="localServers" class="ccpexpCSSReplaceClass136">
+                      <span id="enableOnBox">
+                        Enable local (on-box) server
+                      </span>
+                      <br>
+                      <input type="checkbox" name="remote" value="remote" id="remoteServers" class="ccpexpCSSReplaceClass137">
+                      <span id="enableExternal">
+                        Enable remote (external) server
+                      </span>
+                    </div>
+                    <table id="ldapTable" class="ui-widget ui-widget-content tblCm tbColor ccpexpCSSReplaceClass138" >
+                      <thead>
+                        <tr class="ui-widget-header ">
+                          <th id="profileNmae">
+                            Profile Name
+                          </th>
+                          <th id="serverType">
+                            Type
+                          </th>
+                          <th id="serverName" class="serverIP">
+                            Server IP
+                          </th>
+                          <th id="baseDn">
+                            Base Dn
+                          </th>
+                          <th id="state">
+                            Status
+                          </th>
+                          <th id="ldapAction">
+                            Action
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      </tbody>
+                    </table>
+                    <button id="add-ldap"  >
+                      ADD new server
+                    </button>
+                  </fieldset>
+                  <fieldset class="customfieldset ccpexpCSSReplaceClass369" style="display: block;">
+                    <legend class="ccpexpCSSReplaceClass140">
+                      <h3 id="userAuthenticSerTitle">
+                        Authentication Services
+                      </h3>
+                    </legend>
+                    <table id="authTable" class="ui-widget ui-widget-content tblCm ccpexpCSSReplaceClass135">
+                      <thead>
+                        <tr class="ui-widget-header ">
+                          <th id="zone">
+                            Zone
+                          </th>
+                          <th id="serverName" class="methodTitle">
+                            Method
+                          </th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                      <td>
+                        LAN
+                      </td>
+                      <td>
+                        <select id="authMethods" >
+                          <option value="none">
+                            None
+                          </option>
+                          <option value="webauth">
+                            Web Auth
+                          </option>
+                          <option value="ntlm">
+                            NTLM
+                          </option>
+                        </select>
+                      </td>
+                      </tbody>
+                    </table>
+                  </fieldset>
+                  <!--div class="ccpexpCSSReplaceClass141">
+                  <button id="previewClip"  >
+                  CLI Preview
+                  </button>
+                  </div-->
+                  <div class="ccpexpCSSReplaceClass142">
+                    <button id="applyAuth"  >
+                      Apply
+                    </button>
+                    <button id="resetAuth"  >
+                      Reset
+                    </button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div id="dialog-form" title="Add DHCP pool">
+      <div id="userdialogError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass143" >
+        <p>
+          <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass144" >
+          </span>
+          <span id="userdialogErrorMessage">
+          </span>
+        </p>
+      </div>
+      <form id="userForm" method="get" action="">
+        <div class="demo">
+          <div id="accordion1">
+            <div id="userManagementFieldset">
+              <!--div id="UserLegend" class="headingPopup">
+              User
+              </div-->
+              <table>
+                <tr>
+                  <td id="AstUserName">
+                    UserName 
+                    <span class="ccpexpCSSReplaceClass145">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input type="text" name="username" id="userInput" class="required userInputCheck" placeholder="User Name"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="AstPswd">
+                    Password 
+                    <span class="ccpexpCSSReplaceClass146">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input type="password" name="password" id="paassworInput" class="required" minlength="1" maxlength = "25" placeholder="Password"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="AstConfirmPswd">
+                    Confirm Password 
+                    <span class="ccpexpCSSReplaceClass147">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input type="password" name="confirmpassword" id="confirmInput" class="required" minlength="1" maxlenght = "25"equalTo="#paassworInput" placeholder="Confirm Password"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="AstGroupSelection">
+                    Select Group:
+                  </td>
+                  <td>
+                    <select name="groupsList" id="groupsList">
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="ManagePrivilegeLevel">
+                    privilegeLevel:
+                  </td>
+                  <td>
+                    <select name="privileges" id="privileges">
+                      <option>
+                        0
+                      </option>
+                      <option>
+                        1
+                      </option>
+                      <option>
+                        2
+                      </option>
+                      <option>
+                        3
+                      </option>
+                      <option>
+                        4
+                      </option>
+                      <option>
+                        5
+                      </option>
+                      <option>
+                        6
+                      </option>
+                      <option>
+                        7
+                      </option>
+                      <option>
+                        8
+                      </option>
+                      <option>
+                        9
+                      </option>
+                      <option>
+                        10
+                      </option>
+                      <option>
+                        11
+                      </option>
+                      <option>
+                        12
+                      </option>
+                      <option>
+                        13
+                      </option>
+                      <option>
+                        14
+                      </option>
+                      <option>
+                        15
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr>
+                  <td id="encrytAlgo">
+                    Encrypt password using MD5 hash algorithm
+                    <br />
+                  </td>
+                  <td>
+                    <input type="checkbox" name="encryptPassword" id="encryptPassword"/>
+                  </td>
+                </tr>
+              </table>
+            </div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div id="dialog-form-groups" title="Add Group">
+      <div id="addGroup">
+        <div class="headingPopup" id="userCreateGroup">
+          Create Group
+        </div>
+        <div id="groupError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass148" >
+          <p>
+            <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass149" >
+            </span>
+            <span id="groupErrorMessage">
+            </span>
+          </p>
+        </div>
+        <form id="groupForm" method="get" action="">
+          <table>
+            <tr>
+              <td width="100">
+                <span>
+                  <span id="userGroupName">
+                    Group Name
+                  </span>
+                  <span class="ccpexpCSSReplaceClass150">
+                    *
+                  </span>
+                  :
+                </span>
+              </td>
+              <td class="vpnPaddingTextbox">
+                <input type="text" id="group-name" class="required txtMid" placeholder="Group Name">
+              </td>
+            </tr>
+            <!-- Commenting out for User Group Changes as part of Identity
+            <tr>
+            <td >
+            <span>
+            Type:
+            </span>
+            </td>
+            <td class="vpnPaddingTextbox">
+            <input type="radio" name="groupType" value="First" checked="checked" id="groupLocal" />
+                                      Local Directory
+            <span>
+            <input type="radio" name="groupType" value="second" id="groupActive" />
+                                      Active Directory
+            </span>
+            </td>
+            </tr>
+            -->
+          </table>
+        </form>
+      </div>
+    </div>
+    <div id="dialog-form-ldap" title="Add/Edit LDAP">
+      <div id="addLdap">
+        <div id="ldapError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass151" >
+          <p>
+            <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass152" >
+            </span>
+            <span id="ldapErrorMessage">
+            </span>
+          </p>
+        </div>
+        <form id="ldapForm" method="get" action="">
+          <div>
+            <table id="addLdapTable" width="50%" cellpadding="0" cellspacing="10" border="0">
+              <tbody>
+                <tr id="serverType">
+                  <td>
+                    <span id="userServerType">
+                      Type Of Server
+                    </span>
+                    <span class="ccpexpCSSReplaceClass153">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <select id="serverTypes" disabled="disabled">
+                      <option value="ldap">
+                        LDAP
+                      </option>
+                      <option value="radius">
+                        Radius 
+                      </option>
+                    </select>
+                  </td>
+                </tr>
+                <tr id="profileNmTr">
+                  <td>
+                    <span id="userProfileName">
+                      Profile Name
+                    </span>
+                    <span class="ccpexpCSSReplaceClass154">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input id="profileName" type="text" name="profileName" placeholder="Profile Name"/>
+                  </td>
+                </tr>
+                <tr id="ldapStatusTr">
+                  <td>
+                    <span id="userStatus">
+                      Status
+                    </span>
+                    <span class="ccpexpCSSReplaceClass155">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input id="ldapStatus" type="text" name="ldapStatus" />
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span id="userserverIP">
+                      Server IP
+                    </span>
+                    <span class="ccpexpCSSReplaceClass156">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input id="ldapIpAddress" class="requiredipv4 inputnotallowspace" type="text" name="ldapIpAddress" placeholder="Server IP"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                    <span id="userBaseDN">
+                      Base Dn
+                    </span>
+                    <span class="ccpexpCSSReplaceClass157">
+                      *
+                    </span>
+                    :
+                  </td>
+                  <td>
+                    <input id="ldapBaseDn" class="requiredBaseDn" type="text" name="ldapBaseDn" placeholder="Base Dn"/>
+                  </td>
+                </tr>
+                <tr>
+                  <td>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </form>
+      </div>
+    </div>
+    <div id="authValidationPopup" title="Validation Messages">
+      <div id="authValidationMessages">
+      </div>
+    </div>
+    <div id="authWarningPopup" title="Validation Messages">
+      <div id="authWarningMessages">
+      </div>
+    </div>
+    <div id="priviewCliPopup" title="CLI Preview">
+      <pre id="priviewCliMessages">
+      </pre>
+    </div>
+    <div id="userselectRow" title="Select a Row">
+      <div class="demo">
+        <div id="userSelectRowStr">
+          Select a Row to Edit/Delete. 
+        </div>
+      </div>
+    </div>
+    <div id="groupMngForUser" class="GroupPopup">
+      <div class="gpBdrRight">
+        <div class="caption">
+          <span id="groupMngLbl">
+            Select Group for User
+          </span>
+          <span id="groupMngTitle">
+          </span>
+        </div>
+        <div class="content">
+          <div id="user-groups">
+            <input type="text" placeholder="Search Group(s)" id="search-groups">
+            <br>
+            <hr class="ccpexpCSSReplaceClass158">
+            <div id="group-list">
+            </div>
+            <hr class="ccpexpCSSReplaceClass159">
+            <div id="userGroupAssociate">
+              <button id="addToGroup">
+                OK
+              </button>
+              <button id="cancelGroupMgmt">
+                Cancel
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

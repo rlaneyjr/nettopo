@@ -1,0 +1,22 @@
+interface $interface
+ no shut
+ dialer in-band
+ dialer idle-timeout 120 
+ dialer string $chatScriptName
+ dialer-group $dialerGroupTag
+ ip address negotiated
+$ipNat
+ async mode interactive
+ exit
+
+line $lineTag
+ script dialer $chatScriptName
+ modem InOut
+ transport input all
+ exit
+
+dialer-list $dialerGroupTag protocol ip permit
+ip route 0.0.0.0 0.0.0.0 Cellular$cellular_LineTag 1
+
+ip nat inside source list 198 interface $interface  overload
+access-list 198 permit ip any any

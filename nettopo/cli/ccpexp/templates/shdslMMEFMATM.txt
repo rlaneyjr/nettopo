@@ -1,0 +1,5 @@
+controller $controllerName
+no dsl-group auto
+mode $controllerMode
+dsl-group auto
+exit

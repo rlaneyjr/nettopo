@@ -1,0 +1,1 @@
+no dialer-list $dialerGroupTag protocol ip permit

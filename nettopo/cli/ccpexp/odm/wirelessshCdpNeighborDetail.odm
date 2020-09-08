@@ -1,0 +1,20 @@
+###
+show cdp neighbors detail
+<?xml version='1.0' encoding='utf-8'?>
+<ODMSpec>
+<Command>
+<Name>show cdp neighbors detail</Name>
+</Command>
+<OS>ios</OS>
+<DataModel>
+<Container name="ShowCdpNeighborsDetail">
+<Container name="Device ID" alias = "Neighbor">
+<Property name="Device ID" distance = "1.0" length = "1" type = "String"/>
+<Container name="Entry address">
+<Property name="IP address" distance = "1.0" length = "1" type = "String"/>
+</Container>
+<Property name="Interface" distance = "1.0" length = "1" end-delimiter = "," type = "String"/>
+</Container>
+</Container>
+</DataModel>
+</ODMSpec>

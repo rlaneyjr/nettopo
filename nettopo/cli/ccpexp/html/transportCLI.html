@@ -1,0 +1,71 @@
+<div class="ccpexpCSSReplaceClass119" id="hideAll">
+</div>
+<div id="transportError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass120" >
+  <p>
+    <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass121" >
+    </span>
+    <span id="transportErrorMessage">
+    </span>
+  </p>
+</div>
+<div class="demo containerCenter">
+  <div class="ui-widget">
+    <form id="cliForm" method="get" action="">
+      <div id="cliFiledset">
+        <div class="headingQuad">
+          <div id="configureCLILegend" class="titleTxt">
+            Configure CLI
+          </div>
+        </div>
+        <div class="text_help_en" id="cliHelp">
+          The Configure CLI feature allows you to configure or run any IOS CLI commands that can be directly executed from the router's command prompt.
+        </div>
+        <br/>
+        <table id="cliTable" width="100%">
+          <tr>
+            <td width="10">
+              <input  type="radio"  name="cliType" value="Exec" checked="checked"/>
+            </td>
+            <td id="Exec">
+              Exec
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="radio"   name="cliType" value="Configure"/>
+            </td>
+            <td id="Configure">
+              Configure
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <textarea type="text" name="cliInput" id="cliInput">
+              </textarea>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2">
+              <button id="runCommand">
+                Run Command
+              </button>
+              <button id="clearcommand">
+                Clear
+              </button>
+            </td>
+          </tr>
+          <tr>
+            <td colspan="2" class="positionRelative">
+              <textarea id="temp" class="hideEl"></textarea>
+              <div class="utilToolbar anyCliToolbarPos utilTopPosAnyCliPage">
+                <span class="utilBarIcon" id="copyConfig" title="Copy to clipboard"><em class="fa fa-files-o"></em></span><span class="utilIconDivider">|</span><span id="downloadConfig" class="utilBarIcon" title="Download configuration"><em class="fa fa-download"></em></span>
+              </div>
+              <textarea id="cliOutput" name="cliOutput"  readonly="readonly">
+              </textarea>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+   </div>
+</div>

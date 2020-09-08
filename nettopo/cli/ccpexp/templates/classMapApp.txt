@@ -1,0 +1,8 @@
+class-map type inspect match-any $policyName_app
+match protocol $appName
+
+
+
+
+
+

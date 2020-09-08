@@ -1,0 +1,3 @@
+class-map type inspect match-all $policyName
+$desc
+match $groupType $classOrAclName

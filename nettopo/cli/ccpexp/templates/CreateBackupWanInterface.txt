@@ -1,0 +1,53 @@
+interface {{interfaceName}}
+ no shut
+exit
+
+ip sla auto discovery
+access-list 197 permit icmp any {{slaIP}} 0.0.0.0
+
+ip local policy route-map track-primary-if
+
+route-map track-primary-if permit 1
+ match ip address 197
+ set interface {{primaryipv4Dialer}}
+ exit
+<% if(primaryRout=="wanipv4" || primaryRout=="wanipv4and6"){%>
+no ip route 0.0.0.0 0.0.0.0 {{primaryipv4Dialer}} 
+ip route 0.0.0.0 0.0.0.0 {{primaryipv4Dialer}} 1 track 1
+<%}%>
+<% if(primaryRout=="wanipv6" || primaryRout=="wanipv4and6"){%>
+no ipv6 route ::/0 {{primaryipv6Dialer}} 
+ipv6 route ::/0 {{primaryipv6Dialer}} 1 track 1
+<%}%>
+
+ip sla 1
+ icmp-echo {{slaIP}} source-interface {{primaryipv4Dialer}}
+ timeout 5000
+ frequency 60
+ threshold 5000
+ exit
+
+track 1 ip sla 1 reachability
+
+ip sla schedule 1 life forever start-time now
+
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+ip route 0.0.0.0 0.0.0.0 {{ipv4DialerOrInterface}} 253
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+ipv6 route ::/0 {{ipv6DialerOrInterface}} 253
+<%}%>
+
+ip nat inside source route-map nat2primary interface {{primaryipv4Dialer}} overload
+ip nat inside source route-map nat2backup interface {{ipv4DialerOrInterface}} overload
+
+
+route-map nat2backup permit 1
+match ip address nat-list
+match interface {{ipv4DialerOrInterface}}
+exit
+route-map nat2primary permit 1
+match ip address nat-list
+match interface {{primaryipv4Dialer}}
+exit
+

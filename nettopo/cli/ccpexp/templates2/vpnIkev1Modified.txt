@@ -1,0 +1,6 @@
+crypto keyring isakmp-keyring  
+  no pre-shared-key address $oldPeerAddress key $oldKey
+  pre-shared-key address $addrPeer key $key
+crypto isakmp profile isakmp-profile
+  no match identity address $oldPeerAddress
+  match identity address $peerAddress

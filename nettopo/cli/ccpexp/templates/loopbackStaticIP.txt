@@ -1,0 +1,4 @@
+interface Loopback$loopbackTag
+ no shutdown
+ ip address $ipv4Address $ipv4Mask
+ exit

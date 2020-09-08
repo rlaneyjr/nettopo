@@ -1,0 +1,3 @@
+interface ATM$atmSubInterfaceTag point-to-point
+ description $description
+exit

@@ -1,0 +1,5 @@
+interface $interfaceName
+ no shutdown
+ no ip address
+ ip address dhcp
+ exit

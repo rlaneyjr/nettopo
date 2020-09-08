@@ -1,0 +1,4 @@
+interface $wlanInterfaceName
+switchport trunk native vlan $nativeVlan
+exit
+

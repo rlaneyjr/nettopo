@@ -1,0 +1,6 @@
+no ip route 0.0.0.0 0.0.0.0 $routeInterface
+no ip nat inside source list 198 interface $routeInterface overload
+no access-list 198 permit ip any any
+
+
+

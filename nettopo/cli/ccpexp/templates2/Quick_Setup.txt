@@ -1,0 +1,1837 @@
+<%/*LAN Settings starts here*/%>
+<% if (obj[4].lanForm.selectLanNetwork=="changePool") { %>
+no access-list 23 permit 10.10.10.0 0.0.0.127
+access-list 23 permit {{obj[4].lanForm.poolNetwork}} {{obj[4].lanForm.poolWildCard}}
+no ip dhcp excluded-address 10.10.10.1
+no ip dhcp pool ccp-pool
+ip dhcp excluded-address {{obj[4].lanForm.lanIP}}
+ip dhcp pool {{obj[4].lanForm.poolName}}
+   import all
+   network {{obj[4].lanForm.poolNetwork}} {{obj[4].lanForm.poolSubnet}}
+   default-router {{obj[4].lanForm.lanIP}}
+   lease 0 2
+BREAK;
+interface {{obj[4].lanForm.lanInt}}
+ ip tcp adjust-mss 1452
+BREAK;
+<% } %>
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+<% if (obj[4].lanForm.lanIntSelection=="vlan") { %>
+vlan {{obj[4].lanForm.vlanIdAdd}}
+exit
+BREAK;
+interface vlan {{obj[4].lanForm.vlanIdAdd}}
+exit
+BREAK;
+default interface vlan {{obj[4].lanForm.vlanIdAdd}}
+BREAK;
+interface vlan {{obj[4].lanForm.vlanIdAdd}}
+no shutdown
+exit
+<% _.each(obj[4].lanForm.associatePortVlan.split(","), function(switchport) { %>
+BREAK;
+interface {{switchport}}
+  switchport mode access
+  switchport access vlan {{obj[4].lanForm.vlanIdAdd}}
+  exit
+<% }); %>
+<%}%>
+BREAK;
+ip dhcp excluded-address {{obj[4].lanForm.lanInterfaceIP}}
+ip dhcp pool {{obj[4].lanForm.poolNameAdd}}
+   import all
+   network {{obj[4].lanForm.poolNetworkAdd}} {{obj[4].lanForm.poolSubnetAdd}}
+   default-router {{obj[4].lanForm.lanInterfaceIP}}
+   lease 0 2
+BREAK;
+interface <% if (obj[4].lanForm.lanIntSelection=="vlan") { %>vlan {{obj[4].lanForm.vlanIdAdd}} <%}else{%>{{obj[4].lanForm.lanIntAdd}}<%}%>
+ ip tcp adjust-mss 1452
+BREAK;
+access-list 23 permit {{obj[4].lanForm.poolNetworkAdd}} {{obj[4].lanForm.poolWildCardAdd}}
+<% } %>
+<%/*LAN Settings ends here*/%>
+
+<%/*Basic Settings*/%>
+<%/*Hostname*/%>
+<% if (obj[0].basicForm.wizardbasicroutername) { %>
+hostname {{obj[0].basicForm.wizardbasicroutername}}
+<%}%>
+BREAK;
+<%/*Domain name*/%>
+<% if (obj[0].basicForm.wizardbasicdomainname) { %>
+ip domain name {{obj[0].basicForm.wizardbasicdomainname}}
+<%}%>
+BREAK;
+<%/*time Zone*/%>
+<% if (obj[0].basicForm.wizardbasictimezone) { %>
+clock timezone GMT {{obj[0].basicForm.wizardbasictimezone}}
+<%}%>
+BREAK;
+<%/*Get DNS Server info*/%>
+<% if ((obj[1].primaryForm.wizbasicdnsserver!="on" && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")==-1) || (obj[1].primaryForm.wizbasicdnsservercellular!="on" && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1)) { %>
+<% if ((obj[1].primaryForm.wizardbasicprimarydns && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")==-1) || (obj[1].primaryForm.wizardbasicprimarydnscellular && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1)) { %>
+ip name-server <%if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicprimarydnscellular}}<%}else{%>{{obj[1].primaryForm.wizardbasicprimarydns}}<%}%> <%if (obj[1].primaryForm.wizardbasicsecondarydns || obj[1].primaryForm.wizardbasicsecondarydnscellular) { if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicsecondarydnscellular}}<%}else{%>{{obj[1].primaryForm.wizardbasicsecondarydns}}<%}}%>
+ip domain lookup
+ip dhcp pool <% if (obj[4].lanForm.selectLanNetwork=="ccpPool") { %> ccp-pool <%}else{%> {{obj[4].lanForm.poolName}} <%}%>
+dns-server <%if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicprimarydnscellular}}<%}else{%> {{obj[1].primaryForm.wizardbasicprimarydns}} <%} if (obj[1].primaryForm.wizardbasicsecondarydns || obj[1].primaryForm.wizardbasicsecondarydnscellular) { if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicsecondarydnscellular}}<%}else{%> {{obj[1].primaryForm.wizardbasicsecondarydns}} <%}}%>
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+BREAK;
+ip dhcp pool {{obj[4].lanForm.poolNameAdd}}
+dns-server <%if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicprimarydnscellular}}<%}else{%> {{obj[1].primaryForm.wizardbasicprimarydns}} <%} if (obj[1].primaryForm.wizardbasicsecondarydns || obj[1].primaryForm.wizardbasicsecondarydnscellular) { if(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%> {{obj[1].primaryForm.wizardbasicsecondarydnscellular}}<%}else{%> {{obj[1].primaryForm.wizardbasicsecondarydns}} <%}}%>
+<%}%>
+BREAK;
+<%}%>
+<%}else{%>
+ip dhcp pool <% if (obj[4].lanForm.selectLanNetwork=="ccpPool") { %> ccp-pool <%}else{%> {{obj[4].lanForm.poolName}} <%}%>
+ dns-server <% if (obj[4].lanForm.selectLanNetwork=="ccpPool") { %> 10.10.10.1 <%}else{%> {{obj[4].lanForm.lanIP}} <%}%>
+ exit
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+ip dhcp pool {{obj[4].lanForm.poolNameAdd}}
+ dns-server {{obj[4].lanForm.lanInterfaceIP}}
+ exit
+<%}%>
+ip dns server
+BREAK;
+ip dns view default
+ default dns forwarder
+ default dns forwarding 
+ default domain lookup
+ default domain name-server
+BREAK;
+<%}%>
+<%/*NTP configuration*/%>
+<% if (obj[0].basicForm.ntpEnable=="on") { %>
+ntp server {{obj[0].basicForm.wizardNTPServer}}
+<% if (obj[0].basicForm.ntpSync=="on") { %>
+ntp master
+<%}%>
+<%}%>
+BREAK;
+<%/*Basic Settings ends here*/%>
+
+<%/* Security */%>
+<% if(obj[3].securityForm.wizardsecurityrecomendenable=="on"){%>
+service password-encryption
+BREAK;
+<%}%>
+<% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ip nbar http-services
+<%}%>
+<% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+zone security LAN
+zone security WAN
+BREAK;
+flow record nbar-appmon
+match ipv4 source address
+match ipv4 destination address
+match application name
+collect interface output
+collect counter bytes
+collect counter packets
+collect timestamp absolute first
+collect timestamp absolute last
+exit
+flow monitor application-mon
+cache timeout active 60
+record nbar-appmon
+exit
+BREAK;
+parameter-map type inspect global
+nbar-classify
+BREAK;
+object-group network vpn_remote_subnets
+any
+BREAK;
+object-group network local_cws_net
+interface {{obj[1].primaryForm.lanInterface}}
+ zone-member security LAN
+ ip nbar protocol-discovery
+ load-interval 30
+ ip flow monitor application-mon input
+ ip flow ingress
+ ip flow egress
+BREAK;
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+interface <% if (obj[4].lanForm.lanIntSelection=="vlan") { %>vlan {{obj[4].lanForm.vlanIdAdd}} <%}else{%>{{obj[4].lanForm.lanIntAdd}}<%}%>
+ zone-member security LAN
+ ip nbar protocol-discovery
+ load-interval 30
+ ip flow monitor application-mon input
+ ip flow ingress
+ ip flow egress
+BREAK;
+<%}%>
+object-group network Web_src_net
+ any
+object-group network Web_dst_net
+ any
+object-group network Others_src_net
+ any
+object-group network Others_dst_net
+ any
+object-group service Web_svc
+ ip
+object-group service Others_svc
+ ip
+BREAK;
+ip access-list extended Web_acl
+ permit object-group Web_svc object-group Web_src_net object-group Web_dst_net
+BREAK;
+ip access-list extended Others_acl
+ permit object-group Others_svc object-group Others_src_net object-group Others_dst_net
+BREAK;
+class-map type inspect match-any Others_app
+ match protocol https
+ match protocol smtp
+ match protocol pop3
+ match protocol imap
+ match protocol sip
+ match protocol ftp
+ match protocol dns
+ match protocol icmp
+BREAK;
+class-map type inspect match-any Web_app
+ match protocol http
+BREAK;
+class-map type inspect match-all Web
+ match class-map Web_app
+ match access-group name Web_acl
+BREAK;
+class-map type inspect match-all Others
+ match class-map Others_app
+ match access-group name Others_acl
+BREAK;
+policy-map type inspect LAN-WAN-POLICY
+ class type inspect Web
+  inspect
+ class type inspect Others
+  inspect
+ class class-default
+  drop log
+BREAK;
+zone-pair security LAN-WAN source LAN destination WAN
+ service-policy type inspect LAN-WAN-POLICY
+BREAK;
+<%}%>
+<%/* Security Ends heres */%>
+<%/* LAN NAT */%>
+<% if ((obj[2].backupwanform.wizenablenatcellularBackup=="on"&& obj[2].backupwanform.enableBackupWAN=="on"&&obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")>-1) || (obj[1].primaryForm.wizenablenatcellular=="on" && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) || (obj[1].primaryForm.wizardenableNat=="on" && obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")==-1) || (obj[2].backupwanform.wizardenableNatbackup=="on"&& obj[2].backupwanform.enableBackupWAN=="on"&& obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")==-1)) {%>
+interface <% if (obj[4].lanForm.selectLanNetwork=="ccpPool") { %> {{obj[1].primaryForm.lanInterface}} <%}else{%> {{obj[4].lanForm.lanInt}} <%}%>
+ ip nat inside
+ exit
+BREAK;
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+interface <% if (obj[4].lanForm.lanIntSelection=="vlan") { %>vlan {{obj[4].lanForm.vlanIdAdd}} <%}else{%>{{obj[4].lanForm.lanIntAdd}}<%}%>
+ ip nat inside
+ exit
+BREAK;
+<%}%>
+
+
+object-group network local_lan_subnets
+<% if (obj[4].lanForm.selectLanNetwork=="ccpPool") { %>
+10.10.10.0 255.255.255.128
+<%}else{%>
+{{obj[4].lanForm.poolNetwork}} {{obj[4].lanForm.poolSubnet}}
+<%}%>
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+{{obj[4].lanForm.poolNetworkAdd}} {{obj[4].lanForm.poolSubnetAdd}}
+<%}%>
+BREAK;
+ip access-list extended nat-list
+permit ip object-group local_lan_subnets any
+deny ip any any
+BREAK;
+<%}%>
+<%/* LAN NAT Ends heres */%>
+<%/*Primary WAN*/%>
+<%/*Cellular*/%>
+<% if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1) {%>
+default interface {{obj[1].primaryForm.interfaceSelection}}
+BREAK;
+<%if(obj[0].basicForm.isNano=="true"){%>
+service internal
+no chat-script multimode 
+BREAK;
+chat-script multimode "" "AT!CALL"TIMEOUT '20' "OK"
+<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA"){%>
+no chat-script gsm 
+BREAK;
+chat-script gsm "" "ATDT*99#" TIMEOUT 180 "CONNECT"
+<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>
+no chat-script hspa-R7 
+BREAK;
+chat-script hspa-R7 "" "AT!SCACT=1,1" TIMEOUT 60 "OK
+<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="LTE"){%>
+no chat-script lte 
+BREAK;
+chat-script lte "" "AT!CALL1" TIMEOUT 20 "OK"
+<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA"){%>
+no chat-script cdma 
+BREAK;
+chat-script cdma "" "ATDT#777" TIMEOUT 60 "CONNECT"
+<%}%>
+<% if (obj[1].primaryForm.persist=="yes") {%>
+BREAK;
+interface Dialer1
+ description PrimaryWANDesc___{{obj[1].primaryForm.interfaceSelection.replace(" ","")}}
+ <%if(obj[0].basicForm.isNano=="true" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="LTE"){%>
+ encapsulation slip
+ <%}else if((obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA") && obj[0].basicForm.isNano=="false"){%>
+ encapsulation ppp
+ ppp ipcp dns request
+ <%}%>
+ <%if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA" && obj[0].basicForm.isNano=="false"){%>
+ ppp chap password 0 pass1
+ <%}%>
+ <% if(obj[1].primaryForm.wizenablenatcellular=="on"){%>
+ ip nat outside
+ <%}%>
+ ip address negotiated
+ dialer pool 1
+ dialer-group 1
+ dialer persistent
+ dialer string <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ dialer idle-timeout 0
+ <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ no shut
+ exit
+ 
+<%}%>
+BREAK;
+interface {{obj[1].primaryForm.interfaceSelection}}
+ description PrimaryWANDesc_
+ no shut
+ load-interval 30
+ dialer in-band
+ no peer default ip address
+ <% if(obj[3].securityForm.wizardsecurityenable=="on" && obj[1].primaryForm.persist=="no") {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ <%/*Persistance*/%>
+ <% if (obj[1].primaryForm.persist=="yes") {%>
+ dialer pool-member 1
+ <%}else{%>
+ <%if((obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA") && obj[0].basicForm.isNano=="false"){%>
+ ppp ipcp dns request
+ <%}%>
+ <%if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA" && obj[0].basicForm.isNano=="false"){%>
+ ppp chap password 0 pass1
+ <%}%>
+ dialer idle-timeout 0
+ dialer string <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ dialer-group 1
+ <%if(obj[0].basicForm.isNano=="true"){%>
+ encapsulation slip
+ <%}%>
+ ip address negotiated
+ routing dynamic
+ <%}%>
+ async mode interactive
+ <% if(obj[1].primaryForm.wizenablenatcellular=="on"){%>
+ ip nat outside
+ <%}%>
+ exit
+
+BREAK;
+<%if(obj[0].basicForm.isNano=="true"){%>line <%if(obj[1].primaryForm.interfaceSelection.split(/\s+/)[1].trim()=="0/0/0"){ %>3<%}else{%>19<%}}%>
+<%if(obj[0].basicForm.isNano=="false"){%>line <%if(obj[1].primaryForm.interfaceSelection.split(/\s+/)[1].trim().indexOf('/')==-1){%>3<%}else{if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="LTE"){%>{{obj[1].primaryForm.interfaceSelection.split(/\s+/)[1].trim().substring(0,obj[1].primaryForm.interfaceSelection.split(/\s+/)[1].trim().length-1)+"0"}}<%}else{%>{{obj[1].primaryForm.interfaceSelection.split(/\s+/)[1].trim()}}<%}}}%>
+ script dialer <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="GSM" || obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[1].primaryForm.primaryModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ modem InOut
+ no exec
+ transport input all
+ transport output all
+
+BREAK;
+ip forward-protocol nd
+
+dialer-list 1 protocol ip permit
+
+<% if (obj[1].primaryForm.primaryModemMode.toUpperCase()=="UMTS" && obj[1].primaryForm.simPrimaryNo && obj[0].basicForm.isNano=="true"){ %>
+<% if (obj[1].primaryForm.simPrimaryNo!="-1") {%>
+BREAK;
+controller {{obj[1].primaryForm.interfaceSelection.substring(0,obj[1].primaryForm.interfaceSelection.length-2)}}
+sim profile 1 slot {{obj[1].primaryForm.simPrimaryNo}}
+BREAK;
+<%}}%>
+<%}%>
+<%/*Primary Cellular ends here*/%>
+
+<%/*Backup Cellular*/%>
+<% if (obj[2].backupwanform.enableBackupWAN=="on" && obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")>-1 ) {%>
+default interface {{obj[2].backupwanform.interfaceBackup}}
+<%if(obj[0].basicForm.isNano=="true"){%>
+service internal
+no chat-script multimode 
+BREAK;
+chat-script multimode "" "AT!CALL"TIMEOUT '20' "OK"
+<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA"){%>
+no chat-script gsm 
+BREAK;
+chat-script gsm "" "ATDT*99#" TIMEOUT 180 "CONNECT"
+<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>
+no chat-script hspa-R7 
+BREAK;
+chat-script hspa-R7 "" "AT!SCACT=1,1" TIMEOUT 60 "OK
+<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="LTE"){%>
+no chat-script lte 
+BREAK;
+chat-script lte "" "AT!CALL1" TIMEOUT 20 "OK"
+<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA"){%>
+no chat-script cdma 
+BREAK;
+chat-script cdma "" "ATDT#777" TIMEOUT 60 "CONNECT"
+<%}%>
+<% if (obj[2].backupwanform.persistBackup=="yes") {%>
+BREAK;
+interface Dialer2
+ description BackupWANDesc___{{obj[2].backupwanform.interfaceBackup.replace(" ","")}}
+ <%if(obj[0].basicForm.isNano=="true" || obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7" || obj[2].backupwanform.backupModemMode.toUpperCase()=="LTE"){%>
+ encapsulation slip
+ <%}else if((obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA" || obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA") && obj[0].basicForm.isNano=="false"){%>
+ encapsulation ppp
+ ppp ipcp dns request
+ <%}%>
+ <%if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA" && obj[0].basicForm.isNano=="false"){%>
+ ppp chap password 0 pass1
+ <%}%>
+ <% if(obj[2].backupwanform.wizenablenatcellularBackup=="on"){%>
+ ip nat outside
+ <%}%>
+ ip address negotiated
+ dialer pool 2
+ dialer-group 2
+ dialer persistent
+ dialer string <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ dialer idle-timeout 0
+ <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ no shut
+ exit
+<%}%>
+BREAK;
+interface {{obj[2].backupwanform.interfaceBackup}}
+ description BackupWANDesc_
+ no shut
+ load-interval 30
+ dialer in-band
+ no peer default ip address
+ <% if(obj[3].securityForm.wizardsecurityenable=="on" && obj[2].backupwanform.persistBackup=="no") {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ <%/*Persistance*/%>
+ <% if (obj[2].backupwanform.persistBackup=="yes") {%>
+ dialer pool-member 2
+ <%}else{%>
+ <%if((obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA" || obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA") && obj[0].basicForm.isNano=="false"){%>
+ ppp ipcp dns request
+ <%}%>
+ <%if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA" && obj[0].basicForm.isNano=="false"){%>
+ ppp chap password 0 pass1
+ <%}%>
+ dialer idle-timeout 0
+ dialer string <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ dialer-group 2
+ <%if(obj[0].basicForm.isNano=="true"){%>
+ encapsulation slip
+ <%}%>
+ ip address negotiated
+ routing dynamic
+ <%}%>
+ async mode interactive
+ <% if(obj[2].backupwanform.wizenablenatcellularBackup=="on"){%>
+ ip nat outside
+ <%}%>
+
+BREAK;
+<%if(obj[0].basicForm.isNano=="true"){%>line <% if(obj[2].backupwanform.interfaceBackup.split(/\s+/)[1].trim()=="0/0/0"){ %>3<%}else{%>19<%}}%>
+<%if(obj[0].basicForm.isNano=="false"){%>line <%if(obj[2].backupwanform.interfaceBackup.split(/\s+/)[1].trim().indexOf('/')==-1){%>3<%}else{if(obj[2].backupwanform.backupModemMode.toUpperCase()=="LTE"){%>{{obj[2].backupwanform.interfaceBackup.split(/\s+/)[1].trim().substring(0,obj[2].backupwanform.interfaceBackup.split(/\s+/)[1].trim().length-1)+"0"}}<%}else{%>{{obj[2].backupwanform.interfaceBackup.split(/\s+/)[1].trim()}}<%}}}%>
+ script dialer <%if(obj[0].basicForm.isNano=="true"){%>multimode<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="GSM" || obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA"){%>gsm<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>hspa-R7<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="HSPA+R7"){%>lte<%}else if(obj[2].backupwanform.backupModemMode.toUpperCase()=="CDMA"){%>cdma<%}%>
+ modem InOut
+ no exec
+ transport input all
+ transport output all
+
+BREAK;
+ip forward-protocol nd
+dialer-list 2 protocol ip permit
+BREAK;
+<% if (obj[2].backupwanform.backupModemMode.toUpperCase()=="UMTS"  && obj[2].backupwanform.simBackupNo && obj[0].basicForm.isNano=="true"){ %>
+<% if (obj[1].primaryForm.interfaceBackup!="-1") {%>
+controller {{obj[2].backupwanform.interfaceBackup.substring(0,obj[2].backupwanform.interfaceBackup.length-2)}}
+sim profile 1 slot {{obj[2].backupwanform.simBackupNo}}
+BREAK;
+<%}}%>
+<%}%>
+<%/*Backup Cellular ends here*/%>
+<%/*Cellular ends here*/%>
+
+<%/*Ethernet*/%>
+<% if (obj[1].primaryForm.connectionWanType.toLowerCase().indexOf("ethernet")>-1) {%>
+<% if(obj[1].primaryForm.wizardprimarypppoe=="on") {%>
+interface Dialer1
+ no shutdown
+ description PrimaryWANDesc__{{obj[1].primaryForm.interfaceSelection}}
+ <% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+  ip mtu {{obj[1].primaryForm.wizardMtuSize}}
+<%}else{%>
+ ip mtu 1452
+<%}%>
+<% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+ ip nat outside
+<%}%>
+ ip virtual-reassembly in
+<% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+ zone-member security WAN
+<%}%>
+<% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ip nbar protocol-discovery
+<%}%>
+ encapsulation ppp
+ dialer pool 1
+ dialer-group 1
+ ppp mtu adaptive
+ dialer idle-timeout 120
+ dialer fast-idle 20
+ <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+ no ip address
+ ip address negotiated
+ <%}else{%>
+ ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+ <%}%>
+ 
+ <% if(obj[1].primaryForm.ipcpDNS=="on") {%>
+  ppp ipcp dns request
+  <%}%>
+ <% if(obj[1].primaryForm.papSelect=="on" || obj[1].primaryForm.chapSelect=="on") {%>
+ <% if(obj[1].primaryForm.papSelect=="on" && obj[1].primaryForm.chapSelect=="on"){%>
+ ppp authentication chap pap callin
+ <%}else if(obj[1].primaryForm.papSelect=="on"){%>
+  ppp authentication pap callin
+  <%}else if(obj[1].primaryForm.chapSelect=="on"){%>
+  ppp authentication chap callin
+  <%}%>
+  
+ <% if(obj[1].primaryForm.papSelect=="on"){%>
+ ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+ <%}%>
+ <% if(obj[1].primaryForm.chapSelect=="on"){%>
+ ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+ ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+ <%}%>
+ <%}%>
+ exit
+ BREAK;
+<%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+interface Dialer3
+ no shutdown
+ <% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+  ipv6 mtu {{obj[1].primaryForm.wizardMtuSize}}
+<%}else{%>
+ ip mtu 1452
+<%}%>
+<%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+<%}%>
+<%}%>
+ipv6 enable
+ <% if(obj[1].primaryForm.ipcpDNSIpv6=="on") {%>
+  ppp ipcp dns request
+  <%}%>
+ encapsulation ppp
+ dialer pool 3
+ dialer-group 3
+ ppp mtu adaptive
+ dialer idle-timeout 120
+ dialer fast-idle 20
+ <% if(obj[1].primaryForm.papSelectIpv6=="on" || obj[1].primaryForm.chapSelectIpv6=="on") {%>
+ <% if(obj[1].primaryForm.papSelectIpv6=="on" && obj[1].primaryForm.chapSelectIpv6=="on"){%>
+ ppp authentication chap pap callin
+ <%}else if(obj[1].primaryForm.papSelectIpv6=="on"){%>
+  ppp authentication pap callin
+  <%}else if(obj[1].primaryForm.chapSelectIpv6=="on"){%>
+  ppp authentication chap callin
+  <%}%>
+  
+ <% if(obj[1].primaryForm.papSelectIpv6=="on"){%>
+ ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsernameIpv6}} password 0 {{obj[1].primaryForm.wizardpapChapPasswordIpv6}}
+ <%}%>
+ <% if(obj[1].primaryForm.chapSelectIpv6=="on"){%>
+ ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsernameIpv6}}
+ ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPasswordIpv6}}
+ <%}%>
+ <%}%>
+ <%if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+      <%if(obj[1].primaryForm.dhcpClient=="on"){%>
+      BREAK;
+      ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+ import dns-server
+ import domain-name
+  BREAK;
+      interface Vlan1
+ ipv6 address  {{obj[1].primaryForm.wizardprimaryPrefixProvider}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+
+ 
+      <%}%>
+   <%}%>
+ exit
+ BREAK;
+ dialer-list 3 protocol ipv6 permit
+<%}%>
+ <%if(obj[1].primaryForm.wizardprimaryipv6oe=="on"){%>
+ <%if(obj[1].primaryForm.Ipv6oe=="bridge"){%>
+ bridge irb
+ interface {{obj[1].primaryForm.wizardprimaryIpv6Int}}
+no ip address
+duplex auto
+speed auto
+bridge-group 1
+bridge-group 1 input-type-list 200
+BREAK;
+interface BVI1
+ no shutdown
+ip address {{obj[4].lanForm.lanIP}} {{obj[4].lanForm.poolSubnet}}
+ip nat inside
+ip virtual-reassembly in
+ip tcp adjust-mss 1414
+pppoe-client dial-pool-number 1
+pppoe enable
+BREAK;
+bridge 1 protocol ieee
+bridge 1 route ip
+BREAK;
+
+interface Vlan1
+no ip address
+bridge-group 1
+
+access-list 200 permit 0x86DD 0x0000
+<%}%>
+<%if(obj[1].primaryForm.Ipv6oe=="dhcp"){%>
+interface Vlan1
+ ipv6 address  {{obj[1].primaryForm.ipv6PrefixNameIpv6oe}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+ <%}%>
+ BREAK;
+ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+import dns-server
+ import domain-name
+<%}%>
+BREAK;
+dialer-list 1 protocol ip permit
+
+BREAK;
+interface {{obj[1].primaryForm.lanInterface}}
+<% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+ ip tcp adjust-mss {{obj[1].primaryForm.wizardMssSize}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+interface <% if (obj[4].lanForm.lanIntSelection=="vlan") { %>vlan {{obj[4].lanForm.vlanIdAdd}} <%}else{%>{{obj[4].lanForm.lanIntAdd}}<%}%>
+<% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+ ip tcp adjust-mss {{obj[1].primaryForm.wizardMssSize}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<%}%>
+<%}%>
+BREAK;
+interface {{obj[1].primaryForm.interfaceSelection}}
+ no shutdown
+ description PrimaryWANDesc_
+ <% if(obj[3].securityForm.wizardsecurityenable=="on" && !obj[1].primaryForm.wizardprimarypppoe) {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+ <% if(!obj[1].primaryForm.wizardprimarypppoe) {%>
+ no ip address
+ ip address dhcp
+ <%}%>
+ <%}else{%>
+ <% if(!obj[1].primaryForm.wizardprimarypppoe) {%>
+ ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+ <%}%>
+ <%}%>
+<%if(obj[1].primaryForm.wizprimaryipv6Conf=="on" && !obj[1].primaryForm.wizardprimarypppoe){%>
+<%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+<%}%>
+<%}%>
+ipv6 enable
+<%}%>
+ <% if(obj[1].primaryForm.wizardenableNat=="on"  && !obj[1].primaryForm.wizardprimarypppoe) {%>
+ ip nat outside
+ <%}%>
+ <% if(obj[1].primaryForm.wizardprimarypppoe=="on") {%>
+ <% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+ ip tcp adjust-mss {{obj[1].primaryForm.wizardMssSize}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<%if((obj[1].primaryForm.wizardprimaryipv6oe=="on")&&(obj[1].primaryForm.Ipv6oe=="bridge")){%>
+bridge-group 1
+ <%}else{%>
+ pppoe-client dial-pool-number 1
+ pppoe enable
+ <%}%>
+ <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+ pppoe-client dial-pool-number 3
+ pppoe enable
+ <%}%>
+ <%}%>
+ <%if(obj[1].primaryForm.wizardprimaryipv6oe=="on"){%>
+ <%if(obj[1].primaryForm.Ipv6oe=="bridege"){%>
+ bridge-group 1
+ <%}%>
+ <%if(obj[1].primaryForm.Ipv6oe=="dhcp"){%>
+ ipv6 address autoconfig 
+ ipv6 enable
+ ipv6 dhcp client pd {{obj[1].primaryForm.ipv6PrefixNameIpv6oe}}
+ BREAK;
+ ipv6 route ::/0 {{obj[1].primaryForm.interfaceSelection}}
+ <%}%>
+ 
+ <%}%>
+ <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on" && !obj[1].primaryForm.wizardprimarypppoe){%>
+ <%if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+      <%if(obj[1].primaryForm.dhcpClient=="on"){%>
+      BREAK;
+      ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+ import dns-server
+ import domain-name
+  BREAK;
+      interface Vlan1
+ ipv6 address  {{obj[1].primaryForm.wizardprimaryPrefixProvider}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+
+ 
+      <%}%>
+   <%}%>
+   <%}%>
+ exit
+ BREAK;
+<%}%>
+<%/*Ethernet ends here*/%>
+<%/*Ethernet Backup*/%>
+<%if (obj[2].backupwanform.enableBackupWAN==="on" && obj[2].backupwanform.connectionTypeBackup.toLowerCase().indexOf("ethernet")>-1){%>
+<% if(obj[2].backupwanform.wizardprimarypppoebackup=="on") {%>
+interface Dialer2
+ no shutdown
+ description BackupWANDesc__{{obj[2].backupwanform.interfaceBackup}}
+<% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+ ip mtu {{obj[2].backupwanform.wizardMtuSizebackup}}
+<%}else{%>
+ ip mtu 1452
+<%}%>
+<% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+ ip nat outside
+<%}%>
+ ip virtual-reassembly in
+<% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+ zone-member security WAN
+<%}%>
+<% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ip nbar protocol-discovery
+<%}%>
+ encapsulation ppp
+ dialer pool 2
+ dialer-group 2
+ ppp mtu adaptive
+ ppp ipcp dns request
+ dialer idle-timeout 120
+ dialer fast-idle 20
+ <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+ no ip address
+ ip address negotiated
+ <%}else{%>
+ ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+ <%}%>
+ <% if(obj[2].backupwanform.ipcpDNS=="on") {%>
+  ppp ipcp dns request
+  <%}%>
+ <% if(obj[2].backupwanform.papSelectbackup=="on" || obj[2].backupwanform.chapSelectbackup=="on") {%>
+ <% if(obj[2].backupwanform.papSelectbackup=="on" && obj[2].backupwanform.chapSelectbackup=="on") {%>
+ ppp authentication chap pap callin
+ <%}else if(obj[2].backupwanform.papSelectbackup=="on"){%>
+ ppp authentication pap callin
+ <%}else if(obj[2].backupwanform.papSelectbackup=="on"){%>
+ ppp authentication chap callin
+ <%}%>
+ <% if(obj[2].backupwanform.papSelectbackup=="on"){%>
+ ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+ <%}%>
+ <% if(obj[2].backupwanform.chapSelectbackup=="on"){%>
+ ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+ ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+ <%}%>
+ <%}%>
+BREAK;
+<%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+interface Dialer4
+ no shutdown
+<% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+ ip mtu {{obj[2].backupwanform.wizardMtuSizebackup}}
+<%}else{%>
+ ip mtu 1452
+<%}%>
+<%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefix}}/{{obj[2].backupwanform.ipv6Mask}} <%if(obj[2].backupwanform.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[2].backupwanform.dhcpClient=="on"){%>
+ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+<%}%>
+<%}%>
+ipv6 enable
+ipv6 enable
+ <% if(obj[2].backupwanform.ipcpDNS=="on") {%>
+  ppp ipcp dns request
+  <%}%>
+ encapsulation ppp
+ dialer pool 4
+ dialer-group 4
+ ppp mtu adaptive
+ dialer idle-timeout 120
+ dialer fast-idle 20
+  <% if(obj[2].backupwanform.papSelectIpv6backup=="on" || obj[2].backupwanform.chapSelectIpv6backup=="on") {%>
+ <% if(obj[2].backupwanform.papSelectIpv6backup=="on" && obj[2].backupwanform.chapSelectIpv6backup=="on"){%>
+ ppp authentication chap pap callin
+ <%}else if(obj[2].backupwanform.papSelectIpv6backup=="on"){%>
+  ppp authentication pap callin
+  <%}else if(obj[2].backupwanform.chapSelectIpv6backup=="on"){%>
+  ppp authentication chap callin
+  <%}%>
+  
+ <% if(obj[2].backupwanform.papSelectIpv6backup=="on"){%>
+ ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernameIpv6backup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordIpv6backup}}
+ <%}%>
+ <% if(obj[2].backupwanform.chapSelectIpv6backup=="on"){%>
+ ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernameIpv6backup}}
+ ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordIpv6backup}}
+ <%}%>
+ <%}%>
+  <%if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+      <%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+      BREAK;
+      ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+ import dns-server
+ import domain-name
+  BREAK;
+      interface Vlan1
+ ipv6 address  {{obj[2].backupwanform.wizardprimaryPrefixProviderbackup}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+
+ 
+      <%}%>
+   <%}%>
+ exit
+ BREAK;
+ dialer-list 4 protocol ipv6 permit
+<%}%>
+ <%if(obj[2].backupwanform.wizardprimaryipv6oebackup=="on"){%>
+ <%if(obj[2].backupwanform.Ipv6oebackup=="bridge"){%>
+ bridge irb
+ interface {{obj[2].backupwanform.wizardprimaryIpv6Intbackup}}
+no ip address
+duplex auto
+speed auto
+bridge-group 1
+bridge-group 1 input-type-list 200
+BREAK;
+interface BVI1
+ no shutdown
+ip address {{obj[4].lanForm.lanIP}} {{obj[4].lanForm.poolSubnet}}
+ip nat inside
+ip virtual-reassembly in
+ip tcp adjust-mss 1414
+pppoe-client dial-pool-number 2
+pppoe enable
+BREAK;
+bridge 1 protocol ieee
+bridge 1 route ip
+BREAK;
+
+interface Vlan1
+no ip address
+bridge-group 1
+
+access-list 200 permit 0x86DD 0x0000
+<%}%>
+<%if(obj[2].backupwanform.Ipv6oebackup=="dhcp"){%>
+interface Vlan1
+ ipv6 address  {{obj[2].backupwanform.ipv6PrefixNameIpv6oebackup}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+ <%}%>
+ BREAK;
+ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+import dns-server
+ import domain-name
+<%}%>
+ exit
+BREAK;
+dialer-list 2 protocol ip permit
+BREAK;
+interface {{obj[1].primaryForm.lanInterface}}
+<% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+ ip tcp adjust-mss {{obj[2].backupwanform.wizardMssSizebackup}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<% if (obj[4].lanForm.addNewLanNetwork=="on") { %>
+interface <% if (obj[4].lanForm.lanIntSelection=="vlan") { %>vlan {{obj[4].lanForm.vlanIdAdd}} <%}else{%>{{obj[4].lanForm.lanIntAdd}}<%}%>
+<% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+ ip tcp adjust-mss {{obj[1].primaryForm.wizardMssSize}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<%}%>
+<%}%>
+BREAK;
+interface {{obj[2].backupwanform.interfaceBackup}}
+ no shutdown
+ description BackupWANDesc_
+ <% if(obj[3].securityForm.wizardsecurityenable=="on" && !obj[2].backupwanform.wizardprimarypppoebackup) {%>
+ zone-member security WAN
+ <%}%>
+ <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ ip nbar protocol-discovery
+ <%}%>
+ <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+ <% if(!obj[2].backupwanform.wizardprimarypppoebackup) {%>
+ no ip address
+ ip address dhcp
+ <%}%>
+ <%}else{%>
+ <% if(!obj[2].backupwanform.wizardprimarypppoebackup) {%>
+ ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+ <%}%>
+ <%}%>
+<%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on" && !obj[2].backupwanform.wizardprimarypppoebackup){%>
+<%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefix}}/{{obj[2].backupwanform.ipv6Mask}} <%if(obj[2].backupwanform.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+<%}%>
+<%}%>
+ipv6 enable
+<%}%>
+ <% if(obj[2].backupwanform.wizardenableNatbackup=="on"  && !obj[2].backupwanform.wizardprimarypppoebackup) {%>
+ ip nat outside
+ <%}%>
+ <% if(obj[2].backupwanform.wizardprimarypppoebackup=="on") {%>
+<% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+ ip tcp adjust-mss {{obj[2].backupwanform.wizardMssSizebackup}}
+<%}else{%>
+ ip tcp adjust-mss 1412
+<%}%>
+<%if((obj[2].backupwanform.wizardprimaryipv6oebackup=="on")&&(obj[2].backupwanform.Ipv6oebackup=="bridge")){%>
+bridge-group 1
+<%}else{%>
+ pppoe-client dial-pool-number 2
+ pppoe enable
+ <%}%>
+ <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+ pppoe-client dial-pool-number 4
+ pppoe enable
+ <%}%>
+ <%}%>
+ <%if(obj[2].backupwanform.wizardprimaryipv6oebackup=="on"){%>
+ <%if(obj[2].backupwanform.Ipv6oebackup=="bridege"){%>
+ bridge-group 1
+ <%}%>
+ <%if(obj[2].backupwanform.Ipv6oebackup=="dhcp"){%>
+ ipv6 address autoconfig 
+ ipv6 enable
+ ipv6 dhcp client pd {{obj[2].backupwanform.ipv6PrefixNameIpv6oebackup}}
+ exit
+ BREAK;
+ ipv6 route ::/0 {{obj[2].backupwanform.interfaceBackup}}
+ <%}%>
+ 
+ <%}%>
+ <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on" && !obj[2].backupwanform.wizardprimarypppoebackup){%>
+ <%if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+      <%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+      BREAK;
+      ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp pool STATELESS
+ import dns-server
+ import domain-name
+  BREAK;
+      interface Vlan1
+ ipv6 address  {{obj[2].backupwanform.wizardprimaryPrefixProviderbackup}} ::100:0:0:0:1/64
+ ipv6 enable
+ ipv6 nd other-config-flag
+ ipv6 dhcp server STATELESS
+
+ 
+      <%}%>
+   <%}%>
+   <%}%>
+ BREAK;
+<%}%>
+<%/*Ethernet Backup ends here*/%>
+<%/*Primary WAN*/%>
+BREAK;
+<%/*Serial Starts Here*/%>
+<% if (obj[1].primaryForm.connectionWanType.toLowerCase().indexOf("serial")>-1 ) { %> 
+default interface {{obj[1].primaryForm.interfaceSelection}}   
+interface {{obj[1].primaryForm.interfaceSelection}}
+no shut
+description PrimaryWANDesc_    
+<% if(obj[1].primaryForm.wizardprimarydnsserver=="on"){%>
+ip address negotiated        
+<% } else { %>    
+ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+<% } %>
+<%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+<%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+<%}%>
+<%}%>
+ipv6 enable
+<%}%>
+<% if(obj[1].primaryForm.wizardenableNat=="on"){%>
+ip nat outside  
+ <%}%>
+physical-layer {{obj[1].primaryForm.syncMode}}
+encapsulation <%if(obj[1].primaryForm.syncEnc){print(obj[1].primaryForm.syncEnc)}else if(obj[1].primaryForm.asyncEnc){print(obj[1].primaryForm.asyncEnc)} %>
+<%if(obj[1].primaryForm.decClockRatePrimary){%>
+clock rate {{obj[1].primaryForm.decClockRatePrimary}}
+<%}%>
+<% if (obj[1].primaryForm.syncEnc==="ppp" || obj[1].primaryForm.asyncEnc==="ppp")  {  %>
+<% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+ip tcp adjust-mss {{obj[1].primaryForm.wizardMssSize}}
+ip mtu {{obj[1].primaryForm.wizardMtuSize}}
+<%}else{%>
+ip tcp adjust-mss 1412
+ip mtu 1452
+<%}%>
+ppp mtu adaptive
+ppp ipcp dns request
+<% if ( obj[1].primaryForm.papSelect==="on" && obj[1].primaryForm.chapSelect==="on")  {  %>
+ppp authentication chap pap callin
+ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+<% "\n"} else if( obj[1].primaryForm.papSelect==="on"){ %> 
+ppp authentication pap callin
+ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+<% "\n"} else if(obj[1].primaryForm.chapSelect==="on"){%>
+ppp authentication chap callin
+ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+<% } %> 
+<% } %> 
+<% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+zone-member security WAN
+<%}%>
+<% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ip nbar protocol-discovery
+<%}%>
+exit
+BREAK;
+
+<% } %>
+<%/*Primary Serial WAN END*/%>
+<%/*Primary WAN END*/%>
+<%/*Secondary Serial WAN Start*/%>
+BREAK;
+<% if (obj[2].backupwanform.enableBackupWAN==="on" && obj[2].backupwanform.connectionTypeBackup.toLowerCase().indexOf("serial")>-1 ) { %> 
+default interface {{obj[2].backupwanform.interfaceBackup}}   
+interface {{obj[2].backupwanform.interfaceBackup}}
+no shut
+description BackupWANDesc_    
+<% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on"){%>
+ip address negotiated        
+<% } else { %>    
+ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+<% } %>
+<%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+<%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%> 
+ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6MaskBackup}} <%if(obj[2].backupwanform.eui64=="on"){print("eui-64")}%> 
+<%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+ipv6 address autoconfig
+<%if(obj[2].backupwanform.dhcpClient=="on"){%>
+ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+<%}%>
+<%}%>
+ipv6 enable
+<%}%>
+<% if(obj[2].backupwanform.wizardenableNatbackup=="on"){%>
+ip nat outside  
+ <%}%>
+
+physical-layer {{obj[2].backupwanform.syncModeBackup}}
+encapsulation <%if(obj[2].backupwanform.syncEncBackup){print(obj[2].backupwanform.syncEncBackup)}else if(obj[2].backupwanform.asyncEncBackup){print(obj[2].backupwanform.asyncEncBackup)} %>
+<%if(obj[2].backupwanform.decClockRateBackup){%>
+clock rate {{obj[2].backupwanform.decClockRateBackup}}
+<%}%>
+<% if ((obj[2].backupwanform.syncEncBackup==="ppp" || obj[2].backupwanform.asyncEncBackup==="ppp"))  {  %>
+<% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+ip tcp adjust-mss {{obj[2].backupwanform.wizardMssSizebackup}}
+ip mtu {{obj[2].backupwanform.wizardMtuSizebackup}}
+<%}else{%>
+ip tcp adjust-mss 1412
+ip mtu 1452
+<%}%>
+ppp mtu adaptive
+ppp ipcp dns request
+ppp chap password 0 pass1
+
+<% if ( obj[2].backupwanform.papSelectbackup==="on" && obj[2].backupwanform.chapSelectbackup==="on")  {  %>
+ppp authentication chap pap callin
+ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+<% "\n"} else if( obj[2].backupwanform.papSelectbackup==="on"){ %> 
+ppp authentication pap callin
+ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+<% "\n"} else if(obj[2].backupwanform.chapSelectbackup==="on"){%>
+ppp authentication chap callin
+ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+<% } %> 
+<% } %> 
+ <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+zone-member security WAN
+<%}%>
+<% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+ip nbar protocol-discovery
+<%}%>
+exit
+BREAK;
+
+<% } %>
+
+<%/*Secondary Serial  WAN END*/%>
+<%/*Serial ends here*/%>
+<%/*Primary WAN ends here*/%>
+<% if (obj[1].primaryForm.wanModeFound){%>
+<% if (obj[1].primaryForm.connectionWanType.toLowerCase().indexOf("dsl")>-1){%>
+{{obj[1].primaryForm.wanModeFound}} dsl
+<%}else{%>
+{{obj[1].primaryForm.wanModeFound}} ethernet
+<%}
+}
+%>
+BREAK;
+<%/*primary DSL  WAN Starts here*/%>
+<% if (obj[1].primaryForm.connectionWanType.toLowerCase().indexOf("dsl")>-1){%>
+    <% if (obj[1].primaryForm.controllerName.toLowerCase().indexOf("shdsl")>-1){%>
+    controller {{obj[1].primaryForm.controllerName}}
+        <% if (obj[1].primaryForm.controllerTypePrimary.toLowerCase()=="efm"){%>
+            dsl-group pairs 0-3 efm-bond
+        <%}else if(obj[1].primaryForm.controllerTypePrimary.toLowerCase()=="efmatm"){%>
+        no dsl-group auto
+        mode {{obj[1].primaryForm.modeSelection}}
+        dsl-group auto
+        <%}else if(obj[1].primaryForm.controllerTypePrimary.toLowerCase()=="auto"){%>
+        dsl-group auto
+         <%}else if(obj[1].primaryForm.controllerTypePrimary.toLowerCase()=="platform"){%>
+        <% if( obj[1].primaryForm.controllerTypePlatformType.indexOf('888') !== -1 && obj[1].primaryForm.controllerTypePlatformType.indexOf('888E') === -1){%>
+				mode {{obj[1].primaryForm.modeSelection}}
+			<%} else if(obj[1].primaryForm.controllerTypePlatformType.indexOf('888E') !== -1 && obj[1].primaryForm.controllerTypePlatformType.indexOf('888EA') === -1){%>
+				 dsl-group pairs 0-3 efm-bond
+			<%} else if(obj[1].primaryForm.controllerTypePlatformType.indexOf('EA') !== -1){%>
+				 no dsl-group auto
+                                 mode {{obj[1].primaryForm.modeSelection}}
+                                 dsl-group auto
+			<%}%>
+         <%}%>
+    exit
+    <%}else{%>
+controller {{obj[1].primaryForm.controllerName}}
+operating mode {{obj[1].primaryForm.modeSelection}}
+<%}%>
+BREAK;
+    <% if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1) {%>
+        <% if(obj[1].primaryForm.wizardprimarypppoe=="on") {%>
+            interface Dialer1
+            no shutdown
+            description PrimaryWANDesc__{{obj[1].primaryForm.interfaceSelection}}
+            <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+                no ip address
+                ip address negotiated
+            <%}else{%>
+            ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+            <%}%>
+            <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+                <%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%>
+                    ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%>
+                <%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+                    ipv6 address autoconfig<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+                    ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+                    <%}%>
+                <%}%>
+                ipv6 enable
+            <%}%>
+            <% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+                ip mtu {{obj[1].primaryForm.wizardMtuSize}}
+            <%}else{%>
+                ip mtu 1452
+            <%}%>
+            <% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+                ip nat outside
+            <%}%>
+            ip virtual-reassembly in
+            encapsulation ppp
+            dialer pool 1
+            dialer-group 1
+            dialer idle-timeout 120
+            dialer fast-idle 20
+            <% if ( obj[1].primaryForm.papSelect==="on" && obj[1].primaryForm.chapSelect==="on")  {  %>
+                ppp authentication chap pap callin
+                ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+                ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+                no cdp enable
+            <% "\n"} else if( obj[1].primaryForm.papSelect==="on"){ %>
+                ppp authentication pap callin
+                ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+                no cdp enable
+            <% "\n"} else if(obj[1].primaryForm.chapSelect==="on"){%>
+                ppp authentication chap callin
+                ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+                ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+                no cdp enable
+            <% } %>
+             <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+            exit
+            BREAK;
+            dialer-list 1 protocol ip permit
+            BREAK;
+            interface {{obj[1].primaryForm.interfaceSelection}}
+            no shutdown
+        exit
+        BREAK;
+            <%if(obj[1].primaryForm.wizardencapId){%>
+            interface {{obj[1].primaryForm.interfaceSelectionsub}}
+            description PrimaryWANDesc_
+            encapsulation dot1Q {{obj[1].primaryForm.wizardencapId}}
+            pppoe enable group global
+            pppoe-client dial-pool-number 1
+            <%}else{%>
+            
+            interface {{obj[1].primaryForm.interfaceSelection}}
+            description PrimaryWANDesc_
+            pppoe enable group global
+            pppoe-client dial-pool-number 1
+            <%}%>
+            exit
+            BREAK;
+        <%}else{%>
+            interface {{obj[1].primaryForm.interfaceSelection}}
+            no shutdown
+            exit
+            <%if(obj[1].primaryForm.wizardencapId){%>
+                interface {{obj[1].primaryForm.interfaceSelectionsub}}
+                description PrimaryWANDesc_
+                <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+                    no ip address
+                    ip address dhcp
+                <%}else{%>
+                    ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+                <%}%>
+                <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+                    <%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%>
+                        ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%>
+                    <%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+                        ipv6 address autoconfig<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+                        ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+                        <%}%>
+                    <%}%>
+                    ipv6 enable
+                <%}%>
+                <% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+                    ip nat outside
+                <%}%>
+                <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+            ip nbar protocol-discovery
+            <%}%>
+                encapsulation dot1Q {{obj[1].primaryForm.wizardencapId}}
+                no shutdown
+            <%}else{%>
+                interface {{obj[1].primaryForm.interfaceSelection}}
+                description PrimaryWANDesc_
+                no shutdown
+                <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+                    no ip address
+                    ip address dhcp
+                <%}else{%>
+                    ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+                <%}%>
+                <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+                    <%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%>
+                        ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%>
+                    <%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+                        ipv6 address autoconfig<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+                        ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+                             <%}%>
+                    <%}%>
+                    ipv6 enable
+                <%}%>
+                <% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+                ip nat outside
+                <%}%>
+                <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+            <%}%>
+            exit
+            BREAK;
+        <%}%>
+    <%}%>
+     <% if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1) {%>
+        <% if(obj[1].primaryForm.wizardprimarypppoe=="on") {%>
+            interface Dialer1
+            no shutdown
+            description PrimaryWANDesc__{{obj[1].primaryForm.interfaceSelection}}
+            <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+                no ip address
+                ip address negotiated
+            <%}else{%>
+            ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+            <%}%>
+            <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+            <%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%>
+                ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%>
+            <%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+                ipv6 address autoconfig<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+                    ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+                    <%}%>
+            <%}%>
+            ipv6 enable
+            <%}%>
+            <% if (obj[1].primaryForm.advAuthSetting==="on")  {  %>
+            ip mtu {{obj[1].primaryForm.wizardMtuSize}}
+            <%}else{%>
+            ip mtu 1452
+            <%}%>
+            <% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+            ip nat outside
+            <%}%>
+            <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+            ip nbar protocol-discovery
+            <%}%>
+            ip virtual-reassembly in
+            encapsulation ppp
+            dialer pool 1
+            dialer-group 1
+            dialer idle-timeout 120
+            dialer fast-idle 20
+            <% if ( obj[1].primaryForm.papSelect==="on" && obj[1].primaryForm.chapSelect==="on")  {  %>
+                ppp authentication chap pap callin
+                ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+                ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+                
+            <% "\n"} else if( obj[1].primaryForm.papSelect==="on"){ %>
+                ppp authentication pap callin
+                ppp pap sent-username {{obj[1].primaryForm.wizardpapChapUsername}} password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+              
+            <% "\n"} else if(obj[1].primaryForm.chapSelect==="on"){%>
+                ppp authentication chap callin
+                ppp chap hostname {{obj[1].primaryForm.wizardpapChapUsername}}
+                ppp chap password 0 {{obj[1].primaryForm.wizardpapChapPassword}}
+                ppp ipcp dns request
+                
+            <% } %>
+            exit
+            BREAK;
+            
+            dialer-list 1 protocol ip permit
+            BREAK;
+            interface {{obj[1].primaryForm.interfaceSelection}}
+            no shutdown
+        exit
+        BREAK;
+            <%if(obj[1].primaryForm.wizardvpi){%>
+            interface {{obj[1].primaryForm.interfaceSelectionsub}} point-to-point
+            description PrimaryWANDesc_
+            no shutdown
+            pvc {{obj[1].primaryForm.wizardvpi}}/{{obj[1].primaryForm.wizardvci}}
+            pppoe-client dial-pool-number 1
+            exit
+            exit
+            BREAK;
+            <%}%>
+        <%}else {%>
+        interface {{obj[1].primaryForm.interfaceSelection}}
+            no shutdown
+        exit
+        BREAK;
+        interface {{obj[1].primaryForm.interfaceSelectionsub}} point-to-point
+            description PrimaryWANDesc_
+            <% if(obj[1].primaryForm.wizardprimarydnsserver=="on") {%>
+                no ip address
+                ip address dhcp
+            <%}else{%>
+            ip address {{obj[1].primaryForm.wizardprimaryipaddress}} {{obj[1].primaryForm.wizardprimarysubnet}}
+            <%}%>
+            <%if(obj[1].primaryForm.wizprimaryipv6Conf=="on"){%>
+            <%if(obj[1].primaryForm.ipv6Select=="staticip" || obj[1].primaryForm.ipv6Select=="prefixFromProvider"){%>
+                ipv6 address <%if(obj[1].primaryForm.ipv6Select=="prefixFromProvider"){print(obj[1].primaryForm.wizardprimaryPrefixProvider)}%> {{obj[1].primaryForm.ipv6Prefix}}/{{obj[1].primaryForm.ipv6Mask}} <%if(obj[1].primaryForm.eui64=="on"){print("eui-64")}%>
+            <%}else if(obj[1].primaryForm.ipv6Select=="autoconfig"){%>
+                ipv6 address autoconfig<%if(obj[1].primaryForm.dhcpClient=="on"){%>
+                    ipv6 dhcp client pd {{obj[1].primaryForm.wizardprimaryPrefixProvider}}
+                    <%}%>
+            <%}%>
+            ipv6 enable
+            <%}%>
+            <% if(obj[1].primaryForm.wizardenableNat=="on") {%>
+            ip nat outside
+            <%}%>
+            <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+            ip nbar protocol-discovery
+            <%}%>
+            ip virtual-reassembly in
+            no shutdown
+            pvc {{obj[1].primaryForm.wizardvpi}}/{{obj[1].primaryForm.wizardvci}}
+            exit
+            BREAK;
+            exit
+            BREAK;
+            
+        <%}%>
+    <%}%>
+<%}%>
+
+
+
+
+<%/*Backup DSL  WAN Starts here*/%>
+<% if (obj[2].backupwanform.enableBackupWAN=="on") {%>
+<% if (obj[2].backupwanform.connectionTypeBackup.toLowerCase().indexOf("dsl")>-1){%>
+ <% if (obj[2].backupwanform.controllerBackup.toLowerCase().indexOf("shdsl")>-1){%>
+    controller {{obj[2].backupwanform.controllerBackup}}
+        <% if (obj[2].backupwanform.controllerTypeBackup.toLowerCase()=="efm"){%>
+            dsl-group pairs 0-3 efm-bond
+        <%}else if(obj[2].backupwanform.controllerTypeBackup.toLowerCase()=="efmatm"){%>
+        no dsl-group auto
+        mode {{obj[2].backupwanform.modeBackup}}
+        dsl-group auto
+        <%}else if(obj[2].backupwanform.controllerTypeBackup.toLowerCase()=="auto"){%>
+        dsl-group auto
+     <%}else if(obj[2].backupwanform.controllerTypeBackup.toLowerCase()=="platform"){%>
+      <% if( obj[2].backupwanform.controllerTypeBackupPlatformType.indexOf('888') !== -1 && obj[2].backupwanform.controllerTypeBackupPlatformType.indexOf('888E') === -1){%>
+				mode {{obj[2].backupwanform.modeBackup}}
+			<%} else if(obj[2].backupwanform.controllerTypeBackupPlatformType.indexOf('888E') !== -1 && obj[2].backupwanform.controllerTypeBackupPlatformType.indexOf('888EA') === -1){%>
+				 dsl-group pairs 0-3 efm-bond
+			<%} else if(obj[2].backupwanform.controllerTypeBackupPlatformType.indexOf('EA') !== -1){%>
+				 no dsl-group auto
+                                 mode {{obj[2].backupwanform.modeBackup}}
+                                 dsl-group auto
+                                 <%}%>
+       
+			<%}%>
+    exit
+    <%}else{%>
+controller {{obj[2].backupwanform.controllerBackup}}
+operating mode {{obj[2].backupwanform.modeBackup}}
+<%}%>
+
+BREAK;
+    <% if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("ethernet")>-1) {%>
+        <% if(obj[2].backupwanform.wizardprimarypppoebackup=="on") {%>
+            interface Dialer2
+            no shutdown
+            description BackupWANDesc__{{obj[2].backupwanform.interfaceBackup}}
+            <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+                no ip address
+                ip address negotiated
+            <%}else{%>
+            ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+            <%}%>
+            <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+                <%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%>
+                    ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6MaskBackup}} <%if(obj[2].backupwanform.eui64Backup=="on"){print("eui-64")}%>
+                <%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+                    ipv6 address autoconfig<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+                    ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+                    <%}%>
+                <%}%>
+                ipv6 enable
+            <%}%>
+            <% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+                ip mtu {{obj[2].backupwanform.wizardMtuSizebackup}}
+            <%}else{%>
+                ip mtu 1452
+            <%}%>
+            <% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+                ip nat outside
+            <%}%>
+            <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+            ip virtual-reassembly in
+            encapsulation ppp
+            dialer pool 2
+            dialer-group 2
+            dialer idle-timeout 120
+            dialer fast-idle 20
+            <% if ( obj[2].backupwanform.papSelectbackup==="on" && obj[2].backupwanform.chapSelectbackup==="on")  {  %>
+                ppp authentication chap pap callin
+                ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+                ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+                no cdp enable
+            <% "\n"} else if( obj[2].backupwanform.papSelectbackup==="on"){ %>
+                ppp authentication pap callin
+                ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+                no cdp enable
+            <% "\n"} else if(obj[2].backupwanform.chapSelectbackup==="on"){%>
+                ppp authentication chap callin
+                ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+                ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+                no cdp enable
+            <% } %>
+            exit
+            BREAK;
+            dialer-list 2 protocol ip permit
+            BREAK;
+            <%if(obj[2].backupwanform.wizardencapIdbackup){%>
+            interface {{obj[2].backupwanform.interfaceSelectionsubbackup}}
+            description BackupWANDesc_
+            encapsulation dot1Q {{obj[2].backupwanform.wizardencapIdbackup}}
+            pppoe enable group global
+            pppoe-client dial-pool-number 2
+            <%}else{%>
+            
+            interface {{obj[2].backupwanform.interfaceBackup}}
+            description BackupWANDesc_
+            pppoe enable group global
+            pppoe-client dial-pool-number 2
+            <%}%>
+            exit
+            BREAK;
+        <%}else{%>
+        BREAK;
+            interface {{obj[2].backupwanform.interfaceBackup}}
+            no shutdown
+            exit
+            BREAK;
+            <%if(obj[2].backupwanform.wizardencapIdbackup){%>
+                interface {{obj[2].backupwanform.interfaceSelectionsubbackup}}
+                description BackupWANDesc_
+                <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+                    no ip address
+                    ip address dhcp
+                <%}else{%>
+                    ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+                <%}%>
+                <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+                    <%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%>
+                        ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6Maskbackup}} <%if(obj[2].backupwanform.eui64backup=="on"){print("eui-64")}%>
+                    <%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+                        ipv6 address autoconfig<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+                        ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+                        <%}%>
+                    <%}%>
+                    ipv6 enable
+                <%}%>
+                <% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+                    ip nat outside
+                <%}%>
+                <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+                encapsulation dot1Q {{obj[2].backupwanform.wizardencapIdbackup}}
+                no shutdown
+                exit
+                BREAK;
+            <%}else{%>
+            interface {{obj[2].backupwanform.interfaceBackup}}
+            no shutdown
+            exit
+            BREAK;
+                interface {{obj[2].backupwanform.interfaceBackup}}
+                description BackupWANDesc_
+                no shutdown
+                <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+                    no ip address
+                    ip address dhcp
+                <%}else{%>
+                    ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+                <%}%>
+                <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+                    <%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%>
+                        ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6Maskbackup}} <%if(obj[2].backupwanform.eui64backup=="on"){print("eui-64")}%>
+                    <%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+                        ipv6 address autoconfig<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+                        ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+                             <%}%>
+                    <%}%>
+                    ipv6 enable
+                <%}%>
+                <% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+                ip nat outside
+                <%}%>
+                <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+                exit
+                BREAK;
+            <%}%>
+        <%}%>
+    <%}%>
+     <% if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("atm")>-1) {%>
+        <% if(obj[2].backupwanform.wizardprimarypppoebackup=="on") {%>
+            interface Dialer2
+            no shutdown
+            description BackupWANDesc__{{obj[2].backupwanform.interfaceBackup}}
+            <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+                no ip address
+                ip address negotiated
+            <%}else{%>
+            ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+            <%}%>
+            <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+            <%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%>
+                ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6Maskbackup}} <%if(obj[2].backupwanform.eui64backup=="on"){print("eui-64")}%>
+            <%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+                ipv6 address autoconfig<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+                    ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+                    <%}%>
+            <%}%>
+            ipv6 enable
+            <%}%>
+            <% if (obj[2].backupwanform.advAuthSettingbackup==="on")  {  %>
+            ip mtu {{obj[2].backupwanform.wizardMtuSizebackup}}
+            <%}else{%>
+            ip mtu 1452
+            <%}%>
+            <% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+            ip nat outside
+            <%}%>
+            <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+             ip nbar protocol-discovery
+             <%}%>
+            ip virtual-reassembly in
+            encapsulation ppp
+            dialer pool 2
+            dialer-group 2
+            dialer idle-timeout 120
+            dialer fast-idle 20
+            <% if ( obj[2].backupwanform.papSelectbackup==="on" && obj[2].backupwanform.chapSelectbackup==="on")  {  %>
+                ppp authentication chap pap callin
+                ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+                ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+                
+            <% "\n"} else if( obj[2].backupwanform.papSelect==="on"){ %>
+                ppp authentication pap callin
+                ppp pap sent-username {{obj[2].backupwanform.wizardpapChapUsernamebackup}} password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+              
+            <% "\n"} else if(obj[2].backupwanform.chapSelectbackup==="on"){%>
+                ppp authentication chap callin
+                ppp chap hostname {{obj[2].backupwanform.wizardpapChapUsernamebackup}}
+                ppp chap password 0 {{obj[2].backupwanform.wizardpapChapPasswordbackup}}
+                ppp ipcp dns request
+                
+            <% } %>
+            exit
+            BREAK;
+            dialer-list 2 protocol ip permit
+            BREAK;
+            <%if(obj[2].backupwanform.wizardvpibackup){%>
+            interface {{obj[2].backupwanform.interfaceSelectionsubbackup}} point-to-point
+            description BackupWANDesc_
+            no shutdown
+            pvc {{obj[2].backupwanform.wizardvpibackup}}/{{obj[2].backupwanform.wizardvcibackup}}
+            pppoe-client dial-pool-number 2
+            exit
+            BREAK;
+            exit
+            
+            BREAK;
+            interface {{obj[2].backupwanform.interfaceBackup}}
+            no shutdown
+        exit
+        BREAK;
+            <%}%>
+        <%}else {%>
+        interface {{obj[2].backupwanform.interfaceBackup}}
+            no shutdown
+        exit
+        BREAK;
+        interface {{obj[2].backupwanform.interfaceSelectionsubbackup}} point-to-point
+            description BackupWANDesc_
+            <% if(obj[2].backupwanform.wizardprimarydnsserverbackup=="on") {%>
+                no ip address
+                ip address dhcp
+            <%}else{%>
+            ip address {{obj[2].backupwanform.wizardprimaryipaddressbackup}} {{obj[2].backupwanform.wizardprimarysubnetbackup}}
+            <%}%>
+            <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>
+            <%if(obj[2].backupwanform.ipv6Selectbackup=="staticip" || obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){%>
+                ipv6 address <%if(obj[2].backupwanform.ipv6Selectbackup=="prefixFromProvider"){print(obj[2].backupwanform.wizardbackupPrefixProviderbackup)}%> {{obj[2].backupwanform.ipv6Prefixbackup}}/{{obj[2].backupwanform.ipv6Maskbackup}} <%if(obj[2].backupwanform.eui64backup=="on"){print("eui-64")}%>
+            <%}else if(obj[2].backupwanform.ipv6Selectbackup=="autoconfig"){%>
+                ipv6 address autoconfig<%if(obj[2].backupwanform.dhcpClientbackup=="on"){%>
+                    ipv6 dhcp client pd {{obj[2].backupwanform.wizardbackupPrefixProviderbackup}}
+                    <%}%>
+            <%}%>
+            ipv6 enable
+            <%}%>
+            <% if(obj[2].backupwanform.wizardenableNatbackup=="on") {%>
+            ip nat outside
+            <%}%>
+            <% if(obj[3].securityForm.wizardsecurityenable=="on") {%>
+             zone-member security WAN
+             <%}%>
+             <% if(obj[3].securityForm.wizardAVCEnabled=="yes" && obj[3].securityForm.wizardavcenable=="on"){%>
+            ip nbar protocol-discovery
+            <%}%>
+            ip virtual-reassembly in
+            no shutdown
+            pvc {{obj[2].backupwanform.wizardvpibackup}}/{{obj[2].backupwanform.wizardvcibackup}}
+            exit
+            BREAK;
+            exit
+            
+        <%}%>
+    <%}%>
+<%}%>
+
+<%}%>
+<%if (!obj[2].backupwanform.enableBackupWAN){%>
+ip route 0.0.0.0 0.0.0.0 <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%>
+<% if(((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="Ethernet")) && (obj[1].primaryForm.wizprimaryipv6Conf=="on")){ %>ipv6 route ::/0 Dialer3  BREAK;<%}else if((!obj[1].primaryForm.wizardprimarypppoe)&&(obj[1].primaryForm.connectionWanType=="Ethernet") &&(obj[1].primaryForm.wizprimaryipv6Conf=="on")){%>ipv6 route ::/0 {{obj[1].primaryForm.interfaceSelection}}  BREAK;<%}%>
+ip nat inside source list nat-list interface <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%> overload
+<%}else{%>
+ip sla auto discovery
+dialer-list 2 protocol ip permit
+access-list 197 permit icmp any {{obj[2].backupwanform.WANslaIpAddress}} 0.0.0.0
+BREAK;
+ip local policy route-map track-primary-if
+BREAK;
+route-map track-primary-if permit 1
+ match ip address 197
+ set interface <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%>
+ exit
+BREAK;
+ip route 0.0.0.0 0.0.0.0 <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%> 1 track 1
+BREAK;
+ip sla 1
+ icmp-echo {{obj[2].backupwanform.WANslaIpAddress}} source-interface <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%>
+ timeout 5000
+ frequency 60
+ threshold 5000
+ exit
+BREAK;
+track 1 ip sla 1 reachability
+ip sla schedule 1 life forever start-time now
+ip route 0.0.0.0 0.0.0.0 <%if(((obj[2].backupwanform.persistBackup=="yes")&&(obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")>-1))||((obj[2].backupwanform.wizardprimarypppoebackup=="on")&&(obj[2].backupwanform.connectionTypeBackup=="DSL" || obj[2].backupwanform.connectionTypeBackup=="Ethernet"))){ %>Dialer2<%}else{if(obj[2].backupwanform.connectionTypeBackup==="DSL"){if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("ethernet")>-1){if(obj[2].backupwanform.wizardencapIdbackup){ %>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}else if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("atm")>-1){%>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}%> 253
+BREAK;
+<% if(((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="Ethernet")) && (obj[1].primaryForm.wizprimaryipv6Conf=="on")){ %>ipv6 route ::/0 Dialer3  <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>track 1 BREAK;<%}%><%}else if((!obj[1].primaryForm.wizardprimarypppoe)&&(obj[1].primaryForm.connectionWanType=="Ethernet") &&(obj[1].primaryForm.wizprimaryipv6Conf=="on")){%>ipv6 route ::/0 {{obj[1].primaryForm.interfaceSelection}} <%if(obj[2].backupwanform.wizprimaryipv6Confbackup=="on"){%>track 1 BREAK;<%}%><%}%>
+<% if(((obj[2].backupwanform.wizardprimarypppoebackup=="on")&&(obj[2].backupwanform.connectionTypeBackup=="Ethernet")) && (obj[2].backupwanform.wizprimaryipv6Confbackup=="on")){ %>ipv6 route ::/0 Dialer4  253 BREAK;<%}else if((!obj[2].backupwanform.wizardprimarypppoebackup)&&(obj[2].backupwanform.connectionTypeBackup=="Ethernet") &&(obj[2].backupwanform.wizprimaryipv6Confbackup=="on")){%>ipv6 route ::/0 {{obj[2].backupwanform.interfaceBackup}} 253  BREAK;<%}%>
+
+BREAK;
+ip nat inside source route-map nat2primary interface <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%> overload
+ip nat inside source route-map nat2backup interface <%if(((obj[2].backupwanform.persistBackup=="yes")&&(obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")>-1))||((obj[2].backupwanform.wizardprimarypppoebackup=="on")&&(obj[2].backupwanform.connectionTypeBackup=="DSL" || obj[2].backupwanform.connectionTypeBackup=="Ethernet"))){ %>Dialer2<%}else{if(obj[2].backupwanform.connectionTypeBackup==="DSL"){if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("ethernet")>-1){if(obj[2].backupwanform.wizardencapIdbackup){ %>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}else if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("atm")>-1){%>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}%> overload
+BREAK;
+ip route {{obj[2].backupwanform.WANslaIpAddress}} 255.255.255.255 <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%>
+BREAK;
+route-map nat2backup permit 1
+ match ip address nat-list
+ match interface <%if(((obj[2].backupwanform.persistBackup=="yes")&&(obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("cellular")>-1))||((obj[2].backupwanform.wizardprimarypppoebackup=="on")&&(obj[2].backupwanform.connectionTypeBackup=="DSL" || obj[2].backupwanform.connectionTypeBackup=="Ethernet"))){ %>Dialer2<%}else{if(obj[2].backupwanform.connectionTypeBackup==="DSL"){if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("ethernet")>-1){if(obj[2].backupwanform.wizardencapIdbackup){ %>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}else if (obj[2].backupwanform.interfaceBackup.toLowerCase().indexOf("atm")>-1){%>{{obj[2].backupwanform.interfaceSelectionsubbackup}}<%}}else{%>{{obj[2].backupwanform.interfaceBackup}}<%}}%>
+BREAK;
+route-map nat2primary permit 1
+ match ip address nat-list
+ match interface <% if(((obj[1].primaryForm.persist=="yes")&&(obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("cellular")>-1))||((obj[1].primaryForm.wizardprimarypppoe=="on")&&(obj[1].primaryForm.connectionWanType=="DSL" || obj[1].primaryForm.connectionWanType=="Ethernet"))){ %>Dialer1<%}else{if(obj[1].primaryForm.connectionWanType==="DSL"){if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("ethernet")>-1){if(obj[1].primaryForm.wizardencapId){ %>{{obj[1].primaryForm.interfaceSelectionsub}}<%}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}else if (obj[1].primaryForm.interfaceSelection.toLowerCase().indexOf("atm")>-1){%>{{obj[1].primaryForm.interfaceSelectionsub}}<%}}else{%>{{obj[1].primaryForm.interfaceSelection}}<%}}%>
+<%}%>
+BREAK;

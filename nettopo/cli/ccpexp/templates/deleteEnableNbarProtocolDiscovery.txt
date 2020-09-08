@@ -1,0 +1,4 @@
+interface $interface
+no ip nbar protocol-discovery
+no load-interval 30
+exit

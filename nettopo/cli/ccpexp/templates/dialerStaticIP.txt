@@ -1,0 +1,11 @@
+<% if(pppoe=="pppoe" && (iprout=="wanipv4" || iprout=="wanipv4and6")){%>
+interface Dialer{{wanipv4dialerTag}}
+<%} else {%>
+interface {{interfaceName}}
+<%}%>
+no shutdown
+ip address {{ipv4Address}} {{ipv4Mask}}
+
+
+
+exit

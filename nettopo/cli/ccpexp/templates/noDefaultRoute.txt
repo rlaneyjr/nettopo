@@ -1,0 +1,3 @@
+ip dhcp pool $ipv4PoolName
+
+no default-router

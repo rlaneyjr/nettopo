@@ -1,0 +1,21 @@
+###
+show version
+<?xml version='1.0' encoding='utf-8'?>
+<ODMSpec>
+<Command>
+<Name>show version</Name>
+</Command>
+<OS>ios</OS>
+<DataModel>
+<Container name="ShowVersion">
+<Property name="Software" distance = "3.0" length = "1" type = "String"/>
+<Property name="Version" distance = "1.0" length = "1" type = "String"/>
+<Property name="DSL" distance = "-1" length = "1" type = "Integer"/>
+<Property name="Ethernet interface" distance = "-1" length = "1" type = "Integer"/>
+<Property name="FastEthernet" distance = "-1" length = "1" type = "Integer"/>
+<Property name="ATM" distance = "-1" length = "1" type = "Integer"/>
+<Property name="Gigabit Ethernet" distance = "-1" length = "1" type = "Integer"/>
+<Property name="cisco Embedded AP" distance = "-1" length = "1" type = "Integer"/>
+</Container>
+</DataModel>
+</ODMSpec>

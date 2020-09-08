@@ -1,0 +1,4 @@
+no crypto ipsec profile ipsec-profile
+no crypto isakmp profile isakmp-profile
+no crypto keyring isakmp-keyring
+no crypto isakmp keepalive 10 2 periodic

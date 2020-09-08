@@ -1,0 +1,2 @@
+class-map type inspect match-all $policyName
+match protocol msnmsgr $policyName_urllist

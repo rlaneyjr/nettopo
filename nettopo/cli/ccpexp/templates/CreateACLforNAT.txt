@@ -1,0 +1,4 @@
+ip access-list extended nat-list
+ $permitLanAnyCli
+ $denyCli
+ $denyAnyCli

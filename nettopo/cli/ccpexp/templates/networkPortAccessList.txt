@@ -1,0 +1,2 @@
+ip access-list extended $policyName_acl
+permit object-group $policyName_service object-group $policyName_srcNWObjGrp object-group $policyName_destNWObjGrp

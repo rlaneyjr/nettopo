@@ -1,0 +1,5 @@
+policy-map type inspect $policy_zpName
+class type inspect $policyName
+$action
+class class-default
+drop log

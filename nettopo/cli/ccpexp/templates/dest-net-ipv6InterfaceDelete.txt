@@ -1,0 +1,1 @@
+no ipv6 route $prefixipv6AndMask $interfaceipv6

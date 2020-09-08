@@ -1,0 +1,2 @@
+no ip nat inside source list nat-list interface {{primaryInterface}} overloadno access-list 199 permit ip any anyno ip access-list extended nat-list<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>no ip route 0.0.0.0 0.0.0.0 {{primaryInterface}}
+<%}%><% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>no ipv6 route ::/0  {{primaryInterface}}<%}%>

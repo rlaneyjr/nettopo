@@ -1,0 +1,3 @@
+interface vlan $vlanID
+ip nat inside
+exit

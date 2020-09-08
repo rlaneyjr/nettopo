@@ -1,0 +1,4 @@
+interface $encapInterface
+ ppp chap hostname $gsm_apnUsername
+ ppp chap password 0 $gsm_apnPassword
+exit

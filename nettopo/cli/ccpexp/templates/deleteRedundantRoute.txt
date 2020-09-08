@@ -1,0 +1,2 @@
+no ip nat inside source list nat-list interface $primaryRouteInterface overload
+no ip route 0.0.0.0 0.0.0.0 $routeParam

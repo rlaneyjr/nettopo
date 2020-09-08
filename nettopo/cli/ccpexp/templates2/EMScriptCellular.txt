@@ -1,0 +1,168 @@
+event manager applet nano-1
+ !! This applet is to activate fimrware on selected sim at the time of bootup!!
+ event syslog pattern " %SECONDCORE-5-BOOTSTAGE: LINUX on 2nd core UP" maxrun 100000
+ action 1.1     cli command "enable"
+ action 2.1     cli command "conf t"
+ action 3.1     cli command "event manager environment sim0 $simZeroType"
+ action 3.2     cli command "event manager environment sim1 $simOneType"
+ action 3.3     cli command "event manager environment primary $simPrimarySelected"
+ action 3.4     cli command "do sh ip int br | i Cellular"
+ action 3.5     regexp "([0/1/0]+[0/0/0])" "$_cli_result" cel
+ action 3.6     cli command "event manager environment cel $cel"
+ action 3.7.1   wait 70
+ action 3.7.1.1 cli command "int cellular $cel"
+ action 3.7.1.2 cli command "sh"
+ action 3.7.1.3 cli command "do sh cellular $cel m | i UMTS "
+ action 3.7.1.4 regexp "([0-9])" "$_cli_result" UMTS
+ action 3.7.1.5 cli command "do sh cellular $cel m | i CDMA "
+ action 3.7.1.6 regexp "([0-9])" "$_cli_result" CDMA
+ action 3.7.1.7 cli command "event manager environment UMTS $UMTS"
+ action 3.7.1.8 cli command "event manager environment CDMA $CDMA"
+ action 3.7.1.9 cli command "int cellular $cel"
+ action 4.0     if $primary eq "0"
+ action 4.1.1.0  if $sim0 eq "gsm"
+ action 4.1.1.1   cli command "do cellular $cel m activate $UMTS"
+ action 4.1.1.2   wait 5
+ action 4.1.1.3   cli command "do test cellular $cel modem-power-cycle"
+ action 4.1.1.4   cli command "no sh"
+ action 4.1.1.5  else
+ action 4.1.1.6   cli command "do cellular $cel m activate $CDMA"
+ action 4.1.1.7   wait 5
+ action 4.1.1.8   cli command "do test cellular $cel modem-power-cycle"
+ action 4.1.1.9   cli command "no sh"
+ action 4.2      end
+ action 4.2.1   else
+ action 4.2.1.1  if $primary eq "1"
+ action 4.2.1.2  end
+ action 4.2.1.3 end
+
+
+event manager applet nano-2
+  !! This applet is to activate sim slot 0 when switchover happens to sim 0!!
+ event syslog pattern "SIM in slot 0 is being activated. Please wait for modem to come UP." maxrun 100000
+ action 01.1.1     cli command "enable"
+ action 01.1.2     cli command "conf t"
+ action 01.1.3     cli command "int cellular $cel"
+ action 01.1.3.1   cli command "sh"
+ action 01.1.3.2   wait 5
+ action 01.1.4.1   if $sim0 eq "gsm"
+ action 01.1.4.2    cli command "do cellular $cel m activate $UMTS"
+ action 01.1.4.3   else
+ action 01.1.4.4    cli command "do cellular $cel m activate $CDMA"
+ action 01.1.4.5.1 end
+ action 01.1.4.5.2 wait 5
+ action 01.1.4.5.3 cli command "do test cellular $cel modem-power-cycle"
+ action 01.1.4.5.4 cli command "no sh"
+ action 01.1.4.5.5 syslog priority critical msg "Policy triggered"
+
+
+
+event manager applet nano-3
+ !! This applet is to activate sim slot 1 when switchover happens to sim 1!!
+ event syslog pattern "SIM in slot 1 is being activated. Please wait for modem to come UP." maxrun 100000
+ action 01.1.1     cli command "enable"
+ action 01.1.2     cli command "conf t"
+ action 01.1.3     cli command "int cellular $cel"
+ action 01.1.3.1   cli command "sh"
+ action 01.1.3.2   wait 5
+ action 01.1.4.1   if $sim1 eq "cdma"
+ action 01.1.4.2    cli command "do cellular $cel m activate $CDMA"
+ action 01.1.4.3   else
+ action 01.1.4.4    cli command "do cellular $cel m activate $UMTS"
+ action 01.1.4.5.1 end
+ action 01.1.4.5.2 wait 5
+ action 01.1.4.5.3 cli command "do test cellular $cel modem-power-cycle"
+ action 01.1.4.5.4 cli command "no sh"
+ action 01.1.4.5.5 syslog priority critical msg "Policy triggered"
+
+
+
+event manager applet watch-signal
+  !! This applet is to monitor RSSI level set to 101 if it's >=101 sim switchover will be triggred!!
+ event timer watchdog time 75 maxrun 90000
+ action 001 counter name "runtimes" op inc value 1
+ action 002 if $_counter_value_remain ge "3"
+ action 003  cli command "enable"
+ action 004  cli command "conf t"
+ action 005  cli command "event manager environment sim0 $simZeroType"
+ action 006  cli command "event manager environment sim1 $simOneType"
+ action 007  cli command "event manager environment primary $simPrimarySelected"
+ action 008  cli command "do sh ip int br | i Cellular"
+ action 009  regexp "([0/1/0]+[0/0/0])" "$_cli_result" cel
+ action 010  cli command "event manager environment cel $cel"
+ action 011  cli command "do sh cellular $cel m | i UMTS "
+ action 012 regexp "([0-9])" "$_cli_result" UMTS
+ action 013 cli command "do sh cellular $cel m | i CDMA "
+ action 014 regexp "([0-9])" "$_cli_result" CDMA
+ action 015  set var "999"
+ action 016  cli command "do show cellular $cel radio | inc Current RSSI"
+ action 017  regexp "([0-9]+)" "$_cli_result" var
+ action 018  puts "result = $var"
+ action 019  if $var ge "101"
+ action 020   cli command "do show cellular $cel s | inc Active SIM"
+ action 021   regexp "([0-1]+)" "$_cli_result" simvar
+ action 022   puts "Current Active SIM = $simvar"
+ action 023   if $simvar eq "0"
+ action 024    cli command "do cellular $cel sim activate slot 1"
+ action 025   else
+ action 026    cli command "do cellular $cel sim activate slot 0"
+ action 027   end
+ action 028  end
+ action 029 end
+
+
+
+event manager applet ccpcli
+ !! This applet is to set enviorment values from ccp hhtp!!
+ event syslog pattern "%SYS-5-CONFIG_I: Configured from http" maxrun 100000
+ action 001 cli command "enable"
+ action 002 cli command "conf t"
+ action 003 cli command "event manager environment sim0 $simZeroType"
+ action 004 cli command "event manager environment sim1 $simOneType"
+ action 005 cli command "event manager environment primary $simPrimarySelected"
+ action 006 cli command "do sh ip int br | i Cellular"
+ action 007 regexp "([0/1/0]+[0/0/0])" "$_cli_result" cel
+ action 008 cli command "event manager environment cel $cel"
+ action 009 cli command "do sh cellular $cel m | i UMTS "
+ action 010 regexp "([0-9])" "$_cli_result" UMTS
+ action 011 cli command "do sh cellular $cel m | i CDMA "
+ action 012 regexp "([0-9])" "$_cli_result" CDMA
+ action 013 cli command "event manager environment UMTS $UMTS"
+ action 014 cli command "event manager environment CDMA $CDMA"
+ 
+event manager applet cellular
+  !! This applet is to bring cellular down when no service!
+ event timer watchdog time 75 maxrun 90000
+ action 001 counter name "runtimes" op inc value 1
+ action 002 if $_counter_value_remain ge "3"
+ action 003     cli command "enable"
+ action 004     cli command "conf t"
+ action 005     cli command "do sh ip int br | i Cellular"
+ action 006     regexp "([0/1/0]+[0/0/0])" "$_cli_result" cel
+ action 007  cli command "do sh cellular $cel network | i Service Status"
+ action 008 regexp "(\s=\s[A-Za-z][a-z][a-z\s]*)" "$_cli_result" Service
+ action 008.1 regexp "([A-z][a-z][a-z\s]*)" "$Service" Service1
+ action 008.2 puts "$Service"
+ action 008.3 puts "$Service1"
+ action 009   if $Service1 eq Normal
+ action 010 cli command "int cellular $cel"
+ action 012   else
+ action 013 cli command "int cellular $cel"
+ action 014 cli command "shut"
+ action 015   end
+ action 016  cli command "do sh ip int b | i Cellular"
+ action 017 regexp "(\s[administratively]+[down].*)" "$_cli_result" down
+ action 017.1 regexp "([a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z])" "$down" admin
+ action 017.2 puts "$down"
+ action 017.3 puts "$admin"
+ action 018   if $admin eq administratively
+ action 019 cli command "int cellular 0/1/0"
+ action 020 cli command "no shut"
+ action 021 end
+ action 022 end
+
+
+event manager applet counter_runtimes
+  !! This applet is timer to delay to hold the watch-signal applet at the time of bootup!!
+ event counter name runtimes entry-val 3 entry-op ge exit-val 3 exit-op le
+ action 1.0 syslog priority critical msg "runtimes counter is more than 2, should be starting "

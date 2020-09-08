@@ -1,0 +1,16 @@
+interface $interfaceTunnelName 
+ no shut 
+interface $interfaceTunnelName 
+ $tunnelConf
+ $backupTunnel
+ no ip redirects
+ip nhrp nhs $tunnelAddr nbma $transportAddr multicast priority 1
+ip nhrp shortcut
+ ip nhrp network-id $networkId
+ tunnel source $wanInterfaceName 
+ tunnel mode gre multipoint 
+ tunnel protection ipsec profile $ipsec_profile
+ zone-member security VPN
+object-group network vpn_remote_subnets
+$objGroupdIpRoute
+exit

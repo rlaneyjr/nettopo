@@ -1,0 +1,23 @@
+interface $interface
+ no shut
+ ppp ipcp dns request
+ dialer in-band
+dialer idle-timeout 120 
+ dialer string gsm
+ dialer-group $dialerGroupTag
+ ip address negotiated
+ async mode interactive
+ $ipNat
+ exit
+
+line $lineTag
+ script dialer gsm
+ modem InOut
+ transport input all
+ exit
+
+dialer-list $dialerGroupTag protocol ip permit
+ip route 0.0.0.0 0.0.0.0 Cellular$cellular_LineTag 1
+
+ip nat inside source list 198 interface $interface  overload
+access-list 198 permit ip any any

@@ -1,0 +1,2 @@
+interface $interfaceId
+cws out

@@ -1,0 +1,12 @@
+aaa new-model
+aaa authentication login local_access local
+line con 0
+login authentication local_access
+exit
+line vty 0 4
+access-class 23 in
+privilege level 15
+login authentication local_access
+transport input telnet
+transport input telnet ssh
+exit

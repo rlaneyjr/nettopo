@@ -1,0 +1,1 @@
+no ip nat inside source static $editinternalIP interface $editexternalIP

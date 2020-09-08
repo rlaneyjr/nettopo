@@ -1,0 +1,5 @@
+crypto keyring isakmp-keyring  
+pre-shared-key address $peerAddress key $key
+exit
+crypto isakmp profile isakmp-profile
+match identity address $peerAddress $vpnSubnetMaskIkev1 

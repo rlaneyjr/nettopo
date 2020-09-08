@@ -1,0 +1,10 @@
+<% if(pppoe=="pppoe" && (iprout=="wanipv6" || iprout=="wanipv4and6")){%>
+interface Dialer{{wanipv6dialerTag}}
+<%} else {%>
+interface {{interfaceName}}
+<%}%>
+  no shutdown
+  no ipv6 address
+  ipv6 address {{ipv6Prefix}}/{{ipv6Mask}} {{eui64}}
+  ipv6 enable
+ exit

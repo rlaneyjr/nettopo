@@ -1,0 +1,5 @@
+crypto dynamic-map DynMap$remoteAccessVpnName 1 set transform-set Set$remoteAccessVpnName
+$dynMapReverseRoute
+
+crypto map localMap$remoteAccessVpnName 1 ipsec-isakmp dynamic DynMap$remoteAccessVpnName
+crypto map localMap$remoteAccessVpnName interface interface$remoteAccessVpnName

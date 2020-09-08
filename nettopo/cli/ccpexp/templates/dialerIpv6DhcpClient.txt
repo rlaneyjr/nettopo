@@ -1,0 +1,29 @@
+ipv6 unicast-routing
+ipv6 cef
+ipv6 dhcp Pool STATELESS
+ import dns-server
+ Domain-Name Import 
+exit
+<% _.each(dhcpVlns.split(","), function(vlan) { %>
+<% if(vlan.length!==0){%>
+Interface {{vlan}}
+<% if(oldipv6PrefixName){%>
+ no ipv6 address {{oldipv6PrefixName}} ::100:0:0:0:1/64
+<%}%>
+  ipv6 address {{ipv6PrefixName}} ::100:0:0:0:1/64
+  ipv6 enable
+  ipv6 nd other-config-flag
+  ipv6 dhcp server STATELESS
+exit
+<%}%>
+<%})%>
+<% if(pppoe=="pppoe" && (iprout=="wanipv6" || iprout=="wanipv4and6")){%>
+interface Dialer{{wanipv6dialerTag}}
+<%} else {%>
+interface {{interfaceName}}
+<%}%>
+<% if(oldipv6PrefixName){%>
+no ipv6 dhcp client pd {{oldipv6PrefixName}}
+<%}%>
+  ipv6 dhcp client pd {{ipv6PrefixName}}
+ exit

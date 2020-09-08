@@ -1,0 +1,6 @@
+interface Loopback$loopbackTag
+ exit
+default interface Loopback$loopbackTag
+interface Loopback$loopbackTag
+ no shutdown
+exit

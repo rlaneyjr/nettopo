@@ -1,0 +1,7 @@
+interface $interfaceName
+ description $description
+exit
+ip nat inside source list nat-list interface $interfaceName overload
+ip route 0.0.0.0 0.0.0.0 $interfaceName
+
+

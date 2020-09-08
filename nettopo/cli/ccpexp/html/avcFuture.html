@@ -1,0 +1,168 @@
+<head>
+    <title>
+      Cisco Configuration Professional Express
+    </title>
+    <script type="text/javascript" language="javascript"
+	src="../external/js/d3.js"></script>
+<script type="text/javascript" language="javascript"
+	src="../external/c3.js"></script>
+<script type="text/javascript" language="javascript"
+	src="../external/jquery.jqGrid.src.js"></script>
+<script type="text/javascript" language="javascript"
+	src="../external/grid.locale-en.js"></script>
+<link rel="stylesheet" type="text/css" href="ui.jqgrid.css" />
+<link rel="stylesheet" type="text/css" href="c3.css" />
+<link rel="stylesheet" type="text/css" href="avcStyles.css" />
+</head>
+<div class="wraper">
+   
+     <div class="text_help_en" id="avcInfoDesc"> 
+            The AVC  feature help to monitor real time traffic of the Interfaces.            
+     </div>
+    <div id="avcError" class="ui-state-error ui-corner-all" style="padding: 0 .7em;visibility: hidden" >
+        <p> <span  class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> <span id="avcErrorMessage"></span> </p>
+    </div>
+    
+    <div id="avcDashboardPage" class="page">
+
+        <div class="pageContainer">
+            <div class="deviceInformation">
+                <div id="selectPanelDiv" class="leftSide">
+                    <table><tr><td><div class="interfaceText" id="avcInterfaceLabelen">Interface</div></td><td><select class="interfacesComboBox" id="interfacesComboBox">
+                                    <option id="interfacesComboBoxOptionAll" value="all">All interfaces</option>
+                                </select></td>
+                            <td> <div class="directionText" id="avcDirectionLabel">Direction</div></td>
+                            <td><select class="directionComboBox" id="directionComboBox">
+                                    <option id="directionComboBoxAll" value="both">All</option>
+                                    <option id="directionComboBoxIngress" value="ingress">Ingress</option>
+                                    <option id="directionComboBoxEgress" value="egress">Egress</option>
+                                </select></td>
+                            <td> <div class="zoomText" id="avcPeriodLabel">Period</div></td>
+                            <td><select class="zoomComboBox" id="zoomComboBox">
+                                    <option value="2" id="zoomComboBox2Hrs">2 hrs</option>
+                                    <option value="24" id="zoomComboBox24Hrs">24 hrs</option>
+                                    <option value="48" id="zoomComboBox48Hrs">48 hrs</option>
+                                </select></td>
+                            <td><!--div id="refreshCharts" class="refreshIcon">
+                                    <em class="fa fa-refresh"></em>
+                                </div-->
+                                <div id="refreshIcon" class="refreshIcon">
+								<!-- SonarQube analysis -->
+								<!-- Replacing i tag by span -->
+                                     <span title="Refresh" class="fa fa-refresh" id="refreshCharts">
+                                    </span>
+
+                                </div>
+                            </td>
+                            <td><div id="configAvc">
+                                    <span class="fa fa-cogs"></span>
+                                </div>
+                               
+                            </td>
+                        </tr></table>                   
+                </div>
+
+            </div>
+            <div class="chartsContainer">
+                <div id="areaChartContainerDIV" class="areaChartContainer">
+                    <div class="chartTitle" id="avcUsageLabel">Usage</div>
+                    <div class="areaChart" id="dashboardAreaChart"></div>
+                </div>
+                <div class="chartVirtecalLine"></div>
+                <div id="pieChartContainerDIV" class="pieChartContainer">
+                    <div class="pieChartTitleWrapper">
+                        <div class="pieChartTitle" id="avcApplicationLabel">Applications:</div>
+                        <div class="pieChartTitle-value"></div>
+                    </div>
+                    <div class="pieChart" id="dashboardPieChart"></div>
+                </div>
+            </div>
+
+            <table style="width:100%"><tr><td>
+                   <span class="posRelative">
+                    <input id="AVCApplicationSearchMain" type="text" placeholder="Search Application(s)" class="searchTbx" />
+                    <span class="utmSprite search-icon avcAppSerch">&nbsp;</span>
+                        </span>
+                    </td>
+                    <td><button id="blockApp" type="button" style="float:right;margin-right: 10px;position:relative;left:50px;">Block</button></td>
+                    <td><div id="infoIcon">
+                            <span class="fa fa-info-circle" style="position:relative;left:40px;"></span>
+                        </div></td></tr></table>
+            <div id="tableContainerDIV" class="tableContainer">
+
+                <table class="trafficTable" id="trafficTable"></table>
+                <div id="jqGridPager" style="width: 80%"></div>
+            </div>
+
+
+        </div>
+        <div id="dialog-form-block-application" title="Block Application">
+            <div id="block-application">
+
+                <div id="blockAppError" class="ui-state-error ui-corner-all" style="padding: 0 .7em;display:none">
+                    <p> <span  class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> <span id="blockAppErrorMessage"></span> </p>
+                </div>
+                <form id="blockAppForm" method="get" action="">
+                     <div class="text_help_en" id="avcBlockDesc"> 
+                    This feature help to block the application by creating policy.          
+                    </div>
+                    <div>
+                        <table>
+                            <tr>
+                                <td id="policySourceZoneTitle">Source Zone:</td>
+                                <td><select name="ZoneSource" class="policyTbx" id="sourceZone" style="padding:8px;">
+                                        <option value="LAN">LAN</option>
+                                    </select></td>
+                                <td id="policyDestZoneTitle">Destination Zone:</td>
+                                <td><select name="ZoneDestination" class="policyTbx" id="destinationZone" style="padding:8px;">
+                                        <option value="LAN">LAN</option>
+                                    </select></td>
+                            </tr>
+                        </table>
+                    </div>
+                </form>
+            </div>
+        </div>
+        <div id="dialog-form-confAvc" title="Configuration AVC">
+            <div id="config-avc">
+                 
+                <div id="confAvcError" class="ui-state-error ui-corner-all" style="padding: 0 .7em;display:none">
+                    <p> <span  class="ui-icon ui-icon-alert" style="float: left; margin-right: .3em;"></span> <span id="confAvcErrorMessage"></span> </p>
+                </div>
+                <form id="confAvcForm" method="get" action="">
+
+                 <div class="text_help_en" id="avcConfigDesc"> 
+                    This feature help to select Interfaces to be monitored.            
+                 </div>
+                    <div id="allInterfaceDiv" class="listQuad">
+                        <div class="header" id="allAvailInterf">Available Interfaces</div>
+                        <div id="availableInterfaceDiv"  class="content connectedSortable">
+                            <ul id="allInterfaceList" class="connectedSortable">
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div id="avcFieldSet" class="listQuad">
+                        <div class="header" id="avcWAN">AVC Interfaces</div>
+                        <div id="avcConfigaredListDiv"class="content">
+                            <ul id="avcInterfaceList" class="connectedSortable">
+                            </ul>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+        </div>
+
+    </div>
+    <div id="enableAvc" >
+       
+        <div id="enableAvcCheckBox" style="display: block;"><span class="fa fa-square-o" style="  font-size: 20px;  color: rgb(124, 194, 177);"></span>
+          <span id="enableAvcLabel">Enable AVC</span>
+        </div>
+       
+    </div>
+   
+
+</div>

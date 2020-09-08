@@ -1,0 +1,6 @@
+interface ATM{{atmSubInterfaceTag}} point-to-point
+ no shutdown
+  no ipv6 address
+  ipv6 address autoconfig
+  ipv6 enable
+ exit

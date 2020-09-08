@@ -1,0 +1,50 @@
+object-group network Web_src_net
+any
+object-group network Web_dst_net
+any
+object-group network Others_src_net
+any
+object-group network Others_dst_net
+any
+object-group service Web_svc
+ip
+object-group service Others_svc
+ip
+
+ip access-list extended Web_acl
+permit object-group Web_svc object-group Web_src_net object-group Web_dst_net
+
+ip access-list extended Others_acl
+permit object-group Others_svc object-group Others_src_net object-group Others_dst_net
+
+class-map type inspect match-any Others_app
+match protocol https
+match protocol smtp
+match protocol pop3
+match protocol imap
+match protocol sip
+match protocol ftp
+match protocol dns
+match protocol icmp
+
+class-map type inspect match-any Web_app
+match protocol http
+
+class-map type inspect match-all Web
+match class-map Web_app
+match access-group name Web_acl
+
+class-map type inspect match-all Others
+match class-map Others_app
+match access-group name Others_acl
+
+policy-map type inspect LAN-WAN-POLICY
+class type inspect Web
+inspect
+class type inspect Others
+inspect
+class class-default
+drop log
+
+zone-pair security LAN-WAN source LAN destination WAN
+service-policy type inspect LAN-WAN-POLICY

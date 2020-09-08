@@ -1,0 +1,2012 @@
+<?xml version="1.0"?>
+<xdm>
+
+<hwdictionary>
+
+	<interfaces>
+
+	    <!--The type has to be a unique number and should match the number defined in IfType.java
+	    The LAN interfaces should be given the numbers between 1 and 499
+	    WAN interfaces should be given numbers between 500 and 599
+	    and logical interfaces from 1000 to 1999
+
+	    The phrase is the string that appears in sh runn in ios for an interface
+	    eg: int serial   serial is the phrase in this case
+	    -->
+
+	    <interface type="0" name="Unsupported" image="??" phrase="Unsupported"/>
+		<interface type="1" name="FastEthernet" image="??" phrase="FastEthernet" support="yes"/>
+		<interface type="2" name="Ethernet" image="??" phrase="Ethernet" support="yes"/>
+		<interface type="3" name="10/100Ethernet" image="??" phrase="FastEthernet" support="yes"/>
+        <interface type="4" name="GigabitEthernet" image="??" phrase="GigabitEthernet" support="yes"/>
+		<interface type="5" name="Ethernet Switch Port" image="??" phrase="FastEthernet" support="yes">
+		    <attr name="acl" value="no"/>
+		    <attr name="nat" value="no"/>
+		    <attr name="crypto" value="no"/>
+		    <attr name="ezvpn" value="no"/>
+		    <attr name="cbac" value="no"/>
+		    <attr name="cdp" value="yes"/>
+		    <attr name="mop" value="yes"/>
+			<attr name="ips" value="no"/>
+                    <attr name="qos" value="no"/>
+		</interface>
+
+		<interface type="6" name="GigabitEthernet Switch Port" image="??" phrase="GigabitEthernet">
+		    <attr name="acl" value="no"/>
+		    <attr name="nat" value="no"/>
+		    <attr name="crypto" value="no"/>
+		    <attr name="ezvpn" value="no"/>
+		    <attr name="cbac" value="no"/>
+		    <attr name="cdp" value="yes"/>
+		    <attr name="mop" value="yes"/>
+		    <attr name="ips" value="no"/>
+                    <attr name="qos" value="no"/>
+		</interface>
+		<interface type="7" name="Dot11Radio" image="??" phrase="Dot11Radio" support="yes">
+                <attr name="qos" value="no"/>
+                </interface>
+
+		<interface type="8" name="Switch Module Interface" image="??" phrase="GigabitEthernet" support="yes">
+                </interface>
+		<interface type="9" name="Integrated-Service-Engine" image="??" phrase="Integrated-Service-Engine" support="yes"/>
+
+		<interface type="501" name="Serial" image="??" phrase="Serial" support="yes"/>
+		<interface type="502" name="Serial T1 CSU/DSU" image="??" phrase="Serial" support="yes"/>
+		<interface type="503" name="ADSL" image="??" phrase="ATM" support="yes"/>
+		<interface type="504" name="GSHDSL" image="??" phrase="ATM" support="yes"/>
+		<interface type="505" name="ISDN-BRI-S/T" image="??" phrase="BRI" support="yes"/>
+		<interface type="506" name="ISDN-BRI-U" image="??" phrase="BRI"/>
+		<interface type="507" name="Serial Sync/Async" image="??" phrase="Serial" support="yes"/>
+		<interface type="508" name="Serial 56/64K CSU/DSU" image="??" phrase="Serial"/>
+        <interface type="509" name="T1" image="??" phrase="serial"/>
+        <interface type="510" name="E1" image="??" phrase="serial"/>
+        <interface type="511" name="T1-ATM" image="??" phrase="atm"/>
+        <interface type="512" name="E1-ATM" image="??" phrase="atm"/>
+        <interface type="513" name="Channelized T1" image="??" phrase="serial"/>
+        <interface type="514" name="Channelized E1" image="??" phrase="serial"/>
+        <interface type="515" name="Serial T1/E1" image="??" phrase="serial"/>
+        <interface type="516" name="T3" image="??" phrase="serial"/>
+        <interface type="517" name="E3" image="??" phrase="serial"/>
+        <interface type="518" name="T3-ATM" image="??" phrase="atm"/>
+        <interface type="519" name="E3-ATM" image="??" phrase="atm"/>
+        <interface type="520" name="Channelized T3" image="??" phrase="serial"/>
+        <interface type="521" name="Channelized E3" image="??" phrase="serial"/>
+        <interface type="522" name="FDDI" image="??" phrase="fddi"/>
+        <interface type="523" name="HSSI" image="??" phrase="hssi"/>
+        <interface type="524" name="OC3-ATM" image="??" phrase="atm"/>
+        <interface type="525" name="OC3-POS" image="??" phrase="pos"/>
+        <interface type="526" name="OC12-ATM" image="??" phrase="atm"/>
+        <interface type="527" name="OC12-SRP" image="??" phrase="srp"/>
+        <interface type="528" name="VG AnyLAN" image="??" phrase="vg"/>
+        <interface type="529" name="Parallel Channel" image="??" phrase="channel"/>
+        <interface type="530" name="ESCON Channel" image="??" phrase="channel"/>
+        <interface type="531" name="STM Controller" image="??" phrase="sonet"/>
+		<interface type="532" name="ADSLoverISDN" image="??" phrase="ATM" support="yes"/>
+		<interface type="533" name="IDS-Sensor" image="??" phrase="IDS-Sensor" support="yes"/>
+		<interface type="534" name="Cable-Modem" image="??" phrase="Cable-Modem" support="yes"/>
+		<interface type="536" name="VDSL AnnexB Atm" image="??" phrase="ATM" support="yes"/>
+		<interface type="537" name="VDSL AnnexB Ethernet" image="??" phrase="Ethernet" support="yes"/>
+		<interface type="538" name="VDSL AnnexA Atm" image="??" phrase="ATM" support="yes"/>
+		<interface type="539" name="VDSL AnnexA Ethernet" image="??" phrase="Ethernet" support="yes"/>
+		<interface type="540" name="3G Cellular" image="??" phrase="Cellular" support="yes"/>
+		<interface type="541" name="BRI-NT/TE" image="??" phrase="BRI" support="yes"/>
+	    <interface type="542" name="wlan-ap" image="??" phrase="wlan-ap" />
+	    
+	    <interface type="543" name="WLAN GigabitEthernet Switch Port" image="??" phrase="Wlan-GigabitEthernet" >
+		    <attr name="acl" value="no"/>
+		    <attr name="nat" value="no"/>
+		    <attr name="crypto" value="no"/>
+		    <attr name="ezvpn" value="no"/>
+		    <attr name="cbac" value="no"/>
+		    <attr name="cdp" value="yes"/>
+		    <attr name="mop" value="yes"/>
+			<attr name="ips" value="no"/>
+            <attr name="qos" value="no"/>
+		</interface>
+
+		<interface type="1001" name="Dialer" image="??" phrase="Dialer" support="yes"/>
+		<interface type="1002" name="Tunnel" image="??" phrase="Tunnel" support="yes"/>
+	    <interface type="1003" name="Loopback" image="??" phrase="Loopback">
+            <attr name="qos" value="no"/>
+            </interface>
+            <interface type="1005" name="Virtual-Template" image="??" phrase="Virtual-Template" support="yes"/>
+	    <interface type="1006" name="Null" image="??" phrase="Null"/>
+   	    <interface type="1007" name="Vlan" image="??" phrase="Vlan" support="yes"/>
+   	    <interface type="1008" name="DSLControllerATM" image="??" phrase="ATM" support="yes"/>
+        <interface type="1009" name="Async" image="??" phrase="Async" support="yes"/>
+        <interface type="1010" name="BVI" image="??" phrase="BVI" support="yes">
+        <attr name="qos" value="no"/>
+        </interface>
+        <!--magovind New interface type for SHDSLController ATM -->
+        <interface type="1011" name="SHDSLControllerATM" image="??" phrase="ATM" support="yes"/>
+        <!--end magovind -->
+        
+        <interface type="1012" name="SHDSLControllerEthernet" image="??" phrase="Ethernet" support="yes"/>
+        
+        <!-- Voice Interfaces **Bhaskar** -->
+        <interface type="1501" name="FXS" image="??" phrase="voice-port" support="yes"/>
+        <interface type="1502" name="FXO" image="??" phrase="voice-port" support="yes"/>
+      
+        <interface type="1504" name="FXS-DID" image="??" phrase="voice-port" support="yes"/>
+        <interface type="1505" name="E-M" image="??" phrase="voice-port" support="yes"/>
+        <!-- END -->
+
+   </interfaces>
+
+   <controllers>
+	    <!--The type has to be a unique number and should match the number defined in ControllerType.java
+	    The number should be between 2000 to 2999
+	    -->
+
+        <controller type="2000" name="Unsupported" phrase="Unsupported"/>
+        <controller type="2001" name="DSL" phrase="DSL" support="yes"/>
+        
+        <!-- Adding new controllers **Bhaskar** -->
+        <controller type="2002" name="VDSL" phrase="VDSL" support="yes"/>
+        <controller type="2003" name="SHDSL" phrase="SHDSL" support="yes"/>
+        <!-- END -->
+        
+   </controllers>
+
+	<wics>
+          <wic partno="800-27077" name="HWIC-CABLE-D-2" label="DOCSIS Cable modem WAN card " image="??">
+            <ifs type="534" count="1"/>
+        </wic>
+       <wic partno="800-27078" name="HWIC-CABLE-E/J-2" label="Euro/Japan Cable modem WAN card " image="??">
+            <ifs type="534" count="1"/>
+        </wic>
+		<wic partno="73-5797" name="WIC-1ENET" label="1 Port Ethernet" image="??">
+			 <ifs type="2" count="1"/>
+		</wic>
+                <!--counterpoint support-->
+		<wic partno="800-27737" name="HWIC-1FE" label="1 Port Fast Ethernet HWIC" image="??">
+			 <ifs type="1" count="1"/>
+		</wic>
+		<wic partno="800-27738" name="HWIC-2FE" label="2 Port Fast Ethernet HWIC" image="??">
+			 <ifs type="1" count="2"/>
+		</wic>
+	    <wic partno="800-03181" name="WIC-2T" label="2 Port Serial" image="??">
+			 <ifs type="501" count="2"/>
+		</wic>
+		<wic partno="800-01514" name="WIC-1T" label="1 Port Serial" image="??">
+			 <ifs type="501" count="1"/>
+		</wic>
+		<wic partno="73-1775" name="WIC-1T" label="1 Port Serial" image="??">
+			 <ifs type="501" count="1"/>
+		</wic>
+		<wic partno="800-03182" name="WIC-2A/S" label="2 Port Serial(Sync/Async)" image="??">
+			 <ifs type="507" count="2"/>
+		</wic>
+		<wic partno="800-01833" name="WIC-1B-S/T" label="1 ISDN BRI (S/T)" image="??">
+			 <ifs type="505" count="1"/>
+		</wic>
+		<wic partno="800-21549" name="WIC-1B-S/T-V2" label="1 ISDN BRI (S/T)" image="??">
+			 <ifs type="505" count="1"/>
+		</wic>
+		<wic partno="73-3933" name="WIC-1B-S/T-V3" label="1 ISDN BRI (S/T)" image="??">
+			 <ifs type="505" count="1"/>
+		</wic>
+		<!-- new part number for WIC-1B-S/T-V3 -->
+		<wic partno="800-24973" name="WIC-1B-S/T-V3" label="1 ISDN BRI (S/T)" image="??">
+			 <ifs type="505" count="1"/>
+		</wic>
+		<wic partno="??" name="WIC-1B-U" label="1 ISDN BRI (U)" image="??">
+			 <ifs type="506" count="1"/>
+		</wic>
+		<wic partno="74-0573" name="WIC-1DSU-56K4" label="1 56/64 KBPS CSU/DSU" image="??">
+			 <ifs type="508" count="1"/>
+		</wic>
+		<wic partno="800-03279" name="WIC-1DSU-T1" label="1 Port T1 CSU/DSU" image="??">
+			 <ifs type="502" count="1"/>
+		</wic>
+		<wic partno="73-8346" name="WIC-1DSU-T1-V2" label="1 Port T1 CSU/DSU V2" image="??">
+			 <ifs type="502" count="1"/>
+		</wic>
+		<wic partno="73-4771" name="WIC-1ADSL" label="1 Port ADSL" image="??">
+			 <ifs type="503" count="1"/>
+		</wic>
+		<wic partno="800-08279" name="WIC-1SHDSL" label="1 Port G.SHDSL" image="??">
+			 <ifs type="504" count="1"/>
+		</wic>
+		<wic partno="73-8958" name="WIC-4ESW" label="4 Port FE Switch" image="??">
+			 <ifs type="5" count="4"/>
+		</wic>
+		<wic partno="800-23445" name="WIC-1SHDSL-V2" label="GSHDSL MULTI LINE ATM/T1/E1" image="??">
+			 <cntl type="2001" count="1"/>
+		</wic>
+                <wic partno="800-26571" name="WIC-1SHDSL-V3" label="GSHDSL MULTI LINE ATM" image="??">
+			 <cntl type="2001" count="1"/>
+		</wic>
+                <!--counterpoint-->
+		<wic partno="800-27311" name="HWIC-G.SHDSL" label="HWIC G.SHDSL (4 port)" image="??">
+			 <cntl type="2003" count="1"/>
+		</wic>
+		<!--Violin-1 WICs-->
+		<wic partno="800-31706" pid="HWIC-4SHDSL-E" name="HWIC-4SHDSL-E" label="HWIC G.SHDSL (4 port) with EFM" image="??">
+			 <cntl type="2003" count="1"/>
+			<ifs type="1012" count="1"/>
+		</wic>
+		 <wic partno="800-29624" pid = "HWIC-1VDSL" name="HWIC-1VDSL" label="HWIC VDSL over POTS" image="??">
+			 <cntl type="2002" count="1"/>			 
+		</wic>
+       <!--Violin-1 WICs Ends-->
+                <!--counterpoint-->
+		<wic partno="800-27310" name="HWIC-G.SHDSL" label="HWIC G.SHDSL (2 port)" image="??">
+			 <cntl type="2003" count="1"/>
+		</wic>
+
+        <wic partno="800-08823" name="WIC-1AM" label="1 Port Analog Modem" image="??">
+             <ifs type="1009" count="1"/>
+        </wic>
+  <!--ksubashc Pic-II-->
+         <wic partno="800-25305" name="WIC-1AM-V2" label="1 Port Analog Modem(Version 2)" image="??">
+             <ifs type="1009" count="1"/>
+        </wic>
+        <wic partno="800-08283" name="WIC-2AM" label="2 Port Analog Modem" image="??">
+             <ifs type="1009" count="2"/>
+        </wic>
+        <wic partno="800-27737" name="WIC-1FE" label="1 Port FE HWIC" image="??">
+             <ifs type="1" count="1"/>
+        </wic>
+        <wic partno="800-27738" name="WIC-2FE" label="2 Port FE HWIC" image="??">
+             <ifs type="1" count="2"/>
+        </wic>
+  <!--ksubashc Pic-II-->
+        <wic partno="800-27738" name="HWIC-2FE" label="2 Port FE HWIC" image="??">
+             <ifs type="1" count="2"/>
+        </wic>
+        <wic partno="73-8474" name="HWIC-4ESW" label="4 Port FE Switch" image="??">
+             <ifs type="5" count="4"/>
+        </wic>
+        <!-- before rev 4 -->
+        <wic partno="800-16147" name="HWICD-9ESW" label="9 Port FE Switch" image="??">
+            <ifs type="5" count="9"/>
+        </wic>
+        <!-- rev 4 -->
+        <wic partno="73-8475" name="HWICD-9ESW" label="9 Port FE Switch" image="??">
+            <ifs type="5" count="9"/>
+        </wic>
+
+        <wic partno="73-9117" name="HWIC-4A/S" label="Serial 4A/S daughter card" image="??">
+            <ifs type="507" count="4"/>
+        </wic>
+        <wic partno="73-8970" name="HWIC-4T" label="Serial 4T daughter card" image="??">
+            <ifs type="501" count="4"/>
+        </wic>
+		<!-- magovind Support for HWIC 8A HWIC 16A -->
+        <wic partno="73-8973" name="HWIC-8A" label="Serial 8A daughter card" image="??">
+            <ifs type="1009" count="8"/>
+        </wic>
+       	<wic partno="73-8972" name="HWIC-16A" label="Serial 16A daughter card" image="??">
+            <ifs type="1009" count="16"/>
+        </wic>
+       	<!-- end magovind -->
+        
+        <wic partno="73-9116" name="HWIC-8A/S-RS232" label="Serial 8A/S daughter card" image="??">
+            <ifs type="507" count="8"/>
+        </wic>
+
+        <wic partno="73-9388" name="HWIC-AP-AG" label="Dual Band 802.11 A+B/G Radio Access Point" image="??">
+		    <othermodule phrase="802.11 B/G" partno="73-9388-Single"/>
+            <ifs type="7" count="2"/>
+        </wic>
+
+        <wic partno="73-9388-Single" name="HWIC-AP-G" label="Single Band 802.11 B/G Radio Access Point" image="??">
+            <ifs type="7" count="1"/>
+        </wic>
+          <!--ksubashc-->
+        <wic partno="73-9388" name="HWIC-AP-G-J" label="Single Band 802.11 B/G Radio Access Point" image="??">
+            <ifs type="542" count="1"/>
+        </wic>
+         <wic partno="73-9388" name="HWIC-AP-G-A" label="Single Band 802.11 B/G Radio Access Point" image="??">
+            <ifs type="542" count="1"/>
+        </wic>
+         <wic partno="73-9388" name="HWIC-AP-G-E" label="Single Band 802.11 B/G Radio Access Point" image="??">
+           <ifs type="542" count="1"/>
+        </wic>
+          <wic partno="73-9388" name="HWIC-AP-AG-E" label="Single Band 802.11 B/G Radio Access Point" image="??">
+            <ifs type="542" count="1"/>
+        </wic>
+        <wic partno="800-23880" name="HWIC-ADSL-B/ST" label="ADSL over POTS with BRI S/T" image="??">
+            <ifs type="503" count="1"/>
+            <ifs type="505" count="1"/>
+        </wic>
+        <wic partno="800-23881" name="HWIC-ADSLI-B/ST" label="ADSL over ISDN with BRI S/T" image="??">
+            <ifs type="532" count="1"/>
+            <ifs type="505" count="1"/>
+        </wic>
+        <wic partno="800-26247" name="HWIC-1ADSL" label="ADSL over POTS" image="??">
+            <ifs type="503" count="1"/>
+        </wic>
+        <wic partno="800-28201" name="HWIC-1ADSL-M" label="ADSL over POTS" image="??">
+            <ifs type="503" count="1"/>
+        </wic>
+        <wic partno="800-26248" name="HWIC-1ADSLI" label="ADSL over ISDN" image="??">
+            <ifs type="532" count="1"/>
+        </wic>
+        <wic partno="73-8433" name="WIC 1ADSL-DG" label="ADSLoPOTS with Dying Gasp" image="??">
+            <ifs type="503" count="1"/>
+        </wic>
+        <wic partno="73-8276" name="WIC 1ADSL-I-DG" label="ADSLoISDN with Dying Gasp" image="??">
+            <ifs type="532" count="1"/>
+        </wic>
+	<wic partno="800-19400" name="WIC-1B-U-V2" label="1 ISDN BRI U" image="??">
+		 <ifs type="506" count="1"/>
+	</wic>
+	<!--sadhanap Support for Mallard-->
+	<wic partno="800-28900" name="HWIC-2A/S" label="2 Port Serial(Sync/Async)" image="??">
+			 <ifs type="507" count="2"/>
+		</wic>
+	<wic partno="800-28802" name="HWIC-1T" label="1 Port Serial" image="??">
+			 <ifs type="501" count="1"/>
+		</wic>
+	<wic partno="800-28803" name="HWIC-2T" label="2 Port Serial" image="??">
+			 <ifs type="501" count="2"/>
+		</wic>
+	<wic partno="800-28804" name="HWIC-1DSU-T1" label="1 Port T1 CSU/DSU" image="??">
+			 <ifs type="502" count="1"/>
+		</wic>
+        <wic partno="800-33589" name="HWIC-1DSU-T1" label="1 Port T1 CSU/DSU" image="??">
+			 <ifs type="502" count="1"/>
+		</wic>
+	<!--end sadhanap-->
+<!-- Enzo 3G HWIC support starts - ksubashc -->
+		
+		<wic partno="800-28639" name="HWIC-3G-CDMA-S" label="Enzo 3G CDMA Sprint HWIC" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+		
+		<wic partno="800-28727" name="HWIC-3G-CDMA-V" label="Enzo 3G CDMA Verizon HWIC" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+		
+		<wic partno="800-28846" name="HWIC-3G-GSM" label="Enzo 3G GSM HWIC" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+		
+		<!-- Enzo 3G HWIC support ends - ksubashc -->
+
+<!--McLaren-I-->
+       <wic pid="EHWIC-3G-HSPA+R7" name="EHWIC-3G-HSPA+R7" label="3G EHWIC-QuadBand HSPA+R7/HSPA/UMTS QuadBand EDGE/GPRS and GPS" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+        <wic pid="EHWIC-3G-HSPA-U" name="EHWIC-3G-HSPA-U" label="3G WWAN EHWIC-QuadBand HSPA/UMTS QuadBand EDGE/GPRS and GPS" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+        <wic pid="EHWIC-3G-EVDO-V" name="EHWIC-3G-EVDO-V" label="3G WWAN EHWIC-DuoBand EVDO Rev A/Rel 0/1xRTT and GPS" image="??">
+            <ifs type="540" count="1"/>
+        </wic>        
+         <wic pid="EHWIC-3G-EVDO-S" name="EHWIC-3G-EVDO-S" label="3G WWAN EHWIC-DuoBand EVDO Rev A/Rel 0/1xRTT and GPS" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+        <wic pid="EHWIC-3G-EVDO-B" name="EHWIC-3G-EVDO-B" label="3G WWAN EHWIC-DuoBand EVDO Rev A/Rel 0/1xRTT and GPS" image="??">
+            <ifs type="540" count="1"/>
+        </wic>
+  <!--McLaren-I Ends-->
+
+  <!--McLaren-1.5-->
+       <wic pid="EHWIC-3G-HSPA+7" name="EHWIC-3G-HSPA+7" label="3G EHWIC-QuadBand HSPA+R7/HSPA/UMTS QuadBand EDGE/GPRS and GPS" image="??">
+            <ifs type="540" count="1"/>
+       </wic>
+        
+      <wic pid="EHWIC-3G-HSPA+7-A" name="EHWIC-3G-HSPA+7-A" label="3G EHWIC-QuadBand HSPA+R7/HSPA/UMTS QuadBand EDGE/GPRS and GPS" image="??">
+            <ifs type="540" count="1"/>
+      </wic>
+        
+
+	<wic partno="800-24193" name="HWIC-4ESW" label="4 Port FE Switch" image="??">
+             <ifs type="5" count="4"/>
+        </wic>
+        
+	<wic partno="800-25964" name="HWIC-4ESW-POE" label="4 Port FE Switch with POE" image="??">
+ 	     <ifs type="5" count="4"/>
+        </wic>
+
+        <!-- before rev 4 -->
+        <wic partno="800-24194" name="HWICD-9ESW" label="9 Port FE Switch" image="??">
+            <ifs type="5" count="9"/>
+        </wic>
+        <!-- rev 4 -->
+
+	<wic partno="800-25965" name="HWICD-9ESW-POE" label="9 Port FE Switch with POE" image="??">
+ 	    <ifs type="5" count="9"/>
+        </wic>
+
+	<wic partno="74-7105" name="EHWIC-4ESG" label="4 port 10/100/1000 GE switch" image="??">
+            <ifs type="6" count="4"/>
+        </wic>
+
+	<wic partno="74-7180" name="EHWIC-4ESG-P" label="4 port 10/100/1000 GE switch with POE" image="??">
+            <ifs type="6" count="4"/>
+        </wic>
+
+	<wic partno="74-7181" name="EHWIC-D-8ESG" label="8 Port GE Switch" image="??">
+            <ifs type="6" count="8"/>
+        </wic>
+
+	<wic partno="74-7195" name="EHWIC-D-8ESG-P" label="8 Port GE Switch With POE" image="??">
+            <ifs type="6" count="8"/>
+        </wic>
+	<!--GreyGoose-->
+	   <wic pid="EHWIC-VA-DSL-A" name="EHWIC-VA-DSL-A" label="Annex A" image="??">
+            <cntl type="2002" count="1"/>	
+             <ifs type="538" count="1"/>
+              <ifs type="539" count="1"/>       
+
+        </wic>
+         <wic pid="EHWIC-VA-DSL-B" name="EHWIC-VA-DSL-B" label="Annex B" image="??">
+            <cntl type="2002" count="1"/>	
+            <ifs type="538" count="1"/>
+              <ifs type="539" count="1"/> 
+        </wic>
+         <wic pid="EHWIC-VA-DSL-J" name="EHWIC-VA-DSL-J" label="Annex J" image="??">
+            <cntl type="2002" count="1"/>	
+            <ifs type="538" count="1"/>
+              <ifs type="539" count="1"/> 
+        </wic>
+        <wic pid="EHWIC-VA-DSL-M" name="EHWIC-VA-DSL-M" label="Annex M" image="??">
+            <cntl type="2002" count="1"/>	
+            <ifs type="538" count="1"/>
+              <ifs type="539" count="1"/> 
+        </wic>
+	<!--GreyGoose End-->	
+	
+	<!-- Entry for CGR-2010 device switch module -->
+		<wic partno="73-13486" name="GRWIC-D-ES-2S-8PC" label="8 port copper GRWIC" image="??">
+            <ifs type="8" count="1"/>
+        </wic>
+        
+          <wic partno="73-13509" name="GRWIC-D-ES-6S" label="8 port copper GRWIC" image="??">
+            <ifs type="8" count="1"/>
+        </wic>
+		
+        <wic pid="EHWIC-1GE-SFP-CU" name="EHWIC-1GE-SFP-CU" label="1 Port Gigabit Ethernet SFP/Copper EHWIC" image="??">
+			 <ifs type="4" count="1"/>
+		</wic>
+	</wics>
+
+
+	<networkmodules>
+		<networkmodule partno="800-01237" name="NM-8B-S/T" label="BRI (S/T) Port adapter" image="??">
+			<ifs type="505" count="8"/>
+		</networkmodule>
+		<networkmodule partno="800-01236" name="NM-4B-S/T" label="BRI (S/T) Port adapter" image="??">
+			<ifs type="505" count="4"/>
+		</networkmodule>
+		<networkmodule partno="800-01239" name="NM-8B-U" label="BRI (U) Port adapter" image="??">
+			<ifs type="506" count="8"/>
+		</networkmodule>
+		<networkmodule partno="800-27116" name="NM-WAE" label="WAAS Network Module" image="??">
+			<ifs type="9" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-10371" name="NM-WAE" label="WAAS Network Module" image="??">
+			<ifs type="9" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11062" name="NM-WAE" label="WAAS Network Module" image="??">
+			<ifs type="9" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-28761" name="NM-WAE" label="WAAS Network Module" image="??">
+			<ifs type="9" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-27150" name="NM-WAE" label="WAAS Network Module" image="??">
+			<ifs type="9" count="1"/>
+		</networkmodule>
+
+		<!-- magovind Support for NM-1GE -->
+		<networkmodule partno="800-19966" name="NM-1GE" label="1-Port Gigabit Ethernet Network Module" image="??">
+			<ifs type="4" count="1"/>
+		</networkmodule>
+       	<!-- end magovind -->
+       	
+		<networkmodule partno="800-02026" name="NM-1E" label="1-Port Ethernet Network Module" image="??">
+			<ifs type="2" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-02027" name="NM-4E" label="4-Port Ethernet Network Module" image="??">
+			<ifs type="2" count="4"/>
+		</networkmodule>
+		<networkmodule partno="800-02314" name="NM-4T" label="4-Port Sync Serial" image="??">
+			<ifs type="501" count="4"/>
+		</networkmodule>
+		<networkmodule partno="800-04799" name="NM-2W" label="2 WAN Card Slots Network Module"
+		wic-count="2" image="??">
+		</networkmodule>
+		<networkmodule partno="800-01223" name="NM-1E1R2W" label="1 Ethernet 1 Token Ring 2 WAN Card Slot Network Module"
+		wic-count="2" image="??">
+			<ifs type="2" count="1"/>
+			<ifs type="0" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-01789" name="NM-1E2W" label="1 Ethernet and 2 WIC slots Network Module"
+		wic-count="2" image="??">
+			<ifs type="2" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-04798" name="NM-1FE1R2W" label="1 Fast Ethernet, 1 Token Ring and 2 WIC slots Network Module"
+		wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="0" count="1"/>
+	    </networkmodule>
+		<networkmodule partno="800-04796" name="NM-1FE2W" label="1 Fast Ethernet and 2 WIC slots Network Module"
+		wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-21599" name="NM-1FE2W_V2" label="1 Fast Ethernet and 2 WIC slots Network Module (version 2)"
+		wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-01171" name="NM-2E2W" label="2-Ethernet, 2-WIC slots Network Module"
+		wic-count="2" image="??">
+			<ifs type="2" count="2"/>
+		</networkmodule>
+		<networkmodule partno="800-04797" name="NM-2FE2W" label="2 10/100 Ethernet 2 WAN Card Slot Network Module"
+		wic-count="2" image="??">
+			<ifs type="3" count="2"/>
+		</networkmodule>
+		<networkmodule partno="800-21601" name="NM-2FE2W-V2" label="2 10/100 Ethernet 2 WAN Card Slot Network Module"
+		wic-count="2" image="??">
+			<ifs type="3" count="2"/>
+		</networkmodule>
+		<networkmodule partno="800-03748" name="NM-1FE1CE1U" label="1 10/100 Ethernet 1 Port Channelized E1/ISDN-PRI Unbalanced" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03499" name="NM-1FE2CE1B" label="1 10/100 Ethernet 2 Port Channelized E1/ISDN-PRI Balanced" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03478" name="NM-1FE1CE1B" label="1 10/100 Ethernet 1 Port Channelized E1/ISDN-PRI Balanced" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03747" name="NM-1FE2CE1U" label="1 10/100 Ethernet 2 Port Channelized E1/ISDN-PRI Unbalanced" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03502" name="NM-1FE1CT1" label="1 10/100BaseTX Port and 1 PRI/Channelized T1" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03503" name="NM-1FE2CT1" label="1 10/100BaseTX Port and 2 PRI/Channelized T1" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03500" name="NM-1FE1CT1-CSU" label="1 10/100BaseTX Port and 1 PRI/Channelized T1 with CSU" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03501" name="NM-1FE2CT1-CSU" label="1 10/100BaseTX Port and 2 PRI/Channelized T1 with CSU" image="??">
+			<ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03028" name="NM-1FE-FX" label="1-port fast Ethernet (FX interface) Network Module" image="??">
+		    <ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-21664" name="NM-1FE-FX-V2" label="1-port fast Ethernet (FX interface, version 2) Network Module" image="??">
+		    <ifs type="3" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-03490" name="NM-1FE-TX" label="1-Port Fast Ethernet (TX interface) Network Module" image="??">
+		    <ifs type="3" count="1"/>
+		</networkmodule>
+
+		<networkmodule partno="800-15156" name="NM-16ESW" label="16-Port 10/100 EtherSwitch Network Module" image="??">
+		    <othermodule phrase="GigabitEthernet" partno="GIG-800-15156"/>
+			<ifs type="5" count="16"/>
+		</networkmodule>
+		<networkmodule partno="800-15157" name="NM-36ESW" label="36-Port 10/100 EtherSwitch Network Module" image="??">
+		    <othermodule phrase="GigabitEthernet" partno="GIG-800-15157"/>
+			<ifs type="5" count="36"/>
+		</networkmodule>
+
+		<networkmodule partno="GIG-800-15156" name="NM-16ESW-1GIG" label="16-Port 10/100 EtherSwitch Network Module with one GE(1000BaseT) port" image="??">
+			<ifs type="5" count="16"/>
+			<ifs type="6" count="1"/>
+		</networkmodule>
+		<networkmodule partno="GIG-800-15157" name="NM-36ESW-2GIG" label="36-Port 10/100 EtherSwitch Network Module with two GE(1000BaseT) ports" image="??">
+			<ifs type="5" count="36"/>
+			<ifs type="6" count="2"/>
+		</networkmodule>
+
+		<networkmodule partno="800-25009" name="NME-16ES-1GE" label="EtherSwitch SM 16 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-25012" name="NME-XD-24ES-2ST" label="EtherSwitch SM 24 10/100T PoE + 1 SFP + StackWise Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-25011" name="NME-X-23ES-1G-P" label="EtherSwitch SM 23 10/100T PoE + 1 GE PoE Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="800-25015" name="NME-XD-48ES-2S-P" label="EtherSwitch SM 48 10/100T PoE + 2 SFP Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+
+		<!--Eagle Eye Switch modules -->
+		<networkmodule partno="73-11850" name="SM-ES2-24" label="EtherSwitch SM L2 + 23 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11851" name="SM-ES2-16-P" label="EtherSwitch SM L2 + PoE + 15 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11852" name="SM-ES3-16-P" label="EtherSwitch SM L3 + PoE + 15 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11853" name="SM-ES3G-16-P" label="EtherSwitch SM L3 + PoE + 16 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11854" name="SM-D-ES2-48" label="EtherSwitch SM L2  + 47 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11856" name="SM-ES2-24-P" label="EtherSwitch SM L2 + PoE + 23 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11857" name="SM-ES3-24-P" label="EtherSwitch SM L3 + PoE + 23 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11858" name="SM-ES3G-24-P" label="EtherSwitch SM L3 + PoE + 24 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		
+		<networkmodule partno="73-11859" name="SM-D-ES3-48-P" label="EtherSwitch SM L3 + PoE + 47 10/100 + 1 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		<networkmodule partno="73-11860" name="SM-D-ES3G-48-P" label="EtherSwitch SM L3 + PoE + 48 10/100/1000 Port adapter, 1 port" image="??">
+			<ifs type="8" count="1"/>
+		</networkmodule>
+		
+		<!--End Eagle Eye Switch modules -->
+
+    	<networkmodule partno="800-01224" name="NM-4A/S" label="4 Port Async/Sync Network Module" image="??">
+			<ifs type="507" count="4"/>
+    	</networkmodule>
+
+    	<networkmodule partno="800-01225" name="NM-8A/S" label="8 Port Async/Sync Network Module" image="??">
+			<ifs type="507" count="8"/>
+    	</networkmodule>
+		
+		<networkmodule partno="C1841" name="C1841 Mainboard" label="C1841 Mainboard"
+	    wic-count="2" image="??">
+	        <ifs type="3" count="2"/>
+        </networkmodule>
+
+        <!-- Pompey magovind -->
+        <networkmodule partno="C1805" name="C1805 Mainboard" label="C1805 Mainboard"
+	    wic-count="2" image="??">
+	     	<ifs type="3" count="2"/>
+        </networkmodule>
+        <!-- Pompey magovind ends -->
+        
+        <!--  Support for C1861W Starts here  -->
+        <networkmodule partno="C1861WUC4FXOK9" name="C1861W-UC-4FXO-K9" label="C1861 Mainboard" wic-count="3" image="??">
+			<ifs type="3" count="1"/>
+ 			<ifs type="5" count="8" />  
+			<ifs type="1502" count="4" />
+			<ifs type="1504" count="4" />
+			<ifs type="7" count="1"/>	
+		</networkmodule>
+		
+		
+		<networkmodule partno="C1861WSRSTB/K9" name="C1861W-SRST-B/K9" label="C1861 Mainboard" wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8" />
+			<ifs type="1504" count="4" />
+			<ifs type="541" count="2" /> 
+			<ifs type="7" count="1"/>	
+		</networkmodule>
+		
+		<!-- 9. C1861W-SRST-C-B/K9 -->
+		<networkmodule partno="C1861WSRSTCB/K9" name="C1861W-SRST-C-B/K9" label="C1861 Mainboard" wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8" />
+			<ifs type="1504" count="4" />
+			<ifs type="541" count="2" /> 
+			<ifs type="7" count="1"/>	
+		</networkmodule>
+		
+		<!-- 10. C1861W-SRST-C-F/K9 -->
+		<networkmodule partno="C1861WSRSTCF/K9" name="C1861W-SRST-C-F/K9" label="C1861 Mainboard" wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8" />
+			<ifs type="1502" count="4" />
+			<ifs type="1504" count="4" /> 
+			<ifs type="7" count="1"/>	
+					
+		</networkmodule>
+		
+		<!-- 11. C1861W-SRST-F/K9 -->
+		<networkmodule partno="C1861WSRSTF/K9" name="C1861W-SRST-F/K9" label="C1861 Mainboard" wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8" />
+			<ifs type="1502" count="4" />
+			<ifs type="1504" count="4" /> 
+			<ifs type="7" count="1"/>
+		</networkmodule>
+		
+		<!-- 12. C1861W-UC-2BRI-K9 -->
+		<networkmodule partno="C1861WUC2BRIK9" name="C1861W-UC-2BRI-K9" label="C1861 Mainboard" wic-count="2" image="??">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8" />
+			<ifs type="1504" count="4" />
+			<ifs type="541" count="2" /> 
+			<ifs type="7" count="1"/>			
+		</networkmodule>
+		
+		
+        <!--  Support for C1861W Ends here  -->
+        
+        <networkmodule partno="C2801" name="C2801 Mainboard" label="C2801 Mainboard"
+        wic-count="4" image="??">
+            <ifs type="3" count="2"/>
+        </networkmodule>
+		<networkmodule partno="C2811" name="C2811 Motherboard" label="C2811 Motherboard"
+    	wic-count="4" image="??">
+    	    <ifs type="3" count="2"/>
+   	    </networkmodule>
+
+   	    <networkmodule partno="C2821" name="C2821 Motherboard" label="C2821 Motherboard"
+   	    wic-count="4" image="??">
+   	        <ifs type="4" count="2"/>
+                <ifs type="501" count="501"/>
+        </networkmodule>
+
+        <networkmodule partno="C2851" name="C2851 Motherboard" label="C2851 Motherboard"
+        wic-count="4" image="??">
+            <ifs type="4" count="2"/>
+        </networkmodule>
+		<networkmodule partno="C3825" name="C3825 Motherboard" label="C3825 Motherboard" wic-count="4" image="??">
+			<ifs type="4" count="2"/>
+    	</networkmodule>
+
+		<networkmodule partno="C3845" name="C3845 Motherboard" label="C3845 Motherboard" wic-count="4" image="??">
+			<ifs type="4" count="2"/>
+    	</networkmodule>
+    	<networkmodule partno="800-24660" name="AIM-VPN/BPII-PLUS" label="AIM-VPN/BPII-PLUS">
+		</networkmodule>
+
+		<networkmodule partno="800-24799" name="AIM-VPN/EPII-PLUS" label="AIM-VPN/EPII-PLUS">
+		</networkmodule>
+
+		<networkmodule partno="800-24800" name="AIM-VPN/HPII-PLUS" label="AIM-VPN/HPII-PLUS">
+		</networkmodule>
+		
+		<networkmodule partno="800-27302" name="AIM-VPN/SSL-1" label="AIM-VPN/SSL-1">
+		</networkmodule>
+		
+		<networkmodule partno="800-27059" name="AIM-VPN/SSL-2" label="AIM-VPN/SSL-2">
+		</networkmodule>
+		
+		<networkmodule partno="800-27060" name="AIM-VPN/SSL-3" label="AIM-VPN/SSL-3">
+		</networkmodule>
+
+		<networkmodule name="AIM2-CUE" partno="73-11599" label="Cisco Unity Express Advanced Integration Module 2" image="">
+		<ifs type="544" count="1"/>
+        	</networkmodule> 
+
+        <networkmodule name="C7200-I/O" partno="73-1537" label="C7200-I/O" image="">
+             <ifs type="1" count="1"/>
+        </networkmodule>
+
+        <networkmodule name="C7200-I/O-FE-MII" partno="73-4092" label="C7200-I/O-FE-MII" image="">
+             <ifs type="1" count="1"/>
+        </networkmodule>
+
+        <networkmodule name="C7200-I/O" partno="73-4093" label="C7200-I/O" image="">
+        </networkmodule>
+
+        <networkmodule name="C7200-I/O-2FE/E" partno="800-07114" label="C7200-I/O-2FE/E" image="">
+             <ifs type="1" count="2"/>
+        </networkmodule>
+
+        <networkmodule name="C7200-I/O-GE+E" partno="800-06117" label="GigabitEthernet/Ethernet I/O Card Port adapter" image="">
+             <ifs type="2" count="1"/>
+             <ifs type="4" count="1"/>
+        </networkmodule>
+
+		<!--Infusion 38xx-->
+		<networkmodule partno="C3825NV" name="C3825 No VPN Motherboard" label="C3825 No VPN Motherboard" wic-count="4" image="??">
+		<ifs type="4" count="2"/>
+		</networkmodule>
+
+		<networkmodule partno="C3845NV" name="C3845 No VPN Motherboard" label="C3845 No VPN Motherboard" wic-count="4" image="??">
+		<ifs type="4" count="2"/>
+		</networkmodule>
+		
+
+   	     
+	<!--Transformers rtv -->
+   	    <networkmodule partno="C1941" name="C1941 Motherboard" label="C1941 Motherboard" wic-count="2" image="??">
+    	    <ifs type="4" count="2"/>
+   	    </networkmodule>
+   	    <networkmodule partno="C2901" name="C2901 Motherboard" label="C2901 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="2"/>
+   	    </networkmodule>
+            <networkmodule partno="C2911" name="C2911 Motherboard" label="C2911 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="3"/>
+   	    </networkmodule> 
+   	    <networkmodule partno="C2921" name="C2921 Motherboard" label="C2921 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="3"/>
+   	    </networkmodule>
+   	    <networkmodule partno="C2951" name="C2951 Motherboard" label="C2951 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="3"/>
+   	    </networkmodule>
+   	    <networkmodule partno="C3925" name="C3925 Motherboard" label="C3925 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="3"/>
+   	    </networkmodule>
+   	    <networkmodule partno="C3945" name="C3945 Motherboard" label="C3945 Motherboard" wic-count="4" image="??">
+    	    <ifs type="4" count="3"/>
+   	    </networkmodule>
+<!-- ksubashc Add XFR SKUs for Picollo-II-->
+		 <networkmodule partno="CISCO1941W-A/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+         <ifs type="4" count="2"/>
+		</networkmodule>
+		 
+		 <networkmodule partno="CISCO1941W-C/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+         <ifs type="4" count="2"/>
+		</networkmodule>
+         <networkmodule partno="CISCO1941/K9" name="C1941 Motherboard" label="C1941 Motherboard" wic-count="2"  image="??">
+       <ifs type="4" count="2"/> 
+	   </networkmodule>
+		<networkmodule partno="CISCO2901/K9" name="C2901 Motherboard" label="C2901 Motherboard" wic-count="4"  image="??">
+		<ifs type="4" count="2"/> 
+        </networkmodule>
+		<networkmodule partno="CISCO2911/K9" name="C2911 Motherboard" label="C2911 Motherboard" wic-count="4"  image="??">
+        <ifs type="4" count="3"/>
+        </networkmodule>
+      <networkmodule partno="CISCO2921/K9" name="C2921 Motherboard" label="C2921 Motherboard" wic-count="4"  image="??">
+	   <ifs type="4" count="3"/>  
+      </networkmodule>
+		<networkmodule partno="CISCO2951/K9" name="C2951 Motherboard" label="C2951 Motherboard" wic-count="4"  image="??">
+    	    <ifs type="4" count="3"/>
+    	   
+        </networkmodule>
+		<networkmodule partno="CISCO3925-CHASSIS" name="C3925 Motherboard" label="C3925 Motherboard" wic-count="4"  image="??">
+       <ifs type="4" count="3"/>
+      </networkmodule>
+   	    <networkmodule partno="CISCO3945-CHASSIS" name="C3945 Motherboard" label="C3945 Motherboard" wic-count="4" image="??">
+    	   <ifs type="4" count="3"/>
+    	 
+    	  </networkmodule>     
+     <!--Added on behalf of CSCtb40847-->
+ 		<networkmodule partno="CISCO1941W-E/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+     	</networkmodule>
+        <networkmodule partno="CISCO1941W-P/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+        </networkmodule>  
+       	<networkmodule partno="CISCO1941W-N/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+       	</networkmodule>
+       	<networkmodule partno="CISCO1941W/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+      	</networkmodule>
+      	<networkmodule partno="CISCO1941W-T/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+       	</networkmodule>
+       	<networkmodule partno="CISCO1941W-I/K9" name="C1941 Mainboard" label="C1941 Mainboard"  wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+       	</networkmodule>
+   	   <networkmodule partno="CISCO3925/K9" name="C3925 Motherboard" label="C3925 Motherboard" wic-count="4"  image="??">
+       <ifs type="4" count="3"/>
+      </networkmodule>
+      <networkmodule partno="CISCO3925-E/K9" name="C3925 Motherboard" label="C3925 Motherboard" wic-count="4"  image="??">
+       <ifs type="4" count="3"/>
+      </networkmodule>
+        <networkmodule partno="CISCO3945/K9" name="C3945 Motherboard" label="C3945 Motherboard" wic-count="4" image="??">
+    	   <ifs type="4" count="4"/>
+   	  </networkmodule>  
+       <networkmodule partno="CISCO3945-E/K9" name="C3945 Motherboard" label="C3945 Motherboard" wic-count="4" image="??">
+    	   <ifs type="4" count="4"/>
+   	  </networkmodule>
+   	    
+      <!-- End ksubashc Add XFR SKUs for Picollo-II-->
+        <!--
+        Cisco 7200 Series Network Processing Modules (NPEs)
+	-->
+
+        <networkmodule name="NPE100" partno="" label="NPE100" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE150" partno="73-1536" label="NPE150" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE200" partno="" label="NPE200" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE225" partno="73-4043" label="NPE225" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE300" partno="73-3409" label="NPE300" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE-400" partno="73-5308" label="NPE-400" image="">
+        </networkmodule>
+
+        <networkmodule name="NSE-1" partno="73-4068" label="NSE-1" image="">
+        </networkmodule>
+
+        <networkmodule name="NPE-G1" partno="73-6988" label="NPE-G1" image="">
+             <ifs type="4" count="3"/>
+        </networkmodule>
+
+        <networkmodule name="PA-2FE-TX" partno="73-5419" label="2-port 100-Mbps, Fast Ethernet Port Adapter" image="">
+             <ifs type="1" count="2"/>
+        </networkmodule>
+
+        <networkmodule name="PA-2FE-FX" partno="73-5420" label="2-port 100-Mbps, Fast Ethernet Port Adapter" image="">
+             <ifs type="1" count="2"/>
+        </networkmodule>
+
+        <networkmodule name="PA-8E" partno="73-1391" label="8-port 10-Mbps Ethernet Port Adapter" image="">
+             <ifs type="2" count="8"/>
+        </networkmodule>
+
+        <networkmodule name="PA-4E" partno="73-1556" label="4-port 10-Mbps Ethernet Port Adapter" image="">
+             <ifs type="2" count="4"/>
+        </networkmodule>
+
+        <networkmodule name="SA-VAM" partno="73-5953" label="VAM Encryption/Compression engine" image="">
+        </networkmodule>
+
+        <networkmodule name="SA-VAM2" partno="73-8491" label="VAM2 Encryption/Compression engine" image="">
+        </networkmodule>
+
+        <networkmodule name="SA-VAM2+" partno="73-9571" label="VAM2+ Encryption/Compression engine" image="">
+        </networkmodule>
+        
+        <networkmodule name="C7200-VSA" partno="73-10220" label="VPN Services Adapter" image="">
+        </networkmodule>
+
+
+       <networkmodule name="NM-CIDS-K9" partno="800-23372" label="IDS Sensor Port adapter" image="">
+             <ifs type="533" count="1"/>
+        </networkmodule>
+
+         
+        <networkmodule name="AIM-IPS-K9" partno="800-27927" label="IPS Sensor Port adapter">
+             <ifs type="533" count="1"/>
+        </networkmodule>
+	
+	<networkmodule name="NME-IPS-K9" partno="800-27930" label="IDS-Sensor Port adapter" image="">
+             <ifs type="533" count="1"/>
+        </networkmodule>
+
+		<networkmodule partno="800-01238" name="NM-4B-U" label="4-Port ISDN BRI U" image="??">
+			<ifs type="506" count="4"/>
+		</networkmodule>
+
+		<networkmodule partno="C1921" name="C1921 Motherboard" label="C1921 Motherboard" wic-count="2" image="??">
+			<ifs type="4" count="2"/>
+    		</networkmodule>
+          
+		<networkmodule partno="C1905" name="C1905 Motherboard" label="C1905 Motherboard" wic-count="1" image="??">
+			<ifs type="4" count="2"/>
+    		</networkmodule>		
+                <networkmodule pid="SM-32A" partno="73-14369" name="SM-32A" label="SM-32A Port adapter" image="??">
+			<ifs type="1009" count="32"/>
+		</networkmodule>
+                 <networkmodule pid="ISR4431/K9" partno="ISR4431/K9" name="Chassis" label="Cisco ISR4431 Chassis" image="??">
+		</networkmodule>
+                <!--Add Fin-->
+                 <networkmodule pid="C891FJ-K9" partno="C891FJ-K9" name="C891FJ-K9 chassis" label="C891FJ-K9 chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="C891-24X/K9" partno="C891-24X/K9" name="C891-24X/K9 chassis" label="C891-24X/K9 chassis" image="??">
+		</networkmodule>
+                 <networkmodule pid="C881-K9" partno="C881-K9" name="C881-K9 chassis" label="C881-K9 chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="C819HG-U-K9" partno="C819HG-U-K9" name="C819HG-U-K9 chassis" label="C819HG-U-K9 chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="C881W-P-K9" partno="C881W-P-K9" name="C881W-P-K9 chassis" label="C881W-P-K9 chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="C819H-K9" partno="C819H-K9" name="C819H-K9 chassis" label="C819H-K9 chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="C819G" partno="C819G" name="C819G chassis" label="C819G chassis" image="??">
+		</networkmodule>
+                <networkmodule pid="CISCO867VAE-K9" partno="CISCO867VAE-K9" name="CISCO867VAE-K9 chassis" label="CISCO867VAE-K9 chassis" image="??">
+		</networkmodule>
+                 <networkmodule pid="CISCO867VAE" partno="CISCO867VAE" name="CISCO867VAE chassis" label="CISCO867VAE chassis" image="??">
+		</networkmodule>
+               <!--End Fin Devices--> 
+                
+                
+
+	</networkmodules>
+
+
+	<devices>
+
+		<device name="1841" label="Cisco 1841" MainboardSlot="0" Mainboard="C1841" ifNumbering3="yes" image="1840.gif" family="C1841">
+		</device>
+
+		<device name="1805" label="Cisco 1805" MainboardSlot="0" Mainboard="C1805" ifNumbering3="yes"  family="C180X">
+		</device>
+
+		<device name="1801" label="Cisco 1801" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="503" count="1"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1801W" label="Cisco 1801W" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="503" count="1"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1801-M" label="Cisco 1801" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="503" count="1"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1801W-M" label="Cisco 1801W" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="503" count="1"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1802" label="Cisco 1802" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="532" count="1"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1802W" label="Cisco 1802W" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			<ifs type="532" count="1"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+
+		<device name="1803" label="Cisco 1803" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			 <cntl type="2001" count="1"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1803W" label="Cisco 1803W" image="??" family="C180X" DeviceType="fixed">
+			<ifs type="3" count="1"/>
+			<ifs type="5" count="8"/>
+			 <cntl type="2001" count="1"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1812" label="Cisco 1812" image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1812W" label="Cisco 1812W"  image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1812-J" label="Cisco 1812-J" image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="505" count="1"/>
+		</device>
+
+		<device name="1812W-J" label="Cisco 1812W-J"  image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1812W-P" label="Cisco 1812W-P"  image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+		<device name="1811" label="Cisco 1811" image="??" family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="1009" count="1"/>
+		</device>
+
+		<device name="1811W" label="Cisco 1811W" image="??"  family="C181X" WAN="FastEthernet1" DeviceType="fixed">
+			<ifs type="3" count="2"/>
+			<ifs type="5" count="8"/>
+			<ifs type="1009" count="1"/>
+			<ifs type="7" count="2"/>
+		</device>
+
+
+		<device name="2801" label="Cisco 2801" MainboardSlot="0" Mainboard="C2801" ifNumbering3="yes" image="2801.gif" family="C2801">
+		</device>
+
+		<device name="C1841" label="Cisco 1841" MainboardSlot="0" Mainboard="C1841" ifNumbering3="yes" image="1840.gif" family="C1841">
+		</device>
+
+		<device name="C2801" label="Cisco 2801" MainboardSlot="0" Mainboard="C2801" ifNumbering3="yes" image="2801.gif" family="C2801">
+		</device>
+		
+		<!-- Support for 85x and 87x -->
+		<device name="851" label="Cisco 851" image="??" family="C850" LAN="Vlan1" WAN="Ethernet1" DeviceType="fixed">
+			<ifs type="5" count="4"/>
+			<ifs type="1" count="1"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="857" label="Cisco 857" image="??" family="C850" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+			<ifs type="503" count="1"/>
+			<ifs type="5" count="4"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="871" label="Cisco 871" image="??" family="C870" LAN="Vlan1" WAN="Ethernet1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="4"/>
+			<ifs type="1" count="1"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="876" label="Cisco 876" image="??" family="C870" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+			<ifs type="532" count="1"/>
+			<ifs type="5" count="4"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="878" label="Cisco 878" image="??" family="C870" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+			<cntl type="2001" count="1"/>
+			<ifs type="5" count="4"/>
+			<ifs type="505" count="1"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="877" label="Cisco 877" image="??" family="C870" LAN="Vlan1" WAN="Atm0" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="503" count="1"/>
+			<ifs type="5" count="4"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="877-M" label="Cisco 877" image="??" family="C870" LAN="Vlan1" WAN="Atm0" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="503" count="1"/>
+			<ifs type="5" count="4"/>
+			<ifs type="7" count="1"/>
+		</device>
+
+		<device name="851W" label="Cisco 851W" image="??" family="C850" LAN="Vlan1" WAN="Ethernet1" DeviceType="fixed">
+		    <ifs type="5" count="4"/>
+		    <ifs type="1" count="1"/>
+		    <ifs type="7" count="1"/>
+	    </device>
+	    <device name="857W" label="Cisco 857W" image="??" family="C850" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+	        <ifs type="503" count="1"/>
+	        <ifs type="5" count="4"/>
+	        <ifs type="7" count="1"/>
+        </device>
+        <device name="871W" label="Cisco 871W" image="??" family="C870" LAN="Vlan1" WAN="Ethernet1" AuxBackup="yes" DeviceType="fixed">
+            <ifs type="5" count="4"/>
+            <ifs type="1" count="1"/>
+            <ifs type="7" count="1"/>
+        </device>
+        <device name="876W" label="Cisco 876W" image="??" family="C870" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+            <ifs type="532" count="1"/>
+            <ifs type="5" count="4"/>
+            <ifs type="505" count="1"/>
+            <ifs type="7" count="1"/>
+         </device>
+         <device name="878W" label="Cisco 878W" image="??" family="C870" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+            <cntl type="2001" count="1"/>
+            <ifs type="5" count="4"/>
+            <ifs type="505" count="1"/>
+            <ifs type="7" count="1"/>
+         </device>
+         <device name="877W" label="Cisco 877W" image="??" family="C870" LAN="Vlan1" WAN="Atm0" AuxBackup="yes" DeviceType="fixed">
+            <ifs type="503" count="1"/>
+            <ifs type="5" count="4"/>
+            <ifs type="7" count="1"/>
+         </device>
+         <device name="877W-M" label="Cisco 877W" image="??" family="C870" LAN="Vlan1" WAN="Atm0" AuxBackup="yes" DeviceType="fixed">
+            <ifs type="503" count="1"/>
+            <ifs type="5" count="4"/>
+            <ifs type="7" count="1"/>
+         </device>
+		 
+		<device name="2811" label="Cisco 2811" MainboardSlot="0" Mainboard="C2811" ifNumbering3="yes" image="??" family="C2800,C2800NM" nm-count="1">
+		</device>
+
+		<device name="2821" label="Cisco 2821" MainboardSlot="0" Mainboard="C2821" ifNumbering3="yes" image="??" family="C2800,C2800NM" nm-count="1">
+		</device>
+
+		<device name="2851" label="Cisco 2851" MainboardSlot="0" Mainboard="C2851" ifNumbering3="yes" image="??" family="C2800,C2800NM" nm-count="1">
+		</device>
+		<!--Infusion 38xx -->
+		<device name="3825NOVPN" label="Cisco 3825NOVPN" MainboardSlot="0" Mainboard="C3825NV" ifNumbering3="yes" image="??" family="C3825" nm-count="2">
+		</device>
+		<device name="3845NOVPN" label="Cisco 3845NOVPN" MainboardSlot="0" Mainboard="C3845NV" ifNumbering3="yes" image="??" family="C3845" nm-count="4">
+		</device>
+
+
+	
+	
+<!--Transformers C1941-C3945-->
+		<device name="c1941" label="Cisco 1941" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1941" nm-count="1">
+		</device>
+		<device name="c2901" label="Cisco 2901" MainboardSlot="0" Mainboard="C2901" ifNumbering3="yes" image="??" family="C2901" nm-count="1">
+		</device>
+		<device name="c2911" label="Cisco 2911" MainboardSlot="0" Mainboard="C2911" ifNumbering3="yes" image="??" family="C2911" nm-count="2">
+		</device>
+		<device name="c2921" label="Cisco 2921" MainboardSlot="0" Mainboard="C2921" ifNumbering3="yes" image="??" family="C2921" nm-count="2">
+		</device>
+		<device name="C2951" label="Cisco 2951" MainboardSlot="0" Mainboard="C2951" ifNumbering3="yes" image="??" family="C2951" nm-count="3">
+		</device>
+		<device name="c3925" label="Cisco 3925" MainboardSlot="0" Mainboard="C3925" ifNumbering3="yes" image="??" family="C3925" nm-count="3">
+		</device>
+		<device name="C3945" label="Cisco 3945" MainboardSlot="0" Mainboard="C3945" ifNumbering3="yes" image="??" family="C3945" nm-count="1">
+		</device>
+		<device name="3825" label="Cisco 3825" MainboardSlot="0" Mainboard="C3825" ifNumbering3="yes" image="??" family="C3825" nm-count="2">
+		</device>
+		<!--ksubashc xfr sku Picollo-II-->
+			<device name="CISCO1941/K9" label="Cisco 1941" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900">
+		</device>
+			<device name="CISCO1941W-A/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+			<device name="CISCO1941W-C/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO2901/K9" label="Cisco 2901" MainboardSlot="0" Mainboard="C2901" ifNumbering3="yes" image="??" family="C2900" >
+		</device>	
+		<device name="CISCO2911/K9" label="Cisco 2911" MainboardSlot="0" Mainboard="C2911" ifNumbering3="yes" image="??" family="C2900" nm-count="1">
+		</device>
+		<device name="CISCO2921/K9" label="Cisco 2921" MainboardSlot="0" Mainboard="C2921" ifNumbering3="yes" image="??" family="C2900" nm-count="2">
+		</device>
+		<device name="CISCO2951/K9" label="Cisco 2951" MainboardSlot="0" Mainboard="C2951" ifNumbering3="yes" image="??" family="C2951"  nm-count="2">
+		 </device>
+		<device name="CISCO3925-CHASSIS" label="Cisco 3925" MainboardSlot="0" Mainboard="C3925" ifNumbering3="yes" image="??" family="C3900" nm-count="2">
+		</device>
+		<device name="CISCO3945-CHASSIS" label="Cisco 3945" MainboardSlot="0" Mainboard="C3945" ifNumbering3="yes" image="??" family="C3900" nm-count="4">
+		</device>
+	<!--Added on behalf of CSCtb40847-->
+		<device name="CISCO1941W-E/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-P/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-N/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-T/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-I/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO3925/K9" label="Cisco 3925" MainboardSlot="0" Mainboard="C3925" ifNumbering3="yes" image="??" family="C3900" nm-count="2">
+		</device>		
+		<device name="CISCO3925-E/K9" label="Cisco 3925" MainboardSlot="0" Mainboard="C3925" ifNumbering3="yes" image="??" family="C3900" nm-count="2">
+		</device>
+		<device name="CISCO3945/K9" label="Cisco 3945" MainboardSlot="0" Mainboard="C3945" ifNumbering3="yes" image="??" family="C3900" nm-count="4">
+		</device>
+		<device name="CISCO3945-E/K9" label="Cisco 3945" MainboardSlot="0" Mainboard="C3945" ifNumbering3="yes" image="??" family="C3900" nm-count="4">
+		</device>
+	
+		<device name="3825" label="Cisco 3825" MainboardSlot="0" Mainboard="C3825" ifNumbering3="yes" image="??" family="C3825" nm-count="2">
+		</device>
+
+		<device name="3845" label="Cisco 3845" MainboardSlot="0" Mainboard="C3845" ifNumbering3="yes" image="??" family="C3845" nm-count="4">
+		</device>
+
+        <device name="7204VXR" label="Cisco 7204VXR" nm-count="5" image="" family="C7200,C7200P">
+        </device>
+
+        <device name="7301" label="Cisco 7301" nm-count="2" image="" family="C7300">
+             <ifs type="4" count="3"/>
+        </device>
+
+        <device name="7206VXR" label="Cisco 7206VXR" nm-count="7" image="" family="C7200,C7200P">
+        </device>
+         <device name="815" label="Cisco 815" image="??" family="C815" DeviceType="fixed">
+         	<ifs type="1" count="1"/>
+            <ifs type="5" count="4"/>
+            <ifs type="534" count="1"/>
+         </device>		
+		<!-- Steelers Support **Bhaskar** -->
+		
+		<device name="C861" label="Cisco 861" image="??" family="C86X,C860" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+        </device>
+		
+		<device name="867" label="Cisco 867" image="??" family="C86X,C860" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="503" count="1"/>
+		</device>
+		
+		<device name="881" label="Cisco 881" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+		</device>
+		
+		<device name="881G" label="Cisco 881G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+				<ifs type="540" count="1"/>
+		</device>
+		 <!--McLaren-I-->
+			<device name="881G-2" label="Cisco 881G-2" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>				
+				<ifs type="1" count="1"/>
+				<ifs type="4" count="1"/>
+				<ifs type="540" count="1"/>
+		</device>
+			<device name="881G-2" label="Cisco 881G-2" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+					<ifs type="5" count="4"/>				
+					<ifs type="1" count="1"/>				
+					<ifs type="540" count="1"/>
+			</device>
+				<!-- McLaren-1.5-->
+		<device name="881G2" label="Cisco 881G2" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+					<ifs type="5" count="4"/>				
+					<ifs type="1" count="1"/>				
+					<ifs type="540" count="1"/>
+		</device>
+		
+		
+		<device name="886VAG2" label="Cisco C886VAG2" image="??" family="c88x" LAN="VLAN1"  DeviceType="fixed">
+				<cntl type="2002" count="1"/>				
+				<ifs type="5" count="4"/>
+				<ifs type="505" count="1"/>				
+				<ifs type="540" count="1"/>				
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>			
+		</device>
+		
+		<device name="887VAG2" label="Cisco 887VAG2" image="??" family="c88x" LAN="VLAN1"  DeviceType="fixed">
+				<cntl type="2002" count="1"/>				
+				<ifs type="5"     count="4"/>				
+				<ifs type="538"   count="1"/>
+				<ifs type="539"   count="1"/>				
+		</device>
+		
+		<device name="887VAMG2" label="Cisco 887VAMG2" image="??" family="c88x" LAN="VLAN1"  DeviceType="fixed">
+				<cntl type="2002" count="1"/>				
+				<ifs type="5"     count="4"/>				
+				<ifs type="538"   count="1"/>
+				<ifs type="539"   count="1"/>				
+		</device>
+		
+		<device name="888EG2" label="Cisco 888EG2" image="??" family="c88x" LAN="VLAN1"  DeviceType="fixed">
+				<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/>     <!--Switch port FE-->				
+				<ifs type="541" count="1"/>   <!--BRI-NT/TE-->				
+				<ifs type="1012" count="1"/>				
+		</device>	
+			
+			<!-- McLaren-1.5 Ends-->
+			
+		<!-- McLaren Support for CCP 26 -->
+
+                <device name="C881GW+7-A-K9" label="Cisco C881GW+7-A-K9" image="??" family="C88X" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>	    <!--Switch port FE-->
+				<ifs type="1" count="1"/>       <!--FE4 L3 interface-->
+				<ifs type="540" count="1"/>     <!--3G Cellular interface-->
+		</device>
+		
+		<device name="C881GW+7-E-K9" label="Cisco C881GW+7-E-K9" image="??" family="C88X" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>	    <!--Switch port FE-->
+				<ifs type="1" count="1"/>       <!--FE4 L3 interface-->
+				<ifs type="540" count="1"/>     <!--3G Cellular interface-->
+		</device>
+		
+		<device name="C881GW-V-A-K9" label="Cisco C881GW-V-A-K9" image="??" family="C88X" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>	    <!--Switch port FE-->
+				<ifs type="1" count="1"/>       <!--FE4 L3 interface-->
+				<ifs type="540" count="1"/>     <!--3G Cellular interface-->
+		</device>
+		
+		<device name="C887VAGW+7-A-K9" label="Cisco C887VAGW+7-A-K9" image="??" family="C88X" LAN="Vlan1"  DeviceType="fixed">
+				<ifs type="5" count="4"/>		<!--Switch port FE-->		
+				<ifs type="540" count="1"/>     <!--3G Cellular interface-->
+				<ifs type="538" count="1"/>     <!--VDSL AnnexA Atm interface-->
+				<ifs type="539" count="1"/>     <!--VDSL AnnexA Ethernet-->
+				<cntl type="2002" count="1"/>   <!--VDSL controller-->
+		</device>
+		
+		<device name="C887VAGW+7-E-K9" label="Cisco C887VAGW+7-E-K9" image="??" family="C88X" LAN="Vlan1"  DeviceType="fixed">
+				<ifs type="5" count="4"/>		<!--Switch port FE-->		
+				<ifs type="540" count="1"/>     <!--3G Cellular interface-->
+				<ifs type="538" count="1"/>     <!--VDSL AnnexA Atm interface-->
+				<ifs type="539" count="1"/>     <!--VDSL AnnexA Ethernet-->
+				<cntl type="2002" count="1"/>   <!--VDSL controller-->
+		</device>
+<!-- McLaren Support for CCP 26 Ends -->	
+			
+		<device name="886" label="Cisco 886" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="503" count="1"/>	
+				<ifs type="505" count="1"/>
+		</device>
+        
+        <device name="886G" label="Cisco 886G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+        		<ifs type="5" count="4"/>
+        		<ifs type="503" count="1"/>	
+				<ifs type="540" count="1"/>
+		</device>
+		
+		<device name="887" label="Cisco 887" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="503" count="1"/>
+				<ifs type="505" count="1"/>
+		</device>
+		
+		<device name="887M" label="Cisco 887M" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="503" count="1"/>
+				<ifs type="505" count="1"/>
+				</device>
+		
+		<device name="887G" label="Cisco 887G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="ATM0" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+			        <ifs type="503" count="1"/>
+				<ifs type="540" count="1"/>
+		</device>
+		
+	<!--ksubashc-->
+		<device name="891" label="Cisco 891" image="??" family="891" LAN="Vlan1" DeviceType="fixed">
+		<ifs type="5" count="8"/>
+       	     	<ifs type="4" count="4"/>
+       	     	<ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892" label="Cisco 892" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="8"/>
+       	  	<ifs type="4" count="4"/>
+       	    <ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892F" label="Cisco 892F" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="8"/>
+       	  	<ifs type="4" count="4"/>
+       	    <ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892F-A" label="Cisco 892F-A" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="8"/>
+       	  	<ifs type="4" count="4"/>
+       	    <ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892F-E" label="Cisco 892F-E" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="8"/>
+       	  	<ifs type="4" count="4"/>
+       	    <ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892F-N" label="Cisco 892F-N" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="5" count="8"/>
+       	  	<ifs type="4" count="4"/>
+       	    <ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="892F-P" label="Cisco 892F-P" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+		<ifs type="5" count="8"/>
+       	     	<ifs type="4" count="4"/>
+       	     	<ifs type="1" count="1"/> 	     	
+		</device>
+		
+		<device name="C892FSP-K9" label="Cisco 892FSP" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="6" count="8"/>
+			<ifs type="4" count="2"/>     	    	
+		</device>
+		
+		<device name="C898EA-K9" label="Cisco C898EA-K9" image="??" family="C890" LAN="Vlan1" AuxBackup="yes" DeviceType="fixed">
+			<ifs type="6" count="8"/>
+			<ifs type="4" count="1"/>     	    	
+		</device>
+		
+<device name="887VDSL2" label="Cisco 887" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+       	     	<cntl type="2002" count="1"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>
+				<ifs type="540" count="1"/>
+				<ifs type="505" count="1"/> 
+		</device>
+		<!--Violin-1 Raiders-->
+		
+		<device name="886VA" label="Cisco 886VA" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+       	     	<cntl type="2002" count="1"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>				
+				<ifs type="505" count="1"/> 
+		</device>
+
+        <!--Vader support for CCP 2.6-->
+		<device name="887VA-V" label="Cisco 887" image="??" family="C88X" DeviceType="fixed">
+			<cntl type="2002" count="1"/> <!--VDSL controller Annex A-->
+	 		<ifs type="539" count="1"/>   <!--Ethernet VDSL Annex A-->			
+			<ifs type="5" count="4"/>     <!--Switch port FE-->
+			<ifs type="545" count="3"/>	  <!--BRI interface-->
+			<ifs type="538" count="1"/>   <!--ATM VDSL Annex A-->										
+			<ifs type="1501" count="4"/>  <!--FXS interface-->			
+		</device>			
+		<device name="881-V" label="Cisco 881-V-K9" image="??" family="c88x" LAN="VLAN1"  WAN="FastEthernet4" DeviceType="fixed">
+		 	<ifs type="5" count="4"/>    <!--Switch port FE-->
+		 	<ifs type="1" count="1"/>    <!--FE4-->
+		 	<ifs type="545" count="2"/>	 <!--BRI interface-->
+			<ifs type="1502" count="1"/> <!--FXO interface-->
+			<ifs type="1501" count="4"/> <!--FXS interface-->						
+		</device>
+		<!--Vader support for CCP 2.6 ends-->
+
+		<device name="887VA" label="Cisco  887VA" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed">				
+       	     	<cntl type="2002" count="1"/>
+       	     	<ifs type="5" count="4"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>						
+		</device>	
+		<device name="887VA-M" label="Cisco  887VA-M" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed">				
+       	     	<cntl type="2002" count="1"/>
+       	     	<ifs type="5" count="4"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>						
+		</device>
+		
+		<device name="867 V2" label="Cisco  867 V2" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed">				
+       	     	<cntl type="2002" count="1"/>
+       	     	<ifs type="5" count="4"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>						
+		</device>	
+		
+		<!--Violin-1 Raiders Ends-->
+		
+		
+		 <!-- Support for SRST887VDSL2 starts here -->
+		<device name="SRST887VDSL2" label="Cisco 887" image="??" family="C88X" LAN="Vlan1" DeviceType="fixed"> 
+		      <ifs type="5" count="4"/>
+       	     	<cntl type="2002" count="1"/> 
+				<ifs type="539" count="1"/> 
+				<ifs type="505" count="1"/> 
+				
+		</device> 
+		<!-- Support for SRST887VDSL2 ends here -->
+
+<device name="887GVDSL2" label="Cisco 887" image="??" family="C88X,C880DATA" LAN="Vlan1" DeviceType="fixed">
+                <ifs type="5" count="4"/>
+                <cntl type="2002" count="1"/>
+                <ifs type="540" count="1"/>
+                <ifs type="539" count="1"/>
+</device>
+
+
+		
+        <device name="888" label="Cisco 888" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     	<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->				
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+				
+				
+       	     	<cntl type="2001" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="505" count="1"/>
+		</device>
+        
+		<device name="888G" label="Cisco 888G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     <cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->				
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+       	     	<cntl type="2001" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="540" count="1"/>
+		</device>
+		
+		<!-- Steeler support ends here -->
+		
+		<!--Violin-1 new HW Support-->
+						<!--Troi SKUs starts-->
+	<device name="SRST888E" label="Cisco SRST888E" image="??" family="C88X,C880VOICE" LAN="Vlan1" WAN="Ethernet0" DeviceType="fixed">
+		        <cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->				
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+				<ifs type="1012" count="1"/>
+		</device>
+	
+
+		<device name="C888E" label="Cisco C888E" image="??" family="C88X" LAN="Vlan1"  DeviceType="fixed">
+				<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->				
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->				
+				<ifs type="1012" count="1"/>		
+		</device>
+
+
+	<!--Troi SKUs ends-->
+		
+		<!-- Duplicate Steelers Device info - To be removed later -->
+		
+		<!-- Steelers Support **Bhaskar** -->
+		
+		<device name="861" label="Cisco 861" image="??" family="C86X,C860" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+        </device>
+		<!-- VDSL Support removal 
+		<device name="866" label="Cisco 866" image="??" family="C86X" LAN="Vlan1" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="536" count="1"/>
+				<ifs type="537" count="1"/>
+				<cntl type="2002" count="1"/>
+		</device>
+		
+		<device name="C867" label="Cisco 867" image="??" family="C86X" MainboardSlot="0" Mainboard="CISCO867WGNAK9" LAN="Vlan1" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>
+				<cntl type="2002" count="1"/>
+		</device>
+		-->
+		<device name="C881" label="Cisco 881" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>				
+		</device>
+		
+		<device name="C881G" label="Cisco 881G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+				<ifs type="540" count="1"/>
+		</device>
+		
+		<!-- Bills Phase1 -->
+		
+		<device name="C819G-S-K9" label="Cisco CISCO819G-S-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>
+				<ifs type="1003" count="1"/>
+				<ifs type="507" count="1"/>				
+		</device>
+		
+		<device name="C819G+7-K9" label="Cisco C819G+7-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>
+				<ifs type="1003" count="1"/>
+				<ifs type="507" count="1"/>				
+		</device>
+		
+		<device name="C819G-4G-A-K9" label="Cisco C819G-4G-A-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>				
+		</device>
+		
+		<device name="C819HG-S-K9" label="Cisco CISCO819HG-S-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>
+				<ifs type="1003" count="1"/>
+				<ifs type="507" count="1"/>				
+				<ifs type="1001" count="1"/>
+		</device>
+
+		<device name="C819HG-U-K9" label="C819HG-U-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>				
+				<ifs type="507" count="1"/>								
+		</device>		
+		
+		<device name="C819HG+7-A-K9" label="C819HG+7-A-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>				
+				<ifs type="507" count="1"/>								
+		</device>
+		
+		<device name="C819HGW-S-A-K9" label="Cisco C819HGW-S-A-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>				
+				<ifs type="507" count="1"/>								
+		</device>
+		
+		
+		<!-- Bills Phase1 Ends-->
+		
+		<device name="C812G-CIFI+7-E-K9" label="Cisco C812G-CIFI+7-E-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>				
+				<ifs type="4" count="1"/>												
+		</device>
+		
+		<device name="C812G+7-K9" label="Cisco C812G+7-K9" image="??" family="C8xx" LAN="Vlan1" WAN="GigabitEthernet0" DeviceType="fixed">
+				<ifs type="540" count="1"/>				
+				<ifs type="4" count="1"/>												
+		</device>
+		
+		<!-- SunRidges -->
+		<device name="C887VA-W-A-K9" label="Cisco C887VA-W-A-K9" image="??" family="c88x" LAN="VLAN1"  DeviceType="fixed">
+				<cntl type="2002" count="1"/>				
+				<ifs type="5" count="4"/>
+				<ifs type="4" count="1"/>
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>				
+		</device>
+				
+		<device name="C881W-A-K9" label="Cisco C881W-A-K9" image="??" family="c88x" LAN="Vlan1"  DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+				<ifs type="543" count="1"/>			
+		</device>
+		
+		<device name="C886VA-W-E-K9" label="Cisco C886VA-W-E-K9" image="??" family="c88x" LAN="Vlan1" DeviceType="fixed">
+				<cntl type="2002" count="1"/>				
+				<ifs type="5" count="4"/>
+				<ifs type="505" count="1"/>				
+				<ifs type="543" count="1"/>				
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>
+		</device>		
+		
+  	    <!-- SunRidges Ends-->
+		
+		<!-- Sage -->		 
+		 <device name="C2811VE" label="Cisco C2811VE" image="??" family="C28xx">
+				<ifs type="1" count="2"/>		
+		 </device>
+		 <device name="CISCO1841VE/K9" label="Cisco CISCO1841VE/K9" image="??" family="C18xx">
+				<ifs type="1" count="2"/>	
+				<ifs type="505" count="4"/>					
+		 </device>
+		 
+		<!-- Sage Ends -->
+
+
+		<!-- Ponderoso Starts -->
+		
+			<device name="866VAE-K9" label="Cisco 866VAE-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="4"/>  	  
+				<ifs type="6" count="1"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+
+			<device name="867VAE-K9" label="Cisco 867VAE-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="4"/>  	  
+				<ifs type="6" count="1"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+
+			<device name="866VAE" label="Cisco 866VAE-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="4"/>  	 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+
+			<device name="867VAE" label="Cisco 866VAE-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="4"/>  
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device>
+			
+			<device name="C866VAE-W-E-K9" label="Cisco C866VAE-W-E-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="3"/>  	  
+				<ifs type="6" count="2"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+			
+			<device name="C867VAE-W-A-K9" label="Cisco C867VAE-W-A-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="3"/>  	  
+				<ifs type="6" count="2"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+			
+			<device name="C867VAE-W-E-K9" label="Cisco C867VAE-W-E-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="3"/>  	  
+				<ifs type="6" count="2"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+			
+			<device name="C867VAE-POE-W-A-K9" label="Cisco C867VAE-POE-W-A-K9" image="??" family="C86X,C860" LAN="Vlan1" DeviceType="fixed">  
+				<ifs type="538" count="1"/>
+				<ifs type="539" count="1"/>	
+				<ifs type="5" count="3"/>  	  
+				<ifs type="6" count="2"/> 
+				<ifs type="4" count="1"/>  
+				<cntl type="2002" count="1"/> 
+			</device> 
+		
+		<device name="C888" label="Cisco 888" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     
+				<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->				
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+				<cntl type="2001" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="505" count="1"/>
+		</device>
+        
+		<device name="C888G" label="Cisco 888G" image="??" family="C88X,C880DATA" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+		<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+       	     	<cntl type="2001" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="540" count="1"/>
+		</device>
+		
+		<!-- Steelers IAD devices ends here -->
+		
+		<!-- Steelers SRST devices starts here -->
+		
+		<device name="SRST881" label="Cisco SRST881" image="??" family="C88X,C880VOICE" LAN="Vlan1" WAN="FastEthernet4" DeviceType="fixed">
+				<ifs type="5" count="4"/>
+				<ifs type="1" count="1"/>
+				<ifs type="1501" count="4"/>
+				<ifs type="1502" count="1"/>
+		</device>
+		
+		<device name="SRST886" label="Cisco SRST886" image="??" family="C88X,C880VOICE" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     	<ifs type="5" count="4"/>
+				<ifs type="503" count="1"/>
+				<ifs type="541" count="1"/>
+		</device>
+		
+		<device name="SRST887" label="Cisco SRST887" image="??" family="C88X,C880VOICE" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     	<ifs type="5" count="4"/>
+       	     	<ifs type="503" count="1"/>
+				<ifs type="541" count="1"/>
+		</device>
+		
+		<device name="SRST888" label="Cisco SRST888" image="??" family="C88X,C880VOICE" LAN="Vlan1" WAN="Atm0" DeviceType="fixed">
+       	     	<cntl type="2003" count="1"/> <!--SHDSL-->
+				<ifs type="5" count="4"/> <!--Switch port FE-->
+				<ifs type="541" count="1"/><!--BRI-NT/TE-->
+
+       	     	<cntl type="2001" count="1"/>
+				<ifs type="5" count="4"/>
+				<ifs type="541" count="1"/>
+				<ifs type="1501" count="4"/>
+		</device>
+		
+		<!-- Steelers SRST devices ends here -->
+		
+		
+	<device name="CISCO1921/K9" label="Cisco 1921" MainboardSlot="0" Mainboard="C1921" ifNumbering3="yes" image="??" family="C1900" nm-count="1">
+	</device>
+	
+	<!--Transformers C1941-C3945-->
+		<device name="c1941" label="Cisco 1941" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1941" nm-count="1">
+		</device>
+		<device name="CISCO1941/K9" label="Cisco 1941" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900">
+		</device>
+			<device name="CISCO1941W-A/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+			<device name="CISCO1941W-C/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		
+	<!--Added on behalf of CSCtb40847-->
+		<device name="CISCO1941W-E/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-P/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-N/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-T/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="CISCO1941W-I/K9" label="Cisco 1941W" MainboardSlot="0" Mainboard="C1941" ifNumbering3="yes" image="??" family="C1900" >
+		</device>
+		<device name="2821" label="Cisco 2821" MainboardSlot="0" Mainboard="C2821" ifNumbering3="yes" image="??" family="C2800,C2800NM" nm-count="1">
+		</device>
+		<!-- 1. C1861-UC-2BRI-K9 -->
+		<device name="C1861-UC-2BRI-K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-UC-2BRI-K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+
+		<!-- 2. C1861-SRST-C-B/K9 -->
+		<device name="C1861-SRST-C-B/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-SRST-C-B/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+
+		<!-- 3. C1861-SRST-C-F/K9 -->
+		<device name="C1861-SRST-C-F/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-SRST-C-F/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+
+		<!-- 4. C1861-SRST-F/K9 -->
+		<device name="C1861-SRST-F/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-SRST-F/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+
+		<!-- 5. C1861-UC-4FXO-K9 -->
+		<device name="C1861-UC-4FXO-K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-UC-4FXO-K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+
+		<!-- 6. C1861-SRST-B/K9 -->
+		<device name="C1861-SRST-B/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861-SRST-B/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+		<!-- Freddo Support Ends -->
+		
+		<!--  7. C1861W-UC-4FXO-K9-->
+		 <device name="C1861W-UC-4FXO-K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WUC4FXOK9" ifNumbering3="yes" family="C186X,C1861" >
+		 </device>
+		 
+		 <!-- 8. C1861W-SRST-B/K9 -->
+		<device name="C1861W-SRST-B/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WSRSTB/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+		
+		<!-- 9. C1861W-SRST-C-B/K9 -->
+		<device name="C1861W-SRST-C-B/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WSRSTCB/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+		
+		<!-- 10. C1861W-SRST-C-F/K9 -->
+		<device name="C1861W-SRST-C-F/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WSRSTCF/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+		
+		<!-- 11. C1861W-SRST-F/K9 -->
+		<device name="C1861W-SRST-F/K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WSRSTF/K9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>
+		
+		<!-- 12. C1861W-UC-2BRI-K9 -->
+		<device name="C1861W-UC-2BRI-K9" label="Cisco C1861" MainboardSlot="0" image="??" Mainboard="C1861WUC2BRIK9" ifNumbering3="yes" family="C186X,C1861" >
+		</device>	
+		<device name="CISCO1905/K9" label="Cisco 1905" MainboardSlot="0" Mainboard="C1905" ifNumbering3="yes" image="??" family="C1900" nm-count="1">
+		</device>
+ <!--Fin-->
+                <device name="C891-24X/K9" label="Cisco 891 with 2GE/2SFP and 24 Switch Ports" MainboardSlot="0" Mainboard="C891-24X/K9" ifNumbering3="yes" image="??" family="C800" nm-count="1">
+		</device>
+                <device name="C891FJ-K9" label="C891FJ-K9 chassis" MainboardSlot="0" image="??" Mainboard="C891FJ-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="C881-K9" label="C891-24X/K9 chassis" MainboardSlot="0" image="??" Mainboard="C881-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="C819HG-U-K9" label="C819HG-U-K9 chassis" MainboardSlot="0" image="??" Mainboard="C819HG-U-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="C881W-P-K9" label="C819HG-U-K9 chassis" MainboardSlot="0" image="??" Mainboard="C819HG-U-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="C819H-K9" label="C819H-K9 chassis" MainboardSlot="0" image="??" Mainboard="C819H-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="C819G" label="C819G  chassis" MainboardSlot="0" image="??" Mainboard="C819G" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="CISCO867VAE-K9" label="CISCO867VAE-K9 chassis" MainboardSlot="0" image="??" Mainboard="CISCO867VAE-K9" ifNumbering3="yes" family="C800" >
+		</device>
+                <device name="CISCO867VAE" label="CISCO867VAE chassis" MainboardSlot="0" image="??" Mainboard="CISCO867VAE" ifNumbering3="yes" family="C800" >
+		</device>
+<!--Nano Devicess-->
+                <device name="C841M-4X/K9" label="C841M-4X/K9 chassis" MainboardSlot="0" image="??"  ifNumbering3="yes" family="C800M" >
+                   
+		</device>
+                <device name="C841M-4X/K9" label="C841M-4X/K9 chassis" MainboardSlot="0" image="??"  ifNumbering3="yes" family="C800M" >
+                   
+		</device>
+                 <device name="C841M" label="C841M chassis" MainboardSlot="0" image="??"  ifNumbering3="yes" family="C800M" >
+                   
+		</device>
+                <device name="C841M-8X-JAIS/K9" label="C841M-8X-JAIS/K9 chassis" MainboardSlot="0" image="??" Mainboard="C841M-8X" ifNumbering3="yes" family="C800M" >
+		</device>
+                 <device name="C841M-4X-JAIS/K9" label="C841M-4X-JAIS/K9 chassis" MainboardSlot="0" image="??" Mainboard="C841M-4X" ifNumbering3="yes" family="C800M" >
+		</device>
+                <device name="C841M-4X-JSEC/K9" label="C841M-4X-JAIS/K9 chassis" MainboardSlot="0" image="??" Mainboard="C841M-4X" ifNumbering3="yes" family="C800M" >
+		</device>
+                 <device name="WIM-3G" label="3G module" MainboardSlot="0" image="??" Mainboard="C1861WUC2BRIK9" ifNumbering3="yes" family="CM800" >
+		</device>
+                 <device name="WIM-1T" label="3G module" MainboardSlot="0" image="??" Mainboard="C1861WUC2BRIK9" ifNumbering3="yes" family="CM800" >
+		</device>
+                 <device name="ISR4431/K9" label="Cisco ISR4431 Chassis" MainboardSlot="0" image="??" Mainboard="ISR4431/K9" ifNumbering3="yes" family="ISR4400" >
+		</device>
+                
+</devices>
+
+</hwdictionary>
+
+</xdm>
+

@@ -1,0 +1,4 @@
+ip dhcp pool $dhcpList
+default-router $ipv4Address
+exit
+ip dhcp excluded-address $ipv4Address

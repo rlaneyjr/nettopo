@@ -1,0 +1,2 @@
+no chat-script cdma
+chat-script cdma "" "ATDT#777" TIMEOUT 60 "CONNECT"

@@ -1,0 +1,4 @@
+interface $interfaceName
+$encapsulation
+$ethernetCli
+exit

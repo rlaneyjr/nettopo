@@ -1,0 +1,5 @@
+No username $eUserHostname privilege 15 view enduserview password 0 $eUserPassword
+No aaa new-model
+No enable secret
+No scheduler max-task-time 5000
+No cns trusted-server all-agents yourname

@@ -1,0 +1,5 @@
+$tunnelName
+crypto keyring isakmp-keyring  
+$noPreSharedKey
+crypto isakmp profile isakmp-profile
+$noMatchIdentity

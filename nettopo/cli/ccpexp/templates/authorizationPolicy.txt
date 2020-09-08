@@ -1,0 +1,4 @@
+crypto ikev2 authorization policy authpolicy1
+ $noRouteInterfaceString
+ $routeInterfaceString
+ route accept any

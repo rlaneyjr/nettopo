@@ -1,0 +1,5 @@
+router eigrp $autonomousId
+$localLanString
+network $tunnelNetworkIp $tunnelWildMask
+$networkLanZone
+no auto-summary

@@ -1,0 +1,9 @@
+ldap server $profileNm
+$ipversion $ipv4Address
+base-dn $baseDn
+authentication bind-first
+exit
+aaa group server ldap AAA-SG-LDAP
+server $profileNm
+exit
+

@@ -1,0 +1,4 @@
+interface $interface
+ip nbar protocol-discovery
+load-interval 30
+exit

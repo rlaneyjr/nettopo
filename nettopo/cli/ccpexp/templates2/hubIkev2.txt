@@ -1,0 +1,32 @@
+       
+crypto ikev2 proposal default
+encryption aes-cbc-256 aes-cbc-192 aes-cbc-128
+integrity sha512 sha384 sha256 sha1 md5
+group 5 2
+
+default crypto ikev2 policy
+
+crypto ikev2 policy default
+match fvrf any
+
+
+crypto ikev2 keyring key
+
+$ikev2TunnelString
+pre-shared-key $key
+
+
+crypto ikev2 profile prof
+$spokesIdentity
+authentication remote pre-share
+authentication local pre-share
+keyring local key
+
+crypto ikev2 dpd 10 2 periodic
+
+crypto ipsec transform-set test_trans esp-aes esp-sha-hmac 
+mode tunnel
+
+crypto ipsec profile DMVPN_hub
+set transform-set test_trans 
+set ikev2-profile prof

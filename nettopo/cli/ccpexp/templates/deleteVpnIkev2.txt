@@ -1,0 +1,8 @@
+no crypto ipsec profile test_profile
+no crypto ipsec transform-set test_trans esp-aes esp-sha-hmac
+no crypto ikev2 profile prof
+$noAuthPolicy
+no crypto ikev2 keyring key
+no crypto ikev2 dpd 10 2 periodic
+default crypto ikev2 policy
+default  crypto ikev2 proposal 

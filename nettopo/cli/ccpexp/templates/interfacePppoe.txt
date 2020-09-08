@@ -1,0 +1,10 @@
+interface {{interfaceName}}
+ no shutdown
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+ pppoe-client dial-pool-number {{wanipv4dialerTag}}
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+ pppoe-client dial-pool-number {{wanipv6dialerTag}}
+<%}%>
+ pppoe enable
+ exit

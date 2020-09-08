@@ -1,0 +1,47 @@
+service internal
+default interface $interfaceName
+interface $interfaceDialer
+ encapsulation slip
+ ip nat outside
+ ip address negotiated
+ dialer pool $dialerPool
+ dialer-group $dialerGroupTag
+ dialer persistent
+ dialer string multimode
+ dialer idle-timeout 0 
+ no shut
+ exit
+
+dialer-list $dialerGroupTag protocol ip permit
+
+
+interface $interfaceName
+ no shut
+ load-interval 30
+ dialer in-band
+ dialer pool-member $dialerPool
+ no peer default ip address
+ ip nat outside
+ async mode interactive
+ exit
+
+line $lineNo
+ script dialer multimode
+ modem InOut
+ no exec
+ transport input all
+ transport output all
+
+object-group network local_lan_subnets
+10.10.10.0 255.255.255.128
+
+ip access-list extended nat-list
+permit ip object-group local_lan_subnets any
+deny ip any any
+
+ip forward-protocol nd
+$ipRoute
+dialer-list 1 protocol ip permit
+$ipOverload
+
+$backupCli

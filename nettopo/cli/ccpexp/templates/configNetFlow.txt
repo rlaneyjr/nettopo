@@ -1,0 +1,8 @@
+interface  $interface
+load-interval 30
+ip nbar protocol-discovery
+ip flow monitor application-mon input
+ip flow ingress
+ip flow egress
+$ipNatInside
+exit

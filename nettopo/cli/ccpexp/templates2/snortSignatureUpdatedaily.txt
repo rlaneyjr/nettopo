@@ -1,0 +1,4 @@
+utd engine standard
+signature update server $ciscourl $url $username $password 
+signature update occur-at daily $hour $min
+exit

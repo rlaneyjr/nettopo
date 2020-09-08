@@ -1,0 +1,4 @@
+interface $interfaceName
+shutdown
+exit
+default interface $interfaceName

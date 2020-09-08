@@ -1,0 +1,7 @@
+interface ATM$atmSubInterfaceTag point-to-point
+ no shutdown
+ no ip address
+ ip address dhcp
+ pvc $vpi/$vci
+  exit
+ exit

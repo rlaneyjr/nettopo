@@ -1,0 +1,313 @@
+<div class="ccpexpCSSReplaceClass115" id="hideAll">
+</div>
+<div class="demo containerCenter">
+  <!--This dialog form, opnes up when you click on add button-->
+  <!--which can be modified as per the required feature-->
+  <div id="dialog-form-staticRouting" title="Static Routing">
+    <div id="staticRoutingError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass116" >
+      <p>
+        <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass117" >
+        </span>
+        <span id="staticRoutingErrorMessage">
+        </span>
+      </p>
+    </div>
+    <div class="demo">
+      <div>
+        <div id="ipSelect">
+          <fieldset class="staticRoutingFiledset">
+            <legend class="staticRoutingFiledsetLegend">
+
+              <h3 id="iptypeID">
+                IP Type
+              </h3>
+            </legend>
+            <input type="radio" name="ipType" value="ip4" id="radioIpv4" checked>
+
+            <span id ="ipv4ID">IPv4 Address</span> &nbsp;&nbsp;
+
+            <input type="radio" name="ipType" value="ip6" id="radioIpv6" >
+
+            <span id="ipv6ID">IPv6 Address </span>
+
+            <br/>
+            <br/>
+          </fieldset>
+        </div>
+        <div id="ipv4">
+          <h3 class="ipvHead">
+            <div id="ipv4Heading">
+              IPv4 Address
+            </div>
+          </h3>
+          <form id="dest-net">
+            <div id="destination-network">
+              <div id="destLegend">
+                Destination Network
+              </div>
+              <div>
+                <table id="prefixAndMask">
+                  <tr>
+                    <td width="115">
+                      <label id="PrefixLabel">
+                        Prefix:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" data="prefixMask" name="prefix" id="prefix" class="requiredIPv4Prefix isPrefix vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label id="PrefixMaskLabel">
+                        Prefix Mask:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" name="Mask" id="prefixMask" class="requiredIPv4PrefixAndPrefixMask vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label id="MetricLabel" value="1">
+					<span id="metricID">
+                        Metric:
+					</span>
+                      </label>
+                    </td>
+                    <td>
+                      <input type="number" name="metric" id="metric" min="1" max="255" value="1" />
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="topBdr topBdr1">
+            </div>
+            <div id="forwarding-nexthop">
+              <div id="nextHopLegend">
+                Forwarding(Next Hop)
+              </div>
+              <div>
+                <div>
+                  <table>
+                    <tr>
+                      <td>
+                        <input type="radio" name="group1" value="interface" id="interfaceRadio"/>
+                      <td id="ipv4Interface">
+                        Interface
+                      </td>
+                      <td>
+                        <input type="radio" name="group1" value="IP" id="ipRadio" />
+                      <td id="ipv4IP">
+                        IP
+                      </td>
+                      <td>
+                        <input type="radio" name="group1" value="DHCP" id="ipDhcp" />
+                      <td id="ipDhcp">
+                        DHCP
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <table id="interface-selected">
+                  <tr>
+                    <td width="115">
+                      <label id="forwardingInterface">
+                        Forwarding Interface:
+                      </label>
+                    </td>
+                    <td>
+                      <select name="interface" id="interface-option" class="vpnTbx selectCm">
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+                <table id="next-hop">
+                  <tr>
+                    <td width="115">
+                      <label id="nextHopIP">
+                        Next hop IP:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" name="ip" id="ipAddress" class="requiredipv4 vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+		<div id="ipv61">
+        <h3 class="ipvHead">
+          <div id="ipv6Heading">
+            IPv6 Address
+          </div>
+        </h3>
+          <form id="dest-net-ipv6">
+            <div id="destination-network-ipv6">
+              <div id="ipv6DestLegend">
+                Destination Network
+              </div>
+              <div>
+                <table>
+                  <tr>
+                    <td width="115">
+                      <label id="ipv6PrefixLabel" >
+                        Prefix:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" name="prefix" id="prefixipv6" class="requiredipv6 vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td>
+                      <label id="ipv6PrefixMaskLabel">
+                        Prefix Mask:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" name="Mask" id="prefixMaskipv6" class="requiredIPv6PrefixAndPrefixMask vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+            <div class="topBdr">
+            </div>
+            <div id="forwarding-nexthop-ipv6">
+              <div id="ipv6ForwardingInterfaceLegend">
+                Forwarding(Next Hop)
+              </div>
+              <div>
+                <div>
+                  <table>
+                    <tr>
+                      <td>
+                        <input type="radio" name="group2" value="interface" id="interfaceRadio">
+                      <td id="ipv6Interface">
+                        Interface
+                      </td>
+                      <td>
+                        <input type="radio" name="group2" value="IP" id="ipRadio"/>
+                      <td id="ipv6IP">
+                        IP
+                      </td>
+                    </tr>
+                  </table>
+                </div>
+                <table id="interface-selected-ipv6">
+                  <tr>
+                    <td width="115">
+                      <label id="ipv6ForwardingInterface">
+                        Forwarding Interface:
+                      </label>
+                    </td>
+                    <td>
+                      <select name="interfaceipv6" id="interface-option-ipv6" class="vpnTbx selectCm">
+                      </select>
+                    </td>
+                  </tr>
+                </table>
+                <table id="next-hop-ipv6">
+                  <tr>
+                    <td width="115">
+                      <label id="ipv6NextHopIP">
+                        Next hop IP:
+                      </label>
+                    </td>
+                    <td>
+                      <input type="text" name="ipv6" id="ipv6Address" class="requiredipv6 vpnTbx inputnotallowspace"/>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="staticRoutingFiledset">
+    <div class="headingQuad">
+      <div id="staticRoutingLegend" class="titleTxt pull-left">
+        Static Routing
+      </div>
+      <!-- Buttons for add,edit and delete functionality for interface table-->
+      <!-- Can be changed as per the required feature-->
+      <div id="staticRoutingButtonBar" class="text-right">
+        <button id="add">
+          ADD
+        </button>
+        <button id="edit">
+          EDIT
+        </button>
+        <button id="delete">
+          DELETE
+        </button>
+      </div>
+    </div>
+    <!-- Interface Table-->
+    <!--only need to change the table headers as per the required feature-->
+    <div id="staticRoutingFielddiv">
+      <div id="noStaticRoutingMsg" class="alert alert-danger ccpexpCSSReplaceClass118" >
+        <p id="staticInfoDesc">
+          Static Routing is not configured yet. Please click on Add to configure Static Routes.        
+        </p>
+      </div>
+      <div id="defaultRouterMsg" class="text_help_en">
+      </div>
+      <div id="static-routing-table" class="ui-widget">
+        <table id="staticroutingtable" class="ui-widget ui-widget-content tblCm tbColor tblClick">
+          <thead>
+            <tr class="ui-widget-header ">
+              <th id="StaticRouting_chkboxth">
+                <input id="SRchkbox" type="checkbox"/>
+              </th>
+              <th id="SRprefix">
+                Prefix
+              </th>
+              <th id="prefix_mask">
+                Prefix Mask
+              </th>
+              <th id="IPinterface">
+                Ip/Interface
+              </th>
+              <th id="Metric">
+                Metric
+              </th>
+              <th id="type">
+                Type
+              </th>
+              <th id="SRaction">
+                Action
+              </th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+    <div class="clear">
+    </div>
+  </div>
+</div>
+<div id="srSelectRow" title="Select a Row">
+  <div class="demo">
+    <div id="srSelectRowStr">
+      Select a Row to Edit/Delete.
+    </div>
+  </div>
+</div>
+<div id="srDeleteRow" title="Alert">
+  <div class="demo">
+    <div id="srDeleteRowStr">
+      This will be deleted. Do you want to continue?
+    </div>
+  </div>
+</div>

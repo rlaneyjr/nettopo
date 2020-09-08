@@ -1,0 +1,5 @@
+interface $wlanInterfaceName
+switchport mode trunk
+exit
+
+

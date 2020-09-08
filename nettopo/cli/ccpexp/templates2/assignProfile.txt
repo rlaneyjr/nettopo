@@ -1,0 +1,2 @@
+controller $controllerName
+sim profile $profileNo slot $slot

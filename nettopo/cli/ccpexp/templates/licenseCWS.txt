@@ -1,0 +1,7 @@
+parameter-map type content-scan global
+license $num $licenseScan
+source interface Loopback199
+timeout server 10
+timeout session-inactivity 100
+logging
+server scansafe on-failure block-all

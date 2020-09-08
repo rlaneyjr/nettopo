@@ -1,0 +1,8 @@
+vlan $vlanID
+exit
+interface vlan $vlanID
+ exit
+default interface vlan $vlanID
+interface vlan $vlanID
+no shutdown
+exit

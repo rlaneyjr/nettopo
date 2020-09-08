@@ -1,0 +1,1 @@
+ interface $interfaceName clock rate $clockRate  exit

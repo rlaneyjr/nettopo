@@ -1,0 +1,2 @@
+object-group network vpn_remote_subnets
+$deleteobjGroupIdRoute

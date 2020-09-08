@@ -1,0 +1,7 @@
+ip dhcp pool $ipv4PoolName
+
+default-router $DefaultRoute
+
+exit
+
+ip dhcp excluded-address $DefaultRoute

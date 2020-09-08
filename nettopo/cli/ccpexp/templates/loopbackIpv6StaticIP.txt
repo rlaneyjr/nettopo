@@ -1,0 +1,6 @@
+interface Loopback$loopbackTag
+ no shutdown
+ no ipv6 address
+ ipv6 address $ipv6Prefix/$ipv6Mask $eui64
+ ipv6 enable
+ exit

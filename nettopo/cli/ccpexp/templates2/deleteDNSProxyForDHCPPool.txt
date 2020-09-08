@@ -1,0 +1,5 @@
+ip dhcp pool $ipv4PoolName
+
+$formcli
+
+exit

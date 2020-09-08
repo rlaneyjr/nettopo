@@ -1,0 +1,35 @@
+event manager applet cellular
+  !! This applet is to bring cellular down when no service!
+ event timer watchdog time 75 maxrun 90000
+ action 001 counter name "runtimes" op inc value 1
+ action 002 if $_counter_value_remain ge "3"
+ action 003     cli command "enable"
+ action 004     cli command "conf t"
+ action 005     cli command "do sh ip int br | i Cellular"
+ action 006     regexp "([0/1/0]+[0/0/0])" "$_cli_result" cel
+ action 007  cli command "do sh cellular $cel network | i Service Status"
+ action 008 regexp "(\s=\s[A-Za-z][a-z][a-z\s]*)" "$_cli_result" Service
+ action 008.1 regexp "([A-z][a-z][a-z\s]*)" "$Service" Service1
+ action 008.2 puts "$Service"
+ action 008.3 puts "$Service1"
+ action 009   if $Service1 eq Normal
+ action 010 cli command "int cellular $cel"
+ action 012   else
+ action 013 cli command "int cellular $cel"
+ action 014 cli command "shut"
+ action 015   end
+ action 016  cli command "do sh ip int b | i Cellular"
+ action 017 regexp "(\s[administratively]+[down].*)" "$_cli_result" down
+ action 017.1 regexp "([a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z][a-z])" "$down" admin
+ action 017.2 puts "$down"
+ action 017.3 puts "$admin"
+ action 018   if $admin eq administratively
+ action 019 cli command "int cellular 0/1/0"
+ action 020 cli command "no shut"
+ action 021 end
+ action 022 end
+
+event manager applet counter_runtimes
+  !! This applet is timer to delay to hold the watch-signal applet at the time of bootup!!
+ event counter name runtimes entry-val 3 entry-op ge exit-val 3 exit-op le
+ action 1.0 syslog priority critical msg "runtimes counter is more than 2, should be starting "

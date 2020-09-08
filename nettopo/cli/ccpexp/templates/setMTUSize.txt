@@ -1,0 +1,3 @@
+interface $interfaceName
+ip tcp adjust-mss $mssSize
+exit

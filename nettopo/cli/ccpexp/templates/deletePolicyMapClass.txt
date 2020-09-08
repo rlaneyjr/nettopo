@@ -1,0 +1,2 @@
+policy-map type inspect $policy_zpName
+no class type inspect $policyName

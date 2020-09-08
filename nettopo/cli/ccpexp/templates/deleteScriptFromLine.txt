@@ -1,0 +1,4 @@
+line $lineTag
+ no script dialer 
+ no modem InOut
+ exit

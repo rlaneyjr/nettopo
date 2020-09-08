@@ -1,0 +1,17 @@
+ip ips name IOS-IPS
+
+
+ip ips config location flash:ips
+
+
+ip ips notify sdee
+ip ips notify log
+
+ip ips signature-category
+category all
+retired true
+enabled false
+category ios_ips basic
+retired false
+enabled true
+

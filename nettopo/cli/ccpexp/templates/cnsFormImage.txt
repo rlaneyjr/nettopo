@@ -1,0 +1,10 @@
+cns trusted-server all-agents $hostNamewithout
+cns trusted-server all-agents $hostName
+cns id $cnsId
+cns id $cnsId event
+cns id $cnsId image
+cns event $hostName
+cns config partial $hostName 80
+cns config initial $hostName 80
+cns exec 80
+cns image server  http://$hostName/cns/HttpMsgDispatcher status  http://$hostName/cns/HttpMsgDispatcher

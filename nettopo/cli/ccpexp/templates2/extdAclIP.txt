@@ -1,0 +1,2 @@
+ip access-list extended $aclName
+$Rule $protocol $extdSrcIPAddr $extdSrcmask $extdDestIPAddr $extdDestmask

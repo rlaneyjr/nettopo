@@ -1,0 +1,8 @@
+no router eigrp $eigrp
+no crypto ipsec profile DMVPN_hub
+no crypto ipsec transform-set trans esp-aes esp-sha-hmac 
+no crypto isakmp profile isakmp-profile
+no crypto isakmp keepalive 10 2 periodic
+no crypto isakmp identity dn
+no crypto isakmp policy 1
+no crypto keyring isakmp-keyring

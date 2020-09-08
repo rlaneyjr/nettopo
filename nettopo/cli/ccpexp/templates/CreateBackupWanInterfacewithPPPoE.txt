@@ -1,0 +1,56 @@
+interface {{interface}}
+ no shut
+ exit
+
+interface Dialer{{dialerTag}}
+ encapsulation ppp
+ 
+ ip address negotiated
+ dialer pool {{dialerPoolTag}}
+ dialer-group {{dialerGroupTag}}
+ dialer persistent
+ dialer idle-timeout 0 
+ exit
+
+dialer-list {{dialerGroupTag}} protocol ip permit
+
+access-list 197 permit icmp any {{slaIP}} 0.0.0.0
+
+ip local policy route-map track-primary-if
+
+route-map track-primary-if permit 1
+ match ip address 197
+ set interface {{primaryInterface}}
+ exit
+
+
+ip route 0.0.0.0 0.0.0.0 {{primaryInterface}} 1 track 1
+
+ip sla 1
+ icmp-echo $slaIP source-interface {{primaryInterface}}
+ timeout 5000
+ frequency 60
+ threshold 5000
+ exit
+
+track 1 ip sla 1 reachability
+
+ip sla schedule 1 life forever start-time now
+
+ip route 0.0.0.0 0.0.0.0 Dialer$dialerTag 253
+
+
+ip nat inside source route-map nat2primary interface {{primaryInterface}} overload
+ip nat inside source route-map nat2backup interface Dialer{{dialerTag}} overload
+
+
+route-map nat2backup permit 1
+match ip address nat-list
+match interface Dialer{{dialerTag}}
+exit
+
+route-map nat2primary permit 1
+match ip address nat-list
+match interface {{primaryInterface}}
+exit
+

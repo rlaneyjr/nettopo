@@ -1,0 +1,15 @@
+ip dhcp pool $ipv4PoolName
+
+dns-server  $DefaultRoute
+dns-server $DefaultRoute $DNSipPriAddress $DNSipSecAddress
+
+exit
+
+ip dns server
+
+ip dns view default
+default dns forwarder
+default dns forwarding
+default domain lookup
+default domain name
+exit

@@ -1,0 +1,8 @@
+commands exec include show cdp neighbors detail
+commands exec include show mac-address-table
+commands exec include show arp
+commands configure include cdp run
+commands configure include no cdp run
+commands exec include ping
+
+

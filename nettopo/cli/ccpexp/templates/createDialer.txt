@@ -1,0 +1,40 @@
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv4dialerTag}}
+  shutdown
+ exit
+default interface Dialer{{wanipv4dialerTag}}
+interface Dialer{{wanipv4dialerTag}}
+
+ no shutdown
+ dialer pool {{wanipv4dialerPoolTag}}
+ dialer-group {{wanipv4dialerGroupTag}}
+ encapsulation ppp
+ ip mtu {{mtuSize}}
+ ip tcp adjust-mss {{mssSize}}
+ ppp mtu adaptive
+
+
+ dialer idle-timeout 120
+ dialer fast-idle 20
+ exit
+dialer-list {{wanipv4dialerGroupTag}} protocol ip permit
+<%}%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+interface Dialer{{wanipv6dialerTag}}
+  shutdown
+ exit
+default interface Dialer{{wanipv6dialerTag}}
+interface Dialer{{wanipv6dialerTag}}
+ no shutdown
+dialer pool {{wanipv6dialerPoolTag}}
+ dialer-group {{wanipv6dialerGroupTag}}
+ encapsulation ppp
+  ipv6 mtu  {{wizardMtuSizeipv6}}
+ ipv6 tcp adjust-mss  {{wizardMssSizeipv6}}
+ ppp mtu adaptive
+
+ dialer idle-timeout 120
+ dialer fast-idle 20
+ exit
+dialer-list {{wanipv6dialerGroupTag}} protocol ipv6 permit
+<%}%>

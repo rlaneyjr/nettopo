@@ -1,0 +1,3 @@
+interface $interfaceName
+no description
+ exit

@@ -1,0 +1,2 @@
+aaa authentication login $authPNm $groupLocalOrLDAP
+aaa authorization $authProxyNm $authPNm $groupLocalOrLDAP

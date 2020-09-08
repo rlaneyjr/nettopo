@@ -1,0 +1,3 @@
+interface $interface
+no zone-member security $zone
+exit

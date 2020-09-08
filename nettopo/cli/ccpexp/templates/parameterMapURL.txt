@@ -1,0 +1,2 @@
+parameter-map type protocol-info $policyName_urllist
+server name $url snoop

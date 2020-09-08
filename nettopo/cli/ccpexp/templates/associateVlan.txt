@@ -1,0 +1,4 @@
+interface $associateInterface
+switchport mode access
+switchport access vlan $vlanID
+exit

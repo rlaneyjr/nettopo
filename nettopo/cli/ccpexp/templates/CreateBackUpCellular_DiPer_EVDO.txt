@@ -1,0 +1,67 @@
+interface $interface
+ no shut
+ dialer in-band
+ dialer pool-member $dialerPool
+ ip nat outside
+ async mode interactive
+ exit
+
+interface Dialer$dialer
+ encapsulation ppp
+ ppp chap password 0 pass1
+ ppp ipcp dns request
+ $ipNat
+ ip address negotiated
+ dialer pool $dialerPool
+ dialer-group $dialerGroupTag
+ dialer persistent
+ dialer string cdma
+ dialer idle-timeout 0 
+ no shut
+ exit
+
+dialer-list $dialerGroupTag protocol ip permit
+
+line $lineTag
+ script dialer cdma
+ modem InOut
+ transport input all
+ exit
+
+access-list 197 permit icmp any $slaIP 0.0.0.0
+
+ip local policy route-map track-primary-if
+
+route-map track-primary-if permit 1
+ match ip address 197
+ set interface $primaryInterface
+ exit
+
+ip route 0.0.0.0 0.0.0.0 $primaryInterface 1 track 1
+
+ip sla 1
+ icmp-echo $slaIP source-interface $primaryInterface
+ timeout 5000
+ frequency 60
+ threshold 5000
+ exit
+
+track 1 ip sla 1 reachability
+
+ip sla schedule 1 life forever start-time now
+
+ip route 0.0.0.0 0.0.0.0 Dialer$dialer 253
+
+ip nat inside source route-map nat2primary interface $primaryInterface overload
+ip nat inside source route-map nat2backup interface Dialer$dialer overload
+access-list 198 permit ip any any
+
+route-map nat2backup permit 1
+match ip address 198
+match interface Dialer$dialer
+
+exit
+route-map nat2primary permit 1
+match ip address 198
+match interface $primaryInterface
+exit

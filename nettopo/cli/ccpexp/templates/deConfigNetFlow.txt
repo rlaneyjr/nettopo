@@ -1,0 +1,8 @@
+interface  $interface
+no load-interval 30
+no ip nbar protocol-discovery
+no ip flow monitor application-mon input
+no ip flow ingress
+no ip flow egress
+$ipNatInside
+exit

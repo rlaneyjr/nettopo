@@ -1,0 +1,6 @@
+interface $interfaceName
+$encapsulation
+$ethernetCli
+pppoe enable
+pppoe-client dial-pool-number $PN
+exit

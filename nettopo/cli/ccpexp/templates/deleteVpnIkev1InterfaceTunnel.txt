@@ -1,0 +1,4 @@
+no interface $interfaceTunnelName
+object-group network vpn_remote_subnets
+$deleteobjGroupIdRoute
+exit

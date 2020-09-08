@@ -1,0 +1,5 @@
+$tunnelName
+crypto ikev2 keyring key  
+$noPeerText
+crypto ikev2 profile prof
+$noMatchIdentity

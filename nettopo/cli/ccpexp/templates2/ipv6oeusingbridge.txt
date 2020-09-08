@@ -1,0 +1,61 @@
+
+<% if(nobvino.length!==0){%>
+    <% _.each(oldBVIInterface.split(","), function(bviint) { %>
+        <% if(bviint.length!==0){%>
+            interface {{bviint}}
+            no bridge-group {{nobvino}}
+            exit
+        <%}%>
+    <%});%>
+    interface {{oldIpv6Interface}}
+    no bridge-group {{nobvino}} input-type-list 200
+    exit
+	default interface BVI{{nobvino}}
+	no interface BVI{{nobvino}}
+	no access-list 200 permit 0x86DD 0x0000
+	no dialer-list 1 protocol ip permit
+	no bridge {{nobvino}} protocol ieee
+	no bridge {{nobvino}} route ip
+<%}%>
+<% if(isBVI){%>
+
+bridge irb
+interface {{interfaceName}}
+	bridge-group {{bvino}}
+	no pppoe-client dial-pool-number {{wanipv4dialerTag}}
+	no pppoe enable group global 
+exit
+<% _.each(bridgingInterfaces.split(","), function(binterface) { %>
+<% if(binterface.length!==0){%>
+Interface {{binterface}}
+ no ip address
+ no ipv6 address
+ bridge-group {{bvino}}
+exit
+<%}%>
+<%});%>
+
+<% if(bviIpv6Interface!==0){%>
+Interface {{bviIpv6Interface}}
+ no ip address
+ no ipv6 address
+ bridge-group {{bvino}}
+ bridge-group {{bvino}} input-type-list 200
+exit
+<%}%>
+
+
+Interface BVI{{bvino}}
+ip address {{bridgeipaddress}} {{bridgeSubnet}}
+pppoe enable
+ip nat inside
+ip virtual-reassembly in
+ip tcp adjust-mss {{mssSize}}
+pppoe enable group global 
+pppoe-client dial-pool-number {{wanipv4dialerTag}}
+exit
+access-list 200 permit 0x86DD 0x0000
+dialer-list 1 protocol ip permit
+bridge {{bvino}} protocol ieee
+bridge {{bvino}} route ip
+<%}%>

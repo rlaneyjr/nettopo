@@ -1,0 +1,1103 @@
+<div class="ccpexpCSSReplaceClass25" id="hideAll">
+
+</div>
+
+<div id="dnsDhcpHostname" class="containerCenter">
+
+  <div class="demo">
+
+    <div class="headingQuad">
+
+      <div class="titleTxt" id="dhcpPageTitle">
+
+        Basic Settings
+
+      </div>
+
+    </div>
+
+    <div>
+
+      <div id="hostFiledset">
+
+        <h2 id="cliLegend" class="quadHeader">
+
+          Host name/Domain name/Timezone/NTP
+
+        </h2>
+
+        <div id="hostnameError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass26" >
+
+          <p>
+
+            <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass27" >
+
+            </span>
+
+            <span id="hostnameErrorMessage">
+
+            </span>
+
+          </p>
+
+        </div>
+
+        <div class="ui-widget">
+
+          <form id="hostNameForm" method="get" action="">
+
+            <table id="timeZoneFormDHCP" width="99%" cellspacing="10" cellpadding="0" border="0">
+
+              <tr>
+
+                <td id="HName">
+
+                  Host name:
+
+                </td>
+
+                <td>
+
+                  <input type="text" name="hostNameInput" id="hostNameInput" placeholder="Host name" class="inputnotallowspace"/>
+
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td id="domainNameLabel">
+
+                  Domain name:
+
+                </td>
+
+                <td>
+
+                  <input type="text" name="domainName" id="domainName" placeholder="Domain name" class="inputnotallowspace"/>
+
+                </td>
+
+              </tr>
+
+              <tr>
+                <td>
+                  <span id="timeZoneLabel">TimeZone</span>
+                  <span class="ccpexpCSSReplaceClass348"> * </span>:
+                </td>
+                <td class="vpnPaddingTextbox">
+                            <select
+                              name="basicTimeZone" class="ntpinputsize"
+                              id="basicTimeZone" class="ccpexpCSSReplaceClass349">
+                              <option timeZoneId="1" gmtAdjustment="GMT-1200"
+                                      useDaylightTime="0" value="-12" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT-12:00)
+                                International Date Line West
+                              </option>
+                              <option timeZoneId="2" gmtAdjustment="GMT-1100"
+                                      useDaylightTime="0" value="-11" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT-11:00)
+                                Midway Island, Samoa
+                              </option>
+                              <option timeZoneId="3" gmtAdjustment="GMT-1000"
+                                      useDaylightTime="0" value="-10" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT-10:00)
+                                Hawaii
+                              </option>
+                              <option timeZoneId="4" gmtAdjustment="GMT-0900"
+                                      useDaylightTime="1" value="-9" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-09:00)
+                                Alaska
+                              </option>
+                              <option timeZoneId="5" gmtAdjustment="GMT-0800"
+                                      useDaylightTime="1" value="-8" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-08:00)
+                                Pacific Time (US & Canada)
+                              </option>
+                              <!--<option timeZoneId="6" gmtAdjustment="GMT-0800"
+                                      useDaylightTime="1" value="-8" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-08:00)
+                                Tijuana, Baja California
+                              </option>-->
+                              <option timeZoneId="7" gmtAdjustment="GMT-0700"
+                                      useDaylightTime="0" value="-7" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-07:00)
+                                Arizona
+                              </option>
+                              <!--<option timeZoneId="8" gmtAdjustment="GMT-0700"
+                                      useDaylightTime="1" value="-7" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-07:00)
+                                Chihuahua, La Paz, Mazatlan
+                              </option>
+                              <option timeZoneId="9" gmtAdjustment="GMT-0700"
+                                      useDaylightTime="1" value="-7" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-07:00)
+                                Mountain Time (US & Canada)
+                              </option>-->
+                              <option timeZoneId="10" gmtAdjustment="GMT-0600"
+                                      useDaylightTime="0" value="-6" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-06:00)
+                                Central America
+                              </option>
+                              <!--<option timeZoneId="11" gmtAdjustment="GMT-0600"
+                                      useDaylightTime="1" value="-6" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-06:00)
+                                Central Time (US & Canada)
+                              </option>
+                              <option timeZoneId="12" gmtAdjustment="GMT-0600"
+                                      useDaylightTime="1" value="-6" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-06:00)
+                                Guadalajara, Mexico City, Monterrey
+                              </option>
+                              <option timeZoneId="13" gmtAdjustment="GMT-0600"
+                                      useDaylightTime="0" value="-6" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-06:00)
+                                Saskatchewan
+                              </option>-->
+                              <!--<option timeZoneId="14" gmtAdjustment="GMT-0500"
+                                      useDaylightTime="0" value="-5" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-05:00)
+                                Bogota, Lima, Quito, Rio Branco
+                              </option>
+                              <option timeZoneId="15" gmtAdjustment="GMT-0500"
+                                      useDaylightTime="1" value="-5" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-05:00)
+                                Eastern Time (US & Canada)
+                              </option>-->
+                              <option timeZoneId="16" gmtAdjustment="GMT-0500"
+                                      useDaylightTime="1" value="-5" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-05:00)
+                                Indiana (East)
+                              </option>
+                              <option timeZoneId="17" gmtAdjustment="GMT-0400"
+                                      useDaylightTime="1" value="-4" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-04:00)
+                                Atlantic Time (Canada)
+                              </option>
+                              <!--<option timeZoneId="18" gmtAdjustment="GMT-0400"
+                                      useDaylightTime="0" value="-4" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-04:00)
+                                Caracas, La Paz
+                              </option>
+                              <option timeZoneId="19" gmtAdjustment="GMT-0400"
+                                      useDaylightTime="0" value="-4" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-04:00)
+                                Manaus
+                              </option>
+                              <option timeZoneId="20" gmtAdjustment="GMT-0400"
+                                      useDaylightTime="1" value="-4" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-04:00)
+                                Santiago
+                              </option>-->
+                              <option timeZoneId="21" gmtAdjustment="GMT-0330"
+                                      useDaylightTime="1" value="-3.30" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-03:30)
+                                Newfoundland
+                              </option>
+                              <option timeZoneId="22" gmtAdjustment="GMT-0300"
+                                      useDaylightTime="1" value="-3" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-03:00)
+                                Brasilia
+                              </option>
+                              <!--<option timeZoneId="23" gmtAdjustment="GMT-0300"
+                                      useDaylightTime="0" value="-3" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-03:00)
+                                Buenos Aires, Georgetown
+                              </option>
+                              <option timeZoneId="24" gmtAdjustment="GMT-0300"
+                                      useDaylightTime="1" value="-3" ntp-server-basicSettings="north-america.pool.ntp.org">
+                                (GMT-03:00)
+                                Greenland
+                              </option>
+                              <option timeZoneId="25" gmtAdjustment="GMT-0300"
+                                      useDaylightTime="1" value="-3" ntp-server-basicSettings="south-america.pool.ntp.org">
+                                (GMT-03:00)
+                                Montevideo
+                              </option>-->
+                              <option timeZoneId="26" gmtAdjustment="GMT-0200"
+                                      useDaylightTime="1" value="-2" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT-02:00)
+                                Mid-Atlantic
+                              </option>
+                              <option timeZoneId="27" gmtAdjustment="GMT-0100"
+                                      useDaylightTime="0" value="-1" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT-01:00) Cape
+                                Verde Is.
+                              </option>
+                              <!--<option timeZoneId="28" gmtAdjustment="GMT-0100"
+                                      useDaylightTime="1" value="-1" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT-01:00)
+                                Azores
+                              </option>-->
+                              <!--<option timeZoneId="29" gmtAdjustment="GMT+0000"
+                                      useDaylightTime="0" value="0" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+00:00)
+                                Casablanca, Monrovia, Reykjavik
+                              </option>-->
+                              <option timeZoneId="30" gmtAdjustment="GMT+0000"
+                                      useDaylightTime="1" value="0" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+00:00)
+                                Greenwich Mean Time : Dublin, Edinburgh, Lisbon, London
+                              </option>
+                              <option timeZoneId="31" gmtAdjustment="GMT+0100"
+                                      useDaylightTime="1" value="1" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+01:00)
+                                Amsterdam, Berlin, Bern, Rome, Stockholm, Vienna
+                              </option>
+                              <!--<option timeZoneId="32" gmtAdjustment="GMT+0100"
+                                      useDaylightTime="1" value="1" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+01:00)
+                                Belgrade, Bratislava, Budapest, Ljubljana, Prague
+                              </option>
+                              <option timeZoneId="33" gmtAdjustment="GMT+0100"
+                                      useDaylightTime="1" value="1" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+01:00)
+                                Brussels, Copenhagen, Madrid, Paris
+                              </option>
+                              <option timeZoneId="34" gmtAdjustment="GMT+0100"
+                                      useDaylightTime="1" value="1" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+01:00)
+                                Sarajevo, Skopje, Warsaw, Zagreb
+                              </option>
+                              <option timeZoneId="35" gmtAdjustment="GMT+0100"
+                                      useDaylightTime="1" value="1" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+01:00) West
+                                Central Africa
+                              </option>-->
+                              <!--<option timeZoneId="36" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+02:00) Amman
+                              </option>-->
+                              <option timeZoneId="37" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+02:00)
+                                Athens, Bucharest, Istanbul
+                              </option>
+                              <!--<option timeZoneId="38" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+02:00) Beirut
+                              </option>
+                              <option timeZoneId="39" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+02:00) Cairo
+                              </option>
+                              <option timeZoneId="40" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="0" value="2" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+02:00)
+                                Harare, Pretoria
+                              </option>
+                              <option timeZoneId="41" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+02:00)
+                                Helsinki, Kyiv, Riga, Sofia, Tallinn, Vilnius
+                              </option>
+                              <option timeZoneId="42" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+02:00)
+                                Jerusalem
+                              </option>
+                              <option timeZoneId="43" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="europe.ntp.org">
+                                (GMT+02:00) Minsk
+                              </option>
+                              <option timeZoneId="44" gmtAdjustment="GMT+0200"
+                                      useDaylightTime="1" value="2" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+02:00)
+                                Windhoek
+                              </option>-->
+                              <option timeZoneId="45" gmtAdjustment="GMT+0300"
+                                      useDaylightTime="0" value="3" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+03:00)
+                                Kuwait, Riyadh, Baghdad
+                              </option>
+                              <!--<option timeZoneId="46" gmtAdjustment="GMT+0300"
+                                      useDaylightTime="1" value="3" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+03:00)
+                                Moscow, St. Petersburg, Volgograd
+                              </option>
+                              <option timeZoneId="47" gmtAdjustment="GMT+0300"
+                                      useDaylightTime="0" value="3" ntp-server-basicSettings="pool.ntp.org">
+                                (GMT+03:00)
+                                Nairobi
+                              </option>
+                              <option timeZoneId="48" gmtAdjustment="GMT+0300"
+                                      useDaylightTime="0" value="3" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+03:00)
+                                Tbilisi
+                              </option>-->
+                              <option timeZoneId="49" gmtAdjustment="GMT+0330"
+                                      useDaylightTime="1" value="3.30" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+03:30)
+                                Tehran
+                              </option>
+                              <option timeZoneId="50" gmtAdjustment="GMT+0400"
+                                      useDaylightTime="0" value="4" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+04:00) Abu
+                                Dhabi, Muscat
+                              </option>
+                              <!--<option timeZoneId="51" gmtAdjustment="GMT+0400"
+                                      useDaylightTime="1" value="4" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+04:00) Baku
+                              </option>
+                              <option timeZoneId="52" gmtAdjustment="GMT+0400"
+                                      useDaylightTime="1" value="4" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+04:00)
+                                Yerevan
+                              </option>-->
+                              <option timeZoneId="53" gmtAdjustment="GMT+0430"
+                                      useDaylightTime="0" value="4.30" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+04:30)
+                                Kabul
+                              </option>
+                              <!--<option timeZoneId="54" gmtAdjustment="GMT+0500"
+                                      useDaylightTime="1" value="5" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+05:00)
+                                Yekaterinburg
+                              </option>-->
+                              <option timeZoneId="55" gmtAdjustment="GMT+0500"
+                                      useDaylightTime="0" value="5" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+05:00)
+                                Islamabad, Karachi, Tashkent
+                              </option>
+                              <!--<option timeZoneId="56" gmtAdjustment="GMT+0530"
+                                      useDaylightTime="0" value="5.30" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+05:30) Sri
+                                Jayawardenapura
+                              </option>-->
+                              <option timeZoneId="57" gmtAdjustment="GMT+0530"
+                                      useDaylightTime="0" value="5.30" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+05:30)
+                                Chennai, Kolkata, Mumbai, New Delhi
+                              </option>
+                              <option timeZoneId="58" gmtAdjustment="GMT+0545"
+                                      useDaylightTime="0" value="5.45" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+05:45)
+                                Kathmandu
+                              </option>
+                              <!--<option timeZoneId="59" gmtAdjustment="GMT+0600"
+                                      useDaylightTime="1" value="6" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+06:00)
+                                Almaty, Novosibirsk
+                              </option>-->
+                              <option timeZoneId="60" gmtAdjustment="GMT+0600"
+                                      useDaylightTime="0" value="6" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+06:00)
+                                Astana, Dhaka
+                              </option>
+                              <option timeZoneId="61" gmtAdjustment="GMT+0630"
+                                      useDaylightTime="0" value="6.30" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+06:30)
+                                Yangon (Rangoon)
+                              </option>
+                              <option timeZoneId="62" gmtAdjustment="GMT+0700"
+                                      useDaylightTime="0" value="7" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+07:00)
+                                Bangkok, Hanoi, Jakarta
+                              </option>
+                              <!--<option timeZoneId="63" gmtAdjustment="GMT+0700"
+                                      useDaylightTime="1" value="7" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+07:00)
+                                Krasnoyarsk
+                              </option>-->
+                              <option timeZoneId="64" gmtAdjustment="GMT+0800"
+                                      useDaylightTime="0" value="8" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+08:00)
+                                Beijing, Chongqing, Hong Kong, Urumqi
+                              </option>
+                              <!--<option timeZoneId="65" gmtAdjustment="GMT+0800"
+                                      useDaylightTime="0" value="8" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+08:00) Kuala
+                                Lumpur, Singapore
+                              </option>
+                              <option timeZoneId="66" gmtAdjustment="GMT+0800"
+                                      useDaylightTime="0" value="8" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+08:00)
+                                Irkutsk, Ulaan Bataar
+                              </option>
+                              <option timeZoneId="67" gmtAdjustment="GMT+0800"
+                                      useDaylightTime="0" value="8" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+08:00) Perth
+                              </option>
+                              <option timeZoneId="68" gmtAdjustment="GMT+0800"
+                                      useDaylightTime="0" value="8" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+08:00) Taipei
+                              </option>-->
+                              <option timeZoneId="69" gmtAdjustment="GMT+0900"
+                                      useDaylightTime="0" value="9" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+09:00) Osaka,
+                                Sapporo, Tokyo
+                              </option>
+                              <!--<option timeZoneId="70" gmtAdjustment="GMT+0900"
+                                      useDaylightTime="0" value="9" ntp-server-basicSettings="asia.pool.ntp.org">
+                                (GMT+09:00) Seoul
+                              </option>
+                              <option timeZoneId="71" gmtAdjustment="GMT+0900"
+                                      useDaylightTime="1" value="9" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+09:00)
+                                Yakutsk
+                              </option>-->
+                              <option timeZoneId="72" gmtAdjustment="GMT+0930"
+                                      useDaylightTime="0" value="9.30" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+09:30)
+                                Adelaide
+                              </option>
+                              <!--<option timeZoneId="73" gmtAdjustment="GMT+0930"
+                                      useDaylightTime="0" value="9.30" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+09:30)
+                                Darwin
+                              </option>-->
+                              <!--<option timeZoneId="74" gmtAdjustment="GMT+1000"
+                                      useDaylightTime="0" value="10" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+10:00)
+                                Brisbane
+                              </option>-->
+                              <option timeZoneId="75" gmtAdjustment="GMT+1000"
+                                      useDaylightTime="1" value="10" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+10:00)
+                                Canberra, Melbourne, Sydney
+                              </option>
+                              <!--<option timeZoneId="76" gmtAdjustment="GMT+1000"
+                                      useDaylightTime="1" value="10" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+10:00)
+                                Hobart
+                              </option>
+                              <option timeZoneId="77" gmtAdjustment="GMT+1000"
+                                      useDaylightTime="0" value="10" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+10:00) Guam,
+                                Port Moresby
+                              </option>
+                              <option timeZoneId="78" gmtAdjustment="GMT+1000"
+                                      useDaylightTime="1" value="10" ntp-server-basicSettings="europe.pool.ntp.org">
+                                (GMT+10:00)
+                                Vladivostok
+                              </option>-->
+                              <option timeZoneId="79" gmtAdjustment="GMT+1100"
+                                      useDaylightTime="1" value="11" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+11:00)
+                                Magadan, Solomon Is., New Caledonia
+                              </option>
+                              <option timeZoneId="80" gmtAdjustment="GMT+1200"
+                                      useDaylightTime="1" value="12" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+12:00)
+                                Auckland, Wellington
+                              </option>
+                              <!--<option timeZoneId="81" gmtAdjustment="GMT+1200"
+                                      useDaylightTime="0" value="12" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+12:00) Fiji,
+                                Kamchatka, Marshall Is.
+                              </option>-->
+                              <option timeZoneId="82" gmtAdjustment="GMT+1300"
+                                      useDaylightTime="0" value="13" ntp-server-basicSettings="oceania.pool.ntp.org">
+                                (GMT+13:00)
+                                Nuku'alofa
+                              </option>
+                            </select>
+                </td>
+              </tr>
+              <tr>
+	    	<td td colspan="2" class="paddingTop5px">
+		  <input type="checkbox" id="ntpEnableBasicSettings" name="ntpEnableBasicSettings"> 
+		  <span id="ntpMesgBasicSettings">Synchronise with NTP Server</span>&nbsp;&nbsp;&nbsp;&nbsp;
+                  <input type="checkbox" id="ntpSyncBasicSettings" name="ntpSyncBasicSettings" title="All the Devices (DHCP Client) will have time synchronized with router"> 
+		  <span class="ntpSync">Make this NTP Master</span>
+		</td>
+              </tr>
+              <tr class="displayNone" id="showNTPServerBasicSettings">
+		<td class="ntpTdWidth">
+		  <span id="ntpServerTextBasicSettings">NTP Server
+		  </span><span class="colorRed"> *</span>:
+		</td>
+		<td class="vpnPaddingTextbox">
+		  <input name="ntpServerBasicSettings" type="text" list="ntp-list-basicSettings" id="ntpServerBasicSettings" class="inputnotallowspace wizardinputsize required" placeholder="Domain or IP Address">
+		  <datalist id="ntp-list-basicSettings"></datalist>
+		</td>
+	      </tr>
+
+              <tr>
+
+                <td>
+
+                  &nbsp;
+
+                </td>
+
+                <td>
+
+                  <button id="applyChange">
+
+                    Apply
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+            </table>
+
+          </form>
+
+        </div>
+
+      </div>
+
+      <div id="dnsFiledset">
+
+        <h2 id="dnsLegend" class="quadHeader">
+
+          DNS
+
+        </h2>
+
+        <div id="DNSError" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass28" >
+
+          <p>
+
+            <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass29" >
+
+            </span>
+
+            <span id="DNSErrorMessage">
+
+            </span>
+
+          </p>
+
+        </div>
+
+        <div class="ui-widget">
+
+          <form id="DNSForm" method="get" action="">
+
+            <p class="ui-widget" id="DNSdesc">
+
+              Enter the Primary and Secondary server IP addresses provided by your network administrator or ISP provider. 
+
+            </p>
+
+            <input type="hidden" id="primaryDNSOld" value=""/>
+
+            <input type="hidden" id="secondaryDNSOld" value=""/>
+
+            <table width="99%" cellpadding="0" cellspacing="10" border="0">
+
+              <tr>
+
+                <td id="primaryDNSLabel">
+
+                  Primary DNS:
+
+                </td>
+
+                <td>
+
+                  <input type="text" name="primary Dns" id="primaryDNS" class="requiredIPv4IPv6Address expand-textbox inputnotallowspace" placeholder="ex: 1.1.1.10"/>
+
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td id="secondaryDNSLabel">
+
+                  Secondary DNS:
+
+                </td>
+
+                <td>
+
+                  <input type="text" name="secondary Dns" id="secondaryDNS" class="requiredIPv4IPv6Address expand-textbox inputnotallowspace" placeholder="ex: 2001:CDBA::3257" />
+
+                </td>
+
+              </tr>
+
+              <tr>
+
+                <td>
+
+                  &nbsp;
+
+                </td>
+
+                <td>
+
+                  <button id="applyDNS">
+
+                    Apply
+
+                  </button>
+
+                </td>
+
+              </tr>
+
+            </table>
+
+            <div>
+
+            </div>
+
+          </form>
+
+        </div>
+
+      </div>
+
+      <div class="clear">
+
+      </div>
+
+    </div>
+
+    <!--
+    <div>
+
+      &nbsp;
+
+    </div>
+
+    <div>
+
+      &nbsp;
+
+    </div>
+-->
+    <div>
+
+      <div id="dhcpFiledset">
+
+        <div class="quadHeader">
+
+          <div id="dhcpLegend" class="pull-left">
+
+            DHCP
+
+          </div>
+
+          <div id="dhcpButtonBar" class="text-right">
+
+            <button id="Add">
+
+              Add DHCP
+
+            </button>
+
+            <button id="Edit">
+
+              Edit
+
+            </button>
+
+            <button id="Delete">
+
+              Delete
+
+            </button>
+
+          </div>
+
+        </div>
+
+        <!-- Buttons for add,edit and delete functionality for interface table-->
+
+        <!-- Can be changed as per the required feature-->
+
+        <div id="dhcpFielddiv">
+
+          <div id="dhcp-table" class="ui-widget">
+
+            <div class="headingQuad ccpexpCSSReplaceClass30"  id="nodhcpMessage">
+
+              <div id="noDataDHCPMessage" class="pull-left titleText ccpexpCSSReplaceClass31" >
+
+                No data available
+
+              </div>
+
+            </div>
+
+            <table id="dhcpTable" class="ui-widget ui-widget-content tblCm tbColor tblClick" cellpadding="0" cellspacing="0">
+
+              <thead>
+
+                <tr class="ui-widget-header ">
+
+                  <th id="dhcpdns_chkbxth">
+
+                    <input id="dhcpDNSchkbx" type="checkbox"/>
+
+                  </th>
+
+                  <th id ="poolNameHeader">
+
+                    Pool Name
+
+                  </th>
+
+                  <th id="networkHeader">
+
+                    Pool Network
+
+                  </th>
+
+                  <th id="subnetMaskHeader">
+
+                    Subnet Mask
+
+                  </th>
+
+                  <th id="router">
+
+                    Default Router
+
+                  </th>
+
+                  <th id="dhcpact">
+
+                    Action
+
+                  </th>
+
+                </tr>
+
+              </thead>
+
+              <tbody>
+
+                <tr>
+
+                </tr>
+
+              </tbody>
+
+            </table>
+
+          </div>
+
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-------------------------------------------------------------->
+
+  <div id="dialog-form" title="Add DHCP pool">
+
+    <div id="error" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass32" >
+
+      <p>
+
+        <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass33" >
+
+        </span>
+
+        <span id="errorMessage">
+
+        </span>
+
+      </p>
+
+    </div>
+
+  </div>
+
+  <!------------------------------DHCP Code----------------------------------------------------------------------->
+
+  <div id="dialog-formDHCP">
+
+    <div id="errorDHCP" class="ui-state-error ui-corner-all ccpexpCSSReplaceClass34" >
+
+      <p>
+
+        <span  class="ui-icon ui-icon-alert ccpexpCSSReplaceClass35" >
+
+        </span>
+
+        <span id="errorMessageDHCP">
+
+        </span>
+
+      </p>
+
+    </div>
+
+    <div class="demo">
+
+      <div>
+
+        <form id="ipv4dhcpForm" method="get" action="">
+
+          <div id="dhcpDialogFieldset">
+
+            <div class="alert alert-danger displayNone" id="dnsProxyEnableWarningDiv">
+              <span id="warningLabel" class="displayNone">Warning</span><span class="displayNone">:&nbsp;</span>
+              <span id="enableDNSProxyWarning">The application does not support Domain Filtering when DNS Proxy is enabled.</span>&nbsp;
+              <span id="proceedWithConfiguration">You may proceed with the configuration.</span>
+            </div>
+
+            <div>
+              <input type="hidden" id="primaryDNS-DHCPOld" value=""/>
+
+              <input type="hidden" id="secondaryDNS-DHCPOld" value=""/>
+
+              <input type="hidden" id="wlanInterfaceName" value=""/>
+
+              <table class="tblForm">
+
+                <tr>
+
+                  <td id="DHCPpoolName" width="255">
+
+                    Pool Name:
+
+                  </td>
+
+                  <td>
+
+                    <input name="ipv4PoolName" type="text" id="poolName" class="requiredPoolName inputnotallowspace duplicatePoolCheck" placeholder="Pool Name" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="DHCPpoolNetwork">
+
+                    Pool Network:
+
+                  </td>
+
+                  <td>
+
+                    <input name="ipv4PoolNetwork" uncheck="network" data="subnetMask" type="text" id="network" class="requiredipv4 inputnotallowspace" placeholder="ex: 192.169.0.0" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="DHCPpoolSubnetMask">
+
+                    Subnet Mask:
+
+                  </td>
+
+                  <td>
+
+                    <input name="SubnetMask" type="text" id="subnetMask" class="validIpAndSubnetId inputnotallowspace" placeholder="Subnet Mask" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="DHCPpoolDefaultRoute">
+
+                    Default Gateway:
+
+                  </td>
+
+                  <td>
+
+                    <input name="DefaultRoute" type="text" id="DefaultRoute" class="notrequiredipv4 inputnotallowspace" placeholder="ex: 1.1.1.1" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+
+
+                  <td id="checkboxToIncludeDNSProxy">
+
+
+
+                    Enable DNS Proxy:
+
+
+
+                  </td>
+
+
+
+                  <td>
+
+
+
+                    <input name="checkDNSProxy" type="checkbox" id="checkDNSProxy" unchecked />
+
+
+
+                  </td>
+
+
+
+                </tr>
+
+
+
+                <tr>
+
+                  <td id="checkboxToIncludeDNS">
+
+                    Include DNS values in DHCP pool:
+
+                  </td>
+
+                  <td>
+
+                    <input name="checkDNS" type="checkbox" id="checkDNS" unchecked />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="DHCPpoolPriDNS">
+
+                    DNS Primary IP address:
+
+                  </td>
+
+                  <td>
+
+                    <input name="DNSipPriAddress" type="text" id="DNSipPriAddress" class="notrequiredipv4 inputnotallowspace" placeholder="ex: 1.1.1.10" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="DHCPpoolSecDNS">
+
+                    DNS Secondary IP address:
+
+                  </td>
+
+                  <td>
+
+                    <input name="DNSipSecAddress" type="text" id="DNSipSecAddress" class="notrequiredipv4 inputnotallowspace" placeholder="ex: 1.1.1.1" />
+
+                  </td>
+
+                </tr>
+
+                <tr>
+
+                  <td id="importDNS">
+
+                    Import all DHCP options in to the DHCP server database
+
+                  </td>
+
+                  <td>
+
+                    <input name="importall" id="importall" type="checkbox" />
+
+                  </td>
+
+                </tr>
+
+                <tr id="enableTrunkTR">
+
+                  <td id="enableTrunkLbl">
+
+                    Enable Trunk on
+
+                  </td>
+
+                  <td>
+
+                    <input name="enableTrunk" id="enableTrunk" type="checkbox"/>
+
+                  </td>
+
+                </tr>
+
+                <tr id="enableNativeVlanTR">
+
+                  <td id="enableNativeVlanLbl">
+
+                    Enable Native Vlan on Interface
+
+                  </td>
+
+                  <td>
+
+                    <input name="enableNativeVlan" id="enableNativeVlan" type="checkbox" />
+
+                  </td>
+
+                </tr>
+
+                <tr id="nativeVlanTR">
+
+                  <td id="nativeVlanLbl">
+
+                    Native Vlan
+
+                  </td>
+
+                  <td>
+
+                    <input name="nativeVlan" id="nativeVlan" type="text" placeholder="Native Vlan"/>
+
+                  </td>
+
+                </tr>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </form>
+
+      </div>
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="selectaRow" title="Select a Row">
+
+  <div class="demo">
+
+    <div id="dhcpSelectRowStr">
+
+      Select a Row to Edit/Delete. 
+
+    </div>
+
+  </div>
+
+</div>
+
+<div id="deleteaRow" title="Alert">
+
+  <div class="demo">
+
+    <div id="dhcpDeleteRowStr">
+
+      This DHCP data will be deleted. Do you want to continue? 
+
+    </div>
+
+  </div>
+
+</div>
+

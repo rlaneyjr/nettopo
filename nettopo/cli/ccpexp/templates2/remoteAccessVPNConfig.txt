@@ -1,0 +1,52 @@
+aaa new-model
+aaa authentication ppp default local
+aaa authentication ppp VPDN_AUTH local
+
+vpdn enable
+
+vpdn-group L2TP
+  accept-dialin
+   protocol l2tp
+   virtual-template 1
+  exit
+  no l2tp tunnel authentication
+exit
+
+crypto keyring L2TP
+  pre-shared-key address 0.0.0.0 0.0.0.0 key $preSharedKey
+exit
+
+crypto isakmp policy 1
+  encr 3des
+  authentication pre-share
+  group 2
+  lifetime 28800
+exit
+
+crypto isakmp keepalive 3600
+
+
+crypto ipsec transform-set TS1 esp-aes esp-sha-hmac
+  mode transport
+exit
+
+crypto dynamic-map DYN_MAP 10
+ set nat demux
+ set transform-set TS1
+exit
+
+crypto map CRYP_MAP 6000 ipsec-isakmp dynamic DYN_MAP
+
+
+ip local pool $poolName $remoteAddressPoolFrom $remoteAddressPoolTo
+
+interface Virtual-Template1
+ ip unnumbered $interfaceName
+ peer default ip address pool $poolName
+ ppp mtu adaptive
+ ppp authentication ms-chap-v2 VPDN_AUTH
+exit
+
+interface $interfaceName
+ crypto map CRYP_MAP
+exit

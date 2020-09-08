@@ -1,0 +1,12 @@
+interface ATM{{atmSubInterfaceTag}} point-to-point
+ no shutdown
+ pvc {{vpi}}/{{vci}}
+<% if(iprout=="wanipv4" || iprout=="wanipv4and6"){%>
+  pppoe-client dial-pool-number {{wanipv4dialerTag}}
+<% }%>
+<% if(iprout=="wanipv6" || iprout=="wanipv4and6"){%>
+  pppoe-client dial-pool-number {{wanipv6dialerTag}}
+<% }%>
+
+ exit
+

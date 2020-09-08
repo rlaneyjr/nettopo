@@ -1,0 +1,21 @@
+###
+show processes cpu
+<?xml version="1.0" encoding="UTF-8"?>
+<ODMSpec>
+
+	<Command>
+		<Name>show processes cpu</Name>
+	</Command>
+	
+	<OS>ios</OS>	
+
+	<DataModel>
+		<Container name="ShowProcessCpu">
+			<Container name="CPU utilization for" >
+				<Property name="five seconds" type="String" distance="1" />
+				<Property name="one minute" type="String" distance="1"/> 
+				<Property name="five minutes" type="String" distance="1"/>
+			</Container>			
+		</Container>
+	</DataModel>
+</ODMSpec>

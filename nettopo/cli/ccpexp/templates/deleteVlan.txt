@@ -1,0 +1,5 @@
+ interface $interface
+ shutdown
+ exit
+no interface $interface
+no vlan $vlanID

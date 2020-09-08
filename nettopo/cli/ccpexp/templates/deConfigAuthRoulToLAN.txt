@@ -1,0 +1,4 @@
+interface $laneZoneName
+no ip admission $ipadmisionRoul
+exit
+

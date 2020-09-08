@@ -1,0 +1,6 @@
+isakmp policy 1 authentication pre-share
+isakmp policy 1 encryption 3des
+isakmp policy 1 hash sha
+isakmp policy 1 group 2
+isakmp policy 1 lifetime 43200
+isakmp enable interface$remoteAccessVpnName

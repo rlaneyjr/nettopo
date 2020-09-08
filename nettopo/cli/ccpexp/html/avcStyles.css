@@ -1,0 +1,320 @@
+/*
+ * Copyright (c) 2015 by Cisco Systems, Inc.
+ */
+
+
+.c3-tooltip-container {
+    position: absolute;
+    text-align: center;
+    padding: 10px;
+    font-size: 13px;
+    background: white;
+    border: 0px;
+    border-radius: 8px;
+    border-radius: 4px;
+    box-shadow: 0px 0px 8px #000;
+}
+
+
+.wraper {
+    margin: 0px;
+
+
+}
+
+.page {
+
+    color: #666666;
+    font-family: arial;
+
+}
+
+
+
+
+.page .pageContainer {
+    background-color: #FFF;
+}
+
+.page .leftSide {
+    width: 65%;
+    float: left;
+}
+
+.refreshIcon {
+    float: left;
+    margin-left: 10px;
+    font-size: 25px;
+}
+.refreshIcon:hover{
+    color:#0087d8;
+}
+
+
+.page .pageContainer .deviceInformation {
+    height: 60px;
+    margin-top: 10px;
+}
+
+
+.page .chartsContainer .pieChartContainer .pieChartTitle-value {
+    font-weight: bold;
+    color: rgb(19, 181, 228);
+    opacity: 1;
+}
+
+.page .pageContainer .controlPanel {
+    width: 80%;
+    height: 55px;
+
+}
+
+.page .pageContainer .controlPanel .interafcesContainer {
+    float: left;
+    height: calc(100% - 24px);
+    margin-top: 18px;
+    font-weight: bold;
+}
+
+.page .pageContainer .controlPanel .interafcesContainer .interfaceText {
+    float: left;
+}
+
+.page .pageContainer .controlPanel .interafcesContainer .interfacesComboBox
+{
+    float: left;
+    margin-left: 5px;
+    margin-right: 10px;
+
+    margin-top: -5px;
+}
+
+.page .pageContainer .controlPanel .virtecalLine {
+    width: 1px;
+    height: calc(100% - 40px);
+    margin-top: 18px;
+    float: left;
+    background-color: #e5e5e5;
+}
+
+.page .pageContainer .controlPanel .directionContainer {
+    margin-left: 15px;
+    float: left;
+    height: calc(100% - 24px);
+    margin-top: 18px;
+    margin-right: 10px;
+}
+
+.page .pageContainer .controlPanel .directionContainer .directionText {
+    float: left;
+    font-weight: bold;
+}
+
+.page .pageContainer .controlPanel .directionComboBox {
+    float: left;
+    margin-left: 5px;
+    margin-top: -5px;
+}
+
+.page .pageContainer .controlPanel .zoomContainer {
+    float: left;
+    margin-left: 10px;
+    margin-top: 18px;
+}
+
+.page .pageContainer .controlPanel .zoomContainer .zoomText {
+    float: left;
+    font-weight: bold;
+}
+
+.page .pageContainer .controlPanel .zoomContainer .zoomComboBox {
+    float: left;
+    margin-left: 5px;
+
+    margin-top: -5px;
+}
+
+.page .pageContainer .chartsContainer {
+    width: 100%;
+    height: 240px;
+    border: solid #e5e5e5;
+    border-width: 1px 0px;
+    padding-bottom: 20px;
+}
+
+.chartsContainer .chartTitle {
+    font-weight: bold;
+    /* 	margin-bottom: 3px; */
+    height: 30px;
+}
+
+.chartsContainer .areaChartContainer {
+    width: 73%;
+    height: 100%;
+    float: left;
+    position: relative;
+    margin-top: 10px;
+}
+
+.chartsContainer .areaChartContainer .areaChart {
+    margin-top: 10px;
+    /* margin-left: -10px;  */
+}
+
+.chartsContainer .chartVirtecalLine {
+    width: 1px;
+    height: 109%;
+    float: left;
+    background-color: #e5e5e5;
+}
+
+.chartsContainer .pieChartContainer {
+    width: calc(27% - 1px);
+    height: 100%;
+    float: left;
+    margin-top: 10px;
+    position: relative;
+}
+
+
+#dashboardPieChart {
+    margin-top: 7px;
+}
+
+.chartsContainer .pieChartContainer .pieChartTitle {
+    margin-left: 15px;
+    font-weight: bold;
+    float: left;
+    margin-right: 10px;
+}
+
+.page .pageContainer .tableContainer {
+    margin-bottom: 5px;
+}
+
+.page .pageContainer .tableContainer .trendUp {
+    float: left;
+    margin-left: 18px;
+    font-size: 12px;
+    color:#33bbe1
+}
+
+.page .pageContainer .tableContainer .trendDown {
+    float: left;
+    margin-left: 18px;
+    font-size: 12px;
+    color:#e9001b;
+}
+
+.page .pageContainer .tableContainer .trendDashClass {
+    float: left;
+    margin-left: 19px;
+    height: 100%;
+    width: 10px;
+}
+/* slices in pie chart should not be divided */
+.c3-chart-arc path {
+    stroke: transparent !important;
+}
+/* area charts should have not transiant colors*/
+.c3-area {
+    opacity: 0.84 !important;
+}
+/*style grid line to be solid*/
+.c3-xgrid,.c3-ygrid {
+    stroke-dasharray: 1 0 !important;
+}
+/*remove y axis line*/
+#dashboardAreaChart .c3-axis.c3-axis-y path.domain {
+    display: none !important;
+}
+
+
+
+/* #dashboardAreaChart .c3-target.c3-focused path.c3-line, .c3-target.c3-focused path.c3-step {
+  stroke-width: 3px !important;
+} */
+/* strok line on area chart*/
+#dashboardAreaChart .c3-line {
+    stroke-width: 2px !important;;
+}
+#configAvc{	  
+     font-size: 33px;
+     text-align: right;
+     width: 330px;
+     position: relative;
+}
+#configAvc:hover{
+    
+     color: #0087d8;
+}
+#allInterfaceDiv{
+    width: 270px;
+   
+    float: left;
+}
+#allInterfaceDiv #availableInterfaceDiv,#avcConfigaredListDiv{
+    overflow-y: auto;
+    height: 190px;
+}
+#avcFieldSet{
+    width: 250px;
+   
+    float: right;
+    /* position: absolute; */
+    margin-right: 10px;
+}
+#blockApp:disabled{
+    opacity: 0.5;
+}
+#enableAvc{
+    display: block;
+    width: 100%;  
+    height: 100%;
+    margin-top: 20px;
+    margin-left: auto;
+    font-size: 18px;
+    
+        
+}
+ol .square{
+    list-style-type: square;
+}
+#AVCApplicationSearchMain{
+    position: relative;
+    width: 27%;
+}
+.avcAppSerch{
+    right: 5px;
+    position: absolute;
+    top: 1px;
+}
+.ui-jqgrid .ui-jqgrid-bdiv{
+  position: relative; 
+  margin: 0em; 
+  padding:0; 
+  overflow-x:hidden; 
+  overflow-y:auto;   
+}
+.ui-jqgrid tr.jqgrow td{
+    padding-left: 9px;
+}
+.ui-jqgrid .ui-jqgrid-view {
+    min-height: 200px !important;
+}
+#avcInterfaceLabelen{
+    min-width: 50px;
+}
+
+#avcInterfaceLabelja{
+    min-width: 110px;
+}
+
+#avcDirectionLabel{
+    min-width: 30px;
+    padding-left: 20px;
+}
+#avcPeriodLabel{
+    min-width: 30px;
+    padding-left: 20px;
+}

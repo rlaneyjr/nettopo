@@ -1,0 +1,4 @@
+interface $interfaceName
+no shutdown
+exit
+

@@ -1,0 +1,1 @@
+ip nat inside source static $port $internalIP $internalPort interface $externalIP $externalPort

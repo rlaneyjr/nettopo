@@ -1,0 +1,2 @@
+no chat-script lte
+chat-script lte "" "AT!CALL1" TIMEOUT 20 "OK"

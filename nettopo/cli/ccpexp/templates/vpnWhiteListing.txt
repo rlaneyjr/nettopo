@@ -1,0 +1,2 @@
+ip access-list extended INTRANET-WHITELIST
+permit ip any $destAddresss $wildCardMask

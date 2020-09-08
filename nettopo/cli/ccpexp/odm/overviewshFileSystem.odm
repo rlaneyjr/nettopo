@@ -1,0 +1,20 @@
+###
+show file systems
+<?xml version='1.0' encoding='utf-8'?>
+<ODMSpec>
+<Command>
+<Name>sh file system</Name>
+</Command>
+<OS>ios</OS>
+<DataModel>
+<Container name="ShFileSystem">
+<Table  name="FileSystemTable">
+<Header name = "Size(b)" alias = "size" start = "1" end = "15" type = "String"/>
+<Header name = "Free(b)" alias = "free" start = "16" end = "30" type = "String"/>
+<Header name = "Type" alias = "type" start = "31" end = "39" type = "String"/>
+<Header name = "Flags" start = "40" end = "46" type = "String"/>
+<Header name = "Prefixes" start = "47" end = "65" type = "String"/>
+</Table>
+</Container>
+</DataModel>
+</ODMSpec>

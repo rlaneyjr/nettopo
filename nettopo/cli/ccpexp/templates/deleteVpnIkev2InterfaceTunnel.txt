@@ -1,0 +1,6 @@
+interface $interfaceTunnelName
+no tunnel protection ipsec profile test_profile
+exit
+no interface $interfaceTunnelName
+object-group network vpn_remote_subnets
+$deleteobjGroupIdRoute

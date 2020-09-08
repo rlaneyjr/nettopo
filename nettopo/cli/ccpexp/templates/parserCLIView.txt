@@ -1,0 +1,17 @@
+parser view enduserview
+secret 0 enduserview
+commands exec include dir
+commands exec include write memory
+commands exec include Show version
+commands exec include dir all-filesystems
+commands exec include show ip interface brief
+commands exec include show running-config
+commands exec include configure terminal
+commands interface include switchport mode access
+commands interface include switchport access vlan
+commands interface include no switchport access vlan
+commands configure include scheduler max-task-time
+commands configure include cns trusted-server
+commands exec include show diag
+commands exec include show interfaces
+

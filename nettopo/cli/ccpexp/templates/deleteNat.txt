@@ -1,0 +1,6 @@
+interface $natInterface
+no ip nat outside
+exit
+no ip nat inside source list 199 interface $natInterface overload
+no access-list 199 permit ip any any
+

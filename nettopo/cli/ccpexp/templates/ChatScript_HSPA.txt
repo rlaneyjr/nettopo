@@ -1,0 +1,2 @@
+no chat-script gsm
+chat-script gsm "" "ATDT*99#" TIMEOUT 180 "CONNECT"

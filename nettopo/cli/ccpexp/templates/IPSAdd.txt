@@ -1,0 +1,2 @@
+interface $interface
+ip ips IOS-IPS in

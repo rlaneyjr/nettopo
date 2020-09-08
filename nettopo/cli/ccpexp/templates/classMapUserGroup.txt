@@ -1,0 +1,6 @@
+class-map type inspect match-any $policyName_user
+match user-group $userGroup
+
+
+
+
