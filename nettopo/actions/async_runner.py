@@ -7,13 +7,16 @@
 '''
 
 import asyncio
-
 from netmiko import ConnectHandler
+from netmiko.ssh_autodetect import SSHDetect
 from threading import Thread
+from typing import Union
 
 
-class NetworkDevice():
-    def __init__(self, ip, username, password, device_type='cisco_ios'):
+
+class AsyncRunner():
+    def __init__(self, ip: str, username: str, password: str,
+                 device_type: str='autodetect') -> None:
         self.ip = ip
         self.username = username
         self.password = password
@@ -25,41 +28,62 @@ class NetworkDevice():
         self.config_done = False
         self.exec_done = False
         self.exec_output = []
+        self.context = {
+            'device_type': self.device_type,
+            'host': self.ip,
+            'username': self.username,
+            'password': self.password
+        }
+
+    @staticmethod
+    def run_loop(loop):
+        asyncio.set_event_loop(loop)
+        loop.run_forever()
+
+    def run_async_func(self, func, args=None):
+        self.loop = asyncio.new_event_loop()
+        thread = Thread(target=self.run_loop, args=(self.loop,))
+        thread.start()
+        if args:
+            asyncio.run_coroutine_threadsafe(func(args), self.loop)
+        else:
+            asyncio.run_coroutine_threadsafe(func(), self.loop)
+
+    def detect(self):
+        self.run_async_func(self.async_detect)
+
+    async def async_detect(self):
+        ssh_detect = SSHDetect(**self.context)
+        new_device_type = ssh_detect.autodetect()
+        if new_device_type:
+            self.context['device_type'] = new_device_type
+        else:
+            print(f"Unable to determine device type for {self.ip}")
+            self.context['device_type'] = 'cisco_ios'
+        self.loop.call_soon_threadsafe(self.loop.stop)
 
     def login(self):
-        self.loop = asyncio.new_event_loop()
-        def f(loop):
-            asyncio.set_event_loop(loop)
-            loop.run_forever()
-        thread = Thread(target=f, args=(self.loop,))
-        thread.start()
-        asyncio.run_coroutine_threadsafe(self.async_login(), self.loop)
+        self.run_async_func(self.async_login)
 
     async def async_login(self):
         try:
-            self.con = ConnectHandler(**{
-                'device_type': self.device_type,
-                'ip': self.ip,
-                'username': self.username,
-                'password': self.password
-            })
+            self.con = ConnectHandler(**self.context)
             self.session = True
         except:
             self.session = False
             self.error = 'Login Error'
         self.loop.call_soon_threadsafe(self.loop.stop)
 
+    def check_session(self):
+        if self.session:
+            pass
+        if self.error:
+            raise Exception(f"{self.error}")
+        raise Exception('No session found, login first!')
+
     def send_config(self, config):
-        if not self.session:
-            raise Exception('No session found, login first!')
-        self.loop = asyncio.new_event_loop()
-        def f(loop):
-            asyncio.set_event_loop(loop)
-            loop.run_forever()
-        thread = Thread(target=f, args=(self.loop,))
-        thread.start()
-        asyncio.run_coroutine_threadsafe(self.async_send_config(config),
-                                         self.loop)
+        self.check_session()
+        self.run_async_func(self.async_send_config, config)
 
     async def async_send_config(self, config):
         self.con.send_config_set(config)
@@ -67,16 +91,11 @@ class NetworkDevice():
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def send_commands(self, commands):
-        if not self.session:
-            raise Exception('No session found, login first!')
+        self.check_session()
         self.loop = asyncio.new_event_loop()
-        def f(loop):
-            asyncio.set_event_loop(loop)
-            loop.run_forever()
-        thread = Thread(target=f, args=(self.loop,))
+        thread = Thread(target=target_func, args=(self.loop,))
         thread.start()
-        asyncio.run_coroutine_threadsafe(self.async_send_commands(commands),
-                                         self.loop)
+        self.run_async_func(self.async_send_commands, commands)
 
     async def async_send_commands(self, commands):
         if isinstance(commands, list):
@@ -88,5 +107,7 @@ class NetworkDevice():
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def close(self):
-        del self
+        if self.con:
+            self.con.disconnect()
+            self.session = False
 
