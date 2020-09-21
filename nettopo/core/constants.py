@@ -5,18 +5,30 @@
 constants.py
 '''
 from enum import Enum, auto
+from pysnmp.entity.rfc3413.oneliner import cmdgen
+from pysnmp.proto.rfc1902 import (
+    Counter32,
+    Counter64,
+    Gauge32,
+    Integer,
+    Integer32,
+    IpAddress,
+    OctetString,
+    TimeTicks,
+    Unsigned32,
+)
 
-try:
-    from nettopo.oids import Oids as OID
-except:
-    print("Unable to import nettopo.oids")
-    OID = None
-    pass
 
 __all__ = [
     'NOTHING',
+    'VALID_VERSIONS',
+    'VALID_V3_LEVELS',
+    'VALID_INTEGRITY_ALGO',
+    'VALID_PRIVACY_ALGO',
+    'TYPES',
+    'INTEGRITY_ALGO',
+    'PRIVACY_ALGO',
     'RETCODE',
-    'OID',
     'ENTPHYCLASS',
     'ARP',
     'DCODE',
@@ -24,6 +36,35 @@ __all__ = [
 ]
 
 NOTHING = [None, '0.0.0.0', 'UNKNOWN', '']
+VALID_VERSIONS = ('2', '2c', '3')
+VALID_V3_LEVELS = ('authNoPriv', 'authPriv')
+VALID_INTEGRITY_ALGO = ('md5', 'sha')
+VALID_PRIVACY_ALGO = ('des', '3des', 'aes', 'aes192', 'aes256')
+
+TYPES = {
+    'Counter32': Counter32,
+    'Counter64': Counter64,
+    'Gauge32': Gauge32,
+    'Integer': Integer,
+    'Integer32': Integer32,
+    'IpAddress': IpAddress,
+    'OctetString': OctetString,
+    'TimeTicks': TimeTicks,
+    'Unsigned32': Unsigned32,
+}
+
+INTEGRITY_ALGO = {
+    'md5': cmdgen.usmHMACMD5AuthProtocol,
+    'sha': cmdgen.usmHMACSHAAuthProtocol
+}
+
+PRIVACY_ALGO = {
+    'aes': cmdgen.usmAesCfb128Protocol,
+    'aes192': cmdgen.usmAesCfb192Protocol,
+    'aes256': cmdgen.usmAesCfb256Protocol,
+    'des': cmdgen.usmDESPrivProtocol,
+    '3des': cmdgen.usm3DESEDEPrivProtocol
+}
 
 
 class RETCODE:

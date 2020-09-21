@@ -9,13 +9,13 @@ from glob import glob
 import re
 import sys
 
-from .config import Config
-from .exceptions import NettopoError
-from .network import Network
-from .node import Node
-from .mac import MAC
-from .diagram import Diagram
-from .catalog import Catalog
+from nettopo.core.config import Config
+from nettopo.core.exceptions import NettopoError
+from nettopo.core.network import Network
+from nettopo.core.node import Node
+from nettopo.core.mac import MAC
+from nettopo.core.diagram import Diagram
+from nettopo.core.catalog import Catalog
 
 
 class Nettopo:

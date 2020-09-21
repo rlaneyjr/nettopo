@@ -432,12 +432,14 @@ class Node(BaseData):
         if self.loopbacks:
             for lb in self.loopbacks:
                 if lb.ip:
-                    self.ips.append(lb.ip)
+                    lb_ip = ip_from_cidr(lb.ip)
+                    self.ips.append(lb_ip)
         # SVIs
         if self.svis:
             for svi in self.svis:
                 if svi.ips:
-                    self.ips.extend(svi.ips)
+                    svi_ips = [ip_from_cidr(ip) for ip in svi.ips]
+                    self.ips.extend(svi_ips)
         self.ips.sort()
         return ip_from_cidr(self.ips[0])
 

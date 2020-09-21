@@ -16,6 +16,7 @@ try:
 except:
     from ipaddress import ip_address as IPAddress
 
+from nettopo.core.constants import *
 from nettopo.oids import Oids as o
 
 DEFAULT_COMMS = ['public', 'private', 'letmeSNMP']

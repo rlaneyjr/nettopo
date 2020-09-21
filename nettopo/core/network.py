@@ -5,12 +5,12 @@
         network.py
 """
 from timeit import default_timer as timer
-from .config import Config
-from .exceptions import NettopoNetworkError
-from .util import in_acl, str_matches_pattern, normalize_host
-from .node import Node
-from .constants import NOTHING, NODE, DCODE
-from .data import BaseData
+from nettopo.core.config import Config
+from nettopo.core.exceptions import NettopoNetworkError
+from nettopo.core.util import in_acl, str_matches_pattern, normalize_host
+from nettopo.core.node import Node
+from nettopo.core.constants import NOTHING, NODE, DCODE
+from nettopo.core.data import BaseData
 
 
 class Network(BaseData):
