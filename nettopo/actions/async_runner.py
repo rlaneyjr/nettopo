@@ -9,6 +9,7 @@
 import asyncio
 from netmiko import ConnectHandler
 from netmiko.ssh_autodetect import SSHDetect
+from tabulate import tabulate
 from threading import Thread
 from typing import Union
 
@@ -40,30 +41,31 @@ class AsyncRunner():
         asyncio.set_event_loop(loop)
         loop.run_forever()
 
-    def run_async_func(self, func, args=None):
+    def detect(self):
         self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
-        if args:
-            asyncio.run_coroutine_threadsafe(func(args), self.loop)
-        else:
-            asyncio.run_coroutine_threadsafe(func(), self.loop)
-
-    def detect(self):
-        self.run_async_func(self.async_detect)
+        asyncio.run_coroutine_threadsafe(self.async_detect(), self.loop)
 
     async def async_detect(self):
         ssh_detect = SSHDetect(**self.context)
         new_device_type = ssh_detect.autodetect()
         if new_device_type:
+            self.device_type = new_device_type
             self.context['device_type'] = new_device_type
         else:
             print(f"Unable to determine device type for {self.ip}")
+            self.device_type = 'unknown'
             self.context['device_type'] = 'cisco_ios'
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def login(self):
-        self.run_async_func(self.async_login)
+        if self.device_type == 'autodetect':
+            self.detect()
+        self.loop = asyncio.new_event_loop()
+        thread = Thread(target=self.run_loop, args=(self.loop,))
+        thread.start()
+        asyncio.run_coroutine_threadsafe(self.async_login(), self.loop)
 
     async def async_login(self):
         try:
@@ -72,18 +74,24 @@ class AsyncRunner():
         except:
             self.session = False
             self.error = 'Login Error'
+        else:
+            if not self.con.check_enable_mode():
+                self.con.enable()
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def check_session(self):
-        if self.session:
-            pass
-        if self.error:
-            raise Exception(f"{self.error}")
-        raise Exception('No session found, login first!')
+        if not self.session:
+            if self.error:
+                raise Exception(f"{self.error}")
+            raise Exception('No session found, login first!')
 
     def send_config(self, config):
         self.check_session()
-        self.run_async_func(self.async_send_config, config)
+        self.loop = asyncio.new_event_loop()
+        thread = Thread(target=self.run_loop, args=(self.loop,))
+        thread.start()
+        asyncio.run_coroutine_threadsafe(self.async_send_config(config),
+                                                            self.loop)
 
     async def async_send_config(self, config):
         self.con.send_config_set(config)
@@ -93,9 +101,10 @@ class AsyncRunner():
     def send_commands(self, commands):
         self.check_session()
         self.loop = asyncio.new_event_loop()
-        thread = Thread(target=target_func, args=(self.loop,))
+        thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
-        self.run_async_func(self.async_send_commands, commands)
+        asyncio.run_coroutine_threadsafe(self.async_send_commands(commands),
+                                                                self.loop)
 
     async def async_send_commands(self, commands):
         if isinstance(commands, list):
@@ -107,7 +116,22 @@ class AsyncRunner():
         self.loop.call_soon_threadsafe(self.loop.stop)
 
     def close(self):
-        if self.con:
+        if self.session:
             self.con.disconnect()
             self.session = False
+        del self
+
+    def print_table(self):
+        if not self.exec_output:
+            if not self.exec_done:
+                pout = f"Last command has not finished: {self.exec_done}"
+            pout = f"No output from last command: {self.exec_output}"
+        if len(self.exec_output) == 1:
+            pout = tabulate([line.split(line) for line in \
+                        self.exec_output[0].splitlines()], headers='firstrow')
+        if len(self.exec_output) > 1:
+            pout = tabulate([line.split(line) for line in self.exec_output],
+                            headers='firstrow')
+        self.print_out = pout
+        print(self.print_out)
 

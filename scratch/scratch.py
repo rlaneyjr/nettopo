@@ -91,3 +91,12 @@ net.hosts
 from nettopo.snmp_facts import SnmpFacts
 sw = SnmpFacts('10.0.0.1', community='letmeSNMP')
 sw.get_facts()
+
+from nettopo.actions.async_runner import AsyncRunner
+sw1 = AsyncRunner('10.0.0.1', 'rlaney', 'ralrox22')
+sw2 = AsyncRunner('10.0.0.2', 'rlaney', 'ralrox22')
+sw1.login()
+sw1.device_type
+sw2.login()
+sw2.device_type
+
