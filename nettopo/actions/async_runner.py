@@ -127,7 +127,7 @@ class AsyncRunner():
         table_dict = {}
         if not self.exec_output:
             if not self.exec_done:
-                pout = f"Last command has not finished: {self.exec_done}"
+                pout = f"Last command finished: {self.exec_done}"
             pout = f"No output from last command: {self.exec_output}"
         if len(self.exec_output) == 1 and hasattr(self, 'command'):
             table = [line.split() for line in \
@@ -139,6 +139,7 @@ class AsyncRunner():
                 table = [line.split() for line in item.splitlines()]
                 table_dict.update({str(self.command_list[counter]), table})
                 counter += 1
-         = pout
-        print(self.table_out)
-
+        self.table_out = table_dict
+        for cmd, tbl in self.table_out.items():
+            print(f"Command: {cmd}")
+            print(tabulate(tbl, headers='firstrow'))
