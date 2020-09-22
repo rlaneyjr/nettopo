@@ -108,9 +108,11 @@ class AsyncRunner():
 
     async def async_send_commands(self, commands):
         if isinstance(commands, list):
+            self.command_list = commands
             for command in commands:
                 self.exec_output.append(self.con.send_command(command))
         else:
+            self.command = commands
             self.exec_output.append(self.con.send_command(commands))
         self.exec_done = True
         self.loop.call_soon_threadsafe(self.loop.stop)
@@ -122,16 +124,21 @@ class AsyncRunner():
         del self
 
     def print_table(self):
+        table_dict = {}
         if not self.exec_output:
             if not self.exec_done:
                 pout = f"Last command has not finished: {self.exec_done}"
             pout = f"No output from last command: {self.exec_output}"
-        if len(self.exec_output) == 1:
-            pout = tabulate([line.split(line) for line in \
-                        self.exec_output[0].splitlines()], headers='firstrow')
-        if len(self.exec_output) > 1:
-            pout = tabulate([line.split(line) for line in self.exec_output],
-                            headers='firstrow')
-        self.print_out = pout
-        print(self.print_out)
+        if len(self.exec_output) == 1 and hasattr(self, 'command'):
+            table = [line.split() for line in \
+                                self.exec_output[0].splitlines()]
+            table_dict.update({str(self.command): table})
+        if len(self.exec_output) > 1 and hasattr(self, 'command_list'):
+            counter = 0
+            for item in self.exec_output:
+                table = [line.split() for line in item.splitlines()]
+                table_dict.update({str(self.command_list[counter]), table})
+                counter += 1
+         = pout
+        print(self.table_out)
 
