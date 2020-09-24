@@ -13,6 +13,14 @@ from tabulate import tabulate
 from threading import Thread
 from typing import Union
 
+try:
+    from genie.conf.base import Device
+    from genie.libs.parser.utils import get_parser
+    from pyats.datastructures import AttrDict
+
+    HAS_GENIE = True
+except ImportError:
+    HAS_GENIE = False
 
 
 class AsyncRunner():
@@ -35,6 +43,7 @@ class AsyncRunner():
             'username': self.username,
             'password': self.password
         }
+        self.loop = asyncio.new_event_loop()
 
     @staticmethod
     def run_loop(loop):
@@ -42,7 +51,6 @@ class AsyncRunner():
         loop.run_forever()
 
     def detect(self):
-        self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_detect(), self.loop)
@@ -62,7 +70,6 @@ class AsyncRunner():
     def login(self):
         if self.device_type == 'autodetect':
             self.detect()
-        self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_login(), self.loop)
@@ -87,7 +94,6 @@ class AsyncRunner():
 
     def send_config(self, config):
         self.check_session()
-        self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_send_config(config),
@@ -100,7 +106,6 @@ class AsyncRunner():
 
     def send_commands(self, commands):
         self.check_session()
-        self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(self.async_send_commands(commands),
@@ -110,10 +115,12 @@ class AsyncRunner():
         if isinstance(commands, list):
             self.command_list = commands
             for command in commands:
-                self.exec_output.append(self.con.send_command(command))
+                self.exec_output.append(self.con.send_command(command,
+                                        use_genie=HAS_GENIE))
         else:
             self.command = commands
-            self.exec_output.append(self.con.send_command(commands))
+            self.exec_output.append(self.con.send_command(commands,
+                                    use_genie=HAS_GENIE))
         self.exec_done = True
         self.loop.call_soon_threadsafe(self.loop.stop)
 
