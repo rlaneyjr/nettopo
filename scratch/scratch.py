@@ -101,3 +101,4 @@ sw2.login()
 sw1.device_type
 sw2.device_type
 
+cmds = ['sh ip route', 'sh ip int br', 'sh mac address-table', 'sh ip arp']
