@@ -1,0 +1,156 @@
+e67f68:
+  enabled: true
+  lab_description: Imported from topology.virl
+  lab_title: NettopoLab
+  nodes:
+    n0:
+      devices:
+      - enabled: true
+        listen_port: 9000
+        name: serial0
+        running: false
+        status: ""
+      label: fw1
+    n1:
+      devices:
+      - enabled: true
+        listen_port: 9001
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9002
+        name: serial1
+        running: false
+        status: ""
+      label: rtr1
+    n2:
+      devices:
+      - enabled: true
+        listen_port: 9003
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9004
+        name: serial1
+        running: false
+        status: ""
+      label: rtr2
+    n3:
+      devices:
+      - enabled: true
+        listen_port: 9005
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9006
+        name: serial1
+        running: false
+        status: ""
+      label: rtr3
+    n4:
+      devices:
+      - enabled: true
+        listen_port: 9007
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9008
+        name: serial1
+        running: false
+        status: ""
+      label: sw1
+    n5:
+      devices:
+      - enabled: true
+        listen_port: 9009
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9010
+        name: serial1
+        running: false
+        status: ""
+      label: sw2
+    n6:
+      devices:
+      - enabled: true
+        listen_port: 9011
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9012
+        name: serial1
+        running: false
+        status: ""
+      label: sw3
+    n7:
+      devices:
+      - enabled: true
+        listen_port: 9013
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9014
+        name: serial1
+        running: false
+        status: ""
+      label: sw4
+    n8:
+      devices:
+      - enabled: true
+        listen_port: 9015
+        name: serial0
+        running: false
+        status: ""
+      - enabled: false
+        listen_port: 9016
+        name: serial1
+        running: false
+        status: ""
+      label: sw5
+    n9:
+      devices:
+      - enabled: true
+        listen_port: 9017
+        name: serial0
+        running: false
+        status: ""
+      - enabled: true
+        listen_port: 5900
+        name: vnc
+        running: false
+        status: ""
+      label: server-1
+    n10:
+      devices:
+      - enabled: true
+        listen_port: 9018
+        name: serial0
+        running: false
+        status: ""
+      - enabled: true
+        listen_port: 5901
+        name: vnc
+        running: false
+        status: ""
+      label: server-2
+    n11:
+      devices:
+      - enabled: true
+        listen_port: 9019
+        name: serial0
+        running: false
+        status: ""
+      - enabled: true
+        listen_port: 5902
+        name: vnc
+        running: false
+        status: ""
+      label: server-3

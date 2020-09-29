@@ -1,0 +1,1509 @@
+lab:
+  description: Imported from topology.virl
+  notes: |-
+    ## Import Progress
+    - processing node /fw1 (asav)
+    - processing node /rtr1 (iosv)
+    - processing node /rtr2 (iosv)
+    - processing node /rtr3 (iosv)
+    - processing node /sw1 (iosvl2)
+    - processing node /sw2 (iosvl2)
+    - processing node /sw3 (iosvl2)
+    - processing node /sw4 (iosvl2)
+    - processing node /sw5 (iosvl2)
+    - processing node /server-1 (server)
+    - cloud-config converted for /server-1 (server)
+    - processing node /server-2 (server)
+    - cloud-config converted for /server-2 (server)
+    - processing node /server-3 (server)
+    - cloud-config converted for /server-3 (server)
+    - link GigabitEthernet0/2.sw5 -> eth1.server-3
+    - link GigabitEthernet0/2.sw3 -> GigabitEthernet1/0.sw2
+    - link GigabitEthernet0/3.sw3 -> eth1.server-1
+    - link GigabitEthernet0/2.sw1 -> GigabitEthernet0/2.sw2
+    - link GigabitEthernet0/3.sw1 -> GigabitEthernet0/3.sw2
+    - link GigabitEthernet1/0.sw1 -> GigabitEthernet0/1.sw3
+    - link GigabitEthernet1/1.sw1 -> GigabitEthernet0/1.sw4
+    - link GigabitEthernet0/2.rtr2 -> GigabitEthernet0/2.rtr3
+    - link GigabitEthernet0/3.rtr2 -> GigabitEthernet0/1.sw1
+    - link GigabitEthernet1/1.sw2 -> GigabitEthernet0/2.sw4
+    - link GigabitEthernet0/3.sw4 -> eth1.server-2
+    - link GigabitEthernet0/1.rtr1 -> GigabitEthernet0/1.rtr2
+    - link GigabitEthernet0/2.rtr1 -> GigabitEthernet0/1.rtr3
+    - link GigabitEthernet0/3.rtr1 -> GigabitEthernet0/0.fw1
+    - link GigabitEthernet0/1.fw1 -> GigabitEthernet0/1.sw5
+    - link GigabitEthernet0/3.rtr3 -> GigabitEthernet0/1.sw2
+  timestamp: 1601298285.2252405
+  title: Nettopo Project
+  version: 0.0.3
+nodes:
+  - id: n0
+    label: fw1
+    node_definition: asav
+    x: 382
+    y: 50
+    configuration: |-
+      ! ASAv Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      hostname fw1
+      username cisco password cisco privilege 15
+      enable password cisco
+      passwd cisco
+      names
+      !
+      interface GigabitEthernet0/0
+        description to rtr1
+        duplex full
+        nameif outside
+        security-level 0
+        no shutdown
+        ip address 10.0.128.5 255.255.255.252
+      interface GigabitEthernet0/1
+        description to sw5
+        duplex full
+        nameif inside
+        security-level 100
+        no shutdown
+        ip address 10.0.128.1 255.255.255.252
+      interface Management0/0
+        description OOB Management
+        duplex full
+        management-only
+        nameif mgmt
+        security-level 100
+        no shutdown
+        ! Configured on launch
+        no ip address
+      !
+      same-security-traffic permit inter-interface
+      logging enable
+      logging asdm informational
+      user-identity default-domain LOCAL
+      aaa authentication ssh console LOCAL
+      http server enable
+      http 0.0.0.0 0.0.0.0 mgmt
+      ssh 0.0.0.0 0.0.0.0 mgmt
+      telnet 0.0.0.0 0.0.0.0 mgmt
+      http 0.0.0.0 0.0.0.0 outside
+      ssh 0.0.0.0 0.0.0.0 outside
+      telnet 0.0.0.0 0.0.0.0 outside
+      http 0.0.0.0 0.0.0.0 outside-1
+      ssh 0.0.0.0 0.0.0.0 outside-1
+      telnet 0.0.0.0 0.0.0.0 outside-1
+      ssh version 2
+      crypto key generate rsa modulus 768
+      telnet timeout 15
+      console timeout 0
+      username cisco password cisco privilege 15
+      !
+      class-map inspection_default
+       match default-inspection-traffic
+      !
+      !
+      policy-map type inspect dns preset_dns_map
+       parameters
+        message-length maximum client auto
+        message-length maximum 512
+      policy-map global_policy
+       class inspection_default
+        inspect ip-options
+        inspect netbios
+        inspect rtsp
+        inspect sunrpc
+        inspect tftp
+        inspect xdmcp
+        inspect dns preset_dns_map
+        inspect ftp
+        inspect h323 h225
+        inspect h323 ras
+        inspect rsh
+        inspect esmtp
+        inspect sqlnet
+        inspect sip
+        inspect skinny
+        inspect icmp
+        inspect http
+      !
+      service-policy global_policy global
+      no call-home reporting anonymous
+      call-home
+       profile CiscoTAC-1
+        no active
+
+      access-list global_access line 1 remark Allow Ping
+        access-list global_access line 2 extended permit icmp any any
+
+      access-group global_access global
+
+      route mgmt 0.0.0.0 0.0.0.0 {{ gateway }}
+      route outside 192.168.255.0 255.255.255.0 10.0.128.6
+      route outside 10.0.0.0 255.255.0.0 10.0.128.6
+
+      snmp-server community CISCO
+
+      end
+    image_definition: asav-9-12-2
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: Management0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/1
+        type: physical
+  - id: n1
+    label: rtr1
+    node_definition: iosv
+    x: 173
+    y: 50
+    configuration: |-
+      ! IOS Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      hostname rtr1
+      boot-start-marker
+      boot-end-marker
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      no aaa new-model
+      !
+      !
+      ip cef
+      ipv6 unicast-routing
+      ipv6 cef
+      !
+      !
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      ip domain name virl.info
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      !
+      cdp run
+      !
+      !
+      interface Loopback0
+        description Loopback
+        ip address 192.168.255.1 255.255.255.255
+      !
+      interface GigabitEthernet0/0
+        description OOB Management
+        vrf forwarding Mgmt-intf
+        ! Configured on launch
+        no ip address
+        cdp enable
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to rtr2
+        ip address 10.0.128.9 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to rtr3
+        ip address 10.0.128.13 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to fw1
+        ip address 10.0.128.6 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      !
+      !
+      router ospf 1
+        network 192.168.255.1 0.0.0.0 area 0
+        log-adjacency-changes
+        passive-interface Loopback0
+        network 10.0.128.8 0.0.0.3 area 0
+        network 10.0.128.12 0.0.0.3 area 0
+        network 10.0.128.4 0.0.0.3 area 0
+        redistribute static
+      !
+      !
+      router bgp 1
+        bgp router-id 192.168.255.1
+        no synchronization
+      ! ibgp
+        ! ibgp peers
+        !
+        neighbor 192.168.255.5 remote-as 1
+        neighbor 192.168.255.5 description iBGP peer rtr2
+        neighbor 192.168.255.5 update-source Loopback0
+        !
+        neighbor 192.168.255.7 remote-as 1
+        neighbor 192.168.255.7 description iBGP peer rtr3
+        neighbor 192.168.255.7 update-source Loopback0
+      !
+      !
+       !
+       address-family ipv4
+        network 192.168.255.1 mask 255.255.255.255
+        neighbor 192.168.255.5 activate
+        neighbor 192.168.255.7 activate
+       exit-address-family
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      ip route 10.0.128.0 255.255.255.248 10.0.128.5
+      snmp-server community CISCO
+      end
+    image_definition: iosv-158-3
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n2
+    label: rtr2
+    node_definition: iosv
+    x: 50
+    y: 168
+    configuration: |-
+      ! IOS Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      hostname rtr2
+      boot-start-marker
+      boot-end-marker
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      no aaa new-model
+      !
+      !
+      ip cef
+      ipv6 unicast-routing
+      ipv6 cef
+      !
+      !
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      ip domain name virl.info
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      !
+      cdp run
+      !
+      !
+      interface Loopback0
+        description Loopback
+        ip address 192.168.255.5 255.255.255.255
+      !
+      interface GigabitEthernet0/0
+        description OOB Management
+        vrf forwarding Mgmt-intf
+        ! Configured on launch
+        no ip address
+        cdp enable
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to rtr1
+        ip address 10.0.128.10 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to rtr3
+        ip address 10.0.0.9 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to sw1
+        ip address 10.0.0.2 255.255.255.248
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      !
+      !
+      router ospf 1
+        network 192.168.255.5 0.0.0.0 area 0
+        log-adjacency-changes
+        passive-interface Loopback0
+        network 10.0.128.8 0.0.0.3 area 0
+        network 10.0.0.8 0.0.0.3 area 0
+        network 10.0.0.0 0.0.0.7 area 0
+      !
+      !
+      router bgp 1
+        bgp router-id 192.168.255.5
+        no synchronization
+      ! ibgp
+        ! ibgp peers
+        !
+        neighbor 192.168.255.1 remote-as 1
+        neighbor 192.168.255.1 description iBGP peer rtr1
+        neighbor 192.168.255.1 update-source Loopback0
+        !
+        neighbor 192.168.255.7 remote-as 1
+        neighbor 192.168.255.7 description iBGP peer rtr3
+        neighbor 192.168.255.7 update-source Loopback0
+      !
+      !
+       !
+       address-family ipv4
+        network 192.168.255.5 mask 255.255.255.255
+        neighbor 192.168.255.1 activate
+        neighbor 192.168.255.7 activate
+       exit-address-family
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosv-158-3
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n3
+    label: rtr3
+    node_definition: iosv
+    x: 298
+    y: 168
+    configuration: |-
+      ! IOS Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      hostname rtr3
+      boot-start-marker
+      boot-end-marker
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      no aaa new-model
+      !
+      !
+      ip cef
+      ipv6 unicast-routing
+      ipv6 cef
+      !
+      !
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      ip domain name virl.info
+      crypto key generate rsa modulus 768
+      ip ssh server algorithm authentication password
+      username cisco privilege 15 secret cisco
+      line vty 0 4
+       transport input ssh telnet
+       exec-timeout 720 0
+       password cisco
+       login local
+      line con 0
+       password cisco
+      !
+      cdp run
+      !
+      !
+      interface Loopback0
+        description Loopback
+        ip address 192.168.255.7 255.255.255.255
+      !
+      interface GigabitEthernet0/0
+        description OOB Management
+        vrf forwarding Mgmt-intf
+        ! Configured on launch
+        no ip address
+        cdp enable
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to rtr1
+        ip address 10.0.128.14 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to rtr2
+        ip address 10.0.0.10 255.255.255.252
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to sw2
+        ip address 10.0.0.4 255.255.255.248
+        cdp enable
+        ip ospf cost 1
+        duplex full
+        speed auto
+        no shutdown
+      !
+      !
+      !
+      router ospf 1
+        network 192.168.255.7 0.0.0.0 area 0
+        log-adjacency-changes
+        passive-interface Loopback0
+        network 10.0.128.12 0.0.0.3 area 0
+        network 10.0.0.8 0.0.0.3 area 0
+        network 10.0.0.0 0.0.0.7 area 0
+      !
+      !
+      router bgp 1
+        bgp router-id 192.168.255.7
+        no synchronization
+      ! ibgp
+        ! ibgp peers
+        !
+        neighbor 192.168.255.1 remote-as 1
+        neighbor 192.168.255.1 description iBGP peer rtr1
+        neighbor 192.168.255.1 update-source Loopback0
+        !
+        neighbor 192.168.255.5 remote-as 1
+        neighbor 192.168.255.5 description iBGP peer rtr2
+        neighbor 192.168.255.5 update-source Loopback0
+      !
+      !
+       !
+       address-family ipv4
+        network 192.168.255.7 mask 255.255.255.255
+        neighbor 192.168.255.1 activate
+        neighbor 192.168.255.5 activate
+       exit-address-family
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosv-158-3
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n4
+    label: sw1
+    node_definition: iosvl2
+    x: 50
+    y: 311
+    configuration: |-
+      ! IOSvL2 Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      username cisco privilege 15 secret cisco
+      !
+      line vty 0 4
+      transport input ssh telnet
+      exec-timeout 720 0
+      password cisco
+      login local
+      !
+      line con 0
+      password cisco
+      !
+      hostname sw1
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      !
+      no aaa new-model
+      !
+      vtp domain virl.lab
+      vtp mode transparent
+      !
+      vlan 2
+        name ank_vlan2
+      !
+      !
+      !
+      !
+      cdp run
+      !
+      !
+      !
+      ip cef
+      no ipv6 cef
+      !
+      !
+      spanning-tree mode pvst
+      spanning-tree extend system-id
+      !
+      vlan internal allocation policy ascending
+      !
+      !
+      !
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      !
+      !
+      interface Loopback0
+        description Loopback
+      !
+      interface GigabitEthernet0/0
+        description OOB management
+        ! Configured on launch
+        no switchport
+        vrf forwarding Mgmt-intf
+        no ip address
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to rtr2
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to sw2
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to sw2
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet1/0
+        description to sw3
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet1/1
+        description to sw4
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      !
+      ip forward-protocol nd
+      !
+      no ip http server
+      no ip http secure-server
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i4
+        slot: 4
+        label: GigabitEthernet1/0
+        type: physical
+      - id: i5
+        slot: 5
+        label: GigabitEthernet1/1
+        type: physical
+  - id: n5
+    label: sw2
+    node_definition: iosvl2
+    x: 298
+    y: 311
+    configuration: |-
+      ! IOSvL2 Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      username cisco privilege 15 secret cisco
+      !
+      line vty 0 4
+      transport input ssh telnet
+      exec-timeout 720 0
+      password cisco
+      login local
+      !
+      line con 0
+      password cisco
+      !
+      hostname sw2
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      !
+      no aaa new-model
+      !
+      vtp domain virl.lab
+      vtp mode transparent
+      !
+      vlan 2
+        name ank_vlan2
+      !
+      !
+      !
+      !
+      cdp run
+      !
+      !
+      !
+      ip cef
+      no ipv6 cef
+      !
+      !
+      spanning-tree mode pvst
+      spanning-tree extend system-id
+      !
+      vlan internal allocation policy ascending
+      !
+      !
+      !
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      !
+      !
+      interface Loopback0
+        description Loopback
+      !
+      interface GigabitEthernet0/0
+        description OOB management
+        ! Configured on launch
+        no switchport
+        vrf forwarding Mgmt-intf
+        no ip address
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to rtr3
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to sw1
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to sw1
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet1/0
+        description to sw3
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet1/1
+        description to sw4
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      !
+      ip forward-protocol nd
+      !
+      no ip http server
+      no ip http secure-server
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+      - id: i4
+        slot: 4
+        label: GigabitEthernet1/0
+        type: physical
+      - id: i5
+        slot: 5
+        label: GigabitEthernet1/1
+        type: physical
+  - id: n6
+    label: sw3
+    node_definition: iosvl2
+    x: 50
+    y: 447
+    configuration: |-
+      ! IOSvL2 Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      username cisco privilege 15 secret cisco
+      !
+      line vty 0 4
+      transport input ssh telnet
+      exec-timeout 720 0
+      password cisco
+      login local
+      !
+      line con 0
+      password cisco
+      !
+      hostname sw3
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      !
+      no aaa new-model
+      !
+      vtp domain virl.lab
+      vtp mode transparent
+      !
+      vlan 2
+        name ank_vlan2
+      !
+      !
+      !
+      !
+      cdp run
+      !
+      !
+      !
+      ip cef
+      no ipv6 cef
+      !
+      !
+      spanning-tree mode pvst
+      spanning-tree extend system-id
+      !
+      vlan internal allocation policy ascending
+      !
+      !
+      !
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      !
+      !
+      interface Loopback0
+        description Loopback
+      !
+      interface GigabitEthernet0/0
+        description OOB management
+        ! Configured on launch
+        no switchport
+        vrf forwarding Mgmt-intf
+        no ip address
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to sw1
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to sw2
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to server-1
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      !
+      ip forward-protocol nd
+      !
+      no ip http server
+      no ip http secure-server
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n7
+    label: sw4
+    node_definition: iosvl2
+    x: 298
+    y: 447
+    configuration: |-
+      ! IOSvL2 Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      username cisco privilege 15 secret cisco
+      !
+      line vty 0 4
+      transport input ssh telnet
+      exec-timeout 720 0
+      password cisco
+      login local
+      !
+      line con 0
+      password cisco
+      !
+      hostname sw4
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      !
+      no aaa new-model
+      !
+      vtp domain virl.lab
+      vtp mode transparent
+      !
+      vlan 2
+        name ank_vlan2
+      !
+      !
+      !
+      !
+      cdp run
+      !
+      !
+      !
+      ip cef
+      no ipv6 cef
+      !
+      !
+      spanning-tree mode pvst
+      spanning-tree extend system-id
+      !
+      vlan internal allocation policy ascending
+      !
+      !
+      !
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      !
+      !
+      interface Loopback0
+        description Loopback
+      !
+      interface GigabitEthernet0/0
+        description OOB management
+        ! Configured on launch
+        no switchport
+        vrf forwarding Mgmt-intf
+        no ip address
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to sw1
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to sw2
+        switchport trunk encapsulation dot1q
+        switchport mode trunk
+        no shutdown
+      !
+      interface GigabitEthernet0/3
+        description to server-2
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      !
+      ip forward-protocol nd
+      !
+      no ip http server
+      no ip http secure-server
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+      - id: i3
+        slot: 3
+        label: GigabitEthernet0/3
+        type: physical
+  - id: n8
+    label: sw5
+    node_definition: iosvl2
+    x: 520
+    y: 50
+    configuration: |-
+      ! IOSvL2 Config generated on 2019-02-25 19:56
+      ! by autonetkit_0.24.1
+      !
+      version 15.2
+      service timestamps debug datetime msec
+      service timestamps log datetime msec
+      no service password-encryption
+      service compress-config
+      no service config
+      enable password cisco
+      ip classless
+      ip subnet-zero
+      no ip domain lookup
+      username cisco privilege 15 secret cisco
+      !
+      line vty 0 4
+      transport input ssh telnet
+      exec-timeout 720 0
+      password cisco
+      login local
+      !
+      line con 0
+      password cisco
+      !
+      hostname sw5
+      !
+      boot-start-marker
+      boot-end-marker
+      !
+      !
+      !
+      no aaa new-model
+      !
+      vtp domain virl.lab
+      vtp mode transparent
+      !
+      vlan 2
+        name ank_vlan2
+      !
+      !
+      !
+      !
+      cdp run
+      !
+      !
+      !
+      ip cef
+      no ipv6 cef
+      !
+      !
+      spanning-tree mode pvst
+      spanning-tree extend system-id
+      !
+      vlan internal allocation policy ascending
+      !
+      !
+      !
+      !
+      vrf definition Mgmt-intf
+      !
+       address-family ipv4
+       exit-address-family
+       !
+       address-family ipv6
+       exit-address-family
+      !
+      !
+      !
+      !
+      !
+      interface Loopback0
+        description Loopback
+      !
+      interface GigabitEthernet0/0
+        description OOB management
+        ! Configured on launch
+        no switchport
+        vrf forwarding Mgmt-intf
+        no ip address
+        no shutdown
+      !
+      interface GigabitEthernet0/1
+        description to fw1
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      interface GigabitEthernet0/2
+        description to server-3
+        switchport access vlan 2
+        switchport mode access
+        no shutdown
+      !
+      !
+      ip forward-protocol nd
+      !
+      no ip http server
+      no ip http secure-server
+      !
+      !
+      !
+      !
+      !
+      !
+      control-plane
+      !
+      !
+      !
+      ip route vrf Mgmt-intf 0.0.0.0 0.0.0.0 {{ gateway }}
+      snmp-server community CISCO
+      end
+    image_definition: iosvl2-2019
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: GigabitEthernet0/0
+        type: physical
+      - id: i1
+        slot: 1
+        label: GigabitEthernet0/1
+        type: physical
+      - id: i2
+        slot: 2
+        label: GigabitEthernet0/2
+        type: physical
+  - id: n9
+    label: server-1
+    node_definition: server
+    x: 50
+    y: 575
+    configuration: |-
+      # converted cloud-config
+      hostname server-1
+      ifconfig eth1 up 10.0.0.1 netmask 255.255.255.248
+      route add -net 10.0.0.0/16 gw 10.0.0.2 dev eth1
+      route add -net 192.168.255.0/28 gw 10.0.0.2 dev eth1
+      route add -net 10.0.0.0/16 gw 10.0.0.4 dev eth1
+      route add -net 192.168.255.0/28 gw 10.0.0.4 dev eth1
+    image_definition: server-tcl-8-2-1
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: eth0
+        type: physical
+      - id: i1
+        slot: 1
+        label: eth1
+        type: physical
+  - id: n10
+    label: server-2
+    node_definition: server
+    x: 298
+    y: 575
+    configuration: |-
+      # converted cloud-config
+      hostname server-2
+      ifconfig eth1 up 10.0.0.3 netmask 255.255.255.248
+      route add -net 10.0.0.0/16 gw 10.0.0.2 dev eth1
+      route add -net 192.168.255.0/28 gw 10.0.0.2 dev eth1
+      route add -net 10.0.0.0/16 gw 10.0.0.4 dev eth1
+      route add -net 192.168.255.0/28 gw 10.0.0.4 dev eth1
+    image_definition: server-tcl-8-2-1
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: eth0
+        type: physical
+      - id: i1
+        slot: 1
+        label: eth1
+        type: physical
+  - id: n11
+    label: server-3
+    node_definition: server
+    x: 652
+    y: 50
+    configuration: |-
+      # converted cloud-config
+      hostname server-3
+      ifconfig eth1 up 10.0.128.2 netmask 255.255.255.252
+      route add -net 10.0.0.0/16 gw 10.0.128.1 dev eth1
+      route add -net 192.168.255.0/24 gw 10.0.128.1 dev eth1
+    image_definition: server-tcl-8-2-1
+    tags: []
+    interfaces:
+      - id: i0
+        slot: 0
+        label: eth0
+        type: physical
+      - id: i1
+        slot: 1
+        label: eth1
+        type: physical
+links:
+  - id: l0
+    i1: i2
+    n1: n8
+    i2: i1
+    n2: n11
+  - id: l1
+    i1: i2
+    n1: n6
+    i2: i4
+    n2: n5
+  - id: l2
+    i1: i3
+    n1: n6
+    i2: i1
+    n2: n9
+  - id: l3
+    i1: i2
+    n1: n4
+    i2: i2
+    n2: n5
+  - id: l4
+    i1: i3
+    n1: n4
+    i2: i3
+    n2: n5
+  - id: l5
+    i1: i4
+    n1: n4
+    i2: i1
+    n2: n6
+  - id: l6
+    i1: i5
+    n1: n4
+    i2: i1
+    n2: n7
+  - id: l7
+    i1: i2
+    n1: n2
+    i2: i2
+    n2: n3
+  - id: l8
+    i1: i3
+    n1: n2
+    i2: i1
+    n2: n4
+  - id: l9
+    i1: i5
+    n1: n5
+    i2: i2
+    n2: n7
+  - id: l10
+    i1: i3
+    n1: n7
+    i2: i1
+    n2: n10
+  - id: l11
+    i1: i1
+    n1: n1
+    i2: i1
+    n2: n2
+  - id: l12
+    i1: i2
+    n1: n1
+    i2: i1
+    n2: n3
+  - id: l13
+    i1: i3
+    n1: n1
+    i2: i1
+    n2: n0
+  - id: l14
+    i1: i2
+    n1: n0
+    i2: i1
+    n2: n8
+  - id: l15
+    i1: i3
+    n1: n3
+    i2: i1
+    n2: n5

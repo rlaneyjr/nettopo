@@ -1,0 +1,6 @@
+[submodule "nettopo/lib/netdisco-mibs"]
+	path = nettopo/lib/netdisco-mibs
+	url = https://github.com/netdisco/netdisco-mibs
+[submodule "nettopo/lib/ntc-templates"]
+	path = nettopo/lib/ntc-templates
+	url = https://github.com/networktocode/ntc-templates
