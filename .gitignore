@@ -22,4 +22,5 @@ logs/*
 .coverage
 .tox
 
+.DS_Store
 repos/*
