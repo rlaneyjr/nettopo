@@ -93,12 +93,13 @@ sw = SnmpFacts('10.0.0.1', community='letmeSNMP')
 sw.get_facts()
 
 from nettopo.actions.async_runner import AsyncRunner
+cmds = ['sh ip route', 'sh ip int br', 'sh mac address-table', 'sh ip arp']
 sw1 = AsyncRunner('10.0.0.1', 'rlaney', 'ralrox22')
 sw2 = AsyncRunner('10.0.0.2', 'rlaney', 'ralrox22')
 sw1.login()
 sw2.login()
 
-sw1.device_type
-sw2.device_type
+print(sw1.device_type)
+print(sw2.device_type)
 
-cmds = ['sh ip route', 'sh ip int br', 'sh mac address-table', 'sh ip arp']
+

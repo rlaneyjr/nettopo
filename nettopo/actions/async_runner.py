@@ -11,7 +11,7 @@ from netmiko import ConnectHandler
 from netmiko.ssh_autodetect import SSHDetect
 from tabulate import tabulate
 from threading import Thread
-from typing import Union
+from typing import Union, List
 
 try:
     from genie.conf.base import Device
@@ -29,13 +29,18 @@ except ImportError:
 
 
 class AsyncRunner():
-    def __init__(self, ip: str, username: str, password: str,
-                 device_type: str='autodetect', use_genie: bool=HAS_GENIE,
-                 use_textfsm: bool=HAS_NTC_TEMPLATES) -> None:
+    def __init__(self,
+            ip: str,
+            username: str,
+            password: str,
+            device_type: str='autodetect',
+        ) -> None:
         self.ip = ip
         self.username = username
         self.password = password
         self.device_type = device_type
+        self.has_textfsm = HAS_NTC_TEMPLATES
+        self.has_genie = HAS_GENIE
         self.session = False
         self.con = None
         self.loop = None
@@ -99,14 +104,6 @@ class AsyncRunner():
                 raise Exception(f"{self.error}")
             raise Exception('No session found, login first!')
 
-    def get_parser(self, parser: str): -> Union[dict, None]:
-        if any(['text', 'fsm', 'ntc', 'template']) in parser and
-                                                HAS_NTC_TEMPLATES:
-            return {'use_textfsm': True}
-        if 'genie' in parser and HAS_GENIE:
-            return {'use_genie': True}
-        return None
-
     def send_config(self, config):
         self.check_session()
         self.loop = asyncio.new_event_loop()
@@ -120,32 +117,48 @@ class AsyncRunner():
         self.config_done = True
         self.loop.call_soon_threadsafe(self.loop.stop)
 
+    def get_parser(self, parser: Union[str, None]) -> Union[dict, None]:
+        for word in ['text', 'fsm', 'ntc', 'template']:
+            if word in parser and self.has_textfsm:
+                return {'use_textfsm': True}
+        if 'genie' in parser and self.has_genie:
+            return {'use_genie': True}
+        return None
+
     def send_commands(self, commands: Union[str, List[str]],
-                        use_parser: Union[str, None]=None):
-        if use_parser:
-            parser = self.get_parser(use_parser)
+                        parser: Union[str, None]=None):
+        self.parser = self.get_parser(parser)
         self.check_session()
         self.loop = asyncio.new_event_loop()
         thread = Thread(target=self.run_loop, args=(self.loop,))
         thread.start()
         asyncio.run_coroutine_threadsafe(
-            self.async_send_commands(commands, parser),
+            self.async_send_commands(commands),
             self.loop
         )
 
-    async def async_send_commands(self, commands: Union[str, List[str]],
-                                  parser: Union[dict, None]):
+    async def async_send_commands(self, commands: Union[str, List[str]]):
         if isinstance(commands, list):
             self.command_list = commands
             for command in commands:
-                self.exec_output.append(
-                    self.con.send_command(command, **parser)
-                )
+                if self.parser:
+                    self.exec_output.append(
+                        self.con.send_command(command, **self.parser)
+                    )
+                else:
+                    self.exec_output.append(
+                        self.con.send_command(command)
+                    )
         else:
             self.command = commands
-            self.exec_output.append(
-                self.con.send_command(commands, **parser)
-            )
+            if self.parser:
+                self.exec_output.append(
+                    self.con.send_command(commands, **self.parser)
+                )
+            else:
+                self.exec_output.append(
+                    self.con.send_command(commands)
+                )
         self.exec_done = True
         self.loop.call_soon_threadsafe(self.loop.stop)
 
