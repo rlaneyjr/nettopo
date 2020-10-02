@@ -145,16 +145,15 @@ class VLANData(BaseData):
 
 
 class ARPData(BaseData):
-    def __init__(self, ip, mac, interf, arp_type):
+    def __init__(self, ip, mac, port, arp_type):
         self.ip = ip
         self.mac = mac
-        self.interf = interf
+        self.port = port
         self.arp_type = arp_type
 
 
 class MACData(BaseData):
-    def __init__(self, host, ip, vlan, mac, port):
-        self.host = host
+    def __init__(self, ip, vlan, mac, port):
         self.ip = ip
         self.vlan = int(vlan)
         self.mac = mac
