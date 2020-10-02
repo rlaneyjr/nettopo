@@ -5,9 +5,9 @@
     catalog.py
 '''
 import os
-from .exceptions import NettopoCatalogError
-from .network import Network
-from .data import NodeActions
+from nettopo.core.exceptions import NettopoCatalogError
+from nettopo.core.network import Network
+from nettopo.core.data import NodeActions
 
 
 class Catalog:

@@ -9,11 +9,11 @@ import datetime
 from jinja2 import Template, Environment
 import os
 
-from .exceptions import NettopoDiagramError
-from .config import DiagramDefaults
-from .network import Network
-from .templates import node_template, credits_template, link_template
-from .util import get_path, get_port_module
+from nettopo.core.exceptions import NettopoDiagramError
+from nettopo.core.config import DiagramDefaults
+from nettopo.core.network import Network
+from nettopo.core.templates import node_template, credits_template, link_template
+from nettopo.core.util import get_path, get_port_module
 
 
 class DotNode:

@@ -15,7 +15,7 @@ import pysnmp.entity.rfc3413.oneliner.cmdgen as cmdgen
 from pysnmp.smi import builder, view
 from pysnmp.smi.error import SmiError
 
-from ..sysdescrparser import sysdescrparser
+from sysdescrparser import sysdescrparser
 
 __all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs', 'load_default_mibs',
            'nodeinfo', 'nodename', 'nodeid', 'SnmpClient']
@@ -24,7 +24,19 @@ __all__ = ['V1', 'V2', 'V2C', 'add_mib_path', 'load_mibs', 'load_default_mibs',
 V1 = 0
 V2 = V2C = 1
 
-SYS_MIBS = (("SNMPv2-MIB", "sysDescr"), ("SNMPv2-MIB", "sysObjectID"), ("SNMPv2-MIB", "sysUpTime"), ("SNMPv2-MIB", "sysContact"), ("SNMPv2-MIB", "sysName"), ("SNMPv2-MIB", "sysLocation"), ("SNMPv2-MIB", "sysServices"), ("SNMPv2-MIB", "sysORLastChange"), ("SNMPv2-MIB", "sysORID"), ("SNMPv2-MIB", "sysORUpTime"), ("SNMPv2-MIB", "sysORDescr"))
+SYS_MIBS = (
+    ("SNMPv2-MIB", "sysDescr"),
+    ("SNMPv2-MIB", "sysObjectID"),
+    ("SNMPv2-MIB", "sysUpTime"),
+    ("SNMPv2-MIB", "sysContact"),
+    ("SNMPv2-MIB", "sysName"),
+    ("SNMPv2-MIB", "sysLocation"),
+    ("SNMPv2-MIB", "sysServices"),
+    ("SNMPv2-MIB", "sysORLastChange"),
+    ("SNMPv2-MIB", "sysORID"),
+    ("SNMPv2-MIB", "sysORUpTime"),
+    ("SNMPv2-MIB", "sysORDescr"),
+)
 
 # The internal mib builder
 __mibBuilder = builder.MibBuilder()
@@ -80,6 +92,7 @@ def nodeid(oid):
     oid = mibnode.getName() + ids
     return oid
 
+
 class SnmpClient:
     """ Easy access to an snmp deamon on a host
     """
@@ -91,13 +104,10 @@ class SnmpClient:
         self.port = port
         self.target = (self.host, self.port)
         self.alive = False
-        if not authorizations:
-            self._try_auths(self.DEFAULT_AUTHS)
-        else:
+        if authorizations:
             self._try_auths(authorizations)
-            if not self.alive:
-                last_try = authorizations.extend(self.DEFAULT_AUTHS)
-                self._try_auths(set(last_try))
+        if not self.alive:
+            self._try_auths(self.DEFAULT_AUTHS)
 
         if not self.alive:
             raise RuntimeError("No authentications succeeded!")

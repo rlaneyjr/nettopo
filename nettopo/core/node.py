@@ -7,11 +7,23 @@
 import binascii
 from functools import cached_property
 from typing import Union
+# Nettopo Imports
 from nettopo.core.cache import Cache
-from nettopo.core.constants import NOTHING
-from nettopo.core.data import LinkData, StackData
+from nettopo.core.constants import ARP, DCODE, NODE, NOTHING
+from nettopo.core.data import (
+    BaseData,
+    NodeActions,
+    LinkData,
+    StackData,
+    SVIData,
+    LoopBackData,
+    VLANData,
+    ARPData,
+    MACData,
+)
 from nettopo.core.exceptions import NettopoSNMPError, NettopoNodeError
 from nettopo.core.snmp import SNMP
+from nettopo.core.stack import Stack
 from nettopo.core.util import (
     timethis,
     bits_from_mask,
@@ -26,18 +38,7 @@ from nettopo.core.util import (
     lookup_table,
     oid_last_token
 )
-from nettopo.core.data import (
-    NodeActions,
-    BaseData,
-    LinkData,
-    SVIData,
-    LoopBackData,
-    VLANData,
-    ARPData
-)
-from nettopo.core.stack import Stack
 from nettopo.core.vss import VSS
-from nettopo.core.constants import ARP, DCODE, NODE
 from nettopo.oids import Oids
 o = Oids()
 
@@ -52,6 +53,8 @@ class Node(BaseData):
         self.ips = None
         self.links = None
         self.svis = None
+        self.arp_table = None
+        self.mac_table = None
         self.loopbacks = None
         self.stack = None
         self.vss = None
@@ -418,7 +421,7 @@ class Node(BaseData):
     def get_system_name(self, domains=None):
         if not self.queried:
             self.query_node()
-        return normalize_host(self.name_raw, domains)
+        return normalize_host(self.name_raw, self.config.host_domains)
 
 
     def get_ips(self):
@@ -448,6 +451,8 @@ class Node(BaseData):
         """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         """
+        if not self.queried:
+            self.query_node()
         if not self.cache.vpc:
             return None, None
         domain = oid_last_token(self.cache.vpc[0][0][0])
@@ -458,6 +463,8 @@ class Node(BaseData):
 
 
     def get_vlans(self):
+        if not self.queried:
+            self.query_node()
         arr = []
         i = 0
         for vlan_row in self.cache.vlan:
@@ -472,6 +479,8 @@ class Node(BaseData):
 
 
     def get_arp(self):
+        if not self.queried:
+            self.query_node()
         arr = []
         for r in self.cache.arp:
             for n, v in r:
@@ -497,3 +506,56 @@ class Node(BaseData):
                         type_str = 'static'
                     arr.append(ARPData(ip, mac, interf, type_str))
         return arr
+
+    def get_macs(self):
+        ''' MAC address table from this node
+        '''
+        if not self.queried:
+            self.query_node()
+        self.mac_table = []
+        for vlan_row in self.cache.vlan:
+            for vlan_n, vlan_v in vlan_row:
+                vlan = oid_last_token(vlan_n)
+                if vlan >= 1002:
+                    continue
+                vmacs = self.get_macs_for_vlan(ip, vlan)
+                if vmacs:
+                    self.mac_table.extend(vmacs)
+        return self.mac_table
+
+    def get_macs_for_vlan(self, ip, vlan):
+        ''' MAC addresses for a single VLAN
+        '''
+        ret_macs = []
+        ifname_cache = self.cache.ifname
+        # change our SNMP credentials
+        old_cred = self.cache.snmp.community
+        self.cache.snmp.community = f"{old_cred}@{str(vlan)}"
+        # get CAM table for this VLAN
+        cam_cache = self.cache.cam
+        if not cam_cache:
+            # error getting CAM for VLAN
+            return None
+        portnum_cache = self.cache.portnum
+        ifindex_cache = self.cache.ifindex
+        for cam_row in cam_cache:
+            for cam_n, cam_v in cam_row:
+                cam_entry = mac_format_ascii(cam_v, 0)
+                # find the interface index
+                p = cam_n.getOid()
+                idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
+                portnum_oid = f"{o.BRIDGE_PORTNUMS}.{idx}"
+                bridge_portnum = lookup_table(portnum_cache, portnum_oid)
+                # get the interface index and description
+                try:
+                    ifidx = lookup_table(ifindex_cache,
+                                         f"{o.IFINDEX}.{bridge_portnum}")
+                    port = lookup_table(ifname_cache, f"{o.IFNAME}.{ifidx}")
+                except TypeError:
+                    port = 'None'
+                mac_addr = mac_format_ascii(cam_v, 1)
+                entry = MACData(system_name, ip, vlan, mac_addr, port)
+                ret_macs.append(entry)
+        # restore SNMP credentials
+        self.cache.snmp.community = old_cred
+        return ret_macs

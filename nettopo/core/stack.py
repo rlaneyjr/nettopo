@@ -4,10 +4,11 @@
 """
         stack.py
 """
-from .cache import StackCache
-from .constants import OID
-from .data import BaseData, NodeActions, StackData
-from .util import lookup_table
+from nettopo.core.cache import StackCache
+from nettopo.core.data import BaseData, NodeActions, StackData
+from nettopo.core.util import lookup_table
+from nettopo.oids import Oids
+o = Oids()
 
 
 class Stack(BaseData):
@@ -44,26 +45,26 @@ class Stack(BaseData):
         for row in stack_cache:
             for k, v in row:
                 k = str(k)
-                if k.startswith(f"{OID.STACK_NUM}."):
+                if k.startswith(f"{o.STACK_NUM}."):
                     idx = k.split('.')[14]
                     # Get info on this stack member and add to the list
                     m = StackData()
                     m.num = v
                     m.role = lookup_table(stack_cache,
-                                          f"{OID.STACK_ROLE}.{idx}")
+                                          f"{o.STACK_ROLE}.{idx}")
                     m.role = self.get_role(m)
                     m.pri = lookup_table(stack_cache,
-                                         f"{OID.STACK_PRI}.{idx}")
+                                         f"{o.STACK_PRI}.{idx}")
                     m.img = lookup_table(stack_cache,
-                                         f"{OID.STACK_IMG}.{idx}")
+                                         f"{o.STACK_IMG}.{idx}")
                     if serial_cache:
                         m.serial = lookup_table(serial_cache,
-                                            f"{OID.ENTPHYENTRY_SERIAL}.{idx}")
+                                            f"{o.ENTPHYENTRY_SERIAL}.{idx}")
                     if platform_cache:
                         m.plat = lookup_table(platform_cache,
-                                              f"{OID.ENTPHYENTRY_PLAT}.{idx}")
+                                              f"{o.ENTPHYENTRY_PLAT}.{idx}")
                     m.mac = lookup_table(stack_cache,
-                                         f"{OID.STACK_MAC}.{idx}")
+                                         f"{o.STACK_MAC}.{idx}")
                     mac_seg = [m.mac[x:x+4] for x in range(2, len(m.mac), 4)]
                     m.mac = '.'.join(mac_seg)
                     if m.role:

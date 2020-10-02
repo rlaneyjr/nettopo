@@ -6,7 +6,7 @@ Title:              net.py
 Description:        Network Utilities
 Author:             Ricky Laney
 '''
-from nettopo.sysdescrparser import sysdescrparser
+from sysdescrparser import sysdescrparser
 from netaddr import IPAddress, IPNetwork
 from snimpy.manager import Manager, load
 from typing import Union, Dict, List

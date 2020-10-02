@@ -4,10 +4,11 @@
 '''
         node_vss.py
 '''
-from .cache import VSSCache
-from .constants import OID
-from .data import BaseData, NodeActions, VSSData
-from .util import lookup_table
+from nettopo.core.cache import VSSCache
+from nettopo.core.data import BaseData, NodeActions, VSSData
+from nettopo.core.util import lookup_table
+from nettopo.oids import Oids
+o = Oids()
 
 
 class VSS(BaseData):
@@ -46,17 +47,17 @@ class VSS(BaseData):
                     modidx = str(n).split('.')[14]
                     # we want only chassis - line card module have no software
                     ios = lookup_table(ios_cache,
-                                       f"{OID.ENTPHYENTRY_SOFTWARE}.{modidx}")
+                                       f"{o.ENTPHYENTRY_SOFTWARE}.{modidx}")
                     if ios:
                         member = VSSData()
                         if self.actions.get_ios:
                             member.ios = ios
                         if self.actions.get_plat:
                             member.plat = lookup_table(plat_cache,
-                                            f"{OID.ENTPHYENTRY_PLAT}.{modidx}")
+                                            f"{o.ENTPHYENTRY_PLAT}.{modidx}")
                         if self.actions.get_serial:
                             member.serial = lookup_table(serial_cache,
-                                        f"{OID.ENTPHYENTRY_SERIAL}.{modidx}")
+                                        f"{o.ENTPHYENTRY_SERIAL}.{modidx}")
                         self.members.append(member)
                         chassis += 1
             if chassis > 1:

@@ -9,7 +9,7 @@ import json
 import sys
 from typing import Union
 
-from .exceptions import NettopoConfigError
+from nettopo.core.exceptions import NettopoConfigError
 
 
 default_config = {

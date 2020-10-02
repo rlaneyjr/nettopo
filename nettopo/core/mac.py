@@ -4,16 +4,22 @@
 '''
     mac.py
 '''
-from .cache import MACCache
-from .config import Config
-from .constants import OID
-from .data import BaseData, MACData
-from .snmp import SNMP
-from .util import normalize_host, mac_format_ascii, lookup_table, oid_last_token
+from nettopo.core.cache import MACCache
+from nettopo.core.config import Config
+from nettopo.core.data import BaseData, MACData
+from nettopo.core.snmp import SNMP
+from nettopo.core.util import (
+    normalize_host,
+    mac_format_ascii,
+    lookup_table,
+    oid_last_token,
+)
+from nettopo.oids import Oids
+o = Oids()
 
 
 class MAC(BaseData):
-    def __init__(self, conf, snmp_object=None):
+    def __init__(self, conf: Config, snmp_object: SNMP=None) -> None:
         self.cache = None
         self.config = conf
         self.snmp = snmp_object
@@ -88,13 +94,13 @@ class MAC(BaseData):
                 # find the interface index
                 p = cam_n.getOid()
                 idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
-                portnum_oid = f"{OID.BRIDGE_PORTNUMS}.{idx}"
+                portnum_oid = f"{o.BRIDGE_PORTNUMS}.{idx}"
                 bridge_portnum = lookup_table(portnum_cache, portnum_oid)
                 # get the interface index and description
                 try:
                     ifidx = lookup_table(ifindex_cache,
-                                         f"{OID.IFINDEX}.{bridge_portnum}")
-                    port = lookup_table(ifname_cache, f"{OID.IFNAME}.{ifidx}")
+                                         f"{o.IFINDEX}.{bridge_portnum}")
+                    port = lookup_table(ifname_cache, f"{o.IFNAME}.{ifidx}")
                 except TypeError:
                     port = 'None'
                 mac_addr = mac_format_ascii(cam_v, 1)

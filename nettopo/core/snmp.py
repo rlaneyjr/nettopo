@@ -17,7 +17,8 @@ except:
     from ipaddress import ip_address as IPAddress
 
 from nettopo.core.constants import *
-from nettopo.oids import Oids as o
+from nettopo.oids import Oids
+o = Oids()
 
 DEFAULT_COMMS = ['public', 'private', 'letmeSNMP']
 DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
