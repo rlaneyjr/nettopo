@@ -6,7 +6,7 @@
 """
 import binascii
 from functools import cached_property
-from typing import Union
+from typing import Union, List, Any
 # Nettopo Imports
 from nettopo.core.cache import Cache
 from nettopo.core.constants import ARP, DCODE, NODE, NOTHING
@@ -108,10 +108,20 @@ class Node(BaseData):
         return False
 
 
+    def reset_cache(self) -> None:
+        del self.cache
+        self.cache = Cache(self.snmp)
+        self.queried = False
+
+
     def query(self) -> None:
-        self.queried = True
+        if self.queried:
+            print(f"{self.name} has already been queried.")
+            return
         if not self.snmp.success:
-            raise NettopoNodeError(f"FAILED: SNMP credentials")
+            raise NettopoNodeError(f"FAILED: {self.name} SNMP credentials")
+        self.queried = True
+        # Make all the queries to SNMP here:
         self.cache.name
         self.cache.cdp
         self.cache.lldp
@@ -127,6 +137,9 @@ class Node(BaseData):
         self.cache.trunk_native
         self.cache.vpc
         self.cache.arp
+        self.cache.cam
+        self.cache.portnums
+        self.cache.ifindex
         self.cache.serial
         self.cache.bootfile
         self.cache.ent_class
@@ -141,12 +154,13 @@ class Node(BaseData):
         self.cache.hsrp_vip
 
 
-    def query_node(self) -> None:
+    def query_node(self, reset: bool=False) -> None:
         """ Query this node.
         Builds the cache for this node.
         """
-        if not self.queried:
-            self.query()
+        if reset:
+            self.reset_cache()
+        self.query()
         if self.actions.get_name:
             self.name_raw = self.cache.name
             self.name = self.get_system_name()
@@ -523,7 +537,7 @@ class Node(BaseData):
                     self.mac_table.extend(vmacs)
         return self.mac_table
 
-    def get_macs_for_vlan(self, ip, vlan):
+    def get_macs_for_vlan(self, ip: str, vlan: Union[int, str]) -> List[MACData]:
         ''' MAC addresses for a single VLAN
         '''
         ret_macs = []
