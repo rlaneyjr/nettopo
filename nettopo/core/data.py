@@ -29,7 +29,7 @@ class BaseData:
     """
     def _as_dict(self) -> dict:
         _ignores = ['_', 'get', 'add', 'actions', 'cache',
-                    'query_node', 'snmp', 'show']
+                    'que', 'snmp', 'show']
         _dict = {}
         for item in dir(self):
             if not any([item.startswith(x) for x in _ignores]):
@@ -40,13 +40,13 @@ class BaseData:
     @property
     def show(self) -> dict:
         _dict = {}
-        try:
-            for item in self.items_2_show:
+        for item in self.items_2_show:
+            if hasattr(self, item):
                 val = self.__getattribute__(item)
-                _dict.update({item: val})
-            return _dict
-        except AttributeError:
-            return self._as_dict()
+            else:
+                val = None
+            _dict.update({item: val})
+        return _dict
 
     def __str__(self) -> str:
         items = [f"{key} = {val}" for key, val in self.show.items()]

@@ -77,6 +77,7 @@ class Oids:
     # ipRouteTable (.1.3.6.1.2.1.4.21) from the RFC1213-MIB
     IP_ROUTE_TABLE: str = '1.3.6.1.2.1.4.21'
     SYSNAME: str = '1.3.6.1.2.1.1.5.0'
+    SYSDESC: str = '1.3.6.1.2.1.1.1.0'
     SYS_SERIAL: str = '1.3.6.1.4.1.9.3.6.3.0'
     SYS_BOOT: str = '1.3.6.1.4.1.9.2.1.73.0'
     # IFNAME + ifidx (BULK)

@@ -44,34 +44,10 @@ o = Oids()
 
 
 class Node(BaseData):
-    def __init__(self, ip: str, immediate_query: bool=False) -> None:
+    def __init__(self, ip: str, immediate_query: bool=True) -> None:
         self.ip = ip
         self.snmp = SNMP(self.ip)
-        self.cache = Cache(self.snmp)
-        self.actions = NodeActions()
         self.queried = False
-        self.ips = None
-        self.links = None
-        self.svis = None
-        self.arp_table = None
-        self.mac_table = None
-        self.loopbacks = None
-        self.stack = None
-        self.vss = None
-        self.name = None
-        self.name_raw = None
-        self.plat = None
-        self.ios = None
-        self.router = None
-        self.ospf_id = None
-        self.bgp_las = None
-        self.hsrp_pri = None
-        self.hsrp_vip = None
-        self.serial = None
-        self.bootfile = None
-        self.vpc_peerlink_if = None
-        self.vpc_peerlink_node = None
-        self.vpc_domain = None
         self.items_2_show = ['name', 'ip', 'plat', 'ios',
                              'serial', 'router', 'vss', 'stack']
         if immediate_query:
@@ -110,48 +86,18 @@ class Node(BaseData):
 
     def reset_cache(self) -> None:
         del self.cache
-        self.cache = Cache(self.snmp)
         self.queried = False
 
 
-    def query(self) -> None:
-        if self.queried:
-            print(f"{self.name} has already been queried.")
-            return
+    def build_cache(self) -> None:
         if not self.snmp.success:
             raise NettopoNodeError(f"FAILED: {self.name} SNMP credentials")
-        self.queried = True
+        cache = Cache(self.snmp)
         # Make all the queries to SNMP here:
-        self.cache.name
-        self.cache.cdp
-        self.cache.lldp
-        self.cache.link_type
-        self.cache.lag
-        self.cache.vlan
-        self.cache.vlandesc
-        self.cache.ifname
-        self.cache.svi
-        self.cache.ifip
-        self.cache.ethif
-        self.cache.trunk_allowed
-        self.cache.trunk_native
-        self.cache.vpc
-        self.cache.arp
-        self.cache.cam
-        self.cache.portnums
-        self.cache.ifindex
-        self.cache.serial
-        self.cache.bootfile
-        self.cache.ent_class
-        self.cache.ent_serial
-        self.cache.ent_plat
-        self.cache.ent_ios
-        self.cache.router
-        self.cache.ospf
-        self.cache.ospf_id
-        self.cache.bgp
-        self.cache.hsrp
-        self.cache.hsrp_vip
+        for prop in dir(cache):
+            if not prop.startswith('_'):
+                getattr(cache, prop)
+        self.cache = cache
 
 
     def query_node(self, reset: bool=False) -> None:
@@ -160,78 +106,73 @@ class Node(BaseData):
         """
         if reset:
             self.reset_cache()
-        self.query()
-        if self.actions.get_name:
-            self.name_raw = self.cache.name
-            self.name = self.get_system_name()
+        if self.queried:
+            print(f"{self.name} has already been queried.")
+            return
+        if not hasattr(self, 'cache'):
+            self.build_cache()
+        self.queried = True
+        self.name_raw = self.cache.name
+        self.name = self.get_system_name()
         # router
-        if self.actions.get_router:
-            router = self.cache.router
-            self.router = True if router == '1' else False
-            if self.router:
-                # OSPF
-                if self.actions.get_ospf_id:
-                    self.ospf_id = self.cache.ospf_id
-                # BGP
-                if self.actions.get_bgp_las:
-                    bgp_las = self.cache.bgp
-                    # 4500x reports 0 as disabled
-                    self.bgp_las = bgp_las if bgp_las != '0' else None
-                # HSRP
-                if self.actions.get_hsrp_pri:
-                    self.hsrp_pri = self.cache.hsrp
-                    self.hsrp_vip = self.cache.hsrp_vip
+        router = self.cache.router
+        self.router = True if router == '1' else False
+        if self.router:
+            # OSPF
+            self.ospf_id = self.cache.ospf_id
+            # BGP
+            bgp_las = self.cache.bgp
+            # 4500x reports 0 as disabled
+            self.bgp_las = bgp_las if bgp_las != '0' else None
+            # HSRP
+            self.hsrp_pri = self.cache.hsrp
+            self.hsrp_vip = self.cache.hsrp_vip
         # stack
-        if self.actions.get_stack:
-            stack = Stack(self.snmp, self.actions)
-            self.stack = stack if stack.enabled else False
+        stack = Stack(self.snmp)
+        self.stack = stack if stack.enabled else False
         # vss
-        if self.actions.get_vss:
-            vss = VSS(self.snmp, self.actions)
-            self.vss = vss if vss.enabled else False
+        vss = VSS(self.snmp)
+        self.vss = vss if vss.enabled else False
         # serial
-        if self.actions.get_serial:
-            if self.vss:
-                self.serial = self.vss.serial
-            elif self.stack:
-                self.serial = self.stack.serial
-            else:
-                self.serial = self.cache.serial
+        if self.vss:
+            self.serial = self.vss.serial
+        elif self.stack:
+            self.serial = self.stack.serial
+        else:
+            self.serial = self.cache.serial
         # SVI
-        if self.actions.get_svi:
-            self.svis = []
-            self.cache.svi
-            for row in self.cache.svi:
-                for k, v in row:
-                    k = str(k)
-                    vlan = k.split('.')[14]
-                    svi = SVIData(vlan)
-                    svi.ips = self.get_cidrs_ifidx(v)
-                    self.svis.append(svi)
+        self.svis = []
+        self.cache.svi
+        for row in self.cache.svi:
+            for k, v in row:
+                k = str(k)
+                vlan = k.split('.')[14]
+                svi = SVIData(vlan)
+                svi.ips = self.get_cidrs_ifidx(v)
+                self.svis.append(svi)
         # loopback
-        if self.actions.get_lo:
-            self.loopbacks = []
-            self.cache.ethif
-            self.cache.ifip
-            for row in self.cache.ethif:
-                for k, v in row:
-                    k = str(k)
-                    if k.startswith(o.ETH_IF_TYPE) and v == 24:
-                        ifidx = k.split('.')[10]
-                        lo_name = lookup_table(self.cache.ethif,
-                                               f"{o.ETH_IF_DESC}.{ifidx}")
-                        lo_ip = self.get_cidrs_ifidx(ifidx)
-                        lo = LoopBackData(lo_name, lo_ip)
-                        self.loopbacks.append(lo)
+        self.loopbacks = []
+        self.cache.ethif
+        self.cache.ifip
+        for row in self.cache.ethif:
+            for k, v in row:
+                k = str(k)
+                if k.startswith(o.ETH_IF_TYPE) and v == 24:
+                    ifidx = k.split('.')[10]
+                    lo_name = lookup_table(self.cache.ethif,
+                                           f"{o.ETH_IF_DESC}.{ifidx}")
+                    lo_ip = self.get_cidrs_ifidx(ifidx)
+                    lo = LoopBackData(lo_name, lo_ip)
+                    self.loopbacks.append(lo)
         # bootfile
-        if self.actions.get_bootf:
-            self.bootfile = self.cache.bootfile
+        self.bootfile = self.cache.bootfile
         # chassis info (serial, IOS, platform)
-        if self.actions.get_chassis_info:
-            self.get_chassis()
+        self.get_chassis()
         # VPC peerlink
-        if self.actions.get_vpc:
-            self.vpc_domain, self.vpc_peerlink_if = self.get_vpc(self.cache.ethif)
+        self.vpc_domain, self.vpc_peerlink_if = self.get_vpc()
+        self.get_neighbors()
+        self.get_arp()
+        self.get_cam()
 
 
     def get_cidrs_ifidx(self, idx):
@@ -360,6 +301,13 @@ class Node(BaseData):
         return neighbors
 
 
+    def get_neighbors(self) -> None:
+        neighbors = []
+        neighbors.extend(self.get_cdp_neighbors())
+        neighbors.extend(self.get_lldp_neighbors())
+        self.neighbors = neighbors
+
+
     def get_link(self, ifidx):
         link = LinkData()
         # trunk
@@ -408,21 +356,20 @@ class Node(BaseData):
                                     f"{o.ENTPHYENTRY_PLAT}.{idx}")
                 self.ios = lookup_table(self.cache.ent_ios,
                                     f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-        if self.actions.get_ios:
-            # modular switches may have IOS on module than chassis
-            if not self.ios:
-                for row in self.cache.ent_class:
-                    for n, v in row:
-                        n = str(n)
-                        if v != 'ENTPHYCLASS_MODULE':
-                            continue
-                        t = n.split('.')
-                        idx = t[12]
-                        self.ios = lookup_table(self.cache.ent_ios,
-                                    f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-                        if self.ios:
-                            break
-            self.ios = format_ios_ver(self.ios)
+        # modular switches may have IOS on module than chassis
+        if not self.ios:
+            for row in self.cache.ent_class:
+                for n, v in row:
+                    n = str(n)
+                    if v != 'ENTPHYCLASS_MODULE':
+                        continue
+                    t = n.split('.')
+                    idx = t[12]
+                    self.ios = lookup_table(self.cache.ent_ios,
+                                f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                    if self.ios:
+                        break
+        self.ios = format_ios_ver(self.ios)
 
 
     def get_ifname(self, ifidx=None):
@@ -461,7 +408,7 @@ class Node(BaseData):
         return ip_from_cidr(self.ips[0])
 
 
-    def get_vpc(self, ifarr):
+    def get_vpc(self):
         """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         """
@@ -471,7 +418,7 @@ class Node(BaseData):
             return None, None
         domain = oid_last_token(self.cache.vpc[0][0][0])
         ifidx = str(self.cache.vpc[0][0][1])
-        ifname = lookup_table(ifarr, f"{o.ETH_IF_DESC}.{ifidx}")
+        ifname = lookup_table(self.cache.ethif, f"{o.ETH_IF_DESC}.{ifidx}")
         ifname = normalize_port(ifname)
         return domain, ifname
 
@@ -521,7 +468,7 @@ class Node(BaseData):
                     arr.append(ARPData(ip, mac, interf, type_str))
         return arr
 
-    def get_macs(self):
+    def get_cam(self):
         ''' MAC address table from this node
         '''
         if not self.queried:

@@ -15,6 +15,7 @@ SNIMPY_MIBS = [
     'SNMPv2-MIB',
     'IF-MIB',
     'IP-MIB',
+    'BRIDGE-MIB',
     'IP-FORWARD-MIB',
     'NHRP-MIB',
     'POWER-ETHERNET-MIB',
