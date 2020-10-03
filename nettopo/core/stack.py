@@ -15,15 +15,13 @@ class Stack(BaseData):
     """ Holds switch stack info and details
     Performs all duties upon initialization
     """
-    def __init__(self, snmp, actions=None):
+    def __init__(self, snmp):
         self.members = []
         self.count = 0
         self.enabled = False
-        self.actions = actions or NodeActions()
         self.items_2_show = ['enabled', 'count', 'members']
         self.cache = StackCache(snmp)
-        if self.actions.get_stack_details:
-            self.get_members()
+        self.get_members()
 
 
     @staticmethod

@@ -51,7 +51,7 @@ class Cache:
     def ent_ios(self):
         return self.snmp.get_bulk(o.ENTPHYENTRY_SOFTWARE)
 
-    # Interface properties
+    # Physical Interface properties
     @cached_property
     def link_type(self):
         return self.snmp.get_bulk(o.TRUNK_VTP)
@@ -61,20 +61,8 @@ class Cache:
         return self.snmp.get_bulk(o.LAG_LACP)
 
     @cached_property
-    def vlan(self):
-        return self.snmp.get_bulk(o.VLANS)
-
-    @cached_property
-    def vlandesc(self):
-        return self.snmp.get_bulk(o.VLAN_DESC)
-
-    @cached_property
     def ifname(self):
         return self.snmp.get_bulk(o.IFNAME)
-
-    @cached_property
-    def svi(self):
-        return self.snmp.get_bulk(o.SVI_VLANIF)
 
     @cached_property
     def ifip(self):
@@ -93,20 +81,34 @@ class Cache:
         return self.snmp.get_bulk(o.TRUNK_NATIVE)
 
     @cached_property
-    def arp(self):
-        return self.snmp.get_bulk(o.ARP)
-
-    @cached_property
-    def cam(self):
-        return self.snmp.get_bulk(o.VLAN_CAM)
-
-    @cached_property
     def portnums(self):
         return self.snmp.get_bulk(o.BRIDGE_PORTNUMS)
 
     @cached_property
     def ifindex(self):
         return self.snmp.get_bulk(o.IFINDEX)
+
+    # Virtual Interface properties
+    @cached_property
+    def vlan(self):
+        return self.snmp.get_bulk(o.VLANS)
+
+    @cached_property
+    def vlandesc(self):
+        return self.snmp.get_bulk(o.VLAN_DESC)
+
+    @cached_property
+    def svi(self):
+        return self.snmp.get_bulk(o.SVI_VLANIF)
+
+    # MAC/ARP properties
+    @cached_property
+    def arp(self):
+        return self.snmp.get_bulk(o.ARP)
+
+    @cached_property
+    def cam(self):
+        return self.snmp.get_bulk(o.VLAN_CAM)
 
     # IP properties
     @cached_property
@@ -124,8 +126,6 @@ class Cache:
     @cached_property
     def bgp(self):
         return  self.snmp.get_val(o.BGP_LAS)
-
-    # MAC/ARP properties
 
     # Multi-chassis properties
     @cached_property
@@ -164,3 +164,4 @@ class Cache:
     @cached_property
     def lldp(self):
         return self.snmp.get_bulk(o.LLDP)
+
