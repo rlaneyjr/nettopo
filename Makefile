@@ -7,6 +7,7 @@ help:
 	@echo "  clean-build   to remove build artifacts"
 	@echo "  clean-pyc     to remove Python file artifacts"
 	@echo "  lint          to check style with flake8"
+	@echo "  style         to check & report style with pycodestyle (nettopo.core)"
 	@echo "  test          to run tests quickly with the default Python"
 	@echo "  testall       to run tests on every Python version with tox"
 	@echo "  coverage      to check code coverage quickly with the default Python"
@@ -29,6 +30,10 @@ clean-pyc:
 
 lint:
 	flake8 auto-discover tests
+
+style:
+	# rm -f 'nettopo/core/style_report.txt'
+	pycodestyle 'nettopo/core' > 'nettopo/core/style_report.txt'
 
 test:
 	python -m nose

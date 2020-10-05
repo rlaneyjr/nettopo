@@ -14,6 +14,7 @@ __all__ = [
     'NettopoNetworkError',
     'NettopoDiagramError',
     'NettopoCatalogError',
+    'NettopoCacheError',
     'NettopoSNMPError',
 ]
 
@@ -22,6 +23,7 @@ class NettopoError(Exception): pass
 class NettopoNodeError(NettopoError): pass
 class NettopoNetworkError(NettopoError): pass
 class NettopoCatalogError(NettopoError): pass
+class NettopoCacheError(NettopoError): pass
 class NettopoConfigError(NettopoError): pass
 class NettopoDiagramError(NettopoError): pass
 class NettopoSNMPError(NettopoError): pass
