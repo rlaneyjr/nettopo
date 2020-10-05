@@ -239,8 +239,7 @@ class Node(BaseData):
                                         f"{o.ENTPHYENTRY_PLAT}.{idx}")
                     mac = self.cached_item('stack', f"{o.STACK_MAC}.{idx}")
                     if mac:
-                        mac_seg = [mac[x:x+4] for x in range(2, len(mac), 4)]
-                        mem.mac = '.'.join(mac_seg)
+                        mem.mac = mac_format_ascii(mac)
                     stack.members.append(mem)
         if len(stack.members) > 1:
             stack.enabled = True
@@ -315,13 +314,13 @@ class Node(BaseData):
                         pass
                     remote_ios = format_ios_ver(rios)
                 link = self.get_link(ifidx)
-                link.remote_name = val.prettyPrint()
-                link.remote_ip = remote_ip
+                link.remote_name = val.prettyPrint() if val else 'Unknown'
+                link.remote_ip = remote_ip if remote_ip else 'Unknown'
                 link.discovered_proto = 'cdp'
-                link.local_port = local_port
-                link.remote_port = remote_port
-                link.remote_plat = remote_plat
-                link.remote_ios = remote_ios
+                link.local_port = local_port if local_port else 'Unknown'
+                link.remote_port = remote_port if remote_port else 'Unknown'
+                link.remote_plat = remote_plat if remote_plat else 'Unknown'
+                link.remote_ios = remote_ios if remote_ios else 'Unknown'
                 neighbors.append(link)
         return neighbors
 
@@ -368,12 +367,11 @@ class Node(BaseData):
                                     f"{o.LLDP_DEVNAME}.{idx}")
                 link = self.get_link(ifidx)
                 link.discovered_proto = 'lldp'
-                link.remote_ip = remote_ip if remote_ip else ''
+                link.remote_ip = remote_ip if remote_ip else 'Unknown'
                 link.remote_name = remote_name if remote_name else devid
-                link.local_port = local_port
-                link.remote_port = remote_port
-                link.remote_plat = None
-                link.remote_ios = remote_ios
+                link.local_port = local_port if local_port else 'Unknown'
+                link.remote_port = remote_port if remote_port else 'Unknown'
+                link.remote_ios = remote_ios if remote_ios else 'Unknown'
                 link.remote_mac = remote_mac if remote_mac else devid
                 neighbors.append(link)
         return neighbors
