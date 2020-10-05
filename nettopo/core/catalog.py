@@ -7,7 +7,6 @@
 import os
 from nettopo.core.exceptions import NettopoCatalogError
 from nettopo.core.network import Network
-from nettopo.core.data import NodeActions
 
 
 class Catalog:
@@ -25,16 +24,17 @@ class Catalog:
     def generate(self, filename=None):
         lines = []
         for node in self.network.nodes:
-            # node.query_node()
+            if not node.queried:
+                node.query_node()
             # StackWise
-            if node.stack:
+            if node.stack.enabled:
                 for mem in node.stack.members:
-                    serial = mem.serial or 'NotPolled'
-                    plat = mem.plat or 'NotPolled'
+                    serial = mem.serial or 'Unknown'
+                    plat = mem.plat or 'Unknown'
                     lines.append(f"{node.name},{node.ip[0]},{plat},{node.ios}, \
                                         {serial},STACK,{node.bootfile}\n")
             # VSS
-            elif node.vss:
+            elif node.vss.enabled:
                 for i in range(0, 2):
                     serial = node.vss.members[i].serial
                     plat = node.vss.members[i].plat

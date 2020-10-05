@@ -24,13 +24,26 @@ DEFAULT_COMMS = ['public', 'private', 'letmeSNMP']
 DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
                     ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)))
 
+# Typing shortcuts
+DLS = Union[dict, list, str]
+IP = Union[str, IPAddress]
+
 
 class SNMP:
-    def __init__(self, ip='0.0.0.0', port=161):
-        self.success = False
-        self.community = None
+    def __init__(self, ip: IP='0.0.0.0', port: int=161, *, **kwargs) -> None:
         self.ip = str(ip) if isinstance(ip, IPAddress) else ip
         self.port = port
+        self.success = False
+        self.community = None
+        self.default_comms = DEFAULT_COMMS
+        self.vulnerable = False
+        if kwargs:
+            for key,val in kwargs.items():
+                if key == 'community':
+                    self.default_comms.append(val)
+        self.get_creds(self.default_comms)
+        if self.success:
+            self.vulnerable = True
 
     def check_community(self, community: str) -> bool:
         cmdGen = cmdgen.CommandGenerator()
@@ -45,7 +58,7 @@ class SNMP:
             self.community = community
         return self.success
 
-    def get_creds(self, snmp_creds: Union[dict, list, str]) -> bool:
+    def get_creds(self, snmp_creds: DLS) -> bool:
         if isinstance(snmp_creds, str):
             if self.check_community(snmp_creds):
                 return True
@@ -74,7 +87,7 @@ class SNMP:
                 return None
             return r
 
-    def get_bulk(self, oid):
+    def get_bulk(self, oid) -> Union[list, None]:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
                         cmdgen.CommunityData(self.community),
@@ -352,51 +365,4 @@ def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)
-
-from nettopo.core.snmp import multi_node_bulk_query, SnmpHandler, SNMP
-sw1 = SNMP('10.0.0.1')
-sw2 = SNMP('10.0.0.2')
-sw1.community = 'letmeSNMP'
-sw2.community = 'letmeSNMP'
-hosts = [sw1,sw2]
-multi_node_bulk_query(hosts)
-
-"""
-SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
-
-SNMPv2-MIB::sysName.0 = switch1.icloudmon.local
-----------------------------------------------------------------------------------------------------
-SNMPv2-MIB::sysDescr.0 = Cisco IOS Software [Everest], Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 16.6.4a, RELEASE SOFTWARE (fc3)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2018 by Cisco Systems, Inc.
-Compiled Fri 26-Oct-18 18:32
-----------------------------------------------------------------------------------------------------
-SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
-
-SNMPv2-MIB::sysName.0 = switch1.icloudmon.local
-----------------------------------------------------------------------------------------------------
-SNMPv2-MIB::sysDescr.0 = Cisco IOS Software [Everest], Catalyst L3 Switch Software (CAT3K_CAA-UNIVERSALK9-M), Version 16.6.4a, RELEASE SOFTWARE (fc3)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2018 by Cisco Systems, Inc.
-Compiled Fri 26-Oct-18 18:32
-----------------------------------------------------------------------------------------------------
-SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
-
-SNMPv2-MIB::sysName.0 = switch2.icloudmon.local
-----------------------------------------------------------------------------------------------------
-SNMPv2-MIB::sysDescr.0 = Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(4)E7, RELEASE SOFTWARE (fc2)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2018 by Cisco Systems, Inc.
-Compiled Tue 18-Sep-18 12:50 by prod_rel_team
-----------------------------------------------------------------------------------------------------
-SUCCESS: <nettopo.core.snmp.SNMP object at 0x108151940>, UdpTransportTarget(('10.0.0.2', 161), timeout=1, retries=5, tagList=b'')
-
-SNMPv2-MIB::sysName.0 = switch2.icloudmon.local
-----------------------------------------------------------------------------------------------------
-SNMPv2-MIB::sysDescr.0 = Cisco IOS Software, C3750E Software (C3750E-UNIVERSALK9-M), Version 15.2(4)E7, RELEASE SOFTWARE (fc2)
-Technical Support: http://www.cisco.com/techsupport
-Copyright (c) 1986-2018 by Cisco Systems, Inc.
-Compiled Tue 18-Sep-18 12:50 by prod_rel_team
-----------------------------------------------------------------------------------------------------
-"""
 

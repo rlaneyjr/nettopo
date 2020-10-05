@@ -9,14 +9,18 @@ Version:            0.1.1
 '''
 from functools import cached_property
 from nettopo.core.constants import ARP, DCODE, NODE
+from nettopo.core.exceptions import NettopoCacheError
 from nettopo.core.snmp import SNMP
 from nettopo.oids import Oids
+
 o = Oids()
 
 
 class Cache:
     def __init__(self, snmp_object: SNMP) -> None:
         self.snmp = snmp_object
+        if not self.snmp.success:
+            raise NettopoCacheError(f"ERROR: SNMP object {self.snmp.ip} creds")
 
     # Physical properties
     @cached_property
@@ -101,15 +105,6 @@ class Cache:
     def svi(self):
         return self.snmp.get_bulk(o.SVI_VLANIF)
 
-    # MAC/ARP properties
-    @cached_property
-    def arp(self):
-        return self.snmp.get_bulk(o.ARP)
-
-    @cached_property
-    def cam(self):
-        return self.snmp.get_bulk(o.VLAN_CAM)
-
     # IP properties
     @cached_property
     def router(self):
@@ -156,12 +151,20 @@ class Cache:
     def vss_module(self):
         return self.snmp.get_bulk(o.VSS_MODULES)
 
-    # Neighbor properties
-    @cached_property
+    # We don't cache data can change
     def cdp(self):
         return self.snmp.get_bulk(o.CDP)
 
-    @cached_property
     def lldp(self):
         return self.snmp.get_bulk(o.LLDP)
+
+    def arp(self):
+        return self.snmp.get_bulk(o.ARP)
+
+    def cam(self, community: str=None):
+        if community:
+            old_com = self.snmp.community
+            self.snmp.community = community
+            cam = self.snmp.get_bulk(o.VLAN_CAM)
+            self.snmp.community = old_com
 

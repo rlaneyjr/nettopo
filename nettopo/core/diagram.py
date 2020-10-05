@@ -12,11 +12,17 @@ import os
 from nettopo.core.exceptions import NettopoDiagramError
 from nettopo.core.config import DiagramDefaults
 from nettopo.core.network import Network
-from nettopo.core.templates import node_template, credits_template, link_template
+from nettopo.core.templates import (
+    node_template,
+    credits_template,
+    link_template,
+)
 from nettopo.core.util import get_path, get_port_module
 
 
 class DotNode:
+    ''' Represents a network node for a DOT diagram
+    '''
     def __init__(self, node, config):
         self.node = node
         self.config = config
@@ -25,13 +31,13 @@ class DotNode:
         self.style = 'solid'
         self.peripheries = 1
         # set the node properties
-        if self.node.vss:
+        if self.node.vss.enabled:
             if self.config.expand_vss:
                 self.ntype = 'vss'
             else:
                 # group VSS into one diagram node
                 self.peripheries = 2
-        if self.node.stack:
+        if self.node.stack.enabled:
             if self.config.expand_stackwise:
                 self.ntype = 'stackwise'
             else:
@@ -42,10 +48,14 @@ class DotNode:
 
     @property
     def label(self):
-        temp = Template(node_template)
+        return self.label
+
+    @label.setter
+    def label(self):
+        template = Template(node_template)
         # env = Environment()
         # temp = env.from_string(node_template)
-        return temp.render(node=self.node, config=self.config)
+        return template.render(node=self.node, config=self.config)
 
 
 class Diagram:
@@ -90,6 +100,12 @@ class Diagram:
             else:
                 raise NettopoDiagramError(f"Error: Output type {file_ext} \
                                                             does not exist.")
+
+
+    @staticmethod
+    def lag_in_links(lag_name, links):
+        devs = [link.node.name for link in links if lag_name in link.local_lag]
+        return True if devs else False
 
 
     def build(self, diagram, node):
@@ -165,7 +181,7 @@ class Diagram:
             self.build(diagram, link.node)
             # determine if this link should be broken out or not
             if any([self.config.expand_lag,
-                    link.local_lag == 'UNKNOWN',
+                    link.local_lag == 'Unknown',
                     self.lag_in_links(link.local_lag, node.links)]):
                 # a LAG could span different devices, eg Nexus.
                 # in this case we always break it out, otherwise we could
@@ -179,9 +195,9 @@ class Diagram:
     def create_link(self, node, link, is_lag):
         lag_members = len([lnk for lnk in node.links
                            if lnk.local_lag == link.local_lag])
-        temp = Template(link_template)
-        link_label = temp.render(node=node, link=link, is_lag=is_lag,
-                                 lag_members=lag_members)
+        template = Template(link_template)
+        link_label = template.render(node=node, link=link, is_lag=is_lag,
+                                     lag_members=lag_members)
         if link.link_type == '1':
             # Trunk = Bold/Blue
             link_color = 'blue'
@@ -212,9 +228,3 @@ class Diagram:
                           color=link_color,
                           style=link_style)
         return edge
-
-
-    @staticmethod
-    def lag_in_links(lag_name, links):
-        devs = [link.node.name for link in links if lag_name in link.local_lag]
-        return True if devs else False

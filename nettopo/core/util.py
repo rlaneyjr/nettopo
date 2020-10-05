@@ -41,18 +41,20 @@ __all__ = [
 def build_uuid():
     return str(uuid.uuid4())
 
+
 def timethis(func):
     @wraps(func)
     def run_func(*args, **kwargs):
         start = timer()
         run = func(*args, **kwargs)
         end = timer() - start
-        h=int(end/3600)
-        m=int((end-(h*3600))/60)
-        s=end-(int(end/3600)*3600)-(m*60)
+        h = int(end / 3600)
+        m = int((end - (h * 3600)) / 60)
+        s = end - (int(end / 3600) * 3600) - (m * 60)
         print(f"Completed in {h}:{m}:{s:.2f}")
         return run
     return run_func
+
 
 def bits_from_mask(netm):
     cidr = 0
@@ -65,27 +67,39 @@ def bits_from_mask(netm):
             v = v >> 1
     return cidr
 
+
 def in_cidr(ip, cidr):
     t = cidr.split('/')
     cidr_ip = t[0]
-    cidr_m  = t[1]
+    cidr_m = t[1]
     o = cidr_ip.split('.')
-    cidr_ip = ((int(o[0])<<24) + (int(o[1]) << 16) + (int(o[2]) << 8) + (int(o[3])))
+    cidr_ip = (
+        (int(o[0]) << 24)
+        + (int(o[1]) << 16)
+        + (int(o[2]) << 8)
+        + (int(o[3]))
+    )
     cidr_mb = 0
     zeros = 32 - int(cidr_m)
     for b in range(0, zeros):
         cidr_mb = (cidr_mb << 1) | 0x01
     cidr_mb = 0xFFFFFFFF & ~cidr_mb
     o = ip.split('.')
-    ip = ((int(o[0])<<24) + (int(o[1]) << 16) + (int(o[2]) << 8) + (int(o[3])))
+    ip = (
+        (int(o[0]) << 24)
+        + (int(o[1]) << 16)
+        + (int(o[2]) << 8)
+        + (int(o[3]))
+    )
     return ((cidr_ip & cidr_mb) == (ip & cidr_mb))
+
 
 def normalize_host(host: Union[str, list], domains: list=None):
     # some devices (eg Motorola) report as hex strings
     if host.startswith('0x'):
         try:
             host = binascii.unhexlify(host[2:]).decode('utf-8')
-        except:
+        except Exception:
             # this can fail if the node gives us bad data - revert to original
             # ex, lldp can advertise MAC as hostname, and it might not convert
             # to ascii
@@ -107,6 +121,7 @@ def normalize_host(host: Union[str, list], domains: list=None):
     host = host.rstrip(' \r\n\0')
     return host
 
+
 def normalize_port(port: str=None):
     if not port:
         return 'UNKNOWN'
@@ -122,10 +137,16 @@ def normalize_port(port: str=None):
         port = port.replace('Po', 'po')
     return port
 
-def ip_2_str(_ip):
-    ip = int(_ip, 0)
-    ip = '%i.%i.%i.%i' % (((ip >> 24) & 0xFF), ((ip >> 16) & 0xFF), ((ip >> 8) & 0xFF), (ip & 0xFF))
+
+def ip_2_str(ip):
+    ip = int(ip, 0)
+    seg1 = ((ip >> 24) & 0xFF)
+    seg2 = ((ip >> 16) & 0xFF)
+    seg3 = ((ip >> 8) & 0xFF)
+    seg4 = (ip & 0xFF)
+    ip = f"{seg1}.{seg2}.{seg3}.{seg4}"
     return ip
+
 
 def get_port_module(port):
     try:
@@ -136,6 +157,7 @@ def get_port_module(port):
         pass
     return False
 
+
 def ip_from_cidr(cidr):
     try:
         s = re.search('^(.*)/[0-9]{1,2}$', cidr)
@@ -145,6 +167,7 @@ def ip_from_cidr(cidr):
         pass
     return cidr
 
+
 def get_path(pattern):
     try:
         match = re.search('{([^\}]*)}', pattern)
@@ -152,6 +175,7 @@ def get_path(pattern):
     except:
         return [pattern]
     return [pattern.replace(match[0], token) for token in tokens]
+
 
 def format_ios_ver(img):
     x = img.decode("utf-8") if isinstance(img, bytes) else img
@@ -165,6 +189,7 @@ def format_ios_ver(img):
         return img_s.group(2)
     return img
 
+
 def mac_ascii_to_hex(mac_str):
     mac_str = re.sub('[\.:]', '', mac_str)
     if not len(mac_str) == 12:
@@ -174,29 +199,36 @@ def mac_ascii_to_hex(mac_str):
         mac_hex += chr(int(mac_str[i:i+2], 16))
         return mac_hex
 
-def mac_hex_to_ascii(mac_hex, inc_dots):
+
+def mac_hex_to_ascii(mac_hex, inc_dots: bool=True) -> str:
     ''' Format a hex MAC string to ASCII
-    Args:
-        mac_hex:    Value from SNMP
-        inc_dots:   1 to format as aabb.ccdd.eeff, 0 to format aabbccddeeff
-    Returns:
+
+    :param:     mac_hex
+        Value from SNMP
+    :param:bool:     inc_dots
+        True to format as 'aabb.ccdd.eeff' (default)
+        False to format as 'aabbccddeeff'
+    :return:str:
         String representation of the mac_hex
     '''
     v = mac_hex[2:]
     ret = ''
     for i in range(0, len(v), 4):
         ret += v[i:i+4]
-        if inc_dots and (i+4) < len(v):
+        if inc_dots and (i + 4) < len(v):
             ret += '.'
     return ret
 
-def mac_format_ascii(mac_hex, inc_dots):
+
+def mac_format_ascii(mac_hex, inc_dots: bool=True):
     v = mac_hex.prettyPrint()
     return mac_hex_to_ascii(v, inc_dots)
+
 
 def mac_format_cisco(devid):
     mac_seg = [devid[x:x+4] for x in xrange(2, len(devid), 4)]
     return '.'.join(mac_seg)
+
 
 def parse_allowed_vlans(allowed_vlans):
     if not allowed_vlans.startswith('0x'):
@@ -208,7 +240,7 @@ def parse_allowed_vlans(allowed_vlans):
         v = int(allowed_vlans[i], 16)
         for b in range(0, 4):
             a = v & (0x1 << (3 - b))
-            vlan = ((i-2)*4)+b
+            vlan = ((i - 2) * 4) + b
             if a:
                 if op:
                     group += 1
@@ -238,6 +270,7 @@ def parse_allowed_vlans(allowed_vlans):
             ret += ',1001'
     return ret if ret else 'All'
 
+
 def in_acl(item, acl):
         if acl == 'any':
             return True
@@ -251,17 +284,20 @@ def in_acl(item, acl):
                 return True
         return False
 
+
 def str_matches_pattern(string, pattern):
     return True if string == '*' or re.search(pattern, string) else False
 
-def lookup_table(table, name):
-    if table:
-        for row in table:
-            for n, v in row:
-                if name in str(n):
-                    return v.prettyPrint()
-    else:
+
+def lookup_table(table, item):
+    if not table:
         return None
+    for row in table:
+        for n, v in row:
+            if item in str(n):
+                return v.prettyPrint()
+    return None
+
 
 def oid_last_token(objectId):
     oid = objectId.getOid()

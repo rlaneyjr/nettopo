@@ -11,9 +11,11 @@ from typing import Any, List
 
 __all__ = [
     'BaseData',
-    'NodeActions',
     'LinkData',
+    'VssData',
+    'VssMemberData',
     'StackData',
+    'StackMemberData',
     'SVIData',
     'LoopBackData',
     'VLANData',
@@ -40,12 +42,17 @@ class BaseData:
     @property
     def show(self) -> dict:
         _dict = {}
-        for item in self.items_2_show:
-            if hasattr(self, item):
-                val = self.__getattribute__(item)
-            else:
-                val = None
-            _dict.update({item: val})
+        if hasattr(self, 'items_2_show'):
+            show_items = self.items_2_show
+        else:
+            show_items = self._as_dict().keys()
+        for item in show_items:
+            try:
+                val = getattr(self, item)
+            except ValueError:
+                val = 'Unknown'
+            finally:
+                _dict.update({item: val})
         return _dict
 
     def __str__(self) -> str:
@@ -56,29 +63,6 @@ class BaseData:
         items = [f"{key}={val}" for key, val in self.show.items()]
         items = ",".join(items)
         return f"<{items}>"
-
-
-class NodeActions:
-    def __init__(self, init: bool=True):
-        self.get_name = init
-        self.get_ip = init
-        self.get_plat = init
-        self.get_ios = init
-        self.get_router = init
-        self.get_ospf_id = init
-        self.get_bgp_las = init
-        self.get_hsrp_pri = init
-        self.get_hsrp_vip = init
-        self.get_serial = init
-        self.get_stack = init
-        self.get_stack_details = init
-        self.get_vss = init
-        self.get_vss_details = init
-        self.get_svi = init
-        self.get_lo = init
-        self.get_bootf = init
-        self.get_chassis_info = init
-        self.get_vpc = init
 
 
 class LinkData(BaseData):
@@ -107,7 +91,14 @@ class LinkData(BaseData):
         self.items_2_show = ['local_port', 'remote_name', 'remote_port']
 
 
-class VSSData(BaseData):
+class VssData(BaseData):
+    def __init__(self):
+        self.enabled = False
+        self.members = []
+        self.domain = None
+
+
+class VssMemberData(BaseData):
     def __init__(self):
         self.ios = None
         self.serial = None
@@ -115,6 +106,13 @@ class VSSData(BaseData):
 
 
 class StackData(BaseData):
+    def __init__(self):
+        self.enabled = False
+        self.members = []
+        self.count = 0
+
+
+class StackMemberData(BaseData):
     def __init__(self):
         self.num = 0
         self.role = None
@@ -158,3 +156,4 @@ class MACData(BaseData):
         self.vlan = int(vlan)
         self.mac = mac
         self.port = port
+

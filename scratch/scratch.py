@@ -102,4 +102,12 @@ sw2.login()
 print(sw1.device_type)
 print(sw2.device_type)
 
+#############################################################
+from nettopo.core.snmp import multi_node_bulk_query, SnmpHandler, SNMP
+sw1 = SNMP('10.0.0.1')
+sw2 = SNMP('10.0.0.2')
+sw1.community = 'letmeSNMP'
+sw2.community = 'letmeSNMP'
+hosts = [sw1,sw2]
+multi_node_bulk_query(hosts)
 
