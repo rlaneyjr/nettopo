@@ -139,6 +139,8 @@ def normalize_port(port: str=None):
 
 
 def ip_2_str(ip):
+    if ip is None:
+        return ip
     ip = int(ip, 0)
     seg1 = ((ip >> 24) & 0xFF)
     seg2 = ((ip >> 16) & 0xFF)
@@ -178,7 +180,7 @@ def get_path(pattern):
 
 
 def format_ios_ver(img):
-    x = img.decode("utf-8") if isinstance(img, bytes) else img
+    x = img.decode("utf-8") if isinstance(img, bytes) else str(img)
     try:
         img_s = re.search('(Version:? |CCM:)([^ ,$]*)', x)
     except:
@@ -200,7 +202,7 @@ def mac_ascii_to_hex(mac_str):
         return mac_hex
 
 
-def mac_hex_to_ascii(mac_hex, inc_dots: bool=True) -> str:
+def mac_hex_to_ascii(mac_hex, inc_dots: bool=True, inc_colon: bool=False) -> str:
     ''' Format a hex MAC string to ASCII
 
     :param:     mac_hex
@@ -211,13 +213,19 @@ def mac_hex_to_ascii(mac_hex, inc_dots: bool=True) -> str:
     :return:str:
         String representation of the mac_hex
     '''
+    if not str(mac_hex).startswith('0x'):
+        return mac_hex
     v = mac_hex[2:]
-    ret = ''
-    for i in range(0, len(v), 4):
-        ret += v[i:i+4]
-        if inc_dots and (i + 4) < len(v):
-            ret += '.'
-    return ret
+    mac = ''
+    if inc_dots and not inc_colon:
+        mac_segs = [str(v[i:i+4]) for i in range(len(v), step=4)]
+        mac = '.'.join(mac_seg)
+    elif inc_colon and not inc_dots:
+        mac_segs = [str(v[i:i+2]) for i in range(len(v), step=2)]
+        mac = ':'.join(mac_seg)
+    else:
+        mac = str(v)
+    return mac
 
 
 def mac_format_ascii(mac_hex, inc_dots: bool=True):
@@ -226,7 +234,7 @@ def mac_format_ascii(mac_hex, inc_dots: bool=True):
 
 
 def mac_format_cisco(devid):
-    mac_seg = [devid[x:x+4] for x in xrange(2, len(devid), 4)]
+    mac_seg = [devid[x:x+4] for x in range(2, len(devid), 4)]
     return '.'.join(mac_seg)
 
 
