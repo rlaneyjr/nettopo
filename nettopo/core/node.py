@@ -18,6 +18,8 @@ from nettopo.core.data import (
     VssMemberData,
     StackData,
     StackMemberData,
+    ChassisData,
+    VPCData,
     SVIData,
     LoopBackData,
     VLANData,
@@ -146,12 +148,12 @@ class Node(BaseData):
         # bootfile
         self.bootfile = self.cache.bootfile
         # chassis info (serial, IOS, platform)
-        serial, plat, ios = self.get_chassis()
-        if serial and not self.serial:
+        self.chassis = self.get_chassis()
+        if self.chassis.serial and not self.serial:
             self.serial = serial
-        if plat:
+        if self.chassis.plat:
             self.plat = plat
-        if ios:
+        if self.chassis.ios:
             self.ios = ios
         # VPC peerlink polulates self.vpc
         self.vpc = self.get_vpc()
@@ -192,15 +194,21 @@ class Node(BaseData):
                     if str(v) == str(idx):
                         t = n.split('.')
                         ip = ".".join(t[10:])
-                        mask = self.cached_item('ifip',
-                                            f"{o.IF_IP_NETM}{ip}")
-                        mask = bits_from_mask(mask)
-                        cidr = f"{ip}/{mask}"
-                        ips.append(cidr)
+                        if ip:
+                            mask = self.cached_item('ifip',
+                                                f"{o.IF_IP_NETM}{ip}")
+                            if mask:
+                                mask = bits_from_mask(mask)
+                                cidr = f"{ip}/{mask}"
+                            else:
+                                cidr = f"{ip}/32"
+                            ips.append(cidr)
         if len(ips) == 1:
             return ips[0]
-        else:
+        elif len(ips) > 1:
             return ips
+        else:
+            return None
 
 
     def get_stack(self)-> StackData:
@@ -219,22 +227,21 @@ class Node(BaseData):
                     for role in enumerate(stack_roles, start=1):
                         if role_num == role[0]:
                             mem.role = role[1]
+                    if hasattr(mem, 'role'):
+                        continue
                     mem.pri = self.cached_item('stack',
-                                         f"{o.STACK_PRI}.{idx}")
+                                        f"{o.STACK_PRI}.{idx}")
                     mem.img = self.cached_item('stack',
-                                         f"{o.STACK_IMG}.{idx}")
-                    if self.cache.ent_serial:
-                        mem.serial = self.cached_item('ent_serial',
-                                            f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-                    if self.cache.ent_plat:
-                        mem.plat = self.cached_item('ent_plat',
-                                              f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                    mem.mac = self.cached_item('stack',
-                                         f"{o.STACK_MAC}.{idx}")
-                    mac_seg = [mem.mac[x:x+4] for x in range(2, len(mem.mac), 4)]
-                    mem.mac = '.'.join(mac_seg)
-                    if mem.role:
-                        stack.members.append(mem)
+                                        f"{o.STACK_IMG}.{idx}")
+                    mem.serial = self.cached_item('ent_serial',
+                                        f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+                    mem.plat = self.cached_item('ent_plat',
+                                        f"{o.ENTPHYENTRY_PLAT}.{idx}")
+                    mac = self.cached_item('stack', f"{o.STACK_MAC}.{idx}")
+                    if mac:
+                        mac_seg = [mac[x:x+4] for x in range(2, len(mac), 4)]
+                        mem.mac = '.'.join(mac_seg)
+                    stack.members.append(mem)
         if len(stack.members) > 1:
             stack.enabled = True
             stack.count = len(stack.members)
@@ -288,7 +295,7 @@ class Node(BaseData):
                 t = oid.split('.')
                 ifidx = t[14]
                 ifidx2 = t[15]
-                idx = ".".join(ifidx, ifidx2)
+                idx = ".".join([ifidx, ifidx2])
                 # get remote IP
                 rip = self.cached_item('cdp', f"{o.CDP_IPADDR}.{idx}")
                 remote_ip = ip_2_str(rip)
@@ -336,7 +343,7 @@ class Node(BaseData):
                 t = oid.split('.')
                 ifidx = t[12]
                 ifidx2 = t[13]
-                idx = ".".join(ifidx, ifidx2)
+                idx = ".".join([ifidx, ifidx2])
                 local_port = self.get_ifname(ifidx)
                 if oid.startswith(f"{o.LLDP_DEVADDR}.{idx}"):
                     remote_ip = '.'.join(t[16:])
@@ -397,13 +404,11 @@ class Node(BaseData):
                                       f"{o.TRUNK_VTP}.{ifidx}")
         # trunk
         if link.link_type == '1':
-            native_vlan = self.cached_item('trunk_native',
+            link.local_native_vlan = self.cached_item('trunk_native',
                                        f"{o.TRUNK_NATIVE}.{ifidx}")
             trunk_allowed = self.cached_item('trunk_allowed',
                                          f"{o.TRUNK_ALLOW}.{ifidx}")
-            allowed_vlans = parse_allowed_vlans(trunk_allowed)
-            link.local_native_vlan = native_vlan or None
-            link.local_allowed_vlans = allowed_vlans or 'All'
+            link.local_allowed_vlans = parse_allowed_vlans(trunk_allowed)
         # LAG membership
         lag = self.cached_item('lag', f"{o.LAG_LACP}.{ifidx}")
         if lag:
@@ -411,15 +416,14 @@ class Node(BaseData):
             link.local_lag_ips = self.get_ips_from_index(lag)
             link.remote_lag_ips = []
         # VLAN info
-        vlan = self.cached_item('vlan', f"{o.IF_VLAN}.{ifidx}")
-        link.vlan = vlan or None
+        link.vlan = self.cached_item('vlan', f"{o.IF_VLAN}.{ifidx}")
         # IP address
-        local_if_ips = self.get_ips_from_index(ifidx)
-        link.local_if_ip = local_if_ips or None
+        link.local_if_ip = self.get_ips_from_index(ifidx)
         return link
 
 
     def get_chassis(self) -> tuple:
+        chassis = ChassisData()
         for row in self.cache.ent_class:
             for n, v in row:
                 n = str(n)
@@ -427,14 +431,14 @@ class Node(BaseData):
                     continue
                 t = n.split('.')
                 idx = t[12]
-                serial = self.cached_item('ent_serial',
+                chassis.serial = self.cached_item('ent_serial',
                                     f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-                plat = self.cached_item('ent_plat',
+                chassis.plat = self.cached_item('ent_plat',
                                     f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                ios = self.cached_item('ent_ios',
+                chassis.ios = self.cached_item('ent_ios',
                                     f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
                 # Modular switches have IOS on module
-                if not ios:
+                if not chassis.ios:
                     for row in self.cache.ent_class:
                         for n, v in row:
                             n = str(n)
@@ -446,8 +450,8 @@ class Node(BaseData):
                                         f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
                             if ios:
                                 break
-                ios = format_ios_ver(ios)
-        return (serial, plat, ios)
+                chassis.ios = format_ios_ver(ios)
+        return chassis
 
 
     def get_system_name(self, domains=None):
@@ -483,15 +487,16 @@ class Node(BaseData):
         """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         """
+        vpc = VPCData()
         if not self.queried:
             self.query_node()
         if not self.cache.vpc:
-            self.vpc.domain = None, None
-        domain = oid_last_token(self.cache.vpc[0][0][0])
+            return vpc
+        vpc.domain = oid_last_token(self.cache.vpc[0][0][0])
         ifidx = str(self.cache.vpc[0][0][1])
         ifname = self.cached_item('ethif', f"{o.ETH_IF_DESC}.{ifidx}")
-        ifname = normalize_port(ifname)
-        return domain, ifname
+        vpc.ifname = normalize_port(ifname)
+        return vpc
 
 
     def get_loopbacks(self) -> List[LoopBackData]:

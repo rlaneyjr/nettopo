@@ -124,6 +124,19 @@ class StackMemberData(BaseData):
         self.items_2_show = ['num', 'role', 'serial']
 
 
+class ChassisData(BaseData):
+    def __init__(self):
+        self.serial = None
+        self.plat = None
+        self.ios = None
+
+
+class VPCData(BaseData):
+    def __init__(self):
+        self.domain = None
+        self.ifname = None
+
+
 class SVIData(BaseData):
     def __init__(self, vlan):
         self.vlan = vlan
