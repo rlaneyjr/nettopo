@@ -152,19 +152,18 @@ class Cache:
         return self.snmp.get_bulk(o.VSS_MODULES)
 
     # We don't cache data can change
+    @property
     def cdp(self):
         return self.snmp.get_bulk(o.CDP)
 
+    @property
     def lldp(self):
         return self.snmp.get_bulk(o.LLDP)
 
+    @property
     def arp(self):
         return self.snmp.get_bulk(o.ARP)
 
-    def cam(self, community: str=None):
-        if community:
-            old_com = self.snmp.community
-            self.snmp.community = community
-            cam = self.snmp.get_bulk(o.VLAN_CAM)
-            self.snmp.community = old_com
-
+    @property
+    def cam(self):
+        return self.snmp.get_bulk(o.VLAN_CAM)
