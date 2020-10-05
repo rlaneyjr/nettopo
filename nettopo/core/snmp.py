@@ -30,7 +30,7 @@ IP = Union[str, IPAddress]
 
 
 class SNMP:
-    def __init__(self, ip: IP='0.0.0.0', port: int=161, *, **kwargs) -> None:
+    def __init__(self, ip: IP='0.0.0.0', port: int=161, **kwargs) -> None:
         self.ip = str(ip) if isinstance(ip, IPAddress) else ip
         self.port = port
         self.success = False

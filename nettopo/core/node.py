@@ -45,6 +45,7 @@ from typing import Union, List, Any
 
 # Typing shortcuts
 LSIN = Union[list, str, int, None]
+UIS = Union[int, str]
 
 # Easy access to our OIDs
 o = Oids()
@@ -164,10 +165,21 @@ class Node(BaseData):
         self.mac_table = self.get_cam()
 
 
+    def cached_item(self, cache_name: str, item: str) -> Union[Any, None]:
+        try:
+            table = self.cache[cache_name]
+            for row in table:
+                for n, v in row:
+                    if item in str(n):
+                        return v.prettyPrint()
+        except Exception:
+            return None
+
+
     def get_ifname(self, ifidx=None):
         if not ifidx or ifidx == o.ERR:
             return 'Unknown'
-        res = lookup_table(self.cache.ifname, f"{o.IFNAME}.{ifidx}")
+        res = self.cached_item('ifname', f"{o.IFNAME}.{ifidx}")
         return normalize_port(res) or 'Unknown'
 
 
@@ -180,7 +192,7 @@ class Node(BaseData):
                     if str(v) == str(idx):
                         t = n.split('.')
                         ip = ".".join(t[10:])
-                        mask = lookup_table(self.cache.ifip,
+                        mask = self.cached_item('ifip',
                                             f"{o.IF_IP_NETM}{ip}")
                         mask = bits_from_mask(mask)
                         cidr = f"{ip}/{mask}"
@@ -202,22 +214,22 @@ class Node(BaseData):
                     # Get info on this stack member and add to the list
                     mem = StackMemberData()
                     mem.num = v
-                    role_num = lookup_table(self.cache.stack,
+                    role_num = self.cached_item('stack',
                                           f"{o.STACK_ROLE}.{idx}")
                     for role in enumerate(stack_roles, start=1):
                         if role_num == role[0]:
                             mem.role = role[1]
-                    mem.pri = lookup_table(self.cache.stack,
+                    mem.pri = self.cached_item('stack',
                                          f"{o.STACK_PRI}.{idx}")
-                    mem.img = lookup_table(self.cache.stack,
+                    mem.img = self.cached_item('stack',
                                          f"{o.STACK_IMG}.{idx}")
                     if self.cache.ent_serial:
-                        mem.serial = lookup_table(self.cache.ent_serial,
+                        mem.serial = self.cached_item('ent_serial',
                                             f"{o.ENTPHYENTRY_SERIAL}.{idx}")
                     if self.cache.ent_plat:
-                        mem.plat = lookup_table(self.cache.ent_plat,
+                        mem.plat = self.cached_item('ent_plat',
                                               f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                    mem.mac = lookup_table(self.cache.stack,
+                    mem.mac = self.cached_item('stack',
                                          f"{o.STACK_MAC}.{idx}")
                     mac_seg = [mem.mac[x:x+4] for x in range(2, len(mem.mac), 4)]
                     mem.mac = '.'.join(mac_seg)
@@ -230,8 +242,7 @@ class Node(BaseData):
 
 
     def get_vss(self) -> VssData:
-        vss = {'enabled': False, 'members': [], 'domain': None}
-        vss = VssData(**vss)
+        vss = VssData()
         if self.cache.vss_mode != '2':
             return vss
         vss.enabled = True
@@ -242,14 +253,14 @@ class Node(BaseData):
                 if v == 1:
                     modidx = str(n).split('.')[14]
                     # we want only chassis - line card module have no software
-                    ios = lookup_table(self.cache.ent_ios,
+                    ios = self.cached_item('ent_ios',
                                        f"{o.ENTPHYENTRY_SOFTWARE}.{modidx}")
                     if ios:
                         member = VssMemberData()
                         member.ios = ios
-                        member.plat = lookup_table(self.cache.ent_plat,
+                        member.plat = self.cached_item('ent_plat',
                                                    f"{o.ENTPHYENTRY_PLAT}.{modidx}")
-                        member.serial = lookup_table(self.cache.ent_serial,
+                        member.serial = self.cached_item('ent_serial',
                                                      f"{o.ENTPHYENTRY_SERIAL}.{modidx}")
                         vss.members.append(member)
                         chassis += 1
@@ -279,17 +290,17 @@ class Node(BaseData):
                 ifidx2 = t[15]
                 idx = ".".join(ifidx, ifidx2)
                 # get remote IP
-                rip = lookup_table(self.cache.cdp, f"{o.CDP_IPADDR}.{idx}")
+                rip = self.cached_item('cdp', f"{o.CDP_IPADDR}.{idx}")
                 remote_ip = ip_2_str(rip)
                 # get local port
                 local_port = self.get_ifname(ifidx)
                 # get remote port
-                rport = lookup_table(self.cache.cdp, f"{o.CDP_DEVPORT}.{idx}")
+                rport = self.cached_item('cdp', f"{o.CDP_DEVPORT}.{idx}")
                 remote_port = normalize_port(rport)
                 # get remote platform
-                remote_plat = lookup_table(self.cache.cdp, f"{o.CDP_DEVPLAT}.{idx}")
+                remote_plat = self.cached_item('cdp', f"{o.CDP_DEVPLAT}.{idx}")
                 # get IOS version
-                rios = lookup_table(self.cache.cdp, f"{o.CDP_IOS}.{idx}")
+                rios = self.cached_item('cdp', f"{o.CDP_IOS}.{idx}")
                 if rios:
                     try:
                         rios = binascii.unhexlify(rios[2:])
@@ -329,16 +340,16 @@ class Node(BaseData):
                 local_port = self.get_ifname(ifidx)
                 if oid.startswith(f"{o.LLDP_DEVADDR}.{idx}"):
                     remote_ip = '.'.join(t[16:])
-                rport = lookup_table(self.cache.lldp,
+                rport = self.cached_item('lldp',
                                      f"{o.LLDP_DEVPORT}.{idx}")
                 remote_port = normalize_port(rport)
-                devid = lookup_table(self.cache.lldp,
+                devid = self.cached_item('lldp',
                                      f"{o.LLDP_DEVID}.{idx}")
                 try:
                     remote_mac = mac_format_cisco(devid)
                 except:
                     pass
-                rios = lookup_table(self.cache.lldp,
+                rios = self.cached_item('lldp',
                                     f"{o.LLDP_DEVDESC}.{idx}")
                 if rios:
                     try:
@@ -346,7 +357,7 @@ class Node(BaseData):
                     except:
                         pass
                     remote_ios = format_ios_ver(rios)
-                remote_name = lookup_table(self.cache.lldp,
+                remote_name = self.cached_item('lldp',
                                     f"{o.LLDP_DEVNAME}.{idx}")
                 link = self.get_link(ifidx)
                 link.discovered_proto = 'lldp'
@@ -382,25 +393,25 @@ class Node(BaseData):
 
     def get_link(self, ifidx) -> LinkData:
         link = LinkData()
-        link.link_type = lookup_table(self.cache.link_type,
+        link.link_type = self.cached_item('link_type',
                                       f"{o.TRUNK_VTP}.{ifidx}")
         # trunk
         if link.link_type == '1':
-            native_vlan = lookup_table(self.cache.trunk_native,
+            native_vlan = self.cached_item('trunk_native',
                                        f"{o.TRUNK_NATIVE}.{ifidx}")
-            trunk_allowed = lookup_table(self.cache.trunk_allowed,
+            trunk_allowed = self.cached_item('trunk_allowed',
                                          f"{o.TRUNK_ALLOW}.{ifidx}")
             allowed_vlans = parse_allowed_vlans(trunk_allowed)
             link.local_native_vlan = native_vlan or None
             link.local_allowed_vlans = allowed_vlans or 'All'
         # LAG membership
-        lag = lookup_table(self.cache.lag, f"{o.LAG_LACP}.{ifidx}")
+        lag = self.cached_item('lag', f"{o.LAG_LACP}.{ifidx}")
         if lag:
             link.local_lag = self.get_ifname(lag)
             link.local_lag_ips = self.get_ips_from_index(lag)
             link.remote_lag_ips = []
         # VLAN info
-        vlan = lookup_table(self.cache.vlan, f"{o.IF_VLAN}.{ifidx}")
+        vlan = self.cached_item('vlan', f"{o.IF_VLAN}.{ifidx}")
         link.vlan = vlan or None
         # IP address
         local_if_ips = self.get_ips_from_index(ifidx)
@@ -409,11 +420,6 @@ class Node(BaseData):
 
 
     def get_chassis(self) -> tuple:
-        # Get:
-        #    Serial number
-        #    Platform
-        #    IOS
-        # Slow but reliable method by using SNMP directly.
         for row in self.cache.ent_class:
             for n, v in row:
                 n = str(n)
@@ -421,26 +427,26 @@ class Node(BaseData):
                     continue
                 t = n.split('.')
                 idx = t[12]
-                serial = lookup_table(self.cache.ent_serial,
+                serial = self.cached_item('ent_serial',
                                     f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-                plat = lookup_table(self.cache.ent_plat,
+                plat = self.cached_item('ent_plat',
                                     f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                ios = lookup_table(self.cache.ent_ios,
+                ios = self.cached_item('ent_ios',
                                     f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-        # modular switches may have IOS on module than chassis
-        if not ios:
-            for row in self.cache.ent_class:
-                for n, v in row:
-                    n = str(n)
-                    if v != 'ENTPHYCLASS_MODULE':
-                        continue
-                    t = n.split('.')
-                    idx = t[12]
-                    ios = lookup_table(self.cache.ent_ios,
-                                f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-                    if ios:
-                        break
-        ios = format_ios_ver(ios)
+                # Modular switches have IOS on module
+                if not ios:
+                    for row in self.cache.ent_class:
+                        for n, v in row:
+                            n = str(n)
+                            if v != 'ENTPHYCLASS_MODULE':
+                                continue
+                            t = n.split('.')
+                            idx = t[12]
+                            ios = self.cached_item('ent_ios',
+                                        f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                            if ios:
+                                break
+                ios = format_ios_ver(ios)
         return (serial, plat, ios)
 
 
@@ -483,7 +489,7 @@ class Node(BaseData):
             self.vpc.domain = None, None
         domain = oid_last_token(self.cache.vpc[0][0][0])
         ifidx = str(self.cache.vpc[0][0][1])
-        ifname = lookup_table(self.cache.ethif, f"{o.ETH_IF_DESC}.{ifidx}")
+        ifname = self.cached_item('ethif', f"{o.ETH_IF_DESC}.{ifidx}")
         ifname = normalize_port(ifname)
         return domain, ifname
 
@@ -497,7 +503,7 @@ class Node(BaseData):
                 k = str(k)
                 if k.startswith(o.ETH_IF_TYPE) and v == 24:
                     ifidx = k.split('.')[10]
-                    lo_name = lookup_table(self.cache.ethif,
+                    lo_name = self.cached_item('ethif',
                                            f"{o.ETH_IF_DESC}.{ifidx}")
                     lo_ip = self.get_ips_from_index(ifidx)
                     lo = LoopBackData(lo_name, lo_ip)
@@ -545,11 +551,11 @@ class Node(BaseData):
                     tok = n.split('.')
                     ip = '.'.join(tok[11:])
                     interf = self.get_ifname(str(v))
-                    mach = lookup_table(self.cache.arp,
-                                        f"{o.ARP_MAC}.{str(v)}.{ip}")
+                    mach = self.cached_item('arp',
+                                            f"{o.ARP_MAC}.{str(v)}.{ip}")
                     mac = mac_hex_to_ascii(mach, True)
-                    atype = lookup_table(self.cache.arp,
-                                         f"{o.ARP_TYPE}.{str(v)}.{ip}")
+                    atype = self.cached_item('arp',
+                                            f"{o.ARP_TYPE}.{str(v)}.{ip}")
                     atype = int(atype)
                     type_str = 'unknown'
                     if atype == ARP.OTHER:
@@ -573,15 +579,14 @@ class Node(BaseData):
         for vlan_row in self.cache.vlan:
             for vlan_n, vlan_v in vlan_row:
                 vlan = oid_last_token(vlan_n)
-                if vlan >= 1002:
-                    continue
-                vmacs = self.get_macs_for_vlan(ip, vlan)
-                if vmacs:
-                    mac_table.extend(vmacs)
+                if vlan not in [1002, 1003, 1004, 1005]:
+                    vmacs = self.get_macs_for_vlan(ip, vlan)
+                    if vmacs:
+                        mac_table.extend(vmacs)
         return mac_table
 
 
-    def get_macs_for_vlan(self, ip: str, vlan: Union[int, str]) -> List[MACData]:
+    def get_macs_for_vlan(self, ip: str, vlan: UIS) -> List[MACData]:
         ''' MAC addresses for a single VLAN
         '''
         macs = []
@@ -592,7 +597,7 @@ class Node(BaseData):
         cam_cache = self.cache.cam
         if not cam_cache:
             # error getting CAM for VLAN
-            raise NettopoNodeError(f"ERROR: No CAM for {ip} : {vlan}")
+            raise NettopoNodeError(f"ERROR: No CAM for {vlan} with {ip}")
             # return
         for cam_row in cam_cache:
             for cam_n, cam_v in cam_row:
@@ -600,14 +605,13 @@ class Node(BaseData):
                 # find the interface index
                 p = cam_n.getOid()
                 idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
-                portnum_oid = f"{o.BRIDGE_PORTNUMS}.{idx}"
-                bridge_portnum = lookup_table(self.cache.portnum, portnum_oid)
+                bridge_portnum = self.cached_item('portnum',
+                                                f"{o.BRIDGE_PORTNUMS}.{idx}")
                 # get the interface index and description
                 try:
-                    ifidx = lookup_table(self.cache.ifindex,
-                                         f"{o.IFINDEX}.{bridge_portnum}")
-                    port = lookup_table(self.cache.ifname,
-                                        f"{o.IFNAME}.{ifidx}")
+                    ifidx = self.cached_item('ifindex',
+                                            f"{o.IFINDEX}.{bridge_portnum}")
+                    port = self.cached_item('ifname', f"{o.IFNAME}.{ifidx}")
                 except TypeError:
                     port = 'None'
                 mac_addr = mac_format_ascii(cam_v, True)
