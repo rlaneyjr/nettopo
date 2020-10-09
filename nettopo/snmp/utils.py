@@ -50,21 +50,16 @@ def is_ipv4_address(value):
 
 
 def return_pretty_val(value):
-    if isinstance(value, Counter32):
+    if isinstance(value, (
+            Counter32,
+            Counter64,
+            Gauge32,
+            Integer,
+            Integer32,
+            Unsigned32,
+        )):
         return int(value.prettyPrint())
-    if isinstance(value, Counter64):
-        return int(value.prettyPrint())
-    if isinstance(value, Gauge32):
-        return int(value.prettyPrint())
-    if isinstance(value, Integer):
-        return int(value.prettyPrint())
-    if isinstance(value, Integer32):
-        return int(value.prettyPrint())
-    if isinstance(value, Unsigned32):
-        return int(value.prettyPrint())
-    if isinstance(value, IpAddress):
-        return str(value.prettyPrint())
-    if isinstance(value, ObjectIdentifier):
+    if isinstance(value, (IpAddress, ObjectIdentifier)):
         return str(value.prettyPrint())
     if isinstance(value, OctetString):
         try:
@@ -78,26 +73,21 @@ def return_pretty_val(value):
 
 def return_snmp_data(value, value_type=None):
     if not value_type:
-        if isinstance(value, int):
-            data = Integer(value)
-        elif isinstance(value, float):
-            data = Integer(value)
-        elif isinstance(value, str):
-            if is_ipv4_address(value):
-                data = IpAddress(value)
-            else:
-                data = OctetString(value)
-        else:
-            raise TypeError(
-                "Unable to autodetect type. Please pass one of "
-                "these strings as the value_type keyword arg: "
-                ", ".join(TYPES.keys())
-            )
-    else:
-        if value_type not in TYPES:
-            raise ValueError(f"{value_type} is not one of the supported types: \
-                             {', '.join(TYPES.keys())}")
-
+        value_type = type(value)
+    if value_type in TYPES:
         data = TYPES[value_type](value)
+    elif value_type in [int, float]:
+        data = Integer(value)
+    elif value_type == str:
+        if is_ipv4_address(value):
+            data = IpAddress(value)
+        else:
+            data = OctetString(value)
+    else:
+        data = return_pretty_val(value)
+        # raise TypeError(
+        #     f"Unable to process type for {value} type: {value_type} \
+        #     Please use one of: {', '.join(TYPES.keys())}"
+        # )
     return data
 

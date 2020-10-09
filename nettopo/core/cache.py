@@ -151,7 +151,7 @@ class Cache:
     def vss_module(self):
         return self.snmp.get_bulk(o.VSS_MODULES)
 
-    # We don't cache data can change
+    # We don't cache data that changes often
     @property
     def cdp(self):
         return self.snmp.get_bulk(o.CDP)
@@ -164,6 +164,12 @@ class Cache:
     def arp(self):
         return self.snmp.get_bulk(o.ARP)
 
-    @property
-    def cam(self):
-        return self.snmp.get_bulk(o.VLAN_CAM)
+    def cam(self, community: str=None):
+        if community:
+            old_community = self.snmp.community
+            self.snmp.community = community
+            cam = self.snmp.get_bulk(o.VLAN_CAM)
+            self.snmp.community = old_community
+        else:
+            cam = self.snmp.get_bulk(o.VLAN_CAM)
+        return cam

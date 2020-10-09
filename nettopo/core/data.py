@@ -35,7 +35,7 @@ class BaseData:
         _dict = {}
         for item in dir(self):
             if not any([item.startswith(x) for x in _ignores]):
-                val = self.__getattribute__(item)
+                val = getattr(self, item)
                 _dict.update({item: val})
         return _dict
 
