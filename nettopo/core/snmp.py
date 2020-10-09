@@ -45,6 +45,7 @@ class SNMP:
         if self.success:
             self.vulnerable = True
 
+
     def check_community(self, community: str) -> bool:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
@@ -57,6 +58,7 @@ class SNMP:
             self.success = True
             self.community = community
         return self.success
+
 
     def get_creds(self, snmp_creds: DLS) -> bool:
         if isinstance(snmp_creds, str):
@@ -72,6 +74,7 @@ class SNMP:
                         return True
         return False
 
+
     def get_val(self, oid):
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
@@ -86,6 +89,7 @@ class SNMP:
             if r is any((o.ERR, o.ERR_INST)):
                 return None
             return r
+
 
     def get_bulk(self, oid) -> Union[list, None]:
         cmdGen = cmdgen.CommandGenerator()
@@ -104,6 +108,7 @@ class SNMP:
                         ret.append(r)
             return ret
 
+
     @staticmethod
     def table_lookup(table, name):
         for row in table:
@@ -111,6 +116,7 @@ class SNMP:
                 if name in str(n):
                     return v.prettyPrint()
         return None
+
 
     @staticmethod
     def get_last_oid_token(objectId):
@@ -138,6 +144,7 @@ class SnmpHandler:
         self.authkey = False
         self.privkey = False
         self._parse_args(**kwargs)
+
 
     def _parse_args(self, **kwargs):
         for key in kwargs.keys():
@@ -213,6 +220,7 @@ class SnmpHandler:
                     privKey=self.privkey,
                     privProtocol=PRIVACY_ALGO[self.privacy])
 
+
     def get(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
@@ -231,6 +239,7 @@ class SnmpHandler:
                                     return_pretty_val(value)])
         return pretty_varbinds
 
+
     def get_value(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
@@ -246,6 +255,7 @@ class SnmpHandler:
             values.append(return_pretty_val(value))
         if len(values) == 1:
             return values
+
 
     def getnext(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
@@ -265,6 +275,7 @@ class SnmpHandler:
                                         return_pretty_val(value)])
             pretty_vartable.append(pretty_varbinds)
         return pretty_vartable
+
 
     def set(self, oid=None, value=None, value_type=None, multi=None):
         if multi is None:
@@ -304,6 +315,7 @@ class Worker(Thread):
         self.setDaemon(True)
         self.start()
 
+
     def run(self):
         while True:
             authData, transportTarget, varBinds = self.requests.get()
@@ -326,10 +338,13 @@ class ThreadPool:
         for _ in range(num_threads):
             Worker(self.requests, self.responses)
 
+
     def addRequest(self, authData, transportTarget, varBinds):
         self.requests.put((authData, transportTarget, varBinds))
 
+
     def getResponses(self): return self.responses
+
 
     def waitCompletion(self):
         if hasattr(self.requests, 'join'):
@@ -359,9 +374,9 @@ def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
     # Walk through responses
     for errorIndication, errorStatus, errorIndex, varBinds in pool.getResponses():
         if errorIndication or errorStatus:
-            print(f"ERROR: {host}, {trans}\n")
+            print(f"ERROR: {host.ip} using {host.community}\n")
         else:
-            print(f'SUCCESS: {host}, {trans}\n')
+            print(f"SUCCESS: {host.ip} using {host.community}\n")
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)

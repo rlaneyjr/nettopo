@@ -29,7 +29,6 @@ __all__ = [
     'mac_ascii_to_hex',
     'mac_format_ascii',
     'mac_hex_to_ascii',
-    'mac_format_cisco',
     'parse_allowed_vlans',
     'in_acl',
     'str_matches_pattern',
@@ -124,7 +123,7 @@ def normalize_host(host: Union[str, list], domains: list=None):
 
 def normalize_port(port: str=None):
     if not port:
-        return 'UNKNOWN'
+        return 'Unknown'
     else:
         port = port.replace('TenGigabitEthernet', 'te')
         port = port.replace('GigabitEthernet', 'gi')
@@ -138,16 +137,21 @@ def normalize_port(port: str=None):
     return port
 
 
-def ip_2_str(ip):
-    if ip is None:
+def ip_2_str(ip_hex: Union[str, int]) -> str:
+    try:
+        if isinstance(ip_hex, str):
+            ip = int(ip_hex, 0)
+        elif isinstance(ip_hex, int):
+            ip = ip_hex
+        seg1 = ((ip >> 24) & 0xFF)
+        seg2 = ((ip >> 16) & 0xFF)
+        seg3 = ((ip >> 8) & 0xFF)
+        seg4 = (ip & 0xFF)
+        ip = f"{seg1}.{seg2}.{seg3}.{seg4}"
+    except ValueError as e:
+        ip = e
+    finally:
         return ip
-    ip = int(ip, 0)
-    seg1 = ((ip >> 24) & 0xFF)
-    seg2 = ((ip >> 16) & 0xFF)
-    seg3 = ((ip >> 8) & 0xFF)
-    seg4 = (ip & 0xFF)
-    ip = f"{seg1}.{seg2}.{seg3}.{seg4}"
-    return ip
 
 
 def get_port_module(port):
@@ -218,11 +222,11 @@ def mac_hex_to_ascii(mac_hex, inc_dots: bool=True, inc_colon: bool=False) -> str
     v = mac_hex[2:]
     mac = ''
     if inc_dots and not inc_colon:
-        mac_segs = [str(v[i:i+4]) for i in range(len(v), step=4)]
-        mac = '.'.join(mac_seg)
+        mac_segs = [str(v[i:i+4]) for i in range(0, len(v), 4)]
+        mac = '.'.join(mac_segs)
     elif inc_colon and not inc_dots:
-        mac_segs = [str(v[i:i+2]) for i in range(len(v), step=2)]
-        mac = ':'.join(mac_seg)
+        mac_segs = [str(v[i:i+2]) for i in range(0, len(v), 2)]
+        mac = ':'.join(mac_segs)
     else:
         mac = str(v)
     return mac
@@ -231,11 +235,6 @@ def mac_hex_to_ascii(mac_hex, inc_dots: bool=True, inc_colon: bool=False) -> str
 def mac_format_ascii(mac_hex, inc_dots: bool=True):
     v = mac_hex.prettyPrint()
     return mac_hex_to_ascii(v, inc_dots)
-
-
-def mac_format_cisco(devid):
-    mac_seg = [devid[x:x+4] for x in range(2, len(devid), 4)]
-    return '.'.join(mac_seg)
 
 
 def parse_allowed_vlans(allowed_vlans):

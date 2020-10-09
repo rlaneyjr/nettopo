@@ -37,10 +37,15 @@ from nettopo.core.util import (
     ip_from_cidr,
     format_ios_ver,
     mac_hex_to_ascii,
-    mac_format_cisco,
+    mac_format_ascii,
     parse_allowed_vlans,
     lookup_table,
     oid_last_token
+)
+from nettopo.snmp.utils import (
+    is_ipv4_address,
+    return_pretty_val,
+    return_snmp_data,
 )
 from nettopo.oids import Oids
 from typing import Union, List, Any
@@ -158,9 +163,11 @@ class Node(BaseData):
         # VPC peerlink polulates self.vpc
         self.vpc = self.get_vpc()
         # Get the neighbors combining CDP and LLDP
-        # Populates self.neighbors (CDP and LLDP combined) along with
-        # self.cdp_neighbors and self.lldp_neighbors
-        self.neighbors = self.get_neighbors()
+        self.neighbors = []
+        self.cdp_neighbors = self.get_cdp_neighbors()
+        self.lldp_neighbors = self.get_lldp_neighbors()
+        self.neighbors.extend(self.cdp_neighbors)
+        self.neighbors.extend(self.lldp_neighbors)
         # Populates self.arp_table
         self.arp_table = self.get_arp()
         # Populates self.mac_table
@@ -169,7 +176,7 @@ class Node(BaseData):
 
     def cached_item(self, cache_name: str, item: str) -> Union[Any, None]:
         try:
-            table = self.cache[cache_name]
+            table = getattr(self.cache, cache_name)
             for row in table:
                 for n, v in row:
                     if item in str(n):
@@ -295,32 +302,26 @@ class Node(BaseData):
                 ifidx = t[14]
                 ifidx2 = t[15]
                 idx = ".".join([ifidx, ifidx2])
+                link = self.get_link(ifidx)
+                link.discovered_proto = 'cdp'
+                link.remote_name = val.prettyPrint()
                 # get remote IP
                 rip = self.cached_item('cdp', f"{o.CDP_IPADDR}.{idx}")
-                remote_ip = ip_2_str(rip)
+                link.remote_ip = ip_2_str(rip)
                 # get local port
-                local_port = self.get_ifname(ifidx)
+                link.local_port = self.get_ifname(ifidx)
                 # get remote port
                 rport = self.cached_item('cdp', f"{o.CDP_DEVPORT}.{idx}")
-                remote_port = normalize_port(rport)
+                link.remote_port = normalize_port(rport)
                 # get remote platform
-                remote_plat = self.cached_item('cdp', f"{o.CDP_DEVPLAT}.{idx}")
+                link.remote_plat = self.cached_item('cdp', f"{o.CDP_DEVPLAT}.{idx}")
                 # get IOS version
                 rios = self.cached_item('cdp', f"{o.CDP_IOS}.{idx}")
-                if rios:
-                    try:
-                        rios = binascii.unhexlify(rios[2:])
-                    except:
-                        pass
-                    remote_ios = format_ios_ver(rios)
-                link = self.get_link(ifidx)
-                link.remote_name = val.prettyPrint() if val else 'Unknown'
-                link.remote_ip = remote_ip if remote_ip else 'Unknown'
-                link.discovered_proto = 'cdp'
-                link.local_port = local_port if local_port else 'Unknown'
-                link.remote_port = remote_port if remote_port else 'Unknown'
-                link.remote_plat = remote_plat if remote_plat else 'Unknown'
-                link.remote_ios = remote_ios if remote_ios else 'Unknown'
+                try:
+                    rios = binascii.unhexlify(rios[2:])
+                except:
+                    pass
+                link.remote_ios = format_ios_ver(rios)
                 neighbors.append(link)
         return neighbors
 
@@ -343,50 +344,31 @@ class Node(BaseData):
                 ifidx = t[12]
                 ifidx2 = t[13]
                 idx = ".".join([ifidx, ifidx2])
-                local_port = self.get_ifname(ifidx)
-                if oid.startswith(f"{o.LLDP_DEVADDR}.{idx}"):
-                    remote_ip = '.'.join(t[16:])
-                rport = self.cached_item('lldp',
-                                     f"{o.LLDP_DEVPORT}.{idx}")
-                remote_port = normalize_port(rport)
-                devid = self.cached_item('lldp',
-                                     f"{o.LLDP_DEVID}.{idx}")
-                try:
-                    remote_mac = mac_format_cisco(devid)
-                except:
-                    pass
-                rios = self.cached_item('lldp',
-                                    f"{o.LLDP_DEVDESC}.{idx}")
-                if rios:
-                    try:
-                        rios = binascii.unhexlify(rios[2:])
-                    except:
-                        pass
-                    remote_ios = format_ios_ver(rios)
-                remote_name = self.cached_item('lldp',
-                                    f"{o.LLDP_DEVNAME}.{idx}")
                 link = self.get_link(ifidx)
                 link.discovered_proto = 'lldp'
-                link.remote_ip = remote_ip if remote_ip else 'Unknown'
-                link.remote_name = remote_name if remote_name else devid
-                link.local_port = local_port if local_port else 'Unknown'
-                link.remote_port = remote_port if remote_port else 'Unknown'
-                link.remote_ios = remote_ios if remote_ios else 'Unknown'
-                link.remote_mac = remote_mac if remote_mac else devid
+                link.local_port = self.get_ifname(ifidx)
+                if oid.startswith(f"{o.LLDP_DEVADDR}.{idx}"):
+                    rip = '.'.join(t[16:])
+                else:
+                    rip = self.cached_item('lldp', f"{o.LLDP_DEVADDR}.{idx}")
+                link.remote_ip = ip_2_str(rip)
+                rport = self.cached_item('lldp',
+                                     f"{o.LLDP_DEVPORT}.{idx}")
+                link.remote_port = normalize_port(rport)
+                devid = self.cached_item('lldp',
+                                     f"{o.LLDP_DEVID}.{idx}")
+                link.remote_mac = mac_hex_to_ascii(devid)
+                rios = self.cached_item('lldp',
+                                    f"{o.LLDP_DEVDESC}.{idx}")
+                try:
+                    rios = binascii.unhexlify(rios[2:])
+                except:
+                    pass
+                link.remote_ios = format_ios_ver(rios)
+                link.remote_name = self.cached_item('lldp',
+                                    f"{o.LLDP_DEVNAME}.{idx}")
                 neighbors.append(link)
         return neighbors
-
-
-    def get_neighbors(self, reset: bool=False) -> list:
-        if hasattr(self, 'neighbors'):
-            if not reset:
-                return self.neighbors
-            else:
-                del self.neighbors
-        neighbors = []
-        neighbors.extend(self.get_cdp_neighbors())
-        neighbors.extend(self.get_lldp_neighbors())
-        self.neighbors = neighbors
 
 
     def add_link(self, link):
@@ -401,7 +383,7 @@ class Node(BaseData):
         link.link_type = self.cached_item('link_type',
                                       f"{o.TRUNK_VTP}.{ifidx}")
         # trunk
-        if link.link_type == '1':
+        if link.link_type == '2':
             link.local_native_vlan = self.cached_item('trunk_native',
                                        f"{o.TRUNK_NATIVE}.{ifidx}")
             trunk_allowed = self.cached_item('trunk_allowed',
