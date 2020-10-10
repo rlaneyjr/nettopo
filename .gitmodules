@@ -4,3 +4,6 @@
 [submodule "nettopo/lib/ntc-templates"]
 	path = nettopo/lib/ntc-templates
 	url = https://github.com/networktocode/ntc-templates
+[submodule "nettopo/lib/natlas"]
+	path = nettopo/lib/natlas
+	url = git@github.com:rlaneyjr/natlas.git
