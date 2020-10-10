@@ -30,7 +30,6 @@ vlan._as_dict().items()
 
 from nettopo.core.node import Node
 sw1 = Node('10.0.0.1')
-sw1.get_snmp_creds('letmeSNMP')
 sw1.query_node()
 
 sw2 = Node('10.0.0.2')
