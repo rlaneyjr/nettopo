@@ -435,8 +435,6 @@ class Node(BaseData):
 
 
     def get_system_name(self, domains=None):
-        if not self.queried:
-            self.query_node()
         return normalize_host(self.name_raw, domains)
 
 
@@ -445,8 +443,6 @@ class Node(BaseData):
         Return the lowest numbered IP of all interfaces
         """
         self.ips = list(self.ip)
-        if not self.queried:
-            self.query_node()
         # Loopbacks
         if self.loopbacks:
             for lb in self.loopbacks:
@@ -468,8 +464,6 @@ class Node(BaseData):
         Return the VPC domain and interface name of the VPC peerlink.
         """
         vpc = VPCData()
-        if not self.queried:
-            self.query_node()
         if not self.cache.vpc:
             return vpc
         vpc.domain = oid_last_token(self.cache.vpc[0][0][0])
@@ -480,8 +474,6 @@ class Node(BaseData):
 
 
     def get_loopbacks(self) -> List[LoopBackData]:
-        if not self.queried:
-            self.query_node()
         loopbacks = []
         for row in self.cache.ethif:
             for k, v in row:
@@ -497,8 +489,6 @@ class Node(BaseData):
 
 
     def get_svis(self) -> List[SVIData]:
-        if not self.queried:
-            self.query_node()
         svis = []
         for row in self.cache.svi:
             for k, v in row:
@@ -510,8 +500,6 @@ class Node(BaseData):
 
 
     def get_vlans(self) -> List[VLANData]:
-        if not self.queried:
-            self.query_node()
         vlans = []
         i = 0
         for vlan_row in self.cache.vlan:
@@ -526,8 +514,6 @@ class Node(BaseData):
 
 
     def get_arp(self) -> List[ARPData]:
-        if not self.queried:
-            self.query_node()
         arp_table = []
         for r in self.cache.arp:
             for n, v in r:
@@ -558,39 +544,42 @@ class Node(BaseData):
     def get_cam(self) -> List[List[MACData]]:
         ''' MAC address table from this node
         '''
-        if not self.queried:
-            self.query_node()
-        mac_table = []
+        # Grab global CAM table first
+        mac_table = self.get_macs_for_vlan()
+        # Now for each VLAN
         for vlan_row in self.cache.vlan:
             for vlan_n, vlan_v in vlan_row:
                 vlan = oid_last_token(vlan_n)
                 if vlan not in [1002, 1003, 1004, 1005]:
-                    vmacs = self.get_macs_for_vlan(ip, vlan)
+                    vmacs = self.get_macs_for_vlan(vlan)
                     if vmacs:
                         mac_table.extend(vmacs)
         return mac_table
 
 
-    def get_macs_for_vlan(self, ip: str, vlan: UIS) -> List[MACData]:
+    def get_macs_for_vlan(self, vlan: UIS=None) -> List[MACData]:
         ''' MAC addresses for a single VLAN
         '''
         macs = []
-        # change our SNMP credentials
-        old_cred = self.cache.snmp.community
-        self.cache.snmp.community = f"{old_cred}@{str(vlan)}"
-        # get CAM table for this VLAN
-        cam_cache = self.cache.cam
+        if vlan:
+            # Save community
+            old_community = self.snmp.community
+            # Change community
+            community = f"{old_community}@{str(vlan)}"
+            # CAM table for this VLAN
+            cam_cache = self.cache.cam(community)
+        else:
+            # Global CAM table
+            cam_cache = self.cache.cam()
         if not cam_cache:
-            # error getting CAM for VLAN
-            raise NettopoNodeError(f"ERROR: No CAM for {vlan} with {ip}")
-            # return
+            return macs
         for cam_row in cam_cache:
             for cam_n, cam_v in cam_row:
                 cam_entry = mac_format_ascii(cam_v, False)
                 # find the interface index
                 p = cam_n.getOid()
                 idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
-                bridge_portnum = self.cached_item('portnum',
+                bridge_portnum = self.cached_item('portnums',
                                                 f"{o.BRIDGE_PORTNUMS}.{idx}")
                 # get the interface index and description
                 try:
@@ -600,8 +589,6 @@ class Node(BaseData):
                 except TypeError:
                     port = 'None'
                 mac_addr = mac_format_ascii(cam_v, True)
-                entry = MACData(system_name, ip, vlan, mac_addr, port)
+                entry = MACData(vlan, mac_addr, port)
                 macs.append(entry)
-        # restore SNMP credentials
-        self.cache.snmp.community = old_cred
         return macs
