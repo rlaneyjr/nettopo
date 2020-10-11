@@ -18,63 +18,46 @@ o = Oids()
 
 
 class Cache:
-    """ Class that stores our SNMP calls
+    ''' Class that stores our SNMP calls
 
     :param:SNMP: Initialized SNMP object (required)
     :return: None
-    """
+    '''
     def __init__(self, snmp_object: SNMP) -> None:
         self.snmp = snmp_object
         if not self.snmp.success:
             raise NettopoCacheError(f"ERROR: SNMP object {self.snmp.ip} creds")
 
 
-    def _val(self, oid: str=None) -> Any:
+    def _value(self, oid: str) -> Any:
         results = self.snmp.get_val(oid)
         return results
 
 
-    def _bulk(self, oid: str=None) -> Any:
+    def _bulk(self, oid: str) -> Any:
         results = self.snmp.get_bulk(oid)
-        return results
-
-
-    def _call_new_community(self, call: Union[str, tuple], community: str) -> Any:
-        # Save community
-        old_community = self.snmp.community
-        # Change community
-        self.snmp.community = community
-        if isinstance(call, str):
-            results = self.call
-        elif isinstance(call, tuple):
-            func, args = call
-            results = self.func(args)
-        else:
-            raise NettopoCacheError(f"ERROR: {call} must be a string or tuple")
-        # Restore community
-        self.snmp.community = old_community
         return results
 
 
     # Physical properties
     @cached_property
     def name(self):
-        return self._val(o.SYSNAME)
+        return self._value(o.SYSNAME)
 
 
     @cached_property
     def desc(self):
-        return self._val(o.SYSDESC)
+        return self._value(o.SYSDESC)
 
 
     @cached_property
     def serial(self):
-        return self._val(o.SYS_SERIAL)
+        return self._value(o.SYS_SERIAL)
 
 
     @cached_property
     def bootfile(self):
-        return self._val(o.SYS_BOOT)
+        return self._value(o.SYS_BOOT)
 
 
     @cached_property
@@ -162,22 +145,22 @@ class Cache:
     # IP properties
     @cached_property
     def router(self):
-        return self._val(o.IP_ROUTING)
+        return self._value(o.IP_ROUTING)
 
 
     @cached_property
     def ospf(self):
-        return self._val(o.OSPF)
+        return self._value(o.OSPF)
 
 
     @cached_property
     def ospf_id(self):
-        return self._val(o.OSPF_ID)
+        return self._value(o.OSPF_ID)
 
 
     @cached_property
     def bgp(self):
-        return  self._val(o.BGP_LAS)
+        return  self._value(o.BGP_LAS)
 
 
     # Multi-chassis properties
@@ -188,12 +171,12 @@ class Cache:
 
     @cached_property
     def hsrp(self):
-        return self._val(o.HSRP_PRI)
+        return self._value(o.HSRP_PRI)
 
 
     @cached_property
     def hsrp_vip(self):
-        return self._val(o.HSRP_VIP)
+        return self._value(o.HSRP_VIP)
 
 
     @cached_property
@@ -203,12 +186,12 @@ class Cache:
 
     @cached_property
     def vss_mode(self):
-        return self._val(o.VSS_MODE)
+        return self._value(o.VSS_MODE)
 
 
     @cached_property
     def vss_domain(self):
-        return self._val(o.VSS_DOMAIN)
+        return self._value(o.VSS_DOMAIN)
 
 
     @cached_property
@@ -232,10 +215,6 @@ class Cache:
         return self._bulk(o.ARP)
 
 
-    def cam(self, community: str=None):
-        if community:
-            call = ('_bulk', o.VLAN_CAM)
-            cam = self._call_new_community(call, community)
-        else:
-            cam = self._bulk(o.VLAN_CAM)
-        return cam
+    @property
+    def cam(self):
+        return self._bulk(o.VLAN_CAM)
