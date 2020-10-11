@@ -148,3 +148,25 @@ def snmp_extract(snmp_data):
         return snmp_data[0][1].prettyPrint()
 
 
+macs = []
+cam_cache = new_cache.cam
+portnum_cache = new_cache.portnums
+ifindex_cache = new_cache.ifindex
+for cam_row in cam_cache:
+    for cam_n, cam_v in cam_row:
+        cam_entry = mac_format_ascii(cam_v, False)
+        # find the interface index
+        p = cam_n.getOid()
+        idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
+        bridge_portnum = lookup_table(portnum_cache,
+                                      f"{o.BRIDGE_PORTNUMS}.{idx}")
+        # get the interface index and description
+        try:
+            ifidx = lookup_table(ifindex_cache,
+                                 f"{o.IFINDEX}.{bridge_portnum}")
+            port = sw1.cached_item('ifname', f"{o.IFNAME}.{ifidx}")
+        except TypeError:
+            port = 'None'
+            mac_addr = mac_format_ascii(cam_v, True)
+            entry = MACData(vlan, mac_addr, port)
+            macs.append(entry)

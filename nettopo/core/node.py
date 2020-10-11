@@ -97,15 +97,17 @@ class Node(BaseData):
         self.queried = False
 
 
+    @timethis
     def build_cache(self) -> None:
         cache = Cache(self.snmp)
-        # Call all the cached properties that query SNMP here:
-        for prop in dir(cache):
-            if not prop.startswith('_'):
-                getattr(cache, prop)
+        # # Call all the cached properties that query SNMP here:
+        # for prop in dir(cache):
+        #     if not prop.startswith('_'):
+        #         getattr(cache, prop)
         self.cache = cache
 
 
+    @timethis
     def query_node(self, reset: bool=False) -> None:
         """ Query this node with option to reset
 
@@ -544,9 +546,8 @@ class Node(BaseData):
     def get_cam(self) -> List[List[MACData]]:
         ''' MAC address table from this node
         '''
-        # Grab global CAM table first
-        mac_table = self.get_macs_for_vlan()
-        # Now for each VLAN
+        mac_table = []
+        # Grab CAM table for each VLAN
         for vlan_row in self.cache.vlan:
             for vlan_n, vlan_v in vlan_row:
                 vlan = oid_last_token(vlan_n)
@@ -557,20 +558,21 @@ class Node(BaseData):
         return mac_table
 
 
-    def get_macs_for_vlan(self, vlan: UIS=None) -> List[MACData]:
+    def get_macs_for_vlan(self, vlan: UIS) -> List[MACData]:
         ''' MAC addresses for a single VLAN
         '''
         macs = []
-        if vlan:
-            # Save community
-            old_community = self.snmp.community
-            # Change community
-            community = f"{old_community}@{str(vlan)}"
-            # CAM table for this VLAN
-            cam_cache = self.cache.cam(community)
-        else:
-            # Global CAM table
-            cam_cache = self.cache.cam()
+        old_community = self.snmp.community
+        # Change community
+        community = f"{old_community}@{str(vlan)}"
+        new_snmp = SNMP(self.ip)
+        if not new_snmp.check_community(community):
+            raise NettopoSNMPError(f"ERROR: {community} failed for {self.ip}")
+        new_cache = Cache(new_snmp)
+        # CAM table for this VLAN
+        cam_cache = new_cache.cam
+        portnum_cache = new_cache.portnums
+        ifindex_cache = new_cache.ifindex
         if not cam_cache:
             return macs
         for cam_row in cam_cache:
@@ -579,15 +581,15 @@ class Node(BaseData):
                 # find the interface index
                 p = cam_n.getOid()
                 idx = f"{p[11]}.{p[12]}.{p[13]}.{p[14]}.{p[15]}.{p[16]}"
-                bridge_portnum = self.cached_item('portnums',
+                bridge_portnum = lookup_table(portnum_cache,
                                                 f"{o.BRIDGE_PORTNUMS}.{idx}")
                 # get the interface index and description
                 try:
-                    ifidx = self.cached_item('ifindex',
+                    ifidx = lookup_table(ifindex_cache,
                                             f"{o.IFINDEX}.{bridge_portnum}")
                     port = self.cached_item('ifname', f"{o.IFNAME}.{ifidx}")
                 except TypeError:
-                    port = 'None'
+                    port = 'Local'
                 mac_addr = mac_format_ascii(cam_v, True)
                 entry = MACData(vlan, mac_addr, port)
                 macs.append(entry)
