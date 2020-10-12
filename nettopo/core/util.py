@@ -50,7 +50,7 @@ def timethis(func):
         h = int(end / 3600)
         m = int((end - (h * 3600)) / 60)
         s = end - (int(end / 3600) * 3600) - (m * 60)
-        print(f"Completed in {h}:{m}:{s:.2f}")
+        print(f"Completed {func.__name__} in {h}:{m}:{s:.2f}")
         return run
     return run_func
 

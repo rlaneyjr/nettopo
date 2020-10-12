@@ -10,7 +10,7 @@ from functools import cached_property
 from typing import Union, List, Any
 # Nettopo Imports
 from nettopo.core.cache import Cache
-from nettopo.core.constants import ARP, DCODE, NODE, NOTHING
+from nettopo.core.constants import ARP, DCODE, ENTPHYCLASS, NODE, NOTHING
 from nettopo.core.data import (
     BaseData,
     LinkData,
@@ -97,13 +97,12 @@ class Node(BaseData):
         self.queried = False
 
 
-    @timethis
     def build_cache(self) -> None:
         cache = Cache(self.snmp)
-        # # Call all the cached properties that query SNMP here:
-        # for prop in dir(cache):
-        #     if not prop.startswith('_'):
-        #         getattr(cache, prop)
+        # Call all the cached properties that query SNMP here:
+        for prop in dir(cache):
+            if not prop.startswith('_'):
+                getattr(cache, prop)
         self.cache = cache
 
 
@@ -124,6 +123,7 @@ class Node(BaseData):
         self.queried = True
         self.name_raw = self.cache.name
         self.name = self.get_system_name()
+        self.ip_index = self.build_ip_index()
         # router
         router = self.cache.router
         self.router = True if router == '1' else False
@@ -157,11 +157,11 @@ class Node(BaseData):
         # chassis info (serial, IOS, platform)
         self.chassis = self.get_chassis()
         if self.chassis.serial and not self.serial:
-            self.serial = serial
+            self.serial = self.chassis.serial
         if self.chassis.plat:
-            self.plat = plat
+            self.plat = self.chassis.plat
         if self.chassis.ios:
-            self.ios = ios
+            self.ios = self.chassis.ios
         # VPC peerlink polulates self.vpc
         self.vpc = self.get_vpc()
         # Get the neighbors combining CDP and LLDP
@@ -194,24 +194,33 @@ class Node(BaseData):
         return normalize_port(res) or 'Unknown'
 
 
-    def get_ips_from_index(self, idx) -> LSIN:
-        ips = []
+    def build_ip_index(self) -> List[tuple]:
+        ip_index = []
         for row in self.cache.ifip:
             for n, v in row:
                 n = str(n)
                 if n.startswith(o.IF_IP_ADDR):
-                    if str(v) == str(idx):
-                        t = n.split('.')
-                        ip = ".".join(t[10:])
-                        if ip:
-                            mask = self.cached_item('ifip',
+                    t = n.split('.')
+                    ip = ".".join(t[10:])
+                    if ip:
+                        mask = self.cached_item('ifip',
                                                 f"{o.IF_IP_NETM}{ip}")
-                            if mask:
-                                mask = bits_from_mask(mask)
-                                cidr = f"{ip}/{mask}"
-                            else:
-                                cidr = f"{ip}/32"
-                            ips.append(cidr)
+                        if mask:
+                            mask = bits_from_mask(mask)
+                            cidr = f"{ip}/{mask}"
+                        else:
+                            cidr = f"{ip}/32"
+                        name = self.get_ifname(v)
+                        ip_entry = tuple(v, name, cidr)
+                        ip_index.append(ip_entry)
+        return ip_index
+
+
+    def get_ips_from_index(self, idx: Union[int, str]) -> LSIN:
+        ips = []
+        for num, name, ip in self.ip_index:
+            if num == idx:
+                ips.append(ip)
         if len(ips) == 1:
             return ips[0]
         elif len(ips) > 1:
@@ -298,7 +307,7 @@ class Node(BaseData):
             for oid, val in row:
                 oid = str(oid)
                 # process only if this row is a CDP_DEVID
-                if oid.startswith(o.CDP_DEVID):
+                if not oid.startswith(o.CDP_DEVID):
                     continue
                 t = oid.split('.')
                 ifidx = t[14]
@@ -409,7 +418,7 @@ class Node(BaseData):
         for row in self.cache.ent_class:
             for n, v in row:
                 n = str(n)
-                if v != 'ENTPHYCLASS_CHASSIS':
+                if v != ENTPHYCLASS.CHASSIS:
                     continue
                 t = n.split('.')
                 idx = t[12]
@@ -417,14 +426,14 @@ class Node(BaseData):
                                     f"{o.ENTPHYENTRY_SERIAL}.{idx}")
                 chassis.plat = self.cached_item('ent_plat',
                                     f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                chassis.ios = self.cached_item('ent_ios',
+                ios = self.cached_item('ent_ios',
                                     f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
                 # Modular switches have IOS on module
-                if not chassis.ios:
+                if not ios:
                     for row in self.cache.ent_class:
                         for n, v in row:
                             n = str(n)
-                            if v != 'ENTPHYCLASS_MODULE':
+                            if v != ENTPHYCLASS.MODULE:
                                 continue
                             t = n.split('.')
                             idx = t[12]
@@ -590,6 +599,8 @@ class Node(BaseData):
                     port = self.cached_item('ifname', f"{o.IFNAME}.{ifidx}")
                 except TypeError:
                     port = 'Local'
+                finally:
+                    port = port or 'Local'
                 mac_addr = mac_format_ascii(cam_v, True)
                 entry = MACData(vlan, mac_addr, port)
                 macs.append(entry)
