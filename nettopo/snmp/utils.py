@@ -22,11 +22,12 @@ from pysnmp.proto.rfc1902 import (
 )
 
 from nettopo.snmp.constants import TYPES
+from nettopo.snmp.errors import NettopoTypeError
 
 __all__ = [
     'is_ipv4_address',
     'return_pretty_val',
-    'return_snmp_data',
+    'return_snmptype_val',
 ]
 
 def is_ipv4_address(value):
@@ -71,7 +72,7 @@ def return_pretty_val(value):
     return value
 
 
-def return_snmp_data(value, value_type=None):
+def return_snmptype_val(value, value_type=None):
     if not value_type:
         value_type = type(value)
     if value_type in TYPES:
@@ -84,10 +85,9 @@ def return_snmp_data(value, value_type=None):
         else:
             data = OctetString(value)
     else:
-        data = return_pretty_val(value)
-        # raise TypeError(
-        #     f"Unable to process type for {value} type: {value_type} \
-        #     Please use one of: {', '.join(TYPES.keys())}"
-        # )
+        raise NettopoTypeError(
+            f"Unable to process type for {value} type: {value_type} \
+            Please use one of: {', '.join(TYPES.keys())}"
+        )
     return data
 

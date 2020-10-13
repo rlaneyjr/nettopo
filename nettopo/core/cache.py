@@ -11,7 +11,7 @@ from functools import cached_property
 from typing import Union, Any
 from nettopo.core.constants import ARP, DCODE, NODE
 from nettopo.core.exceptions import NettopoCacheError
-from nettopo.core.snmp import SNMP
+from nettopo.core.snmp import SNMP, SnmpHandler
 from nettopo.oids import Oids
 
 o = Oids()
@@ -23,7 +23,7 @@ class Cache:
     :param:SNMP: Initialized SNMP object (required)
     :return: None
     '''
-    def __init__(self, snmp_object: SNMP) -> None:
+    def __init__(self, snmp_object: Union[SNMP, SnmpHandler]) -> None:
         self.snmp = snmp_object
         if not self.snmp.success:
             raise NettopoCacheError(f"ERROR: SNMP object {self.snmp.ip} creds")
@@ -208,6 +208,11 @@ class Cache:
     @property
     def lldp(self):
         return self._bulk(o.LLDP)
+
+
+    @property
+    def route(self):
+        return self._bulk(o.IP_ROUTE_TABLE)
 
 
     @property

@@ -16,7 +16,22 @@ try:
 except:
     from ipaddress import ip_address as IPAddress
 
-from nettopo.core.constants import *
+from nettopo.core.constants import (
+    NOTHING,
+    VALID_VERSIONS,
+    VALID_V3_LEVELS,
+    VALID_INTEGRITY_ALGO,
+    VALID_PRIVACY_ALGO,
+    TYPES,
+    INTEGRITY_ALGO,
+    PRIVACY_ALGO,
+    RETCODE,
+    ENTPHYCLASS,
+    ARP,
+    DCODE,
+    NODE,
+)
+from nettopo.snmp.utils import return_pretty_val, return_snmptype_val
 from nettopo.oids import Oids
 o = Oids()
 
@@ -26,6 +41,7 @@ DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
 
 # Typing shortcuts
 DLS = Union[dict, list, str]
+DLSN = Union[dict, list, str, None]
 IP = Union[str, IPAddress]
 
 
@@ -127,23 +143,32 @@ class SNMP:
 
 class SnmpHandler:
 
-    def __init__(self, host, **kwargs):
-        if hasattr(host, 'ip'):
-            self.host = host.ip
-        else:
-            self.host = host
+    def __init__(self, ip: IP, **kwargs) -> None:
+        self.ip = ip
         self.port = 161
-        self.timeout = 2
-        self.retries = 3
+        self.timeout = 10
+        self.retries = 2
         self.version = '2c'
-        self.community = 'public'
+        self.community = None
+        self.default_comms = DEFAULT_COMMS
         self.username = False
         self.level = False
         self.integrity = False
         self.privacy = False
         self.authkey = False
         self.privkey = False
+        self.success = False
         self._parse_args(**kwargs)
+        if not self.ip:
+            raise ArgumentError('Host not defined')
+        self._build_auth()
+        if not self.success:
+            raise NettopoSNMPError(f"Invalid SNMP creds for {self.ip}")
+        self.transport = cmdgen.UdpTransportTarget(
+            (self.ip, self.port),
+            timeout=self.timeout,
+            retries=self.retries
+        )
 
 
     def _parse_args(self, **kwargs):
@@ -153,7 +178,7 @@ class SnmpHandler:
             if key == 'community':
                 self.community = kwargs[key]
             if key == 'host':
-                self.host = kwargs[key]
+                self.ip = kwargs[key]
             if key == 'port':
                 try:
                     port = int(kwargs[key])
@@ -188,12 +213,16 @@ class SnmpHandler:
                 self.authkey = kwargs[key]
             if key == 'privkey':
                 self.privkey = kwargs[key]
-        if not self.host:
-            raise ArgumentError('Host not defined')
+
+
+    def _build_auth(self) -> None:
         if self.version not in VALID_VERSIONS:
             raise ArgumentError('No valid SNMP version defined')
-        if self.version.startswith("2"):
-            self.snmp_auth = cmdgen.CommunityData(self.community)
+        if "2" in self.version:
+            if self.community:
+                self.find_v2_creds(self.community)
+            else:
+                self.find_v2_creds(self.default_comms)
         elif self.version == "3":
             if not self.username:
                 raise ArgumentError('No username specified')
@@ -204,7 +233,7 @@ class SnmpHandler:
             if not self.authkey:
                 raise ArgumentError('No authkey specified')
             if self.level == 'authNoPriv':
-                self.snmp_auth = cmdgen.UsmUserData(
+                snmp_auth = cmdgen.UsmUserData(
                     self.username,
                     authKey=self.authkey,
                     authProtocol=INTEGRITY_ALGO[self.integrity])
@@ -213,21 +242,56 @@ class SnmpHandler:
                     raise ArgumentError('No privacy protocol specified')
                 if not self.privkey:
                     raise ArgumentError('No privacy key specified')
-                self.snmp_auth = cmdgen.UsmUserData(
+                snmp_auth = cmdgen.UsmUserData(
                     self.username,
                     authKey=self.authkey,
                     authProtocol=INTEGRITY_ALGO[self.integrity],
                     privKey=self.privkey,
                     privProtocol=PRIVACY_ALGO[self.privacy])
+            self.check_auth(snmp_auth)
+
+
+    def check_auth(self, snmp_auth) -> bool:
+        cmdGen = cmdgen.CommandGenerator()
+        errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
+            snmp_auth,
+            cmdgen.UdpTransportTarget((self.ip, self.port),
+                                      timeout=self.timeout,
+                                      retries=self.retries),
+            '1.3.6.1.2.1.1.5.0',
+            lookupMib=False,
+        )
+        if errIndication:
+            self.success = False
+        else:
+            self.success = True
+            self.snmp_auth = snmp_auth
+        return self.success
+
+
+    def find_v2_creds(self, snmp_creds: DLS) -> bool:
+        if isinstance(snmp_creds, str):
+            snmp_auth = cmdgen.CommunityData(snmp_creds)
+            if self.check_auth(snmp_auth):
+                return True
+        else:
+            for cred in snmp_creds:
+                if isinstance(cred, dict):
+                    snmp_auth = cmdgen.CommunityData(cred['community'])
+                    if self.check_auth(snmp_auth):
+                        return True
+                else:
+                    snmp_auth = cmdgen.CommunityData(cred)
+                    if self.check_auth(snmp_auth):
+                        return True
+        return False
 
 
     def get(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
             self.snmp_auth,
-            cmdgen.UdpTransportTarget((self.host, self.port),
-                                      timeout=self.timeout,
-                                      retries=self.retries),
+            self.transport,
             *oidlist,
             lookupMib=False,
         )
@@ -240,28 +304,45 @@ class SnmpHandler:
         return pretty_varbinds
 
 
-    def get_value(self, *oidlist):
+    def get_val(self, oid):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
             self.snmp_auth,
-            cmdgen.UdpTransportTarget((self.host, self.port)),
-            *oidlist,
+            self.transport,
+            oid,
             lookupMib=False
         )
         if errorIndication or errorStatus:
             raise SnmpError(errorIndication._ErrorIndication__descr)
-        values = []
-        for oid, value in varBinds:
-            values.append(return_pretty_val(value))
-        if len(values) == 1:
-            return values
+        value = return_pretty_val(varBinds[0][1])
+        if value is any((o.ERR, o.ERR_INST)):
+            return None
+        return value
+
+
+    def get_bulk(self, oid) -> Union[list, None]:
+        cmdGen = cmdgen.CommandGenerator()
+        errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
+            self.snmp_auth,
+            self.transport,
+            0, 50, oid)
+        if errorIndication or errorStatus:
+            raise SnmpError(errorIndication._ErrorIndication__descr)
+        else:
+            pretty_table = []
+            for row in varBindTable:
+                for name, value in row:
+                    if str(name).startswith(oid):
+                        pretty_table.append([name.prettyPrint(),
+                                             return_pretty_val(value)])
+            return pretty_table
 
 
     def getnext(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varTable = cmdGen.nextCmd(
             self.snmp_auth,
-            cmdgen.UdpTransportTarget((self.host, self.port)),
+            cmdgen.UdpTransportTarget((self.ip, self.port)),
             *oidlist,
             lookupMib=False
         )
@@ -298,7 +379,7 @@ class SnmpHandler:
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varTable = cmdGen.setCmd(
             self.snmp_auth,
-            cmdgen.UdpTransportTarget((self.host, self.port)),
+            cmdgen.UdpTransportTarget((self.ip, self.port)),
             *snmp_sets,
             lookupMib=False
         )

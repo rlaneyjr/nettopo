@@ -6,7 +6,7 @@
 """
 import binascii
 from dataclasses import dataclass
-from functools import cached_property
+from functools import cached_property, namedtuple
 from typing import Union, List, Any
 # Nettopo Imports
 from nettopo.core.cache import Cache
@@ -45,7 +45,7 @@ from nettopo.core.util import (
 from nettopo.snmp.utils import (
     is_ipv4_address,
     return_pretty_val,
-    return_snmp_data,
+    return_snmptype_val,
 )
 from nettopo.oids import Oids
 from typing import Union, List, Any
@@ -56,6 +56,7 @@ UIS = Union[int, str]
 
 # Easy access to our OIDs
 o = Oids()
+IP = namedtuple('IP', ['idx', 'interface', 'cidr'])
 
 
 class Node(BaseData):
@@ -197,10 +198,10 @@ class Node(BaseData):
     def build_ip_index(self) -> List[tuple]:
         ip_index = []
         for row in self.cache.ifip:
-            for n, v in row:
-                n = str(n)
-                if n.startswith(o.IF_IP_ADDR):
-                    t = n.split('.')
+            for oid, ifidx in row:
+                oid = str(oid)
+                if oid.startswith(o.IF_IP_ADDR):
+                    t = oid.split('.')
                     ip = ".".join(t[10:])
                     if ip:
                         mask = self.cached_item('ifip',
@@ -210,8 +211,9 @@ class Node(BaseData):
                             cidr = f"{ip}/{mask}"
                         else:
                             cidr = f"{ip}/32"
-                        name = self.get_ifname(v)
-                        ip_entry = tuple(v, name, cidr)
+                        interface = self.get_ifname(ifidx)
+                        idx = ifidx.prettyPrint()
+                        ip_entry = IP(idx, interface, cidr)
                         ip_index.append(ip_entry)
         return ip_index
 
