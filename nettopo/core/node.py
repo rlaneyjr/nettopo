@@ -7,6 +7,7 @@
 import binascii
 from dataclasses import dataclass
 from functools import cached_property, namedtuple
+from sysdescrparser import sysdescrparser
 from typing import Union, List, Any
 # Nettopo Imports
 from nettopo.core.cache import Cache
@@ -18,7 +19,7 @@ from nettopo.core.data import (
     VssMemberData,
     StackData,
     StackMemberData,
-    ChassisData,
+    EntData,
     VPCData,
     SVIData,
     LoopBackData,
@@ -31,7 +32,7 @@ from nettopo.core.snmp import SNMP
 from nettopo.core.util import (
     timethis,
     bits_from_mask,
-    normalize_host,
+    # normalize_host,
     normalize_port,
     ip_2_str,
     ip_from_cidr,
@@ -48,7 +49,6 @@ from nettopo.snmp.utils import (
     return_snmptype_val,
 )
 from nettopo.oids import Oids
-from typing import Union, List, Any
 
 # Typing shortcuts
 LSIN = Union[list, str, int, None]
@@ -57,6 +57,7 @@ UIS = Union[int, str]
 # Easy access to our OIDs
 o = Oids()
 IP = namedtuple('IP', ['idx', 'interface', 'cidr'])
+SYS = namedtuple('SYS', ['idx', 'interface', 'cidr'])
 
 
 class Node(BaseData):
@@ -124,6 +125,9 @@ class Node(BaseData):
         self.queried = True
         self.name_raw = self.cache.name
         self.name = self.get_system_name()
+        self.descr = self.cache.descr
+        # Sys info (vendor, model, os, version)
+        self.sys = sysdescrparser(self.descr)
         self.ip_index = self.build_ip_index()
         # router
         router = self.cache.router
@@ -143,9 +147,9 @@ class Node(BaseData):
         # vss
         self.vss = self.get_vss()
         # serial
-        if self.vss.enabled:
+        if self.vss.enabled and self.vss.serial:
             self.serial = self.vss.serial
-        elif self.stack.enabled:
+        elif self.stack.enabled and self.stack.serial:
             self.serial = self.stack.serial
         else:
             self.serial = self.cache.serial
@@ -155,14 +159,8 @@ class Node(BaseData):
         self.loopbacks = self.get_loopbacks()
         # bootfile
         self.bootfile = self.cache.bootfile
-        # chassis info (serial, IOS, platform)
-        self.chassis = self.get_chassis()
-        if self.chassis.serial and not self.serial:
-            self.serial = self.chassis.serial
-        if self.chassis.plat:
-            self.plat = self.chassis.plat
-        if self.chassis.ios:
-            self.ios = self.chassis.ios
+        # Ent chassis info (serial, ios, platform)
+        self.ent = self.get_ent()
         # VPC peerlink polulates self.vpc
         self.vpc = self.get_vpc()
         # Get the neighbors combining CDP and LLDP
@@ -231,6 +229,137 @@ class Node(BaseData):
             return None
 
 
+    def get_system_name(self):
+        name = self.name_raw.split('.')[0]
+        return name
+
+
+    def get_ent(self) -> tuple:
+        ent = EntData()
+        for row in self.cache.ent_class:
+            for n, v in row:
+                n = str(n)
+                if v != ENTPHYCLASS.CHASSIS:
+                    continue
+                t = n.split('.')
+                idx = t[12]
+                ent.serial = self.cached_item('ent_serial',
+                                              f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+                ent.plat = self.cached_item('ent_plat',
+                                            f"{o.ENTPHYENTRY_PLAT}.{idx}")
+                ios = self.cached_item('ent_ios',
+                                       f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                # Modular switches have IOS on module
+                if not ios:
+                    for row in self.cache.ent_class:
+                        for n, v in row:
+                            n = str(n)
+                            if v != ENTPHYCLASS.MODULE:
+                                continue
+                            t = n.split('.')
+                            idx = t[12]
+                            ios = self.cached_item('ent_ios',
+                                                   f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                            if ios:
+                                break
+                ent.ios = format_ios_ver(ios)
+        return ent
+
+
+    def get_ips(self):
+        """ Collects and stores all the IPs for Node
+        Return the lowest numbered IP of all interfaces
+        """
+        ips = []
+        if self.ip not in NOTHING:
+            ips.append(self.ip)
+        # Loopbacks
+        if self.loopbacks:
+            for lb in self.loopbacks:
+                if lb.ip:
+                    lb_ip = ip_from_cidr(lb.ip)
+                    ips.append(lb_ip)
+        # SVIs
+        if self.svis:
+            for svi in self.svis:
+                if svi.ips:
+                    svi_ips = [ip_from_cidr(ip) for ip in svi.ips]
+                    ips.extend(svi_ips)
+        self.ips = ips.sort()
+        return ip_from_cidr(self.ips[0])
+
+
+    def get_loopbacks(self) -> List[LoopBackData]:
+        loopbacks = []
+        for row in self.cache.ethif:
+            for k, v in row:
+                k = str(k)
+                if k.startswith(o.ETH_IF_TYPE) and v == 24:
+                    ifidx = k.split('.')[10]
+                    lo_name = self.cached_item('ethif',
+                                               f"{o.ETH_IF_DESC}.{ifidx}")
+                    lo_ip = self.get_ips_from_index(ifidx)
+                    lo = LoopBackData(lo_name, lo_ip)
+                    loopbacks.append(lo)
+        return loopbacks
+
+
+    def get_svis(self) -> List[SVIData]:
+        svis = []
+        for row in self.cache.svi:
+            for k, v in row:
+                vlan = str(k).split('.')[14]
+                svi = SVIData(vlan)
+                svi.ips = self.get_ips_from_index(v)
+                svis.append(svi)
+        return svis
+
+
+    def get_vlans(self) -> List[VLANData]:
+        vlans = []
+        i = 0
+        for vlan_row in self.cache.vlan:
+            for vlan_n, vlan_v in vlan_row:
+                # get VLAN ID from OID
+                vlan = oid_last_token(vlan_n)
+                if vlan >= 1002:
+                    continue
+                vlans.append(VLANData(vlan, str(self.cache.vlandesc[i][0][1])))
+                i += 1
+        return vlans
+
+
+    def add_link(self, link):
+        if not isinstance(link, LinkData):
+            link = LinkData(link)
+        if link not in self.links:
+            self.links.append(link)
+
+
+    def get_link(self, ifidx) -> LinkData:
+        link = LinkData()
+        link.link_type = self.cached_item('link_type',
+                                          f"{o.TRUNK_VTP}.{ifidx}")
+        # trunk
+        if link.link_type == '2':
+            link.local_native_vlan = self.cached_item('trunk_native',
+                                                      f"{o.TRUNK_NATIVE}.{ifidx}")
+            trunk_allowed = self.cached_item('trunk_allowed',
+                                             f"{o.TRUNK_ALLOW}.{ifidx}")
+            link.local_allowed_vlans = parse_allowed_vlans(trunk_allowed)
+        # LAG membership
+        lag = self.cached_item('lag', f"{o.LAG_LACP}.{ifidx}")
+        if lag:
+            link.local_lag = self.get_ifname(lag)
+            link.local_lag_ips = self.get_ips_from_index(lag)
+            link.remote_lag_ips = []
+        # VLAN info
+        link.vlan = self.cached_item('vlan', f"{o.IF_VLAN}.{ifidx}")
+        # IP address
+        link.local_if_ip = self.get_ips_from_index(ifidx)
+        return link
+
+
     def get_stack(self)-> StackData:
         stack_roles = ['master', 'member', 'notMember', 'standby']
         stack = StackData()
@@ -293,6 +422,20 @@ class Node(BaseData):
             if chassis > 1:
                 break
         return vss
+
+
+    def get_vpc(self):
+        """ If VPC is enabled,
+        Return the VPC domain and interface name of the VPC peerlink.
+        """
+        vpc = VPCData()
+        if not self.cache.vpc:
+            return vpc
+        vpc.domain = oid_last_token(self.cache.vpc[0][0][0])
+        ifidx = str(self.cache.vpc[0][0][1])
+        ifname = self.cached_item('ethif', f"{o.ETH_IF_DESC}.{ifidx}")
+        vpc.ifname = normalize_port(ifname)
+        return vpc
 
 
     def get_cdp_neighbors(self) -> List[LinkData]:
@@ -382,148 +525,6 @@ class Node(BaseData):
                                     f"{o.LLDP_DEVNAME}.{idx}")
                 neighbors.append(link)
         return neighbors
-
-
-    def add_link(self, link):
-        if not isinstance(link, LinkData):
-            link = LinkData(link)
-        if link not in self.links:
-            self.links.append(link)
-
-
-    def get_link(self, ifidx) -> LinkData:
-        link = LinkData()
-        link.link_type = self.cached_item('link_type',
-                                      f"{o.TRUNK_VTP}.{ifidx}")
-        # trunk
-        if link.link_type == '2':
-            link.local_native_vlan = self.cached_item('trunk_native',
-                                       f"{o.TRUNK_NATIVE}.{ifidx}")
-            trunk_allowed = self.cached_item('trunk_allowed',
-                                         f"{o.TRUNK_ALLOW}.{ifidx}")
-            link.local_allowed_vlans = parse_allowed_vlans(trunk_allowed)
-        # LAG membership
-        lag = self.cached_item('lag', f"{o.LAG_LACP}.{ifidx}")
-        if lag:
-            link.local_lag = self.get_ifname(lag)
-            link.local_lag_ips = self.get_ips_from_index(lag)
-            link.remote_lag_ips = []
-        # VLAN info
-        link.vlan = self.cached_item('vlan', f"{o.IF_VLAN}.{ifidx}")
-        # IP address
-        link.local_if_ip = self.get_ips_from_index(ifidx)
-        return link
-
-
-    def get_chassis(self) -> tuple:
-        chassis = ChassisData()
-        for row in self.cache.ent_class:
-            for n, v in row:
-                n = str(n)
-                if v != ENTPHYCLASS.CHASSIS:
-                    continue
-                t = n.split('.')
-                idx = t[12]
-                chassis.serial = self.cached_item('ent_serial',
-                                    f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-                chassis.plat = self.cached_item('ent_plat',
-                                    f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                ios = self.cached_item('ent_ios',
-                                    f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-                # Modular switches have IOS on module
-                if not ios:
-                    for row in self.cache.ent_class:
-                        for n, v in row:
-                            n = str(n)
-                            if v != ENTPHYCLASS.MODULE:
-                                continue
-                            t = n.split('.')
-                            idx = t[12]
-                            ios = self.cached_item('ent_ios',
-                                        f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-                            if ios:
-                                break
-                chassis.ios = format_ios_ver(ios)
-        return chassis
-
-
-    def get_system_name(self, domains=None):
-        return normalize_host(self.name_raw, domains)
-
-
-    def get_ips(self):
-        """ Collects and stores all the IPs for Node
-        Return the lowest numbered IP of all interfaces
-        """
-        self.ips = list(self.ip)
-        # Loopbacks
-        if self.loopbacks:
-            for lb in self.loopbacks:
-                if lb.ip:
-                    lb_ip = ip_from_cidr(lb.ip)
-                    self.ips.append(lb_ip)
-        # SVIs
-        if self.svis:
-            for svi in self.svis:
-                if svi.ips:
-                    svi_ips = [ip_from_cidr(ip) for ip in svi.ips]
-                    self.ips.extend(svi_ips)
-        self.ips.sort()
-        return ip_from_cidr(self.ips[0])
-
-
-    def get_vpc(self):
-        """ If VPC is enabled,
-        Return the VPC domain and interface name of the VPC peerlink.
-        """
-        vpc = VPCData()
-        if not self.cache.vpc:
-            return vpc
-        vpc.domain = oid_last_token(self.cache.vpc[0][0][0])
-        ifidx = str(self.cache.vpc[0][0][1])
-        ifname = self.cached_item('ethif', f"{o.ETH_IF_DESC}.{ifidx}")
-        vpc.ifname = normalize_port(ifname)
-        return vpc
-
-
-    def get_loopbacks(self) -> List[LoopBackData]:
-        loopbacks = []
-        for row in self.cache.ethif:
-            for k, v in row:
-                k = str(k)
-                if k.startswith(o.ETH_IF_TYPE) and v == 24:
-                    ifidx = k.split('.')[10]
-                    lo_name = self.cached_item('ethif',
-                                           f"{o.ETH_IF_DESC}.{ifidx}")
-                    lo_ip = self.get_ips_from_index(ifidx)
-                    lo = LoopBackData(lo_name, lo_ip)
-                    loopbacks.append(lo)
-        return loopbacks
-
-
-    def get_svis(self) -> List[SVIData]:
-        svis = []
-        for row in self.cache.svi:
-            for k, v in row:
-                vlan = str(k).split('.')[14]
-                svi = SVIData(vlan)
-                svi.ips = self.get_ips_from_index(v)
-                svis.append(svi)
-        return svis
-
-
-    def get_vlans(self) -> List[VLANData]:
-        vlans = []
-        i = 0
-        for vlan_row in self.cache.vlan:
-            for vlan_n, vlan_v in vlan_row:
-                # get VLAN ID from OID
-                vlan = oid_last_token(vlan_n)
-                if vlan >= 1002:
-                    continue
-                vlans.append(VLANData(vlan, str(self.cache.vlandesc[i][0][1])))
-                i += 1
-        return vlans
 
 
     def get_arp(self) -> List[ARPData]:

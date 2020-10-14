@@ -46,7 +46,7 @@ class Cache:
 
 
     @cached_property
-    def desc(self):
+    def descr(self):
         return self._value(o.SYSDESC)
 
 

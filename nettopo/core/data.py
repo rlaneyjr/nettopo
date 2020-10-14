@@ -124,7 +124,7 @@ class StackMemberData(BaseData):
         self.items_2_show = ['num', 'role', 'serial']
 
 
-class ChassisData(BaseData):
+class EntData(BaseData):
     def __init__(self):
         self.serial = None
         self.plat = None
