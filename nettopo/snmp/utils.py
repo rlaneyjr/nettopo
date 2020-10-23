@@ -30,6 +30,7 @@ __all__ = [
     'return_snmptype_val',
 ]
 
+
 def is_ipv4_address(value):
     try:
         from netaddr import IPAddress
@@ -69,6 +70,8 @@ def return_pretty_val(value):
             return value.asOctets()
     if isinstance(value, TimeTicks):
         return timedelta(seconds=int(value.prettyPrint()) / 100.0)
+    if isinstance(value, bytes):
+        return value.prettyPrint().decode('utf-8')
     return value
 
 

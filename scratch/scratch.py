@@ -33,8 +33,9 @@ sw1 = Node('10.0.0.1')
 sw1.query_node()
 
 sw2 = Node('10.0.0.2')
-sw2.get_snmp_creds('letmeSNMP')
 sw2.query_node()
+
+sw2.get_snmp_creds('letmeSNMP')
 
 from nettopo.core.nettopo import Nettopo
 net = Nettopo()

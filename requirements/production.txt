@@ -1,11 +1,25 @@
-# PRECAUTION: avoid production dependencies that aren't in development
-
--r ./base.txt
-
-gunicorn==19.9.0  # https://github.com/benoitc/gunicorn
-psycopg2==2.7.6.1 --no-binary psycopg2  # https://github.com/psycopg/psycopg2
-
-# Django
-# ------------------------------------------------------------------------------
-django-storages[boto3]==1.7.1  # https://github.com/jschneier/django-storages
-django-anymail[mailgun]==5.0  # https://github.com/anymail/django-anymail
+Jinja2
+PyYAML
+ciscoconfparse
+dnspython
+docopt
+easysnmp
+genie
+manuf
+netaddr
+netifaces
+netmiko
+ntc-templates
+pexpect
+pyats
+pydot
+pysmi
+pysnmp
+pysnmp-mibs
+requests
+ruamel.yaml
+snmpsysdescrparser
+tabulate
+textfsm
+alive-progress
+alive-progress

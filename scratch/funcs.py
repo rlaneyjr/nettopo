@@ -1,3 +1,52 @@
+neighbors = []
+for row in sw1.cache.lldp:
+    for oid, val in row:
+        oid = str(oid)
+        val = v.prettyPrint()
+        print(f"Processing: {oid} with {val}")
+        print(f"Looking for {o.LLDP_TYPE} oids only")
+        if oid.startswith(o.LLDP_TYPE):
+            print(f"Found one: {oid}")
+            t = oid.split('.')
+            print(f"Split it: {t}")
+            ifidx = t[-2:-1]
+            print(f"Index 1: {ifidx}")
+            ifidx2 = t[-1]
+            print(f"Index 2: {ifidx2}")
+            idx = ".".join(t[-2:])
+            print(f"Combined Index: {idx}")
+            link = sw1.get_link(ifidx)
+            print(f"Found: {link}")
+            link.discovered_proto = 'lldp'
+            link.local_port = sw1.get_ifname(ifidx)
+            print(f"link.local_port: {link.local_port}")
+            rip = sw1.cached_item('lldp', f"{o.LLDP_DEVADDR}.{idx}")
+            print(f"Raw IP: {rip}")
+            link.remote_ip = ip_2_str(rip)
+            print(f"link.remote_ip: {link.remote_ip}")
+            rport = sw1.cached_item('lldp',
+                                    f"{o.LLDP_DEVPORT}.{idx}")
+            print(f"Raw port: {rport}")
+            link.remote_port = normalize_port(rport)
+            print(f"link.remote_port: {link.remote_port}")
+            devid = sw1.cached_item('lldp',
+                                    f"{o.LLDP_DEVID}.{idx}")
+            print(f"Raw devid: {devid}")
+            link.remote_mac = mac_hex_to_ascii(devid)
+            print(f"link.remote_mac: {link.remote_mac}")
+            rios = sw1.cached_item('lldp',
+                                   f"{o.LLDP_DEVDESC}.{idx}")
+            print(f"Raw IOS: {rios}")
+            try:
+                rios = binascii.unhexlify(rios[2:])
+            except:
+                pass
+            link.remote_ios = format_ios_ver(rios)
+            print(f"link.remote_ios: {link.remote_ios}")
+            link.remote_name = sw1.cached_item('lldp',
+                                               f"{o.LLDP_DEVNAME}.{idx}")
+            print(f"link.remote_name: {link.remote_name}")
+            neighbors.append(link)
 
 vartable = cdp.getnext(o.cdpCacheEntry)
 neighbors = {}

@@ -4,13 +4,27 @@
 '''
         util.py
 '''
-import re
 import binascii
+from datetime import timedelta
 from functools import wraps
+from pyasn1.type.univ import ObjectIdentifier
+from pysnmp.proto.rfc1902 import (
+    Counter32,
+    Counter64,
+    Gauge32,
+    Integer,
+    Integer32,
+    IpAddress,
+    OctetString,
+    TimeTicks,
+    Unsigned32,
+)
+import re
 from timeit import default_timer as timer
 from typing import Union
 import uuid
 # My Stuff
+from nettopo.core.constants import TYPES
 from nettopo.core.exceptions import NettopoError
 
 
@@ -34,6 +48,9 @@ __all__ = [
     'str_matches_pattern',
     'lookup_table',
     'oid_last_token',
+    'is_ipv4_address',
+    'return_pretty_val',
+    'return_snmptype_val',
 ]
 
 
@@ -50,7 +67,7 @@ def timethis(func):
         h = int(end / 3600)
         m = int((end - (h * 3600)) / 60)
         s = end - (int(end / 3600) * 3600) - (m * 60)
-        print(f"Completed {func.__name__} in {h}:{m}:{s:.2f}")
+        print(f"Completed {func.__name__} in {h}:{m:02}:{s:.2f}")
         return run
     return run_func
 
@@ -133,14 +150,17 @@ def normalize_port(port: str=None):
         port = port.replace('Te', 'te')
         port = port.replace('Gi', 'gi')
         port = port.replace('Fa', 'fa')
+        port = port.replace('Lo', 'lo')
         port = port.replace('Po', 'po')
+        port = port.replace('Vl', 'vl')
     return port
 
 
 def ip_2_str(ip_hex: Union[str, int]) -> str:
+    ip = None
     try:
         if isinstance(ip_hex, str):
-            ip = int(ip_hex, 0)
+            ip = int(ip_hex, base=0)
         elif isinstance(ip_hex, int):
             ip = ip_hex
         seg1 = ((ip >> 24) & 0xFF)
@@ -206,14 +226,13 @@ def mac_ascii_to_hex(mac_str):
         return mac_hex
 
 
-def mac_hex_to_ascii(mac_hex, inc_dots: bool=True, inc_colon: bool=False) -> str:
+def mac_hex_to_ascii(mac_hex, *, separator: str='.') -> str:
     ''' Format a hex MAC string to ASCII
 
     :param:     mac_hex
         Value from SNMP
-    :param:bool:     inc_dots
-        True to format as 'aabb.ccdd.eeff' (default)
-        False to format as 'aabbccddeeff'
+    :param:str:     separator
+        '.' to format as 'aabb.ccdd.eeff' (default)
     :return:str:
         String representation of the mac_hex
     '''
@@ -221,20 +240,20 @@ def mac_hex_to_ascii(mac_hex, inc_dots: bool=True, inc_colon: bool=False) -> str
         return mac_hex
     v = mac_hex[2:]
     mac = ''
-    if inc_dots and not inc_colon:
+    if separator == '.':
         mac_segs = [str(v[i:i+4]) for i in range(0, len(v), 4)]
-        mac = '.'.join(mac_segs)
-    elif inc_colon and not inc_dots:
+        mac = separator.join(mac_segs)
+    elif separator in [':', '-']:
         mac_segs = [str(v[i:i+2]) for i in range(0, len(v), 2)]
-        mac = ':'.join(mac_segs)
+        mac = separator.join(mac_segs)
     else:
         mac = str(v)
     return mac
 
 
-def mac_format_ascii(mac_hex, inc_dots: bool=True):
+def mac_format_ascii(mac_hex, separator: str='.'):
     v = mac_hex.prettyPrint()
-    return mac_hex_to_ascii(v, inc_dots)
+    return mac_hex_to_ascii(v, separator=separator)
 
 
 def parse_allowed_vlans(allowed_vlans):
@@ -310,3 +329,68 @@ def oid_last_token(objectId):
     oid = objectId.getOid()
     idx = len(oid) - 1
     return oid[idx]
+
+
+def is_ipv4_address(value):
+    try:
+        from netaddr import IPAddress
+        ip = IPAddress(value)
+        if isinstance(ip, IPAddress):
+            return True
+        else:
+            return False
+    except:
+        try:
+            c1, c2, c3, c4 = value.split(".")
+            assert 0 <= int(c1) <= 255
+            assert 0 <= int(c2) <= 255
+            assert 0 <= int(c3) <= 255
+            assert 0 <= int(c4) <= 255
+            return True
+        except:
+            return False
+
+
+def return_pretty_val(value):
+    if isinstance(value, (
+        Counter32,
+        Counter64,
+        Gauge32,
+        Integer,
+        Integer32,
+        Unsigned32,
+    )):
+        return int(value.prettyPrint())
+    if isinstance(value, (IpAddress, ObjectIdentifier)):
+        return str(value.prettyPrint())
+    if isinstance(value, OctetString):
+        try:
+            return value.asOctets().decode(value.encoding)
+        except UnicodeDecodeError:
+            return value.asOctets()
+    if isinstance(value, TimeTicks):
+        return timedelta(seconds=int(value.prettyPrint()) / 100.0)
+    if isinstance(value, bytes):
+        return value.prettyPrint().decode('utf-8')
+    return value
+
+
+def return_snmptype_val(value, value_type=None):
+    if not value_type:
+        value_type = type(value)
+    if value_type in TYPES:
+        data = TYPES[value_type](value)
+    elif value_type in [int, float]:
+        data = Integer(value)
+    elif value_type == str:
+        if is_ipv4_address(value):
+            data = IpAddress(value)
+        else:
+            data = OctetString(value)
+    else:
+        raise NettopoTypeError(
+            f"Unable to process type for {value} type: {value_type} \
+            Please use one of: {', '.join(TYPES.keys())}"
+        )
+    return data
+

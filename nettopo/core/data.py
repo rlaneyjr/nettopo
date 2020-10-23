@@ -47,12 +47,11 @@ class BaseData:
         else:
             show_items = self._as_dict().keys()
         for item in show_items:
-            try:
+            if hasattr(self, item):
                 val = getattr(self, item)
-            except ValueError:
-                val = 'Unknown'
-            finally:
-                _dict.update({item: val})
+            else:
+                show_items.remove(item)
+            _dict.update({item: val})
         return _dict
 
     def __str__(self) -> str:
@@ -63,6 +62,13 @@ class BaseData:
         items = [f"{key}={val}" for key, val in self.show.items()]
         items = ",".join(items)
         return f"<{items}>"
+
+
+class IntData(BaseData):
+    def __init__(self, idx, name, cidrs):
+        self.idx = idx
+        self.name = name
+        self.cidrs = cidrs
 
 
 class LinkData(BaseData):
@@ -78,12 +84,14 @@ class LinkData(BaseData):
         self.remote_allowed_vlans = None
         self.local_port = None
         self.remote_port = None
+        self.remote_port_desc = None
         self.local_lag = None
         self.remote_lag = None
         self.local_lag_ips = None
         self.remote_lag_ips = None
         self.local_if_ip = None
         self.remote_if_ip = None
+        self.remote_desc = None
         self.remote_platform = None
         self.remote_ios = None
         self.remote_mac = None
@@ -125,10 +133,10 @@ class StackMemberData(BaseData):
 
 
 class EntData(BaseData):
-    def __init__(self):
-        self.serial = None
-        self.plat = None
-        self.ios = None
+    def __init__(self, serial, plat, ios):
+        self.serial = serial
+        self.plat = plat
+        self.ios = ios
 
 
 class VPCData(BaseData):

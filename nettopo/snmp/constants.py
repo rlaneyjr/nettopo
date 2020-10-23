@@ -4,8 +4,7 @@
 '''
 Title:              constants.py
 Description:        SNMP Constants
-Author:             Ricky Laney
-Version:            0.1.1
+Author:             Ricky Laney Version:            0.1.1
 '''
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.proto.rfc1902 import (

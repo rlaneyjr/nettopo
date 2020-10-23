@@ -80,6 +80,7 @@ class Oids:
     SYSDESC: str = '1.3.6.1.2.1.1.1.0'
     SYS_SERIAL: str = '1.3.6.1.4.1.9.3.6.3.0'
     SYS_BOOT: str = '1.3.6.1.4.1.9.2.1.73.0'
+    SYS_BOOT2: str = '1.3.6.1.2.1.16.19.6.0'
     # IFNAME + ifidx (BULK)
     IFNAME: str = '1.3.6.1.2.1.31.1.1.1.1'
     # CDP (BULK)
@@ -93,9 +94,11 @@ class Oids:
     # CDP_INT 6.ifidx
     CDP_INT: str = '1.3.6.1.4.1.9.9.23.1.1.1.1.'
     LLDP: str = '1.0.8802.1.1.2.1.4'
-    LLDP_TYPE: str = '1.0.8802.1.1.2.1.4.1.1.4.0'
+    # LLDP_TYPE: str = '1.0.8802.1.1.2.1.4.1.1.4.0'
+    LLDP_TYPE: str = '1.0.8802.1.1.2.1.4.1.1.6.0'
     LLDP_DEVID: str = '1.0.8802.1.1.2.1.4.1.1.5.0'
     LLDP_DEVPORT: str = '1.0.8802.1.1.2.1.4.1.1.7.0'
+    LLDP_DEVPDSC: str = '1.0.8802.1.1.2.1.4.1.1.8.0'
     LLDP_DEVNAME: str = '1.0.8802.1.1.2.1.4.1.1.9.0'
     LLDP_DEVDESC: str = '1.0.8802.1.1.2.1.4.1.1.10.0'
     LLDP_DEVADDR: str = '1.0.8802.1.1.2.1.4.2.1.5.0'
@@ -115,7 +118,7 @@ class Oids:
     # IF_IP_ADDR + a.b.c.d = ifid
     IF_IP_ADDR: str = '1.3.6.1.2.1.4.20.1.2'
     # IF_IP_NETM + a.b.c.d
-    IF_IP_NETM: str = '1.3.6.1.2.1.4.20.1.3.'
+    IF_IP_NETM: str = '1.3.6.1.2.1.4.20.1.3'
     # SVI_VLANIF cviRoutedVlanIfIndex
     SVI_VLANIF: str = '1.3.6.1.4.1.9.9.128.1.1.1.1.3'
     # ETH_IF ifEntry
