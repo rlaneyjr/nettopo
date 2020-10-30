@@ -1,3 +1,62 @@
+import binascii
+from nettopo.core.util import *
+from nettopo.oids import Oids
+o = Oids()
+def get_cdp_neighbors(switch):
+    neighbors = []
+    if not switch.cache.cdp:
+        print('No CDP Neighbors Found.')
+        return neighbors
+    for row in switch.cache.cdp:
+        for oid, val in row:
+            print(f"Processing: {oid} with {val}")
+            oid = str(oid)
+            # process only if this row is a CDP_DEVID
+            if oid.startswith(o.CDP_DEVID):
+                print(f"Found match {o.CDP_DEVID}: {oid}")
+                t = oid.split('.')
+                print(f"Split it: {t}")
+                ifidx = t[14]
+                print(f"Index 1: {ifidx}")
+                ifidx2 = t[15]
+                print(f"Index 2: {ifidx2}")
+                idx = ".".join([ifidx, ifidx2])
+                print(f"Combined Index: {idx}")
+                link = switch.get_link(ifidx)
+                print(f"Found: {link}")
+                link.discovered_proto = 'cdp'
+                link.remote_name = val.prettyPrint()
+                print(f"link.remote_name: {link.remote_name}")
+                rip = switch.get_cached_item('cdp', f"{o.CDP_IPADDR}.{idx}")
+                print(f"Raw IP: {rip}")
+                link.remote_ip = ip_2_str(rip)
+                print(f"link.remote_ip: {link.remote_ip}")
+                link.local_port = switch.get_ifname(ifidx)
+                print(f"link.local_port: {link.local_port}")
+                rport = switch.get_cached_item(
+                    'cdp',
+                    f"{o.CDP_DEVPORT}.{idx}"
+                )
+                print(f"Raw port: {rport}")
+                link.remote_port = normalize_port(rport)
+                print(f"link.remote_port: {link.remote_port}")
+                link.remote_plat = switch.get_cached_item(
+                    'cdp',
+                    f"{o.CDP_DEVPLAT}.{idx}"
+                )
+                print(f"link.remote_plat: {link.remote_plat}")
+                rios = switch.get_cached_item('cdp', f"{o.CDP_IOS}.{idx}")
+                print(f"Raw IOS: {rios}")
+                try:
+                    rios = binascii.unhexlify(rios[2:])
+                except:
+                    pass
+                link.remote_ios = format_ios_ver(rios)
+                print(f"link.remote_ios: {link.remote_ios}")
+                neighbors.append(link)
+    return neighbors
+
+
 neighbors = []
 for row in sw1.cache.lldp:
     for oid, val in row:
@@ -183,18 +242,36 @@ def get_cidrs_ifidx(switch, ifidx):
         return ips
 
 
-def snmp_extract(snmp_data):
-    '''
-    Unwrap the SNMP response data and return in a readable format
-    Assumes only a single list element is returned
-    '''
-    if len(snmp_data) > 1:
-        raise ValueError("snmp_extract only allows a single element")
-    if len(snmp_data) == 0:
-        return None
-    else:
-        # Unwrap the data which is returned as a tuple wrapped in a list
-        return snmp_data[0][1].prettyPrint()
+from nettopo.core.util import lookup_table, mac_hex_to_ascii
+arp_table = []
+for r in sw1.cache.arp:
+    for n, v in r:
+        oid = str(n)
+        if oid.startswith(o.ARP_VLAN):
+            ip = '.'.join(oid.split('.')[-4:])
+            print(f"IP: {ip}")
+            interf = sw1.get_ifname(v)
+            print(f"Interface: {interf}")
+            mac_hex = lookup_table(sw1.cache.arp, f"{o.ARP_MAC}.{v}.{ip}")
+            print(f"MAC hex: {mac_hex}")
+            mac = mac_hex_to_ascii(mac_hex)
+            print(f"MAC: {mac}")
+            atype = lookup_table(sw1.cache.arp, f"{o.ARP_TYPE}.{v}.{ip}")
+            print(f"atype: {atype}")
+            if isinstance(atype, list):
+                atype = atype[0]
+                arp_type = atype if isinstance(atype, int) else int(atype)
+                type_str = 'unknown'
+                if atype == ARP.OTHER:
+                    type_str = 'other'
+                elif atype == ARP.INVALID:
+                    type_str = 'invalid'
+                elif atype == ARP.DYNAMIC:
+                    type_str = 'dynamic'
+                elif atype == ARP.STATIC:
+                    type_str = 'static'
+            print(f"type_str: {type_str}")
+
 
 
 macs = []

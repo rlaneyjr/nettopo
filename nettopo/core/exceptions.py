@@ -27,3 +27,4 @@ class NettopoCacheError(NettopoError): pass
 class NettopoConfigError(NettopoError): pass
 class NettopoDiagramError(NettopoError): pass
 class NettopoSNMPError(NettopoError): pass
+class NettopoTypeError(NettopoError): pass

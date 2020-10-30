@@ -10,6 +10,7 @@ from collections import namedtuple
 from dataclasses import dataclass
 from functools import cached_property
 from pysnmp.smi.rfc1902 import ObjectIdentity
+import re
 from sysdescrparser import sysdescrparser
 from typing import Union, List, Any
 from tqdm import tqdm
@@ -43,7 +44,6 @@ from nettopo.core.util import (
     ip_from_cidr,
     format_ios_ver,
     mac_hex_to_ascii,
-    mac_format_ascii,
     parse_allowed_vlans,
     lookup_table,
     oid_last_token,
@@ -96,7 +96,8 @@ class Node(BaseData):
 
 
     def reset_cache(self) -> None:
-        del self.cache
+        if hasattr(self, cache):
+            del self.cache
         self.queried = False
 
 
@@ -112,6 +113,11 @@ class Node(BaseData):
                 getattr(cache, prop)
                 bar()
         self.cache = cache
+
+
+    def rebuild_cache(self) -> None:
+        self.reset_cache()
+        self.build_cache()
 
 
     @timethis
@@ -150,18 +156,14 @@ class Node(BaseData):
             self.hsrp_pri = self.cache.hsrp
             self.hsrp_vip = self.cache.hsrp_vip
         # stack
-        stack = self.get_stack()
-        if stack.enabled:
-            self.stack = stack
+        self.stack = self.get_stack()
         # vss
-        vss = self.get_vss()
-        if vss.enabled:
-            self.vss = vss
+        self.vss = self.get_vss()
         # serial
-        if hasattr(self, 'vss'):
+        if self.vss:
             if self.vss.enabled and self.vss.serial:
                 self.serial = self.vss.serial
-        elif hasattr(self, 'stack'):
+        elif self.stack:
             if self.stack.enabled and self.stack.serial:
                 self.serial = self.stack.serial
         else:
@@ -176,16 +178,16 @@ class Node(BaseData):
         self.ent = self.get_ent()
         # VPC peerlink polulates self.vpc
         self.vpc = self.get_vpc()
+        # Populates self.arp_table
+        self.arp_table = self.get_arp()
+        # Populates self.mac_table
+        self.mac_table = self.get_cam()
         # Get the neighbors combining CDP and LLDP
         self.neighbors = []
         self.cdp_neighbors = self.get_cdp_neighbors()
         self.lldp_neighbors = self.get_lldp_neighbors()
         self.neighbors.extend(self.cdp_neighbors)
         self.neighbors.extend(self.lldp_neighbors)
-        # Populates self.arp_table
-        self.arp_table = self.get_arp()
-        # Populates self.mac_table
-        self.mac_table = self.get_cam()
 
 
     def get_cached_item(self,
@@ -202,10 +204,15 @@ class Node(BaseData):
             for row in table:
                 for o, v in row:
                     oid = str(o) if return_pretty else o
-                    value = return_pretty_val(v) if return_pretty else v
+                    value = v.prettyPrint() if return_pretty else v
                     if item_type == 'oid':
-                        # Match item in start of oid. Return value.
-                        if str(o).startswith(item):
+                        # Oid matching is string based
+                        item = item if isinstance(item, str) else str(item)
+                        # Use regex to ensure we do not match ending digit
+                        # like '1' to '10', '100', etc.
+                        item_re = re.compile(item + r'(?!\d)')
+                        # Match re with oid. Return value.
+                        if item_re.match(str(o)):
                             res = (oid, value) if return_both else value
                             results.append(res)
                     elif item_type == 'val':
@@ -250,18 +257,17 @@ class Node(BaseData):
 
     def build_int_index(self) -> List[IntData]:
         int_index = []
-        cache = self.cache.ifname
         with alive_bar(
-            len(cache),
+            len(self.cache.ifname),
             title=f"Building Int_Index for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in cache:
+            for row in self.cache.ifname:
                 for oid, val in row:
                     port = return_pretty_val(val)
-                    # Skip unrouted VLAN ports
-                    if port.startswith('VLAN-'):
-                        continue
+                    # # Skip unrouted VLAN ports
+                    # if port.startswith('VLAN-'):
+                    #     continue
                     idx = oid_last_token(oid)
                     name = normalize_port(port)
                     ip_oids = self.get_cached_item(
@@ -294,18 +300,20 @@ class Node(BaseData):
         return 'Unknown'
 
 
-    def get_ips_from_index(self, num: int) -> ULSIN:
+    def get_ips_from_index(self, num: UIS, ip_only: bool=False) -> ULSIN:
         ips = []
         for entry in self.int_index:
-            if num == entry.idx:
+            if int(num) == int(entry.idx):
                 if entry.cidrs:
-                    ips.extend([cidr for cidr in entry.cidrs])
+                    if ip_only:
+                        cidrs = [cidr.split('/')[0] for cidr in entry.cidrs]
+                    else:
+                        cidrs = [cidr for cidr in entry.cidrs]
+                    ips.extend(cidrs)
         if len(ips) == 1:
             return ips[0]
-        elif len(ips) > 1:
-            return ips
         else:
-            return None
+            return ips
 
 
     def get_system_name(self):
@@ -350,7 +358,6 @@ class Node(BaseData):
     # TODO: IOS is incorrect for IOS-XE at least.
     def get_ent(self) -> tuple:
         results = []
-        cache = self.cache.ent_class
         chs_oids = self.get_cached_item('ent_class', ENTPHYCLASS.CHASSIS, item_type='val')
         if isinstance(chs_oids, list):
             for chs_oid in chs_oids:
@@ -371,20 +378,21 @@ class Node(BaseData):
         ips = []
         for entry in self.int_index:
             if entry.cidrs:
-                ips.extend([cidr for cidr in entry.cidrs])
+                ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
+        ips = set(ips)
+        ips = list(ips)
         ips.sort()
         return ips
 
 
     def get_loopbacks(self) -> List[LoopBackData]:
         loopbacks = []
-        cache = self.cache.ethif
         with alive_bar(
-            len(cache),
+            len(self.cache.ethif),
             title=f"Building Loopbacks for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in cache:
+            for row in self.cache.ethif:
                 for n, v in row:
                     oid = str(n)
                     if oid.startswith(o.ETH_IF_TYPE) and v == 24:
@@ -400,13 +408,12 @@ class Node(BaseData):
 
     def get_svis(self) -> List[SVIData]:
         svis = []
-        cache = self.cache.svi
         with alive_bar(
-            len(cache),
+            len(self.cache.svi),
             title=f"Building SVIs for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in cache:
+            for row in self.cache.svi:
                 for n, v in row:
                     vlan = str(n).split('.')[14]
                     svi = SVIData(vlan)
@@ -418,14 +425,13 @@ class Node(BaseData):
 
     def get_vlans(self) -> List[VLANData]:
         vlans = []
-        cache = self.cache.vlan
         with alive_bar(
-            len(cache),
+            len(self.cache.vlan),
             title=f"Building VLANs for {self.name}",
             bar='smooth',
         ) as bar:
             i = 0
-            for row in cache:
+            for row in self.cache.vlan:
                 for n, v in row:
                     # get VLAN ID from OID
                     vlan = oid_last_token(n)
@@ -499,18 +505,18 @@ class Node(BaseData):
                                         f"{o.ENTPHYENTRY_PLAT}.{idx}")
                     mac = self.get_cached_item('stack', f"{o.STACK_MAC}.{idx}")
                     if mac:
-                        mem.mac = mac_format_ascii(mac)
+                        mem.mac = mac_hex_to_ascii(mac)
                     stack.members.append(mem)
         if len(stack.members) > 1:
             stack.enabled = True
             stack.count = len(stack.members)
-        return stack
+        return stack if stack.enabled else None
 
 
     def get_vss(self) -> VssData:
-        vss = VssData()
         if self.cache.vss_mode != '2':
-            return vss
+            return None
+        vss = VssData()
         vss.enabled = True
         vss.domain = self.cache.vss_domain
         chassis = 0
@@ -539,9 +545,9 @@ class Node(BaseData):
         """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         """
-        vpc = VPCData()
         if not self.cache.vpc:
-            return vpc
+            return None
+        vpc = VPCData()
         vpc.domain = oid_last_token(self.cache.vpc[0][0][0])
         ifidx = str(self.cache.vpc[0][0][1])
         ifname = self.get_cached_item('ethif', f"{o.ETH_IF_DESC}.{ifidx}")
@@ -549,139 +555,25 @@ class Node(BaseData):
         return vpc
 
 
-    def get_cdp_neighbors(self) -> List[LinkData]:
-        """ Get a list of CDP neighbors.
-        Returns a list of LinkData's.
-        Will always return an array.
-        """
-        # get list of CDP neighbors
-        neighbors = []
-        cache = self.cache.cdp
-        if not cache:
-            print('No CDP Neighbors Found.')
-            return neighbors
-        with alive_bar(
-            len(cache),
-            title=f"Building CDP neighbors for {self.name}",
-            bar='smooth',
-        ) as bar:
-            for row in cache:
-                for oid, val in row:
-                    oid = str(oid)
-                    # process only if this row is a CDP_DEVID
-                    if oid.startswith(o.CDP_DEVID):
-                        t = oid.split('.')
-                        ifidx = t[14]
-                        ifidx2 = t[15]
-                        idx = ".".join([ifidx, ifidx2])
-                        link = self.get_link(ifidx)
-                        link.discovered_proto = 'cdp'
-                        link.remote_name = val.prettyPrint()
-                        # get remote IP
-                        rip = self.get_cached_item('cdp', f"{o.CDP_IPADDR}.{idx}")
-                        link.remote_ip = ip_2_str(rip)
-                        # get local port
-                        link.local_port = self.get_ifname(ifidx)
-                        # get remote port
-                        rport = self.get_cached_item(
-                                    'cdp',
-                                    f"{o.CDP_DEVPORT}.{idx}"
-                                )
-                        link.remote_port = normalize_port(rport)
-                        # get remote platform
-                        link.remote_plat = self.get_cached_item(
-                                    'cdp',
-                                    f"{o.CDP_DEVPLAT}.{idx}"
-                                )
-                        # get IOS version
-                        rios = self.get_cached_item('cdp', f"{o.CDP_IOS}.{idx}")
-                        try:
-                            rios = binascii.unhexlify(rios[2:])
-                        except:
-                            pass
-                        link.remote_ios = format_ios_ver(rios)
-                        neighbors.append(link)
-                    bar()
-        return neighbors
-
-
-    def get_lldp_neighbors(self) -> List[LinkData]:
-        """ Get a list of LLDP neighbors.
-        Returns a list of LinkData's
-        Will always return an array.
-        """
-        neighbors = []
-        cache = self.cache.lldp
-        if not cache:
-            print('No LLDP Neighbors Found.')
-            return neighbors
-        with alive_bar(
-            len(cache),
-            title=f"Building LLDP neighbors for {self.name}",
-            bar='smooth',
-        ) as bar:
-            for row in cache:
-                for oid, val in row:
-                    oid = str(oid)
-                    if oid.startswith(o.LLDP_TYPE):
-                        t = oid.split('.')
-                        ifidx = t[-2]
-                        ifidx2 = t[-1]
-                        idx = ".".join(t[-2:])
-                        link = self.get_link(ifidx)
-                        link.discovered_proto = 'lldp'
-                        link.local_port = self.get_ifname(int(ifidx) + 2)
-                        rip_oid, _ = self.get_cached_item(
-                                        'lldp',
-                                        f"{o.LLDP_DEVADDR}.{idx}",
-                                        return_both=True
-                                    )
-                        link.remote_ip = self.cidr_from_oid(rip_oid)
-                        rport = self.get_cached_item('lldp',
-                                             f"{o.LLDP_DEVPORT}.{idx}")
-                        link.remote_port = normalize_port(rport)
-                        link.remote_port_desc = self.get_cached_item('lldp',
-                                                 f"{o.LLDP_DEVPDSC}.{idx}")
-                        devid = self.get_cached_item('lldp',
-                                                f"{o.LLDP_DEVID}.{idx}",
-                                                return_pretty=False)
-                        link.remote_mac = mac_hex_to_ascii(devid)
-                        rios = self.get_cached_item('lldp',
-                                            f"{o.LLDP_DEVDESC}.{idx}")
-                        if rios.startswith('0x'):
-                            try:
-                                rios = binascii.unhexlify(rios[2:])
-                            except:
-                                pass
-                        link.remote_desc = rios
-                        link.remote_ios = format_ios_ver(rios)
-                        link.remote_name = self.get_cached_item('lldp',
-                                            f"{o.LLDP_DEVNAME}.{idx}")
-                        neighbors.append(link)
-                    bar()
-        return neighbors
-
-
     def get_arp(self) -> List[ARPData]:
         arp_table = []
-        cache = self.cache.arp
         with alive_bar(
-            len(cache),
+            len(self.cache.arp),
             title=f"Building ARP table for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in cache:
+            for row in self.cache.arp:
                 for n, v in row:
                     oid = str(n)
                     if oid.startswith(o.ARP_VLAN):
                         ip = '.'.join(oid.split('.')[-4:])
                         interf = self.get_ifname(v)
-                        mac_hex = lookup_table(self.cache.arp,
+                        mac_hex = self.get_cached_item('arp',
                                         f"{o.ARP_MAC}.{v}.{ip}")
                         mac = mac_hex_to_ascii(mac_hex)
-                        atype = lookup_table(self.cache.arp,
+                        atype = self.get_cached_item('arp',
                                         f"{o.ARP_TYPE}.{v}.{ip}")
-                        arp_type = atype if isinstance(atype, int) else int(atype)
+                        arp_type = int(atype)
                         type_str = 'unknown'
                         if arp_type == ARP.OTHER:
                             type_str = 'other'
@@ -700,16 +592,15 @@ class Node(BaseData):
         ''' MAC address table from this node
         '''
         mac_table = []
-        cache = self.cache.vlan
         with alive_bar(
-            len(cache),
+            len(self.cache.vlan),
             title=f"Building MAC table for {self.name}",
             bar='smooth',
         ) as bar:
             # Grab CAM table for each VLAN
-            for vlan_row in cache:
-                for vlan_n, vlan_v in vlan_row:
-                    vlan = oid_last_token(vlan_n)
+            for row in self.cache.vlan:
+                for n, v in row:
+                    vlan = oid_last_token(n)
                     if vlan not in [1002, 1003, 1004, 1005]:
                         vmacs = self.get_macs_for_vlan(vlan)
                         if vmacs:
@@ -722,19 +613,12 @@ class Node(BaseData):
         ''' MAC addresses for a single VLAN
         '''
         macs = []
-        old_community = self.snmp.community
-        # Change community
-        community = f"{old_community}@{str(vlan)}"
-        new_snmp = SNMP(self.ip)
-        if not new_snmp.check_community(community):
-            raise NettopoSNMPError(f"ERROR: {community} failed for {self.ip}")
-        new_cache = Cache(new_snmp)
         # CAM table for this VLAN
-        cam_cache = new_cache.cam
+        cam_cache = self.cache.vlan_prop(vlan, 'cam')
         if not cam_cache:
             return macs
-        portnum_cache = new_cache.portnums
-        ifindex_cache = new_cache.ifindex
+        portnum_cache = self.cache.vlan_prop(vlan, 'portnums')
+        ifindex_cache = self.cache.vlan_prop(vlan, 'ifindex')
         for cam_row in cam_cache:
             for cam_n, cam_v in cam_row:
                 # find the interface index
@@ -745,13 +629,127 @@ class Node(BaseData):
                 # get the interface index and description
                 try:
                     ifidx = lookup_table(ifindex_cache,
-                                            f"{o.IFINDEX}.{bridge_portnum}")
-                    port = self.get_cached_item('ifname', f"{o.IFNAME}.{ifidx}")
+                                        f"{o.IFINDEX}.{bridge_portnum}")
+                    port = self.get_ifname(ifidx)
                 except TypeError:
-                    port = 'Local'
+                    port = 'local'
                 finally:
-                    port = port or 'Local'
-                mac_addr = mac_format_ascii(cam_v)
+                    port = str(port).lower() or 'local'
+                mac_addr = mac_hex_to_ascii(cam_v.prettyPrint())
                 entry = MACData(vlan, mac_addr, port)
                 macs.append(entry)
         return macs
+
+
+    def get_cdp_neighbors(self) -> List[LinkData]:
+        """ Get a list of CDP neighbors.
+        Returns a list of LinkData's.
+        Will always return an array.
+        """
+        # get list of CDP neighbors
+        neighbors = []
+        if not self.cache.cdp:
+            print('No CDP Neighbors Found.')
+            return neighbors
+        with alive_bar(
+            len(self.cache.cdp),
+            title=f"Building CDP neighbors for {self.name}",
+            bar='smooth',
+        ) as bar:
+            for row in self.cache.cdp:
+                for oid, val in row:
+                    oid = str(oid)
+                    # process only if this row is a CDP_DEVID
+                    if oid.startswith(o.CDP_DEVID):
+                        t = oid.split('.')
+                        ifidx = t[14]
+                        ifidx2 = t[15]
+                        idx = ".".join([ifidx, ifidx2])
+                        link = self.get_link(ifidx)
+                        link.discovered_proto = 'cdp'
+                        link.remote_name = val.prettyPrint()
+                        # get remote IP
+                        rip = self.get_cached_item(
+                                    'cdp',
+                                    f"{o.CDP_IPADDR}.{idx}",
+                                    return_pretty=False,
+                                )
+                        link.remote_ip = ip_2_str(rip)
+                        # get local port
+                        link.local_port = self.get_ifname(ifidx)
+                        # get remote port
+                        rport = self.get_cached_item(
+                            'cdp',
+                            f"{o.CDP_DEVPORT}.{idx}"
+                        )
+                        link.remote_port = normalize_port(rport)
+                        # get remote platform
+                        link.remote_plat = self.get_cached_item(
+                            'cdp',
+                            f"{o.CDP_DEVPLAT}.{idx}"
+                        )
+                        # get IOS version
+                        rios = self.get_cached_item('cdp', f"{o.CDP_IOS}.{idx}")
+                        try:
+                            rios = binascii.unhexlify(rios[2:])
+                        except:
+                            pass
+                        link.remote_ios = format_ios_ver(rios)
+                        neighbors.append(link)
+                    bar()
+        return neighbors
+
+
+    def get_lldp_neighbors(self) -> List[LinkData]:
+        """ Get a list of LLDP neighbors.
+        Returns a list of LinkData's
+        Will always return an array.
+        """
+        neighbors = []
+        if not self.cache.lldp:
+            print('No LLDP Neighbors Found.')
+            return neighbors
+        with alive_bar(
+            len(self.cache.lldp),
+            title=f"Building LLDP neighbors for {self.name}",
+            bar='smooth',
+        ) as bar:
+            for row in self.cache.lldp:
+                for n, v in row:
+                    oid = str(n)
+                    if oid.startswith(o.LLDP_TYPE):
+                        t = oid.split('.')
+                        ifidx = t[-2]
+                        ifidx2 = t[-1]
+                        idx = ".".join(t[-2:])
+                        link = self.get_link(ifidx)
+                        link.discovered_proto = 'lldp'
+                        link.local_port = self.get_ifname(int(ifidx) + 2)
+                        rip_oid, _ = self.get_cached_item(
+                            'lldp',
+                            f"{o.LLDP_DEVADDR}.{idx}",
+                            return_both=True
+                        )
+                        link.remote_ip = self.cidr_from_oid(rip_oid)
+                        rport = self.get_cached_item('lldp',
+                                                     f"{o.LLDP_DEVPORT}.{idx}")
+                        link.remote_port = normalize_port(rport)
+                        link.remote_port_desc = self.get_cached_item('lldp',
+                                                                     f"{o.LLDP_DEVPDSC}.{idx}")
+                        devid = self.get_cached_item('lldp',
+                                                     f"{o.LLDP_DEVID}.{idx}")
+                        link.remote_mac = mac_hex_to_ascii(devid)
+                        rios = self.get_cached_item('lldp',
+                                                    f"{o.LLDP_DEVDESC}.{idx}")
+                        if rios and rios.startswith('0x'):
+                            try:
+                                rios = binascii.unhexlify(rios[2:])
+                            except:
+                                pass
+                        link.remote_desc = rios
+                        link.remote_ios = format_ios_ver(rios)
+                        link.remote_name = self.get_cached_item('lldp',
+                                                                f"{o.LLDP_DEVNAME}.{idx}")
+                        neighbors.append(link)
+                    bar()
+        return neighbors

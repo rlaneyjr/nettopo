@@ -92,7 +92,7 @@ class Network(BaseData):
         dcodes = list(DCODE.STEP_INTO)
         if depth == 0:
             dcodes.append(DCODE.ROOT)
-        self.print_step(node.ip[0], node.name, dcodes)
+        self.print_step(node.ip, node.name, dcodes)
         # get the cached snmp credentials
         snmpobj = node.snmp
         # get list of neighbors

@@ -25,7 +25,7 @@ from typing import Union
 import uuid
 # My Stuff
 from nettopo.core.constants import TYPES
-from nettopo.core.exceptions import NettopoError
+from nettopo.core.exceptions import NettopoError, NettopoTypeError
 
 
 __all__ = [
@@ -41,7 +41,6 @@ __all__ = [
     'get_path',
     'format_ios_ver',
     'mac_ascii_to_hex',
-    'mac_format_ascii',
     'mac_hex_to_ascii',
     'parse_allowed_vlans',
     'in_acl',
@@ -217,7 +216,7 @@ def format_ios_ver(img):
 
 
 def mac_ascii_to_hex(mac_str):
-    mac_str = re.sub('[\.:]', '', mac_str)
+    mac_str = re.sub(r'[\.:]', '', mac_str)
     if not len(mac_str) == 12:
         return None
     mac_hex = ''
@@ -249,11 +248,6 @@ def mac_hex_to_ascii(mac_hex, *, separator: str='.') -> str:
     else:
         mac = str(v)
     return mac
-
-
-def mac_format_ascii(mac_hex, separator: str='.'):
-    v = mac_hex.prettyPrint()
-    return mac_hex_to_ascii(v, separator=separator)
 
 
 def parse_allowed_vlans(allowed_vlans):
@@ -393,4 +387,21 @@ def return_snmptype_val(value, value_type=None):
             Please use one of: {', '.join(TYPES.keys())}"
         )
     return data
+
+
+def snmp_extract(snmp_data, data_type='val'):
+    '''
+    Unwrap the SNMP response data and return the requested 'data_type' in a
+    readable 'pretty' format. Will only return single item first one in list.
+    '''
+    if len(snmp_data) > 1:
+        raise ValueError("snmp_extract only allows a single element")
+    if len(snmp_data) == 0:
+        return None
+    else:
+        # Unwrap the data which is returned as a tuple wrapped in a list
+        if data_type == 'val':
+            return snmp_data[0][1].prettyPrint()
+        elif data_type == 'oid':
+            return snmp_data[0][0].getOid()
 

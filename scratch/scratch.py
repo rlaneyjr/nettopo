@@ -28,12 +28,21 @@ vlan._as_dict()
 vlan.show()
 vlan._as_dict().items()
 
+def pp_table(table):
+    for row in table:
+        for n,v in row:
+            print(f"{n}: {v.prettyPrint()}")
+
 from nettopo.core.node import Node
 sw1 = Node('10.0.0.1')
 sw1.query_node()
-
 sw2 = Node('10.0.0.2')
 sw2.query_node()
+
+from nettopo.core.util import *
+from nettopo.oids import Oids
+o = Oids()
+rip = sw1.get_cached_item('cdp', f"{o.CDP_IPADDR}")
 
 sw2.get_snmp_creds('letmeSNMP')
 

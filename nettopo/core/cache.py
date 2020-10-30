@@ -10,7 +10,7 @@ Version:            0.1.1
 from functools import cached_property
 from typing import Union, Any
 from nettopo.core.constants import ARP, DCODE, NODE
-from nettopo.core.exceptions import NettopoCacheError
+from nettopo.core.exceptions import NettopoCacheError, NettopoSNMPError
 from nettopo.core.snmp import SNMP, SnmpHandler
 from nettopo.oids import Oids
 
@@ -36,6 +36,30 @@ class Cache:
 
     def _bulk(self, oid: str) -> Any:
         results = self.snmp.get_bulk(oid)
+        return results
+
+
+    def vlan_prop(self, vlan: Union[str, int], prop: str) -> None:
+        if prop not in dir(self):
+            raise NettopoCacheError(f"ERROR: {prop} invalid property")
+        if not hasattr(self, "_props_for_vlan"):
+            self._props_for_vlan = []
+        old_community = self.snmp.community
+        # Change community
+        community = f"{old_community}@{str(vlan)}"
+        self.snmp.community = community
+        if not self.snmp.check_community(community):
+            raise NettopoSNMPError(f"ERROR: {community} failed {self.snmp.ip}")
+        results = getattr(self, prop)
+        self._props_for_vlan.append(
+            {
+                "vlan": str(vlan),
+                "community": community,
+                "prop": prop,
+                "results": results,
+            }
+        )
+        self.snmp.community = old_community
         return results
 
 

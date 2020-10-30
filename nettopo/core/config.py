@@ -60,6 +60,7 @@ class Config:
         self.diagram = DiagramDefaults()
         self.acl = {'permit': [], 'deny': []}
 
+
     def load(self, config=None, filename=None):
         # Load defaults then override with custom
         json_config = default_config
@@ -85,10 +86,12 @@ class Config:
                 raise NettopoConfigError(
                     f"Line in discover ACL has no permit or deny: {line}")
 
+
     def load_json(self, json_file):
         with open(json_file) as jf:
             json_data = json.load(jf)
         return json_data
+
 
     def add_creds(self, creds: Union[str, list]=None) -> None:
         if isinstance(creds, list):
@@ -96,6 +99,7 @@ class Config:
                 self.snmp_creds.append(cred)
         else:
             self.snmp_creds.append(creds)
+
 
     def ip_passes_acl(self, ip: str) -> bool:
         """ Check to see if this IP is allowed to be discovered
@@ -109,6 +113,7 @@ class Config:
                 return True
         else:
             return False
+
 
     def net_passes_acl(self, net: Union[str, IPNetwork]) -> bool:
         """ Check to see if this IP is allowed to be discovered
