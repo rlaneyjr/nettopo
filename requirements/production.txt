@@ -22,4 +22,3 @@ snmpsysdescrparser
 tabulate
 textfsm
 alive-progress
-alive-progress
