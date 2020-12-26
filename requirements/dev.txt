@@ -1,40 +1,5 @@
-ciscoconfparse
-click
-colorama
-docopt
-easysnmp
-Jinja2
-junos-eznc
-matplotlib
-ncclient
-nelmon
-nelsnmp
-netaddr
-netmiko
-nornir
-numpy
-nxapi-plumbing
-paramiko
-passlib
-pexpect
-ptyprocess
-pydot
-pyeapi
-Pygments
-pyIOSXR
-pysmi
-pysnmp
-pysnmp-mibs
-PyX
-PyYAML
-requests
-ruamel.yaml
-scapy
-snimpy
-tabulate
-textfsm
-urllib3
 # dev
+include ./prod.txt
 idna
 ipdb
 ipython
@@ -43,4 +8,3 @@ jedi
 mypy-extensions
 pycodestyle
 pylint
-virlutils
