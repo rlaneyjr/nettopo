@@ -13,7 +13,6 @@ from pysnmp.smi.rfc1902 import ObjectIdentity
 import re
 from sysdescrparser import sysdescrparser
 from typing import Union, List, Any
-from tqdm import tqdm
 # Nettopo Imports
 from nettopo.core.cache import Cache
 from nettopo.core.constants import ARP, DCODE, ENTPHYCLASS, NODE, NOTHING
@@ -183,11 +182,12 @@ class Node(BaseData):
         # Populates self.mac_table
         self.mac_table = self.get_cam()
         # Get the neighbors combining CDP and LLDP
-        self.neighbors = []
         self.cdp_neighbors = self.get_cdp_neighbors()
         self.lldp_neighbors = self.get_lldp_neighbors()
-        self.neighbors.extend(self.cdp_neighbors)
-        self.neighbors.extend(self.lldp_neighbors)
+        neighbors = []
+        neighbors.extend(self.cdp_neighbors)
+        neighbors.extend(self.lldp_neighbors)
+        self.neighbors = list(set(neighbors))
 
 
     def get_cached_item(self,
@@ -232,9 +232,6 @@ class Node(BaseData):
         except Exception:
             pass
         finally:
-            # # Always return as list of tuples if returning both
-            # if return_both:
-            #     return results
             if len(results) == 1:
                 return results[0]
             elif len(results) > 1:
@@ -265,9 +262,9 @@ class Node(BaseData):
             for row in self.cache.ifname:
                 for oid, val in row:
                     port = return_pretty_val(val)
-                    # # Skip unrouted VLAN ports
-                    # if port.startswith('VLAN-'):
-                    #     continue
+                    # Skip unrouted VLAN ports
+                    if port.startswith('VLAN-'):
+                        continue
                     idx = oid_last_token(oid)
                     name = normalize_port(port)
                     ip_oids = self.get_cached_item(
@@ -297,6 +294,10 @@ class Node(BaseData):
             for entry in self.int_index:
                 if int(idx) == int(entry.idx):
                     return entry.name
+                elif (int(idx) + 2) == int(entry.idx):
+                    return entry.name
+                elif str(idx) == entry.name.split('/')[-1]:
+                    return entry.name
         return 'Unknown'
 
 
@@ -317,8 +318,11 @@ class Node(BaseData):
 
 
     def get_system_name(self):
-        name = self.name_raw.split('.')[0]
-        return name
+        name = self.name_raw.split('.')
+        if len(name) == 3:
+            return name[0]
+        else:
+            return self.name_raw
 
 
     def _build_ent_from_oid(self, oid):
@@ -358,7 +362,11 @@ class Node(BaseData):
     # TODO: IOS is incorrect for IOS-XE at least.
     def get_ent(self) -> tuple:
         results = []
-        chs_oids = self.get_cached_item('ent_class', ENTPHYCLASS.CHASSIS, item_type='val')
+        chs_oids = self.get_cached_item(
+            'ent_class',
+            ENTPHYCLASS.CHASSIS,
+            item_type='val',
+        )
         if isinstance(chs_oids, list):
             for chs_oid in chs_oids:
                 ent = self._build_ent_from_oid(chs_oid)
@@ -724,7 +732,7 @@ class Node(BaseData):
                         idx = ".".join(t[-2:])
                         link = self.get_link(ifidx)
                         link.discovered_proto = 'lldp'
-                        link.local_port = self.get_ifname(int(ifidx) + 2)
+                        link.local_port = self.get_ifname(int(ifidx))
                         rip_oid, _ = self.get_cached_item(
                             'lldp',
                             f"{o.LLDP_DEVADDR}.{idx}",

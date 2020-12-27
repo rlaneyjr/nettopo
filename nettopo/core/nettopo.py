@@ -13,7 +13,6 @@ from nettopo.core.config import Config
 from nettopo.core.exceptions import NettopoError
 from nettopo.core.network import Network
 from nettopo.core.node import Node
-from nettopo.core.mac import MAC
 from nettopo.core.diagram import Diagram
 from nettopo.core.catalog import Catalog
 
@@ -95,7 +94,7 @@ class Nettopo:
         return node.get_vlans()
 
 
-    def get_switch_macs(self, switch_ip_or_node, *, vlan=None, mac=None, port=None, verbose=True):
+    def get_switch_macs(self, switch_ip_or_node, *, vlan=None, mac=None, port=None):
         ''' Get the CAM table from a switch.
         Args:
             *switch_ip* or *node* is required
@@ -107,29 +106,27 @@ class Nettopo:
         :param: verbose         Display progress to stdout
         :return:                Array of MAC objects
         '''
-        if isinstance(switch_ip_or_node, Node):
-            switch_ip = switch_ip_or_node.get_ips()
-        elif isinstance(switch_ip_or_node, str):
-            switch_ip = switch_ip_or_node
-        M = MAC(self.config)
+        if not isinstance(switch_ip_or_node, Node):
+            node = Node(switch_ip_or_node)
+        else:
+            node = switch_ip_or_node
+        # if not node.queried:
+        #     node.query_node()
         if vlan:
             # get MACs for single VLAN
-            macs = M.get_macs_for_vlan(switch_ip, vlan, verbose)
+            macs = node.get_macs_for_vlan(vlan)
         else:
             # get all MACs
-            macs = M.get_macs(switch_ip, verbose)
+            macs = node.get_cam()
         if not all([mac, port]):
-            return macs if macs else []
+            return macs or []
         # filter results
         ret = []
         for m in macs:
-            if mac:
-                if not re.match(mac, m.mac):
-                    continue
-            if port:
-                if not re.match(port, m.port):
-                    continue
-            ret.append(m)
+            if mac and re.match(mac, m.mac):
+                ret.append(m)
+            if port and re.match(port, m.port):
+                ret.append(m)
         return ret
 
 

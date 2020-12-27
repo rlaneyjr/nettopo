@@ -1,10 +1,5 @@
 # dev
 include ./prod.txt
-idna
 ipdb
-ipython
-ipython-genutils
-jedi
 mypy-extensions
 pycodestyle
-pylint

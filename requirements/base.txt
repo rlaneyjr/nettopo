@@ -1,0 +1,9 @@
+PyYAML
+Jinja2
+alive-progress
+netaddr
+netifaces
+pydot
+pysnmp
+snmpsysdescrparser
+tabulate

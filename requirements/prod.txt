@@ -1,24 +1,18 @@
-Jinja2
-PyYAML
+include ./base.txt
 ciscoconfparse
 dnspython
 docopt
 easysnmp
 genie
 manuf
-netaddr
-netifaces
 netmiko
 ntc-templates
 pexpect
 pyats
-pydot
 pysmi
-pysnmp
 pysnmp-mibs
-requests
 ruamel.yaml
-snmpsysdescrparser
+scapy
 tabulate
 textfsm
-alive-progress
+snimpy
