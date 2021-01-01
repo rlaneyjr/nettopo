@@ -94,31 +94,6 @@ class Node(BaseData):
         return False
 
 
-    def reset_cache(self) -> None:
-        if hasattr(self, cache):
-            del self.cache
-        self.queried = False
-
-
-    def build_cache(self) -> None:
-        cache = Cache(self.snmp)
-        props = [word for word in dir(cache) if not word.startswith('_')]
-        with alive_bar(
-            len(props),
-            title=f"Building Cache for {self.ip}",
-            bar='smooth',
-        ) as bar:
-            for prop in props:
-                getattr(cache, prop)
-                bar()
-        self.cache = cache
-
-
-    def rebuild_cache(self) -> None:
-        self.reset_cache()
-        self.build_cache()
-
-
     @timethis
     def query_node(self, reset: bool=False) -> None:
         """ Query this node with option to reset
@@ -126,34 +101,30 @@ class Node(BaseData):
         :param:bool: reset
             Reset the cache on this node prior to query (default=False)
         """
-        if reset:
-            self.reset_cache()
         if self.queried:
             print(f"{self.name} has already been queried.")
             return
-        if not hasattr(self, 'cache'):
-            self.build_cache()
         self.queried = True
-        self.name_raw = self.cache.name
+        self.name_raw = self.snmp.get_val(o.SYSNAME)
         self.name = self.get_system_name()
-        self.descr = self.cache.descr
+        self.descr = self.snmp.get_val(o.SYSDESC)
+serial = self.snmp.get_val(o.SYS_SERIAL)
         # Sys info (vendor, model, os, version)
         self.sys = sysdescrparser(self.descr)
-        self.int_index = self.build_int_index()
         self.ips = self.get_ips()
         # router
-        router = self.cache.router
+        router = self.snmp.get_val(o.IP_ROUTING)
         self.router = True if router == '1' else False
         if self.router:
             # OSPF
             self.ospf_id = self.cache.ospf_id
             # BGP
-            bgp_las = self.cache.bgp
+            bgp_las = self.snmp.get_val(o.BGP_LAS)
             # 4500x reports 0 as disabled
             self.bgp_las = bgp_las if bgp_las != '0' else None
             # HSRP
-            self.hsrp_pri = self.cache.hsrp
-            self.hsrp_vip = self.cache.hsrp_vip
+            self.hsrp_pri = self.snmp.get_val(o.HSRP_PRI)
+            self.hsrp_vip = self.snmp.get_val(o.HSRP_VIP)
         # stack
         self.stack = self.get_stack()
         # vss
@@ -172,7 +143,7 @@ class Node(BaseData):
         # loopback
         self.loopbacks = self.get_loopbacks()
         # bootfile
-        self.bootfile = self.cache.bootfile
+        self.bootfile = self.snmp.get_val(o.SYS_BOOT)
         # Ent chassis info (serial, ios, platform)
         self.ent = self.get_ent()
         # VPC peerlink polulates self.vpc
@@ -189,18 +160,43 @@ class Node(BaseData):
         neighbors.extend(self.lldp_neighbors)
         self.neighbors = list(set(neighbors))
 
+ent_class = self.snmp.get_bulk(o.ENTPHYENTRY_CLASS)
+ent_serial = self.snmp.get_bulk(o.ENTPHYENTRY_SERIAL)
+ent_plat = self.snmp.get_bulk(o.ENTPHYENTRY_PLAT)
+ent_ios = self.snmp.get_bulk(o.ENTPHYENTRY_SOFTWARE)
+link_type = self.snmp.get_bulk(o.TRUNK_VTP)
+lag = self.snmp.get_bulk(o.LAG_LACP)
+ifname = self.snmp.get_bulk(o.IFNAME)
+ifip = self.snmp.get_bulk(o.IF_IP)
+ethif = self.snmp.get_bulk(o.ETH_IF)
+trunk_allowed = self.snmp.get_bulk(o.TRUNK_ALLOW)
+trunk_native = self.snmp.get_bulk(o.TRUNK_NATIVE)
+portnums = self.snmp.get_bulk(o.BRIDGE_PORTNUMS)
+ifindex = self.snmp.get_bulk(o.IFINDEX)
+vlan = self.snmp.get_bulk(o.VLANS)
+vlandesc = self.snmp.get_bulk(o.VLAN_DESC)
+svi = self.snmp.get_bulk(o.SVI_VLANIF)
+ospf = self.snmp.get_val(o.OSPF)
+ospf_id = self.snmp.get_val(o.OSPF_ID)
+vpc = self.snmp.get_bulk(o.VPC_PEERLINK_IF)
+stack = self.snmp.get_bulk(o.STACK)
+cdp = self.snmp.get_bulk(o.CDP)
+lldp = self.snmp.get_bulk(o.LLDP)
+route = self.snmp.get_bulk(o.IP_ROUTE_TABLE)
+arp = self.snmp.get_bulk(o.ARP)
+cam = self.snmp.get_bulk(o.VLAN_CAM)
 
-    def get_cached_item(self,
-                    cache_name: str,
-                    item: Union[int, str, ObjectIdentity],
-                    *,
-                    item_type: str='oid',
-                    return_both: bool=False,
-                    return_pretty: bool=True,
-                ) -> Union[Any, None]:
+    def get_bulk_item(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        *,
+        item_type: str='oid',
+        return_both: bool=False,
+        return_pretty: bool=True,
+    ) -> Union[Any, None]:
         results = []
         try:
-            table = getattr(self.cache, cache_name)
+            table = self.snmp.get_bulk(item)
             for row in table:
                 for o, v in row:
                     oid = str(o) if return_pretty else o
@@ -227,8 +223,6 @@ class Node(BaseData):
                         if int(item) == int(idx):
                             res = (oid, value) if return_both else value
                             results.append(res)
-                    else:
-                        raise NettopoNodeError(f"Invalid item_type: {item_type}")
         except Exception:
             pass
         finally:
@@ -236,15 +230,12 @@ class Node(BaseData):
                 return results[0]
             elif len(results) > 1:
                 return results
-            else:
-                return None
 
 
     def cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
         ip = ".".join(str(oid).split('.')[-4:])
         if is_ipv4_address(ip):
-            mask = self.get_cached_item('ifip',
-                                        f"{o.IF_IP_NETM}.{ip}")
+            mask = self.snmp.get_val(f"{o.IF_IP_NETM}.{ip}")
             if mask:
                 mask = bits_from_mask(mask)
                 return f"{ip}/{mask}"
@@ -252,53 +243,12 @@ class Node(BaseData):
                 return f"{ip}/32"
 
 
-    def build_int_index(self) -> List[IntData]:
-        int_index = []
-        with alive_bar(
-            len(self.cache.ifname),
-            title=f"Building Int_Index for {self.name}",
-            bar='smooth',
-        ) as bar:
-            for row in self.cache.ifname:
-                for oid, val in row:
-                    port = return_pretty_val(val)
-                    # Skip unrouted VLAN ports
-                    if port.startswith('VLAN-'):
-                        continue
-                    idx = oid_last_token(oid)
-                    name = normalize_port(port)
-                    ip_oids = self.get_cached_item(
-                                    'ifip',
-                                    str(idx),
-                                    item_type='val',
-                                )
-                    cidrs = []
-                    if ip_oids:
-                        if isinstance(ip_oids, list):
-                            cidr = [self.cidr_from_oid(ip_oid) \
-                                    for ip_oid in ip_oids \
-                                    if str(ip_oid).startswith(o.IF_IP_ADDR)]
-                            cidrs.extend(cidr)
-                        else:
-                            if str(ip_oids).startswith(o.IF_IP_ADDR):
-                                cidr = self.cidr_from_oid(ip_oids)
-                                cidrs.append(cidr)
-                    int_data = IntData(idx, name, cidrs)
-                    int_index.append(int_data)
-                    bar()
-        return int_index
-
-
-    def get_ifname(self, idx):
-        if idx != o.ERR:
-            for entry in self.int_index:
-                if int(idx) == int(entry.idx):
-                    return entry.name
-                elif (int(idx) + 2) == int(entry.idx):
-                    return entry.name
-                elif str(idx) == entry.name.split('/')[-1]:
-                    return entry.name
-        return 'Unknown'
+    def get_ifname(self, idx: int) -> str:
+        ifname = self.snmp.get_val(f"{o.IFNAME}.{idx}")
+        if ifname in [o.ERR, o.ERR_INST]:
+            ifindex = self.snmp.get_val(f"{o.IFINDEX}.{idx}")
+            ifname = self.snmp.get_val(f"{o.IFNAME}.{ifindex}")
+        return normalize_port(ifname)
 
 
     def get_ips_from_index(self, num: UIS, ip_only: bool=False) -> ULSIN:
@@ -353,10 +303,7 @@ class Node(BaseData):
                                            f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         ios = format_ios_ver(ios)
         if any([serial, plat, ios]):
-            ent = EntData(serial, plat, ios)
-        else:
-            ent = None
-        return ent
+            return EntData(serial, plat, ios)
 
 
     # TODO: IOS is incorrect for IOS-XE at least.
@@ -522,13 +469,14 @@ class Node(BaseData):
 
 
     def get_vss(self) -> VssData:
-        if self.cache.vss_mode != '2':
+        vss_mode = self.snmp.get_val(o.VSS_MODE)
+        if vss_mode != '2':
             return None
         vss = VssData()
         vss.enabled = True
-        vss.domain = self.cache.vss_domain
+        vss.domain = self.snmp.get_val(o.VSS_DOMAIN)
         chassis = 0
-        for row in self.cache.vss_module:
+        for row in self.snmp.get_bulk(o.VSS_MODULES):
             for n, v in row:
                 if v == 1:
                     modidx = str(n).split('.')[14]
