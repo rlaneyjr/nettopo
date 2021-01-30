@@ -105,26 +105,25 @@ class Node(BaseData):
             print(f"{self.name} has already been queried.")
             return
         self.queried = True
-        self.name_raw = self.snmp.get_val(o.SYSNAME)
+        self.name_raw = self.snmp_value(o.SYSNAME)
         self.name = self.get_system_name()
-        self.descr = self.snmp.get_val(o.SYSDESC)
-serial = self.snmp.get_val(o.SYS_SERIAL)
+        self.descr = self.snmp_value(o.SYSDESC)
         # Sys info (vendor, model, os, version)
         self.sys = sysdescrparser(self.descr)
         self.ips = self.get_ips()
         # router
-        router = self.snmp.get_val(o.IP_ROUTING)
+        router = self.snmp_value(o.IP_ROUTING)
         self.router = True if router == '1' else False
         if self.router:
             # OSPF
             self.ospf_id = self.cache.ospf_id
             # BGP
-            bgp_las = self.snmp.get_val(o.BGP_LAS)
+            bgp_las = self.snmp_value(o.BGP_LAS)
             # 4500x reports 0 as disabled
             self.bgp_las = bgp_las if bgp_las != '0' else None
             # HSRP
-            self.hsrp_pri = self.snmp.get_val(o.HSRP_PRI)
-            self.hsrp_vip = self.snmp.get_val(o.HSRP_VIP)
+            self.hsrp_pri = self.snmp_value(o.HSRP_PRI)
+            self.hsrp_vip = self.snmp_value(o.HSRP_VIP)
         # stack
         self.stack = self.get_stack()
         # vss
@@ -137,13 +136,13 @@ serial = self.snmp.get_val(o.SYS_SERIAL)
             if self.stack.enabled and self.stack.serial:
                 self.serial = self.stack.serial
         else:
-            self.serial = self.cache.serial
+            self.serial = self.snmp_value(o.SYS_SERIAL)
         # SVI
         self.svis = self.get_svis()
         # loopback
         self.loopbacks = self.get_loopbacks()
         # bootfile
-        self.bootfile = self.snmp.get_val(o.SYS_BOOT)
+        self.bootfile = self.snmp_value(o.SYS_BOOT)
         # Ent chassis info (serial, ios, platform)
         self.ent = self.get_ent()
         # VPC peerlink polulates self.vpc
@@ -160,33 +159,48 @@ serial = self.snmp.get_val(o.SYS_SERIAL)
         neighbors.extend(self.lldp_neighbors)
         self.neighbors = list(set(neighbors))
 
-ent_class = self.snmp.get_bulk(o.ENTPHYENTRY_CLASS)
-ent_serial = self.snmp.get_bulk(o.ENTPHYENTRY_SERIAL)
-ent_plat = self.snmp.get_bulk(o.ENTPHYENTRY_PLAT)
-ent_ios = self.snmp.get_bulk(o.ENTPHYENTRY_SOFTWARE)
-link_type = self.snmp.get_bulk(o.TRUNK_VTP)
-lag = self.snmp.get_bulk(o.LAG_LACP)
-ifname = self.snmp.get_bulk(o.IFNAME)
-ifip = self.snmp.get_bulk(o.IF_IP)
-ethif = self.snmp.get_bulk(o.ETH_IF)
-trunk_allowed = self.snmp.get_bulk(o.TRUNK_ALLOW)
-trunk_native = self.snmp.get_bulk(o.TRUNK_NATIVE)
-portnums = self.snmp.get_bulk(o.BRIDGE_PORTNUMS)
-ifindex = self.snmp.get_bulk(o.IFINDEX)
-vlan = self.snmp.get_bulk(o.VLANS)
-vlandesc = self.snmp.get_bulk(o.VLAN_DESC)
-svi = self.snmp.get_bulk(o.SVI_VLANIF)
-ospf = self.snmp.get_val(o.OSPF)
-ospf_id = self.snmp.get_val(o.OSPF_ID)
-vpc = self.snmp.get_bulk(o.VPC_PEERLINK_IF)
-stack = self.snmp.get_bulk(o.STACK)
-cdp = self.snmp.get_bulk(o.CDP)
-lldp = self.snmp.get_bulk(o.LLDP)
-route = self.snmp.get_bulk(o.IP_ROUTE_TABLE)
-arp = self.snmp.get_bulk(o.ARP)
-cam = self.snmp.get_bulk(o.VLAN_CAM)
+ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
+ent_serial = self.snmp_bulk(o.ENTPHYENTRY_SERIAL)
+ent_plat = self.snmp_bulk(o.ENTPHYENTRY_PLAT)
+ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
+link_type = self.snmp_bulk(o.TRUNK_VTP)
+lag = self.snmp_bulk(o.LAG_LACP)
+ifname = self.snmp_bulk(o.IFNAME)
+ifip = self.snmp_bulk(o.IF_IP)
+ethif = self.snmp_bulk(o.ETH_IF)
+trunk_allowed = self.snmp_bulk(o.TRUNK_ALLOW)
+trunk_native = self.snmp_bulk(o.TRUNK_NATIVE)
+portnums = self.snmp_bulk(o.BRIDGE_PORTNUMS)
+ifindex = self.snmp_bulk(o.IFINDEX)
+vlan = self.snmp_bulk(o.VLANS)
+vlandesc = self.snmp_bulk(o.VLAN_DESC)
+svi = self.snmp_bulk(o.SVI_VLANIF)
+ospf = self.snmp_value(o.OSPF)
+ospf_id = self.snmp_value(o.OSPF_ID)
+vpc = self.snmp_bulk(o.VPC_PEERLINK_IF)
+stack = self.snmp_bulk(o.STACK)
+cdp = self.snmp_bulk(o.CDP)
+lldp = self.snmp_bulk(o.LLDP)
+route = self.snmp_bulk(o.IP_ROUTE_TABLE)
+arp = self.snmp_bulk(o.ARP)
+cam = self.snmp_bulk(o.VLAN_CAM)
 
-    def get_bulk_item(
+    def snmp_value(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        return_pretty: bool=True,
+    ) -> Union[Any, None]:
+        results = None
+        try:
+            value = self.snmp.get_val(item)
+            results = value.prettyPrint() if return_pretty else value
+        except Exception:
+            pass
+        finally:
+            return results
+
+
+    def snmp_bulk(
         self,
         item: Union[int, str, ObjectIdentity],
         *,
@@ -235,7 +249,7 @@ cam = self.snmp.get_bulk(o.VLAN_CAM)
     def cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
         ip = ".".join(str(oid).split('.')[-4:])
         if is_ipv4_address(ip):
-            mask = self.snmp.get_val(f"{o.IF_IP_NETM}.{ip}")
+            mask = self.snmp_value(f"{o.IF_IP_NETM}.{ip}")
             if mask:
                 mask = bits_from_mask(mask)
                 return f"{ip}/{mask}"
@@ -244,10 +258,10 @@ cam = self.snmp.get_bulk(o.VLAN_CAM)
 
 
     def get_ifname(self, idx: int) -> str:
-        ifname = self.snmp.get_val(f"{o.IFNAME}.{idx}")
+        ifname = self.snmp_value(f"{o.IFNAME}.{idx}")
         if ifname in [o.ERR, o.ERR_INST]:
-            ifindex = self.snmp.get_val(f"{o.IFINDEX}.{idx}")
-            ifname = self.snmp.get_val(f"{o.IFNAME}.{ifindex}")
+            ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
+            ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
         return normalize_port(ifname)
 
 
@@ -277,12 +291,9 @@ cam = self.snmp.get_bulk(o.VLAN_CAM)
 
     def _build_ent_from_oid(self, oid):
         idx = oid.split('.')[12]
-        serial = self.get_cached_item('ent_serial',
-                                      f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-        plat = self.get_cached_item('ent_plat',
-                                    f"{o.ENTPHYENTRY_PLAT}.{idx}")
-        ios = self.get_cached_item('ent_ios',
-                                   f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+        serial = self.get_bulk_item(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+        plat = self.get_bulk_item(f"{o.ENTPHYENTRY_PLAT}.{idx}")
+        ios = self.get_bulk_item(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         # Modular switches have IOS on module
         if not ios:
             mod_oids = self.get_cached_item(
@@ -469,14 +480,14 @@ cam = self.snmp.get_bulk(o.VLAN_CAM)
 
 
     def get_vss(self) -> VssData:
-        vss_mode = self.snmp.get_val(o.VSS_MODE)
+        vss_mode = self.snmp_value(o.VSS_MODE)
         if vss_mode != '2':
             return None
         vss = VssData()
         vss.enabled = True
-        vss.domain = self.snmp.get_val(o.VSS_DOMAIN)
+        vss.domain = self.snmp_value(o.VSS_DOMAIN)
         chassis = 0
-        for row in self.snmp.get_bulk(o.VSS_MODULES):
+        for row in self.snmp_bulk(o.VSS_MODULES):
             for n, v in row:
                 if v == 1:
                     modidx = str(n).split('.')[14]
