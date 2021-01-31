@@ -94,6 +94,15 @@ class Node(BaseData):
         return False
 
 
+    def vlan_community(self, vlan: Union[int, str]) -> Union[str, None]:
+        original_community = self.snmp.community
+        community = f"{original_community}@{str(vlan)}"
+        if self.snmp.check_community(community):
+            return original_community
+        else:
+            raise NettopoSNMPError(f"ERROR: {community} failed {self.ip}")
+
+
     @timethis
     def query_node(self, reset: bool=False) -> None:
         """ Query this node with option to reset
@@ -116,7 +125,8 @@ class Node(BaseData):
         self.router = True if router == '1' else False
         if self.router:
             # OSPF
-            self.ospf_id = self.cache.ospf_id
+            self.ospf = self.snmp_value(o.OSPF)
+            self.ospf_id = self.snmp_value(o.OSPF_ID)
             # BGP
             bgp_las = self.snmp_value(o.BGP_LAS)
             # 4500x reports 0 as disabled
@@ -159,56 +169,39 @@ class Node(BaseData):
         neighbors.extend(self.lldp_neighbors)
         self.neighbors = list(set(neighbors))
 
-ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
-ent_serial = self.snmp_bulk(o.ENTPHYENTRY_SERIAL)
-ent_plat = self.snmp_bulk(o.ENTPHYENTRY_PLAT)
-ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
-link_type = self.snmp_bulk(o.TRUNK_VTP)
-lag = self.snmp_bulk(o.LAG_LACP)
-ifname = self.snmp_bulk(o.IFNAME)
-ifip = self.snmp_bulk(o.IF_IP)
-ethif = self.snmp_bulk(o.ETH_IF)
-trunk_allowed = self.snmp_bulk(o.TRUNK_ALLOW)
-trunk_native = self.snmp_bulk(o.TRUNK_NATIVE)
-portnums = self.snmp_bulk(o.BRIDGE_PORTNUMS)
-ifindex = self.snmp_bulk(o.IFINDEX)
-vlan = self.snmp_bulk(o.VLANS)
-vlandesc = self.snmp_bulk(o.VLAN_DESC)
-svi = self.snmp_bulk(o.SVI_VLANIF)
-ospf = self.snmp_value(o.OSPF)
-ospf_id = self.snmp_value(o.OSPF_ID)
-vpc = self.snmp_bulk(o.VPC_PEERLINK_IF)
-stack = self.snmp_bulk(o.STACK)
-cdp = self.snmp_bulk(o.CDP)
-lldp = self.snmp_bulk(o.LLDP)
-route = self.snmp_bulk(o.IP_ROUTE_TABLE)
-arp = self.snmp_bulk(o.ARP)
-cam = self.snmp_bulk(o.VLAN_CAM)
 
     def snmp_value(
         self,
         item: Union[int, str, ObjectIdentity],
+        vlan: Union[int, str]=None,
         return_pretty: bool=True,
     ) -> Union[Any, None]:
         results = None
+        if vlan:
+            old_community = self.vlan_community(vlan)
         try:
             value = self.snmp.get_val(item)
             results = value.prettyPrint() if return_pretty else value
-        except Exception:
-            pass
+        except Exception as e:
+            error = e
         finally:
-            return results
+            if vlan:
+                self.snmp.community = old_community
+            return results or error
 
 
     def snmp_bulk(
         self,
         item: Union[int, str, ObjectIdentity],
+        vlan: Union[int, str]=None,
         *,
         item_type: str='oid',
         return_both: bool=False,
         return_pretty: bool=True,
     ) -> Union[Any, None]:
         results = []
+        if vlan:
+            old_community = self.vlan_community(vlan)
         try:
             table = self.snmp.get_bulk(item)
             for row in table:
@@ -226,7 +219,7 @@ cam = self.snmp_bulk(o.VLAN_CAM)
                             res = (oid, value) if return_both else value
                             results.append(res)
                     elif item_type == 'val':
-                        # Match item to val using the item's type. Return oid.
+                        # Match item to val using type. Return oid.
                         itype = type(item)
                         if item == itype(value):
                             res = (oid, value) if return_both else oid
@@ -237,13 +230,15 @@ cam = self.snmp_bulk(o.VLAN_CAM)
                         if int(item) == int(idx):
                             res = (oid, value) if return_both else value
                             results.append(res)
-        except Exception:
-            pass
+        except Exception as e:
+            error = e
         finally:
+            if vlan:
+                self.snmp.community = old_community
             if len(results) == 1:
                 return results[0]
-            elif len(results) > 1:
-                return results
+            else:
+                return results or error
 
 
     def cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
@@ -263,6 +258,20 @@ cam = self.snmp_bulk(o.VLAN_CAM)
             ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
             ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
         return normalize_port(ifname)
+
+
+    def get_ips(self):
+        """ Collects and stores all the IPs for Node
+        Return the lowest numbered IP of all interfaces
+        """
+        ips = []
+        for entry in self.int_index:
+            if entry.cidrs:
+                ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
+        ips = set(ips)
+        ips = list(ips)
+        ips.sort()
+        return ips
 
 
     def get_ips_from_index(self, num: UIS, ip_only: bool=False) -> ULSIN:
@@ -289,11 +298,15 @@ cam = self.snmp_bulk(o.VLAN_CAM)
             return self.name_raw
 
 
+ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
+ent_serial = self.snmp_bulk(o.ENTPHYENTRY_SERIAL)
+ent_plat = self.snmp_bulk(o.ENTPHYENTRY_PLAT)
+ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
     def _build_ent_from_oid(self, oid):
         idx = oid.split('.')[12]
-        serial = self.get_bulk_item(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-        plat = self.get_bulk_item(f"{o.ENTPHYENTRY_PLAT}.{idx}")
-        ios = self.get_bulk_item(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+        serial = self.snmp_bulk(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+        plat = self.snmp_bulk(f"{o.ENTPHYENTRY_PLAT}.{idx}")
+        ios = self.snmp_bulk(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         # Modular switches have IOS on module
         if not ios:
             mod_oids = self.get_cached_item(
@@ -320,6 +333,7 @@ cam = self.snmp_bulk(o.VLAN_CAM)
     # TODO: IOS is incorrect for IOS-XE at least.
     def get_ent(self) -> tuple:
         results = []
+        ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS, item_type='val')
         chs_oids = self.get_cached_item(
             'ent_class',
             ENTPHYCLASS.CHASSIS,
@@ -335,20 +349,6 @@ cam = self.snmp_bulk(o.VLAN_CAM)
             if ent:
                 results.append(ent)
         return results
-
-
-    def get_ips(self):
-        """ Collects and stores all the IPs for Node
-        Return the lowest numbered IP of all interfaces
-        """
-        ips = []
-        for entry in self.int_index:
-            if entry.cidrs:
-                ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
-        ips = set(ips)
-        ips = list(ips)
-        ips.sort()
-        return ips
 
 
     def get_loopbacks(self) -> List[LoopBackData]:
@@ -720,3 +720,32 @@ cam = self.snmp_bulk(o.VLAN_CAM)
                         neighbors.append(link)
                     bar()
         return neighbors
+
+""" SNMP Queries Saved
+ospf = self.snmp_value(o.OSPF)
+ospf_id = self.snmp_value(o.OSPF_ID)
+
+ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
+ent_serial = self.snmp_bulk(o.ENTPHYENTRY_SERIAL)
+ent_plat = self.snmp_bulk(o.ENTPHYENTRY_PLAT)
+ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
+link_type = self.snmp_bulk(o.TRUNK_VTP)
+lag = self.snmp_bulk(o.LAG_LACP)
+ifname = self.snmp_bulk(o.IFNAME)
+ifip = self.snmp_bulk(o.IF_IP)
+ethif = self.snmp_bulk(o.ETH_IF)
+trunk_allowed = self.snmp_bulk(o.TRUNK_ALLOW)
+trunk_native = self.snmp_bulk(o.TRUNK_NATIVE)
+portnums = self.snmp_bulk(o.BRIDGE_PORTNUMS)
+ifindex = self.snmp_bulk(o.IFINDEX)
+vlan = self.snmp_bulk(o.VLANS)
+vlandesc = self.snmp_bulk(o.VLAN_DESC)
+svi = self.snmp_bulk(o.SVI_VLANIF)
+vpc = self.snmp_bulk(o.VPC_PEERLINK_IF)
+stack = self.snmp_bulk(o.STACK)
+cdp = self.snmp_bulk(o.CDP)
+lldp = self.snmp_bulk(o.LLDP)
+route = self.snmp_bulk(o.IP_ROUTE_TABLE)
+arp = self.snmp_bulk(o.ARP)
+cam = self.snmp_bulk(o.VLAN_CAM)
+"""
