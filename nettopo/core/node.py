@@ -94,7 +94,7 @@ class Node(BaseData):
         return False
 
 
-    def vlan_community(self, vlan: Union[int, str]) -> Union[str, None]:
+    def use_vlan_community(self, vlan: Union[int, str]) -> Union[str, None]:
         original_community = self.snmp.community
         community = f"{original_community}@{str(vlan)}"
         if self.snmp.check_community(community):
@@ -103,18 +103,111 @@ class Node(BaseData):
             raise NettopoSNMPError(f"ERROR: {community} failed {self.ip}")
 
 
+    def process_table(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        table: List[Any],
+        item_type: str='oid',
+        return_both: bool=False,
+        return_pretty: bool=True,
+    ) -> Union[Any, None]:
+        results = []
+        for row in table:
+            for o, v in row:
+                oid = str(o) if return_pretty else o
+                value = v.prettyPrint() if return_pretty else v
+                if item_type == 'oid':
+                    # Oid matching is string based
+                    item = item if isinstance(item, str) else str(item)
+                    # Use regex to ensure we do not match ending digit
+                    # like '1' to '10', '100', etc.
+                    item_re = re.compile(item + r'(?!\d)')
+                    # Match re with oid. Return value.
+                    if item_re.match(str(o)):
+                        res = (oid, value) if return_both else value
+                        results.append(res)
+                elif item_type == 'val':
+                    # Match item to val using type. Return oid.
+                    itype = type(item)
+                    if item == itype(value):
+                        res = (oid, value) if return_both else oid
+                        results.append(res)
+                elif item_type == 'idx':
+                    # Match item to last token in oid as integers. Return value.
+                    idx = oid_last_token(o)
+                    if int(item) == int(idx):
+                        res = (oid, value) if return_both else value
+                        results.append(res)
+        if results:
+            if len(results) == 1:
+                return results[0]
+            else:
+                return results
+        else:
+            return None
+
+
+    def snmp_value(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        vlan: Union[int, str]=None,
+        *,
+        return_pretty: bool=True,
+    ) -> Union[Any, None]:
+        results = None
+        if vlan:
+            old_community = self.use_vlan_community(vlan)
+        try:
+            value = self.snmp.get_val(item)
+        except Exception as e:
+            error = e
+        finally:
+            if vlan:
+                self.snmp.community = old_community
+            if error:
+                return error
+            if value:
+                return value.prettyPrint() if return_pretty else value
+
+
+    def snmp_bulk(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        vlan: Union[int, str]=None,
+        *,
+        item_type: str='oid',
+        return_both: bool=False,
+        return_pretty: bool=True,
+    ) -> Union[Any, None]:
+        if vlan:
+            old_community = self.use_vlan_community(vlan)
+        try:
+            table = self.snmp.get_bulk(item)
+        except Exception as e:
+            error = e
+        finally:
+            if vlan:
+                self.snmp.community = old_community
+            if error:
+                return error
+            if table:
+                return self.process_table(
+                    item=item,
+                    table=table,
+                    item_type=item_type,
+                    return_both=return_both,
+                    return_pretty=return_pretty
+                )
+
+
     @timethis
     def query_node(self, reset: bool=False) -> None:
         """ Query this node with option to reset
-
-        :param:bool: reset
-            Reset the cache on this node prior to query (default=False)
         """
         if self.queried:
             print(f"{self.name} has already been queried.")
             return
         self.queried = True
-        self.name_raw = self.snmp_value(o.SYSNAME)
         self.name = self.get_system_name()
         self.descr = self.snmp_value(o.SYSDESC)
         # Sys info (vendor, model, os, version)
@@ -164,81 +257,20 @@ class Node(BaseData):
         # Get the neighbors combining CDP and LLDP
         self.cdp_neighbors = self.get_cdp_neighbors()
         self.lldp_neighbors = self.get_lldp_neighbors()
-        neighbors = []
-        neighbors.extend(self.cdp_neighbors)
-        neighbors.extend(self.lldp_neighbors)
-        self.neighbors = list(set(neighbors))
+        neighbors = self.cdp_neighbors
+        for nb in self.lldp_neighbors:
+            if nb not in neighbors:
+                neighbors.append(nb)
+        self.neighbors = neighbors
 
 
-    def snmp_value(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        vlan: Union[int, str]=None,
-        return_pretty: bool=True,
-    ) -> Union[Any, None]:
-        results = None
-        if vlan:
-            old_community = self.vlan_community(vlan)
-        try:
-            value = self.snmp.get_val(item)
-            results = value.prettyPrint() if return_pretty else value
-        except Exception as e:
-            error = e
-        finally:
-            if vlan:
-                self.snmp.community = old_community
-            return results or error
-
-
-    def snmp_bulk(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        vlan: Union[int, str]=None,
-        *,
-        item_type: str='oid',
-        return_both: bool=False,
-        return_pretty: bool=True,
-    ) -> Union[Any, None]:
-        results = []
-        if vlan:
-            old_community = self.vlan_community(vlan)
-        try:
-            table = self.snmp.get_bulk(item)
-            for row in table:
-                for o, v in row:
-                    oid = str(o) if return_pretty else o
-                    value = v.prettyPrint() if return_pretty else v
-                    if item_type == 'oid':
-                        # Oid matching is string based
-                        item = item if isinstance(item, str) else str(item)
-                        # Use regex to ensure we do not match ending digit
-                        # like '1' to '10', '100', etc.
-                        item_re = re.compile(item + r'(?!\d)')
-                        # Match re with oid. Return value.
-                        if item_re.match(str(o)):
-                            res = (oid, value) if return_both else value
-                            results.append(res)
-                    elif item_type == 'val':
-                        # Match item to val using type. Return oid.
-                        itype = type(item)
-                        if item == itype(value):
-                            res = (oid, value) if return_both else oid
-                            results.append(res)
-                    elif item_type == 'idx':
-                        # Match item to last token in oid as integers. Return value.
-                        idx = oid_last_token(o)
-                        if int(item) == int(idx):
-                            res = (oid, value) if return_both else value
-                            results.append(res)
-        except Exception as e:
-            error = e
-        finally:
-            if vlan:
-                self.snmp.community = old_community
-            if len(results) == 1:
-                return results[0]
-            else:
-                return results or error
+    def get_system_name(self):
+        name_raw = self.snmp_value(o.SYSNAME)
+        name = name_raw.split('.')
+        if len(name) == 3:
+            return name[0]
+        else:
+            return name_raw
 
 
     def cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
@@ -262,7 +294,6 @@ class Node(BaseData):
 
     def get_ips(self):
         """ Collects and stores all the IPs for Node
-        Return the lowest numbered IP of all interfaces
         """
         ips = []
         for entry in self.int_index:
@@ -290,19 +321,7 @@ class Node(BaseData):
             return ips
 
 
-    def get_system_name(self):
-        name = self.name_raw.split('.')
-        if len(name) == 3:
-            return name[0]
-        else:
-            return self.name_raw
-
-
-ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
-ent_serial = self.snmp_bulk(o.ENTPHYENTRY_SERIAL)
-ent_plat = self.snmp_bulk(o.ENTPHYENTRY_PLAT)
-ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
-    def _build_ent_from_oid(self, oid):
+    def build_ent_from_oid(self, oid):
         idx = oid.split('.')[12]
         serial = self.snmp_bulk(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
         plat = self.snmp_bulk(f"{o.ENTPHYENTRY_PLAT}.{idx}")
@@ -341,11 +360,11 @@ ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
         )
         if isinstance(chs_oids, list):
             for chs_oid in chs_oids:
-                ent = self._build_ent_from_oid(chs_oid)
+                ent = self.build_ent_from_oid(chs_oid)
                 if ent:
                     results.append(ent)
         else:
-            ent = self._build_ent_from_oid(chs_oids)
+            ent = self.build_ent_from_oid(chs_oids)
             if ent:
                 results.append(ent)
         return results
@@ -353,12 +372,13 @@ ent_ios = self.snmp_bulk(o.ENTPHYENTRY_SOFTWARE)
 
     def get_loopbacks(self) -> List[LoopBackData]:
         loopbacks = []
+        ethif = self.snmp_bulk(o.ETH_IF)
         with alive_bar(
-            len(self.cache.ethif),
+            len(ethif),
             title=f"Building Loopbacks for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in self.cache.ethif:
+            for row in ethif:
                 for n, v in row:
                     oid = str(n)
                     if oid.startswith(o.ETH_IF_TYPE) and v == 24:
