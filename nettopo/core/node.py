@@ -67,6 +67,32 @@ class Node(BaseData):
         self.queried = False
         self.items_2_show = ['name', 'ip', 'plat', 'ios',
                              'serial', 'router', 'vss', 'stack']
+        self.name = None
+        self.descr = None
+        self.os = None
+        self.model = None
+        self.vendor = None
+        self.version = None
+        self.ips = None
+        self.router = None
+        self.ospf = None
+        self.ospf_id = None
+        self.bgp_las = None
+        self.hsrp_pri = None
+        self.hsrp_vip = None
+        self.stack = None
+        self.vss = None
+        self.serial = None
+        self.svis = None
+        self.loopbacks = None
+        self.bootfile = None
+        self.ent = None
+        self.vpc = None
+        self.arp_table = None
+        self.mac_table = None
+        self.cdp_neighbors = None
+        self.lldp_neighbors = None
+        self.neighbors = None
         if immediate_query:
             self.query_node()
 
@@ -107,6 +133,7 @@ class Node(BaseData):
         self,
         item: Union[int, str, ObjectIdentity],
         table: List[Any],
+        *,
         item_type: str='oid',
         return_both: bool=False,
         return_pretty: bool=True,
@@ -129,7 +156,7 @@ class Node(BaseData):
                 elif item_type == 'val':
                     # Match item to val using type. Return oid.
                     itype = type(item)
-                    if item == itype(value):
+                    if item == itype(v):
                         res = (oid, value) if return_both else oid
                         results.append(res)
                 elif item_type == 'idx':
@@ -151,7 +178,6 @@ class Node(BaseData):
         self,
         item: Union[int, str, ObjectIdentity],
         vlan: Union[int, str]=None,
-        *,
         return_pretty: bool=True,
     ) -> Union[Any, None]:
         results = None
@@ -174,10 +200,6 @@ class Node(BaseData):
         self,
         item: Union[int, str, ObjectIdentity],
         vlan: Union[int, str]=None,
-        *,
-        item_type: str='oid',
-        return_both: bool=False,
-        return_pretty: bool=True,
     ) -> Union[Any, None]:
         if vlan:
             old_community = self.use_vlan_community(vlan)
@@ -191,13 +213,7 @@ class Node(BaseData):
             if error:
                 return error
             if table:
-                return self.process_table(
-                    item=item,
-                    table=table,
-                    item_type=item_type,
-                    return_both=return_both,
-                    return_pretty=return_pretty
-                )
+                return table
 
 
     @timethis
@@ -211,7 +227,11 @@ class Node(BaseData):
         self.name = self.get_system_name()
         self.descr = self.snmp_value(o.SYSDESC)
         # Sys info (vendor, model, os, version)
-        self.sys = sysdescrparser(self.descr)
+        sys = sysdescrparser(self.descr)
+        self.os = sys.os
+        self.model = sys.model
+        self.vendor = sys.vendor
+        self.version = sys.version
         self.ips = self.get_ips()
         # router
         router = self.snmp_value(o.IP_ROUTING)
@@ -321,29 +341,27 @@ class Node(BaseData):
             return ips
 
 
-    def build_ent_from_oid(self, oid):
+    def build_ent_from_oid(self, oid, table):
         idx = oid.split('.')[12]
-        serial = self.snmp_bulk(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-        plat = self.snmp_bulk(f"{o.ENTPHYENTRY_PLAT}.{idx}")
-        ios = self.snmp_bulk(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+        serial = self.snmp_value(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+        plat = self.snmp_value(f"{o.ENTPHYENTRY_PLAT}.{idx}")
+        ios = self.snmp_value(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         # Modular switches have IOS on module
         if not ios:
-            mod_oids = self.get_cached_item(
-                            'ent_class',
+            mod_oids = self.process_table(
                             ENTPHYCLASS.MODULE,
+                            ent_class_table,
                             item_type='val'
                         )
             if isinstance(mod_oids, list):
                 for mod_oid in mod_oids:
                     idx = mod_oid.split('.')[12]
-                    ios = self.get_cached_item('ent_ios',
-                                               f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                    ios = self.snmp_value(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
                     if ios:
                         break
             else:
                 idx = mod_oids.split('.')[12]
-                ios = self.get_cached_item('ent_ios',
-                                           f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                ios = self.snmp_value(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         ios = format_ios_ver(ios)
         if any([serial, plat, ios]):
             return EntData(serial, plat, ios)
@@ -352,21 +370,19 @@ class Node(BaseData):
     # TODO: IOS is incorrect for IOS-XE at least.
     def get_ent(self) -> tuple:
         results = []
-        ent_class = self.snmp_bulk(o.ENTPHYENTRY_CLASS, item_type='val')
-        chs_oids = self.get_cached_item(
-            'ent_class',
+        ent_class_table = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
+        chs_oids = self.process_table(
             ENTPHYCLASS.CHASSIS,
+            ent_class_table,
             item_type='val',
         )
         if isinstance(chs_oids, list):
             for chs_oid in chs_oids:
-                ent = self.build_ent_from_oid(chs_oid)
-                if ent:
-                    results.append(ent)
-        else:
-            ent = self.build_ent_from_oid(chs_oids)
-            if ent:
+                ent = self.build_ent_from_oid(chs_oid, ent_class_table)
                 results.append(ent)
+        else:
+            ent = self.build_ent_from_oid(chs_oids, ent_class_table)
+            results.append(ent)
         return results
 
 
@@ -693,7 +709,8 @@ class Node(BaseData):
         Will always return an array.
         """
         neighbors = []
-        if not self.cache.lldp:
+        lldp = self.snmp_bulk(o.LLDP)
+        if not lldp:
             print('No LLDP Neighbors Found.')
             return neighbors
         with alive_bar(
