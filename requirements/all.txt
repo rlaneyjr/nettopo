@@ -1,0 +1,32 @@
+# Base
+PyYAML
+Jinja2
+alive-progress
+netaddr
+netifaces
+pydot
+pysnmp
+snmpsysdescrparser
+tabulate
+# Prod
+ciscoconfparse
+dnspython
+docopt
+easysnmp
+genie
+manuf
+netmiko
+ntc-templates
+pexpect
+pyats
+pysmi
+pysnmp-mibs
+ruamel.yaml
+scapy
+tabulate
+textfsm
+snimpy
+# Dev
+ipdb
+mypy-extensions
+pycodestyle
