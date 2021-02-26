@@ -304,14 +304,6 @@ class Node(BaseData):
                 return f"{ip}/32"
 
 
-    def get_ifname(self, idx: int) -> str:
-        ifname = self.snmp_value(f"{o.IFNAME}.{idx}")
-        if ifname in [o.ERR, o.ERR_INST]:
-            ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
-            ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
-        return normalize_port(ifname)
-
-
     def get_ips(self):
         """ Collects and stores all the IPs for Node
         """
@@ -325,20 +317,39 @@ class Node(BaseData):
         return ips
 
 
-    def get_ips_from_index(self, num: UIS, ip_only: bool=False) -> ULSIN:
+    def get_ifname_from_index(self, idx: int) -> str:
+        ifname = self.snmp_value(f"{o.IFNAME}.{idx}")
+        if ifname in [o.ERR, o.ERR_INST]:
+            ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
+            ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
+        return normalize_port(ifname)
+
+
+    def get_ips_from_index(
+        self, num: UIS,
+        *,
+        no_mask: bool=False,
+        sort: bool=True,
+        return_first: bool=False,
+    ) -> ULSIN:
         ips = []
         for entry in self.int_index:
             if int(num) == int(entry.idx):
                 if entry.cidrs:
-                    if ip_only:
+                    if no_mask:
                         cidrs = [cidr.split('/')[0] for cidr in entry.cidrs]
                     else:
-                        cidrs = [cidr for cidr in entry.cidrs]
+                        cidrs = entry.cidrs
                     ips.extend(cidrs)
-        if len(ips) == 1:
-            return ips[0]
+        if ips:
+            if sort:
+                ips.sort()
+            if return_first or len(ips) == 1:
+                return ips[0]
+            else:
+                return ips
         else:
-            return ips
+            return None
 
 
     def build_ent_from_oid(self, oid, table):
@@ -388,20 +399,23 @@ class Node(BaseData):
 
     def get_loopbacks(self) -> List[LoopBackData]:
         loopbacks = []
-        ethif = self.snmp_bulk(o.ETH_IF)
+        ethif_cache = self.snmp_bulk(o.ETH_IF)
         with alive_bar(
-            len(ethif),
+            len(ethif_cache),
             title=f"Building Loopbacks for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in ethif:
+            for row in ethif_cache:
                 for n, v in row:
                     oid = str(n)
                     if oid.startswith(o.ETH_IF_TYPE) and v == 24:
                         ifidx = oid.split('.')[10]
-                        lo_name = self.get_cached_item('ethif',
-                                        f"{o.ETH_IF_DESC}.{ifidx}")
-                        lo_ip = self.get_ips_from_index(ifidx)
+                        lo_name = self.snmp_value(f"{o.ETH_IF_DESC}.{ifidx}")
+                        lo_ip = self.get_ips_from_index(
+                            ifidx,
+                            no_mask=True,
+                            return_first=True,
+                        )
                         lo = LoopBackData(lo_name, lo_ip)
                         loopbacks.append(lo)
                     bar()
@@ -410,12 +424,13 @@ class Node(BaseData):
 
     def get_svis(self) -> List[SVIData]:
         svis = []
+        svi_cache = self.snmp_bulk(o.SVI_VLANIF)
         with alive_bar(
-            len(self.cache.svi),
+            len(svi_cache),
             title=f"Building SVIs for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in self.cache.svi:
+            for row in svi_cache:
                 for n, v in row:
                     vlan = str(n).split('.')[14]
                     svi = SVIData(vlan)
@@ -427,22 +442,22 @@ class Node(BaseData):
 
     def get_vlans(self) -> List[VLANData]:
         vlans = []
+        vlan_cache = self.snmp_bulk(o.VLANS)
+        vlandesc_cache = self.snmp_bulk(o.VLAN_DESC)
         with alive_bar(
-            len(self.cache.vlan),
+            len(vlan_cache),
             title=f"Building VLANs for {self.name}",
             bar='smooth',
         ) as bar:
             i = 0
-            for row in self.cache.vlan:
+            for row in vlan_cache:
                 for n, v in row:
                     # get VLAN ID from OID
                     vlan = oid_last_token(n)
                     if vlan >= 1002:
                         continue
-                    vlans.append(VLANData(
-                            vlan,
-                            str(self.cache.vlandesc[i][0][1])
-                        ))
+                    vlandesc = str(vlandesc_cache[i][0][1])
+                    vlans.append(VLANData(vlan, vlandesc))
                     i += 1
                     bar()
         return vlans
@@ -457,8 +472,7 @@ class Node(BaseData):
 
     def get_link(self, ifidx) -> LinkData:
         link = LinkData()
-        link.link_type = self.get_cached_item('link_type',
-                                          f"{o.TRUNK_VTP}.{ifidx}")
+        link.link_type = self.snmp_value(f"{o.TRUNK_VTP}.{ifidx}")
         # trunk
         if link.link_type == '2':
             link.local_native_vlan = self.get_cached_item('trunk_native',
@@ -469,7 +483,7 @@ class Node(BaseData):
         # LAG membership
         lag = self.get_cached_item('lag', f"{o.LAG_LACP}.{ifidx}")
         if lag:
-            link.local_lag = self.get_ifname(lag)
+            link.local_lag = self.get_ifname_from_index(lag)
             link.local_lag_ips = self.get_ips_from_index(lag)
             link.remote_lag_ips = []
         # VLAN info
@@ -570,7 +584,7 @@ class Node(BaseData):
                     oid = str(n)
                     if oid.startswith(o.ARP_VLAN):
                         ip = '.'.join(oid.split('.')[-4:])
-                        interf = self.get_ifname(v)
+                        interf = self.get_ifname_from_index(v)
                         mac_hex = self.get_cached_item('arp',
                                         f"{o.ARP_MAC}.{v}.{ip}")
                         mac = mac_hex_to_ascii(mac_hex)
@@ -633,7 +647,7 @@ class Node(BaseData):
                 try:
                     ifidx = lookup_table(ifindex_cache,
                                         f"{o.IFINDEX}.{bridge_portnum}")
-                    port = self.get_ifname(ifidx)
+                    port = self.get_ifname_from_index(ifidx)
                 except TypeError:
                     port = 'local'
                 finally:
@@ -679,7 +693,7 @@ class Node(BaseData):
                                 )
                         link.remote_ip = ip_2_str(rip)
                         # get local port
-                        link.local_port = self.get_ifname(ifidx)
+                        link.local_port = self.get_ifname_from_index(ifidx)
                         # get remote port
                         rport = self.get_cached_item(
                             'cdp',
@@ -728,7 +742,7 @@ class Node(BaseData):
                         idx = ".".join(t[-2:])
                         link = self.get_link(ifidx)
                         link.discovered_proto = 'lldp'
-                        link.local_port = self.get_ifname(int(ifidx))
+                        link.local_port = self.get_ifname_from_index(int(ifidx))
                         rip_oid, _ = self.get_cached_item(
                             'lldp',
                             f"{o.LLDP_DEVADDR}.{idx}",

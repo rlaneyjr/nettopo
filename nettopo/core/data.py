@@ -64,13 +64,6 @@ class BaseData:
         return f"<{items}>"
 
 
-class IntData(BaseData):
-    def __init__(self, idx, name, cidrs):
-        self.idx = idx
-        self.name = name
-        self.cidrs = cidrs
-
-
 class LinkData(BaseData):
     def __init__(self):
         self.node = None
@@ -130,6 +123,13 @@ class StackMemberData(BaseData):
         self.serial = None
         self.plat = None
         self.items_2_show = ['num', 'role', 'serial']
+
+
+class IntData(BaseData):
+    def __init__(self, idx, name, cidrs):
+        self.idx = idx
+        self.name = name
+        self.cidrs = cidrs
 
 
 class EntData(BaseData):
