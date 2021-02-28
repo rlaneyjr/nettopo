@@ -296,3 +296,5 @@ for cam_row in cam_cache:
             mac_addr = mac_format_ascii(cam_v, True)
             entry = MACData(vlan, mac_addr, port)
             macs.append(entry)
+
+

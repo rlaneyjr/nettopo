@@ -120,3 +120,50 @@ sw2.community = 'letmeSNMP'
 hosts = [sw1,sw2]
 multi_node_bulk_query(hosts)
 
+
+from nettopo.core.snmp import SNMP
+from nettopo.oids import Oids
+o = Oids()
+sw1 = SNMP('10.0.0.1')
+sw2 = SNMP('10.0.0.2')
+ifname_cache = sw1.get_bulk(o.IFNAME)
+ifname_cache2 = sw2.get_bulk(o.IFNAME)
+ifip_cache = sw1.get_bulk(o.IF_IP)
+ifip_cache2 = sw2.get_bulk(o.IF_IP)
+ethif_cache = sw1.get_bulk(o.ETH_IF)
+ethif_cache2 = sw2.get_bulk(o.ETH_IF)
+ip_cache = sw1.get_bulk(o.IP)
+ip_cache2 = sw2.get_bulk(o.IP)
+pp_table(ifname_cache)
+pp_table(ifname_cache2)
+pp_table(ifip_cache)
+pp_table(ifip_cache2)
+pp_table(ethif_cache)
+pp_table(ethif_cache2)
+pp_table(ip_cache)
+pp_table(ip_cache2)
+
+def cache_out(name, cache):
+    with open(f'./{name}_cache.txt', 'w+') as out:
+        out.write(f"SNMP {name} table:\n")
+        for row in cache:
+            for n,v in row:
+                out.write(f"{n} = {v.prettyPrint()}\n")
+        out.write("\n")
+cache_out('sw1_ifname', ifname_cache)
+cache_out('sw2_ifname', ifname_cache2)
+cache_out('sw1_ifip', ifip_cache)
+cache_out('sw2_ifip', ifip_cache2)
+cache_out('sw1_ethif', ethif_cache)
+cache_out('sw2_ethif', ethif_cache2)
+cache_out('sw1_ip', ip_cache)
+cache_out('sw2_ip', ip_cache2)
+
+ifname_table = TableBuilder('ifname', ifname_cache)
+ifname_table2 = TableBuilder('ifname2', ifname_cache2)
+ifip_table = TableBuilder('ifip', ifip_cache)
+ifip_table2 = TableBuilder('ifip2', ifip_cache2)
+ethif_table = TableBuilder('ethif', ethif_cache)
+ethif_table2 = TableBuilder('ethif2', ethif_cache2)
+ip_table = TableBuilder('ip', ip_cache)
+ip_table2 = TableBuilder('ip2', ip_cache2)

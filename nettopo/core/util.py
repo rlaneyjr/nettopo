@@ -146,6 +146,7 @@ def normalize_port(port: str=None):
         port = port.replace('FastEthernet', 'fa')
         port = port.replace('port-channel', 'po')
         port = port.replace('Loopback', 'lo')
+        port = port.replace('Vlan', 'vl')
         port = port.replace('Te', 'te')
         port = port.replace('Gi', 'gi')
         port = port.replace('Fa', 'fa')

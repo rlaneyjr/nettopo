@@ -60,6 +60,59 @@ UIS = Union[int, str]
 o = Oids()
 
 
+class TableBuilder:
+    def __init__(self, name: str, data: list) -> None:
+        self.name = name
+        self.raw_data = data
+        self.table = self._build_table(data)
+
+    def _build_table(self, data) -> list:
+        results = []
+        for row in data:
+            for oid, val in row:
+                idx = oid_last_token(oid)
+                value = return_pretty_val(val)
+                entry = (idx, str(oid), value)
+                results.append(entry)
+        return results
+
+    def add_to_table(self, thing: Union[tuple, list]) -> None:
+        if isinstance(thing, list):
+            for item in thing:
+                if item not in self.table:
+                    self.table.append(item)
+        else:
+            if thing not in self.table:
+                self.table.append(thing)
+
+    def search_table(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        item_type: str='oid',
+    ) -> Union[Any, None]:
+        results = []
+        for idx, oid, val in self.table:
+            if item_type == 'oid':
+                # Oid matching is string based
+                item = str(item)
+                # Use regex to ensure we do not match ending digit
+                # like '1' to '10', '100', etc.
+                item_re = re.compile(item + r'(?!\d)')
+                # Match re with oid
+                if item_re.match(oid):
+                    results.append((idx, oid, val))
+            elif item_type == 'val':
+                # Match item to val using type
+                itype = type(item)
+                if item == itype(val):
+                    results.append((idx, oid, val))
+            elif item_type == 'idx':
+                # Match item to last token in oid as integers
+                if int(item) == int(idx):
+                    results.append((idx, oid, val))
+        return results
+
+
 class Node(BaseData):
     def __init__(self, ip: str, immediate_query: bool=False) -> None:
         self.ip = ip
@@ -142,10 +195,10 @@ class Node(BaseData):
         for row in table:
             for o, v in row:
                 oid = str(o) if return_pretty else o
-                value = v.prettyPrint() if return_pretty else v
+                value = return_pretty_val(v) if return_pretty else v
                 if item_type == 'oid':
                     # Oid matching is string based
-                    item = item if isinstance(item, str) else str(item)
+                    item = str(item)
                     # Use regex to ensure we do not match ending digit
                     # like '1' to '10', '100', etc.
                     item_re = re.compile(item + r'(?!\d)')
@@ -193,7 +246,7 @@ class Node(BaseData):
             if error:
                 return error
             if value:
-                return value.prettyPrint() if return_pretty else value
+                return return_pretty_val(value) if return_pretty else value
 
 
     def snmp_bulk(
@@ -304,10 +357,48 @@ class Node(BaseData):
                 return f"{ip}/32"
 
 
+    def build_int_index(self) -> List[IntData]:
+        int_index = []
+        ifname_cache = self.snmp_bulk(o.IFNAME)
+        ifname_table = TableBuilder('ifname', ifname_cache)
+        ethif_cache = self.snmp_bulk(o.ETH_IF)
+        ethif_table = TableBuilder('ethif', ethif_cache)
+        ifip_cache = self.snmp_bulk(o.IF_IP)
+        ifip_table = TableBuilder('ifip', ifip_cache)
+        with alive_bar(
+            len(ifname_table),
+            title=f"Building Int_Index for {self.name}",
+            bar='smooth',
+        ) as bar:
+            for oid, port in ifname_table:
+                # Skip unrouted VLAN ports
+                if port.startswith('VLAN-'):
+                    continue
+                idx = oid_last_token(oid)
+                name = normalize_port(port)
+                ip_oids = ifip_table.search_table(idx, item_type='val')
+                cidrs = []
+                if ip_oids:
+                    if isinstance(ip_oids, list):
+                        cidr = [self.cidr_from_oid(ip_oid) \
+                                for ip_oid in ip_oids \
+                                if str(ip_oid).startswith(o.IF_IP_ADDR)]
+                        cidrs.extend(cidr)
+                    else:
+                        if str(ip_oids).startswith(o.IF_IP_ADDR):
+                            cidr = self.cidr_from_oid(ip_oids)
+                            cidrs.append(cidr)
+                int_data = IntData(idx, name, cidrs)
+                int_index.append(int_data)
+                bar()
+        return int_index
+
+
     def get_ips(self):
         """ Collects and stores all the IPs for Node
         """
         ips = []
+        ifip_table = self.snmp_bulk(f"{o.IF_IP}.1")
         for entry in self.int_index:
             if entry.cidrs:
                 ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
