@@ -167,3 +167,33 @@ ethif_table = TableBuilder('ethif', ethif_cache)
 ethif_table2 = TableBuilder('ethif2', ethif_cache2)
 ip_table = TableBuilder('ip', ip_cache)
 ip_table2 = TableBuilder('ip2', ip_cache2)
+
+from nettopo.core.snmp import SNMP, TableBuilder
+from nettopo.oids import Oids, GeneralOids, CiscoOids
+o = Oids()
+g = GeneralOids()
+c = CiscoOids()
+sw1 = SNMP('10.0.0.1', community='letmeSNMP')
+sw1_vlans = TableBuilder('sw1_vlans', sw1.get_bulk(o.VLANS))
+sw1_vlans
+sw1_vlans.table
+len(sw1_vlans)
+sw1_vlandesc = TableBuilder('sw1_vlandesc', sw1.get_bulk(o.VLAN_DESC))
+len(sw1_vlandesc)
+sw1_vlandesc.table
+o.VLANS
+o.VLAN_DESC
+g.entPhysicalName
+c.cL2L3IfModeAdmin
+c.vtpVlanState
+c.vtpVlanName
+c.vtpVlanIndex
+sw1.get_bulk(c.vtpVlanIndex)
+sw1.get_bulk(c.vtpVlanName)
+
+In [24]: c.vtpVlanIndex
+Out[24]: '1.3.6.1.4.1.9.9.46.1.3.1.1.1'
+In [25]: c.vtpVlanName
+Out[25]: '1.3.6.1.4.1.9.9.46.1.3.1.1.4'
+In [26]: c_vlans = sw1.get_bulk('1.3.6.1.4.1.9.9.46.1.3.1.1')
+

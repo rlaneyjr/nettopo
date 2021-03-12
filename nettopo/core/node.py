@@ -6,16 +6,24 @@
 """
 from alive_progress import alive_bar
 import binascii
-from collections import namedtuple
 from dataclasses import dataclass
 from functools import cached_property
 from pysnmp.smi.rfc1902 import ObjectIdentity
 import re
 from sysdescrparser import sysdescrparser
-from typing import Union, List, Any
+from typing import NamedTuple, Union, List, Any
 # Nettopo Imports
 from nettopo.core.cache import Cache
-from nettopo.core.constants import ARP, DCODE, ENTPHYCLASS, NODE, NOTHING
+from nettopo.core.constants import (
+    ARP,
+    DCODE,
+    ENTPHYCLASS,
+    NODE,
+    NOTHING,
+    int_oper_status,
+    int_type,
+    int_admin_status,
+)
 from nettopo.core.data import (
     BaseData,
     IntData,
@@ -33,7 +41,7 @@ from nettopo.core.data import (
     MACData,
 )
 from nettopo.core.exceptions import NettopoSNMPError, NettopoNodeError
-from nettopo.core.snmp import SNMP
+from nettopo.core.snmp import SNMP, TableBuilder
 from nettopo.core.util import (
     timethis,
     bits_from_mask,
@@ -49,8 +57,9 @@ from nettopo.core.util import (
     is_ipv4_address,
     return_pretty_val,
     return_snmptype_val,
+    bits_2_megabytes,
 )
-from nettopo.oids import Oids
+from nettopo.oids import Oids, CiscoOids, GeneralOids
 
 # Typing shortcuts
 ULSIN = Union[list, str, int, None]
@@ -58,59 +67,21 @@ UIS = Union[int, str]
 
 # Easy access to our OIDs
 o = Oids()
+g = GeneralOids()
+c = CiscoOids()
 
-
-class TableBuilder:
-    def __init__(self, name: str, data: list) -> None:
-        self.name = name
-        self.raw_data = data
-        self.table = self._build_table(data)
-
-    def _build_table(self, data) -> list:
-        results = []
-        for row in data:
-            for oid, val in row:
-                idx = oid_last_token(oid)
-                value = return_pretty_val(val)
-                entry = (idx, str(oid), value)
-                results.append(entry)
-        return results
-
-    def add_to_table(self, thing: Union[tuple, list]) -> None:
-        if isinstance(thing, list):
-            for item in thing:
-                if item not in self.table:
-                    self.table.append(item)
-        else:
-            if thing not in self.table:
-                self.table.append(thing)
-
-    def search_table(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        item_type: str='oid',
-    ) -> Union[Any, None]:
-        results = []
-        for idx, oid, val in self.table:
-            if item_type == 'oid':
-                # Oid matching is string based
-                item = str(item)
-                # Use regex to ensure we do not match ending digit
-                # like '1' to '10', '100', etc.
-                item_re = re.compile(item + r'(?!\d)')
-                # Match re with oid
-                if item_re.match(oid):
-                    results.append((idx, oid, val))
-            elif item_type == 'val':
-                # Match item to val using type
-                itype = type(item)
-                if item == itype(val):
-                    results.append((idx, oid, val))
-            elif item_type == 'idx':
-                # Match item to last token in oid as integers
-                if int(item) == int(idx):
-                    results.append((idx, oid, val))
-        return results
+IntEntry_NT = NamedTuple('InterfaceEntry', [
+    ("idx", int),
+    ("name", str),
+    ("name_long", str),
+    ("mtu", int),
+    ("media", str),
+    ("speed", int),
+    ("mac", str),
+    ("cidrs", list),
+    ("admin_status", str),
+    ("oper_status", str),
+])
 
 
 class Node(BaseData):
@@ -182,58 +153,14 @@ class Node(BaseData):
             raise NettopoSNMPError(f"ERROR: {community} failed {self.ip}")
 
 
-    def process_table(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        table: List[Any],
-        *,
-        item_type: str='oid',
-        return_both: bool=False,
-        return_pretty: bool=True,
-    ) -> Union[Any, None]:
-        results = []
-        for row in table:
-            for o, v in row:
-                oid = str(o) if return_pretty else o
-                value = return_pretty_val(v) if return_pretty else v
-                if item_type == 'oid':
-                    # Oid matching is string based
-                    item = str(item)
-                    # Use regex to ensure we do not match ending digit
-                    # like '1' to '10', '100', etc.
-                    item_re = re.compile(item + r'(?!\d)')
-                    # Match re with oid. Return value.
-                    if item_re.match(str(o)):
-                        res = (oid, value) if return_both else value
-                        results.append(res)
-                elif item_type == 'val':
-                    # Match item to val using type. Return oid.
-                    itype = type(item)
-                    if item == itype(v):
-                        res = (oid, value) if return_both else oid
-                        results.append(res)
-                elif item_type == 'idx':
-                    # Match item to last token in oid as integers. Return value.
-                    idx = oid_last_token(o)
-                    if int(item) == int(idx):
-                        res = (oid, value) if return_both else value
-                        results.append(res)
-        if results:
-            if len(results) == 1:
-                return results[0]
-            else:
-                return results
-        else:
-            return None
-
-
     def snmp_value(
         self,
         item: Union[int, str, ObjectIdentity],
         vlan: Union[int, str]=None,
         return_pretty: bool=True,
     ) -> Union[Any, None]:
-        results = None
+        value = None
+        error = False
         if vlan:
             old_community = self.use_vlan_community(vlan)
         try:
@@ -254,6 +181,8 @@ class Node(BaseData):
         item: Union[int, str, ObjectIdentity],
         vlan: Union[int, str]=None,
     ) -> Union[Any, None]:
+        table = None
+        error = False
         if vlan:
             old_community = self.use_vlan_community(vlan)
         try:
@@ -285,6 +214,7 @@ class Node(BaseData):
         self.model = sys.model
         self.vendor = sys.vendor
         self.version = sys.version
+        self.if_index = self.build_if_index()
         self.ips = self.get_ips()
         # router
         router = self.snmp_value(o.IP_ROUTING)
@@ -346,7 +276,7 @@ class Node(BaseData):
             return name_raw
 
 
-    def cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
+    def get_cidr_from_oid(self, oid: Union[str, int, ObjectIdentity]) -> str:
         ip = ".".join(str(oid).split('.')[-4:])
         if is_ipv4_address(ip):
             mask = self.snmp_value(f"{o.IF_IP_NETM}.{ip}")
@@ -357,49 +287,116 @@ class Node(BaseData):
                 return f"{ip}/32"
 
 
-    def build_int_index(self) -> List[IntData]:
-        int_index = []
-        ifname_cache = self.snmp_bulk(o.IFNAME)
-        ifname_table = TableBuilder('ifname', ifname_cache)
-        ethif_cache = self.snmp_bulk(o.ETH_IF)
-        ethif_table = TableBuilder('ethif', ethif_cache)
-        ifip_cache = self.snmp_bulk(o.IF_IP)
-        ifip_table = TableBuilder('ifip', ifip_cache)
+    def get_ifname_from_index(self, idx: int, normalize: bool=True) -> str:
+        ifname = self.snmp_value(f"{o.IFNAME}.{idx}")
+        if ifname in [o.ERR, o.ERR_INST]:
+            ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
+            ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
+        if normalize:
+            return normalize_port(ifname)
+        else:
+            return ifname
+
+
+    def get_cidrs_from_index(self, idx: int) -> Union[list, None]:
+        """
+        # From IP-MIB
+        ipAdEntTable = "1.3.6.1.2.1.4.20.1"
+        ipAdEntAddr = "1.3.6.1.2.1.4.20.1.1"
+        ipAdEntIfIndex = "1.3.6.1.2.1.4.20.1.2"
+        ipAdEntNetMask = "1.3.6.1.2.1.4.20.1.3"
+        """
+        cidrs = []
+        ip_table = TableBuilder('ip_table', self.snmp_bulk(g.ipAdEntTable))
+        ip_entries = ip_table.search(g.ipAdEntIfIndex, item_type='oid')
+        for ip_oid, ip_idx in ip_entries:
+            if ip_idx == idx:
+                ip = ".".join(str(ip_oid).split('.')[-4:])
+                if is_ipv4_address(ip):
+                    mask = ip_table.search(
+                        f"{g.ipAdEntNetMask}.{ip}",
+                        item_type='oid',
+                        return_type='val',
+                    )
+                    if mask:
+                        subnet_mask = bits_from_mask(mask[0])
+                        cidrs.append(f"{ip}/{subnet_mask}")
+                    else:
+                        cidrs.append(f"{ip}/32")
+        return cidrs
+
+
+    def build_if_index(self) -> List[IntData]:
+        """
+        # From IF-MIB
+        ifTable = "1.3.6.1.2.1.2.2"
+        ifEntry = "1.3.6.1.2.1.2.2.1"
+        ifIndex = "1.3.6.1.2.1.2.2.1.1"
+        ifDescr = "1.3.6.1.2.1.2.2.1.2"
+        ifType = "1.3.6.1.2.1.2.2.1.3"
+        ifMtu = "1.3.6.1.2.1.2.2.1.4"
+        ifSpeed = "1.3.6.1.2.1.2.2.1.5"
+        ifPhysAddress = "1.3.6.1.2.1.2.2.1.6"
+        ifAdminStatus = "1.3.6.1.2.1.2.2.1.7"
+        ifOperStatus = "1.3.6.1.2.1.2.2.1.8"
+        """
+        if_index = []
+        if_table = TableBuilder('if_table', self.snmp_bulk(g.ifTable))
+        if_entries = if_table.search(
+            g.ifIndex,
+            item_type='oid',
+            return_type='val',
+        )
         with alive_bar(
-            len(ifname_table),
-            title=f"Building Int_Index for {self.name}",
+            len(if_entries),
+            title=f"Building If_Table for {self.name}",
             bar='smooth',
         ) as bar:
-            for oid, port in ifname_table:
-                # Skip unrouted VLAN ports
-                if port.startswith('VLAN-'):
+            for idx in if_entries:
+                non_if_name = self.get_ifname_from_index(idx, normalize=False)
+                # Skip unrouted VLAN ports and Stack ports
+                if non_if_name.startswith('VLAN-') or non_if_name.startswith('Stack'):
                     continue
-                idx = oid_last_token(oid)
-                name = normalize_port(port)
-                ip_oids = ifip_table.search_table(idx, item_type='val')
-                cidrs = []
-                if ip_oids:
-                    if isinstance(ip_oids, list):
-                        cidr = [self.cidr_from_oid(ip_oid) \
-                                for ip_oid in ip_oids \
-                                if str(ip_oid).startswith(o.IF_IP_ADDR)]
-                        cidrs.extend(cidr)
-                    else:
-                        if str(ip_oids).startswith(o.IF_IP_ADDR):
-                            cidr = self.cidr_from_oid(ip_oids)
-                            cidrs.append(cidr)
-                int_data = IntData(idx, name, cidrs)
-                int_index.append(int_data)
+                if_name = normalize_port(non_if_name)
+                if_cidrs = self.get_cidrs_from_index(idx)
+                idx_table = if_table.index_table(idx)
+                for oid, val in idx_table:
+                    if oid == g.ifDescr:
+                        if_name_long = val
+                    if oid == g.ifMtu:
+                        if_mtu = val
+                    if oid == g.ifType:
+                        if_type = int_type.get(val)
+                    if oid == g.ifSpeed:
+                        if_speed = bits_2_megabytes(val)
+                    if oid == g.ifPhysAddress:
+                        if_mac = mac_hex_to_ascii(val)
+                    if oid == g.ifAdminStatus:
+                        if_admin_status = int_admin_status.get(val)
+                    if oid == g.ifOperStatus:
+                        if_oper_status = int_oper_status.get(val)
+                entry = IntEntry_NT(
+                    idx=idx,
+                    name=if_name,
+                    name_long=if_name_long,
+                    mtu=if_mtu,
+                    media=if_type,
+                    speed=if_speed,
+                    mac=if_mac,
+                    cidrs=if_cidrs,
+                    admin_status=if_admin_status,
+                    oper_status=if_oper_status,
+                )
+                if_index.append(entry)
                 bar()
-        return int_index
+        return if_index
 
 
-    def get_ips(self):
+    def get_ips(self) -> list:
         """ Collects and stores all the IPs for Node
         """
         ips = []
-        ifip_table = self.snmp_bulk(f"{o.IF_IP}.1")
-        for entry in self.int_index:
+        for entry in self.if_index:
             if entry.cidrs:
                 ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
         ips = set(ips)
@@ -408,23 +405,16 @@ class Node(BaseData):
         return ips
 
 
-    def get_ifname_from_index(self, idx: int) -> str:
-        ifname = self.snmp_value(f"{o.IFNAME}.{idx}")
-        if ifname in [o.ERR, o.ERR_INST]:
-            ifindex = self.snmp_value(f"{o.IFINDEX}.{idx}")
-            ifname = self.snmp_value(f"{o.IFNAME}.{ifindex}")
-        return normalize_port(ifname)
-
-
     def get_ips_from_index(
-        self, num: UIS,
+        self,
+        num: UIS,
         *,
         no_mask: bool=False,
         sort: bool=True,
         return_first: bool=False,
     ) -> ULSIN:
         ips = []
-        for entry in self.int_index:
+        for entry in self.if_index:
             if int(num) == int(entry.idx):
                 if entry.cidrs:
                     if no_mask:
@@ -443,19 +433,19 @@ class Node(BaseData):
             return None
 
 
-    def build_ent_from_oid(self, oid, table):
+    def build_ent_from_oid(self, oid, ent_table) -> EntData:
         idx = oid.split('.')[12]
         serial = self.snmp_value(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
         plat = self.snmp_value(f"{o.ENTPHYENTRY_PLAT}.{idx}")
         ios = self.snmp_value(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
         # Modular switches have IOS on module
         if not ios:
-            mod_oids = self.process_table(
-                            ENTPHYCLASS.MODULE,
-                            ent_class_table,
-                            item_type='val'
-                        )
-            if isinstance(mod_oids, list):
+            mod_oids = ent_table.search(
+                ENTPHYCLASS.MODULE,
+                item_type='val'
+                return_type='oid',
+            )
+            if mod_oids:
                 for mod_oid in mod_oids:
                     idx = mod_oid.split('.')[12]
                     ios = self.snmp_value(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
@@ -470,87 +460,52 @@ class Node(BaseData):
 
 
     # TODO: IOS is incorrect for IOS-XE at least.
-    def get_ent(self) -> tuple:
+    def get_ent(self) -> list:
         results = []
-        ent_class_table = self.snmp_bulk(o.ENTPHYENTRY_CLASS)
-        chs_oids = self.process_table(
+        ent_class_table = TableBuilder('ent_class',
+                        self.snmp_bulk(o.ENTPHYENTRY_CLASS))
+        chs_oids = ent_class_table.search(
             ENTPHYCLASS.CHASSIS,
-            ent_class_table,
             item_type='val',
+            return_type='oid',
         )
-        if isinstance(chs_oids, list):
+        if chs_oids:
             for chs_oid in chs_oids:
                 ent = self.build_ent_from_oid(chs_oid, ent_class_table)
                 results.append(ent)
-        else:
-            ent = self.build_ent_from_oid(chs_oids, ent_class_table)
-            results.append(ent)
         return results
 
 
-    def get_loopbacks(self) -> List[LoopBackData]:
-        loopbacks = []
-        ethif_cache = self.snmp_bulk(o.ETH_IF)
-        with alive_bar(
-            len(ethif_cache),
-            title=f"Building Loopbacks for {self.name}",
-            bar='smooth',
-        ) as bar:
-            for row in ethif_cache:
-                for n, v in row:
-                    oid = str(n)
-                    if oid.startswith(o.ETH_IF_TYPE) and v == 24:
-                        ifidx = oid.split('.')[10]
-                        lo_name = self.snmp_value(f"{o.ETH_IF_DESC}.{ifidx}")
-                        lo_ip = self.get_ips_from_index(
-                            ifidx,
-                            no_mask=True,
-                            return_first=True,
-                        )
-                        lo = LoopBackData(lo_name, lo_ip)
-                        loopbacks.append(lo)
-                    bar()
-        return loopbacks
+    def get_loopbacks(self) -> List[IntEntry_NT]:
+        return [entry for entry in self.if_index if entry.media == 'softwareLoopback']
 
 
     def get_svis(self) -> List[SVIData]:
         svis = []
-        svi_cache = self.snmp_bulk(o.SVI_VLANIF)
+        svi_table = TableBuilder('svi_table', self.snmp_bulk(o.SVI_VLANIF))
         with alive_bar(
-            len(svi_cache),
+            len(svi_table),
             title=f"Building SVIs for {self.name}",
             bar='smooth',
         ) as bar:
-            for row in svi_cache:
-                for n, v in row:
-                    vlan = str(n).split('.')[14]
-                    svi = SVIData(vlan)
-                    svi.ips = self.get_ips_from_index(v)
-                    svis.append(svi)
-                    bar()
+            for n, v in svi_table.table:
+                vlan = str(n).split('.')[14]
+                svi = SVIData(vlan)
+                svi.ips = self.get_ips_from_index(v)
+                svis.append(svi)
+                bar()
         return svis
 
 
     def get_vlans(self) -> List[VLANData]:
         vlans = []
-        vlan_cache = self.snmp_bulk(o.VLANS)
-        vlandesc_cache = self.snmp_bulk(o.VLAN_DESC)
-        with alive_bar(
-            len(vlan_cache),
-            title=f"Building VLANs for {self.name}",
-            bar='smooth',
-        ) as bar:
-            i = 0
-            for row in vlan_cache:
-                for n, v in row:
-                    # get VLAN ID from OID
-                    vlan = oid_last_token(n)
-                    if vlan >= 1002:
-                        continue
-                    vlandesc = str(vlandesc_cache[i][0][1])
-                    vlans.append(VLANData(vlan, vlandesc))
-                    i += 1
-                    bar()
+        vlan_table = TableBuilder('vlan_table', self.snmp_bulk(o.VLANS_NEW))
+        for oid, vlandesc in vlan_table.table:
+            # get VLAN ID from OID
+            vlan = oid_last_token(oid)
+            if vlan >= 1002:
+                continue
+            vlans.append(VLANData(vlan, vlandesc))
         return vlans
 
 
@@ -587,33 +542,36 @@ class Node(BaseData):
     def get_stack(self)-> StackData:
         stack_roles = ['master', 'member', 'notMember', 'standby']
         stack = StackData()
-        for row in self.cache.stack:
-            for n, v in row:
-                oid = str(n)
-                if oid.startswith(f"{o.STACK_NUM}."):
-                    idx = oid.split('.')[14]
-                    # Get info on this stack member and add to the list
-                    mem = StackMemberData()
-                    mem.num = v
-                    role_num = self.get_cached_item('stack',
-                                          f"{o.STACK_ROLE}.{idx}")
-                    for role in enumerate(stack_roles, start=1):
-                        if role_num == role[0]:
-                            mem.role = role[1]
-                    if hasattr(mem, 'role'):
-                        continue
-                    mem.pri = self.get_cached_item('stack',
-                                        f"{o.STACK_PRI}.{idx}")
-                    mem.img = self.get_cached_item('stack',
-                                        f"{o.STACK_IMG}.{idx}")
-                    mem.serial = self.get_cached_item('ent_serial',
-                                        f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-                    mem.plat = self.get_cached_item('ent_plat',
-                                        f"{o.ENTPHYENTRY_PLAT}.{idx}")
-                    mac = self.get_cached_item('stack', f"{o.STACK_MAC}.{idx}")
-                    if mac:
-                        mem.mac = mac_hex_to_ascii(mac)
-                    stack.members.append(mem)
+        stack_table = TableBuilder('stack', self.snmp_bulk(o.STACK))
+        for _oid, _val in stack_table.table:
+            oid = str(_oid)
+            if oid.startswith(f"{o.STACK_NUM}."):
+                idx = oid.split('.')[14]
+                # Get info on this stack member and add to the list
+                mem = StackMemberData()
+                mem.num = _val
+                role_num = stack_table.search(
+                    f"{o.STACK_ROLE}.{idx}",
+                    item_type='oid',
+                    return_type='val',
+                )
+                for role in enumerate(stack_roles, start=1):
+                    if role_num == role[0]:
+                        mem.role = role[1]
+                if hasattr(mem, 'role'):
+                    continue
+                mem.pri = self.get_cached_item('stack',
+                                    f"{o.STACK_PRI}.{idx}")
+                mem.img = self.get_cached_item('stack',
+                                    f"{o.STACK_IMG}.{idx}")
+                mem.serial = self.get_cached_item('ent_serial',
+                                    f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+                mem.plat = self.get_cached_item('ent_plat',
+                                    f"{o.ENTPHYENTRY_PLAT}.{idx}")
+                mac = self.get_cached_item('stack', f"{o.STACK_MAC}.{idx}")
+                if mac:
+                    mem.mac = mac_hex_to_ascii(mac)
+                stack.members.append(mem)
         if len(stack.members) > 1:
             stack.enabled = True
             stack.count = len(stack.members)
@@ -839,7 +797,7 @@ class Node(BaseData):
                             f"{o.LLDP_DEVADDR}.{idx}",
                             return_both=True
                         )
-                        link.remote_ip = self.cidr_from_oid(rip_oid)
+                        link.remote_ip = self.get_cidr_from_oid(rip_oid)
                         rport = self.get_cached_item('lldp',
                                                      f"{o.LLDP_DEVPORT}.{idx}")
                         link.remote_port = normalize_port(rport)

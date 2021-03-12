@@ -12,13 +12,15 @@ from typing import Union, Any
 from nettopo.core.constants import ARP, DCODE, NODE
 from nettopo.core.exceptions import NettopoCacheError, NettopoSNMPError
 from nettopo.core.snmp import SNMP, SnmpHandler
-from nettopo.oids import Oids
+from nettopo.oids import Oids, CiscoOids, GeneralOids
 
 o = Oids()
+g = GeneralOids()
+c = CiscoOids()
 
 
-class Cache:
-    ''' Class that stores our SNMP calls
+class SnmpFactory:
+    ''' Factory Class that creates and stores our SNMP results
 
     :param:SNMP: Initialized SNMP object (required)
     :return: None

@@ -39,6 +39,7 @@ class GeneralOids:
     ifEntry = "1.3.6.1.2.1.2.2.1"
     ifIndex = "1.3.6.1.2.1.2.2.1.1"
     ifDescr = "1.3.6.1.2.1.2.2.1.2"
+    ifType = "1.3.6.1.2.1.2.2.1.3"
     ifMtu = "1.3.6.1.2.1.2.2.1.4"
     ifSpeed = "1.3.6.1.2.1.2.2.1.5"
     ifPhysAddress = "1.3.6.1.2.1.2.2.1.6"
@@ -46,6 +47,7 @@ class GeneralOids:
     ifOperStatus = "1.3.6.1.2.1.2.2.1.8"
     ifAlias = "1.3.6.1.2.1.31.1.1.1.18"
     # From IP-MIB
+    ipAdEntTable = "1.3.6.1.2.1.4.20.1"
     ipAdEntAddr = "1.3.6.1.2.1.4.20.1.1"
     ipAdEntIfIndex = "1.3.6.1.2.1.4.20.1.2"
     ipAdEntNetMask = "1.3.6.1.2.1.4.20.1.3"
@@ -153,6 +155,7 @@ class Oids:
     VPC_PEERLINK_IF: str = '1.3.6.1.4.1.9.9.807.1.4.1.1.2'
     VLANS: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.2'
     VLAN_DESC: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.4'
+    VLANS_NEW: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.4.1'
     VLAN_CAM: str = '1.3.6.1.2.1.17.4.3.1.1'
     BRIDGE_PORTNUMS: str = '1.3.6.1.2.1.17.4.3.1.2'
     IFINDEX: str = '1.3.6.1.2.1.17.1.4.1.2'

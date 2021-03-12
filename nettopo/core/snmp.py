@@ -7,6 +7,7 @@
 
 import json
 from queue import Queue
+import re
 from threading import Thread
 from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
@@ -31,7 +32,12 @@ from nettopo.core.constants import (
     DCODE,
     NODE,
 )
-from nettopo.snmp.utils import return_pretty_val, return_snmptype_val
+from nettopo.core.exceptions import NettopoSNMPError
+from nettopo.snmp.utils import (
+    return_pretty_val,
+    return_snmptype_val,
+)
+from nettopo.core.util import oid_last_token
 from nettopo.oids import Oids
 o = Oids()
 
@@ -461,4 +467,83 @@ def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)
+
+
+class TableBuilder:
+    def __init__(self, name: str, data: list) -> None:
+        self.name = name
+        self.raw_data = data
+        self.table = []
+        self._build_table(self.raw_data)
+
+    def __str__(self) -> str:
+        return str(self.name)
+
+    def __repr__(self) -> str:
+        return f"[TableBuilder] <{self.name}>"
+
+    def __len__(self) -> int:
+        return len(self.table)
+
+    def _add_to_table(self, thing: Union[tuple, list]) -> None:
+        if isinstance(thing, list):
+            for item in thing:
+                if item not in self.table:
+                    self.table.append(item)
+        else:
+            if thing not in self.table:
+                self.table.append(thing)
+
+    def _build_table(self, data) -> None:
+        if len(self.table):
+            raise NettopoSNMPError(f"{self.name} has been built")
+        for row in data:
+            for oid, val in row:
+                value = return_pretty_val(val)
+                entry = (oid, value)
+                self._add_to_table(entry)
+
+    def index_table(self, index: Union[int, str], strip_oids: bool=True) -> List[tuple]:
+        results = []
+        for oid, val in self.table:
+            if oid_last_token(oid) == index:
+                if strip_oids:
+                    oid_no_idx = '.'.join(str(oid).split('.')[:-1])
+                    results.append((oid_no_idx, val))
+                else:
+                    results.append((oid, val))
+        return results
+
+    def search(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        item_type: str='oid',
+        return_type: str=None,
+    ) -> list:
+        """ Always returns a list. User must handle single item lists.
+        """
+        results = []
+        for oid, val in self.table:
+            if item_type == 'oid':
+                # Oid matching is string based
+                item = str(item)
+                # Use regex to ensure we do not match ending digit
+                # like '1' to '10', '100', etc.
+                item_re = re.compile(item + r'(?!\d)')
+                # Match re with oid
+                if item_re.match(str(oid)):
+                    results.append((oid, val))
+            elif item_type == 'val':
+                if item == val:
+                    results.append((oid, val))
+            else:
+                raise NettopoSNMPError(f"Wrong item_type {item_type}")
+        if return_type:
+            if return_type == 'oid':
+                results = [oid for oid, _ in results]
+            elif return_type == 'val':
+                results = [val for _, val in results]
+            else:
+                raise NettopoSNMPError(f"Wrong return_type {return_type}")
+        return results
 

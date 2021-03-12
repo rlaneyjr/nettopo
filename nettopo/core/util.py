@@ -50,6 +50,7 @@ __all__ = [
     'is_ipv4_address',
     'return_pretty_val',
     'return_snmptype_val',
+    'bits_2_megabytes',
 ]
 
 
@@ -107,6 +108,10 @@ def in_cidr(ip, cidr):
         + (int(o[3]))
     )
     return ((cidr_ip & cidr_mb) == (ip & cidr_mb))
+
+
+def bits_2_megabytes(bits_per_sec) -> int:
+    return int(bits_per_sec) / 8000000
 
 
 def normalize_host(host: Union[str, list], domains: list=None):
@@ -324,6 +329,13 @@ def oid_last_token(objectId):
     oid = objectId.getOid()
     idx = len(oid) - 1
     return oid[idx]
+
+
+def strip_oid_index(oid, idx):
+    oid = oid.getOid()
+    if oid_last_token(objectId) == idx:
+        return oid[:-1]
+    return oid
 
 
 def is_ipv4_address(value):
