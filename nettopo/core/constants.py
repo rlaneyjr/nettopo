@@ -38,7 +38,7 @@ __all__ = [
     'int_admin_status',
 ]
 
-NOTHING = [None, '0.0.0.0', 'UNKNOWN', '']
+NOTHING = (None, '0.0.0.0', 'UNKNOWN', '')
 VALID_VERSIONS = ('2', '2c', '3')
 VALID_V3_LEVELS = ('authNoPriv', 'authPriv')
 VALID_INTEGRITY_ALGO = ('md5', 'sha')

@@ -10,9 +10,10 @@ import sys
 from typing import Union
 
 from nettopo.core.exceptions import NettopoConfigError
+from nettopo.core.util import SingletonDecorator
 
 
-default_config = {
+DEFAULT_CONFIG = {
     "snmp": [
         {"community": "private", "ver": 2},
         {"community": "public", "ver": 2}
@@ -25,7 +26,6 @@ default_config = {
         "permit ip 10.0.0.0/8",
         "permit ip 172.16.0.0/12",
         "permit ip 192.168.0.0/16",
-        "permit ip 0.0.0.0/32"
     ],
     "diagram": {
         "node_text_size": 10,
@@ -53,67 +53,65 @@ class DiagramDefaults:
     group_vpc = True
 
 
+@SingletonDecorator
 class Config:
-    def __init__(self):
+    def __init__(self, config=None, filename=None):
+        # Load defaults then override with custom
+        self.config = DEFAULT_CONFIG
         self.host_domains = []
         self.snmp_creds = []
         self.diagram = DiagramDefaults()
         self.acl = {'permit': [], 'deny': []}
+        self.load(config=config, filename=filename)
 
-
-    def load(self, config=None, filename=None):
-        # Load defaults then override with custom
-        json_config = default_config
-        if config:
-            json_config.update(**config)
-        if filename:
-            json_data = self.load_json(filename)
-            json_config.update(**json_data)
-        creds = [cred['community'] for cred in json_config['snmp']]
-        self.snmp_creds.extend(creds)
-        domains = [domain for domain in json_config['domains']]
-        self.host_domains.extend(domains)
-        for line in json_config['discover']:
-            if line.startswith('permit'):
-                net = IPNetwork(line.split(' ip ')[1])
+    def add_acl_line(self, line: str) -> None:
+        if line.startswith('#'):
+            return
+        elif line.startswith('permit'):
+            net = IPNetwork(line.split(' ip ')[1])
+            if net not in self.acl['permit']:
                 self.acl['permit'].append(net)
-            elif line.startswith('deny'):
-                net = IPNetwork(line.split(' ip ')[1])
+        elif line.startswith('deny'):
+            net = IPNetwork(line.split(' ip ')[1])
+            if net not in self.acl['deny']:
                 self.acl['deny'].append(net)
-            elif line.startswith('#'):
-                continue
-            else:
-                raise NettopoConfigError(
-                    f"Line in discover ACL has no permit or deny: {line}")
+        else:
+            raise NettopoConfigError(f"ACl line has no permit or deny {line}")
 
+    def sync_config(self) -> None:
+        for cred in self.config['snmp']:
+            if cred['community'] not in self.snmp_creds:
+                self.snmp_creds.append(cred['community'])
+        for domain in self.config['domains']:
+            if domain not in self.host_domains:
+                self.host_domains.append(domain)
+        for line in self.config['discover']:
+            self.add_acl_line(line)
 
     def load_json(self, json_file):
         with open(json_file) as jf:
             json_data = json.load(jf)
         return json_data
 
-
-    def add_creds(self, creds: Union[str, list]=None) -> None:
-        if isinstance(creds, list):
-            for cred in creds:
-                self.snmp_creds.append(cred)
-        else:
-            self.snmp_creds.append(creds)
-
+    def load(self, config=None, filename=None):
+        if config:
+            self.config.update(**config)
+        if filename:
+            json_data = self.load_json(filename)
+            self.config.update(**json_data)
+        self.sync_config()
 
     def ip_passes_acl(self, ip: str) -> bool:
         """ Check to see if this IP is allowed to be discovered
         """
-        # Check deny first
-        for denies in self.acl['deny']:
-            if ip in denies:
-                return False
-        for allows in self.acl['permit']:
-            if ip in allows:
+        # Check allow first
+        for allow_net in self.acl['permit']:
+            if ip in allow_net:
                 return True
-        else:
-            return False
-
+        for deny_net in self.acl['deny']:
+            if ip in deny_net:
+                return False
+        return False
 
     def net_passes_acl(self, net: Union[str, IPNetwork]) -> bool:
         """ Check to see if this IP is allowed to be discovered

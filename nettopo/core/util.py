@@ -29,6 +29,9 @@ from nettopo.core.exceptions import NettopoError, NettopoTypeError
 
 
 __all__ = [
+    'SingletonDecorator',
+    'Secret',
+    'show_secret',
     'build_uuid',
     'timethis',
     'bits_from_mask',
@@ -52,6 +55,38 @@ __all__ = [
     'return_snmptype_val',
     'bits_2_megabytes',
 ]
+
+
+class SingletonDecorator:
+    def __init__(self, klass):
+        self.klass = klass
+        self.instance = None
+
+    def __call__(self, *args, **kwds):
+        if self.instance == None:
+            self.instance = self.klass(*args, **kwds)
+        return self.instance
+
+
+class Secret:
+    def __init__(self, secret):
+        self.secret = secret
+
+    def __str__(self):
+        return "******"
+
+    def __repr__(self):
+        return "******"
+
+    def show(self):
+        return self.secret
+
+
+def show_secret(item: Any) -> str:
+    if isinstance(item, Secret):
+        return item.show()
+    else:
+        return item
 
 
 def build_uuid():

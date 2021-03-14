@@ -21,6 +21,7 @@ __all__ = [
     'VLANData',
     'ARPData',
     'MACData',
+    'InterfaceData',
 ]
 
 
@@ -29,12 +30,11 @@ class BaseData:
     Provides:
     :property:  show - Show the items_2_show
     """
+    _ignores = ['_', 'get', 'add', 'actions', 'cache', 'que', 'snmp', 'show']
     def _as_dict(self) -> dict:
-        _ignores = ['_', 'get', 'add', 'actions', 'cache',
-                    'que', 'snmp', 'show']
         _dict = {}
         for item in dir(self):
-            if not any([item.startswith(x) for x in _ignores]):
+            if not any([item.startswith(x) for x in self._ignores]):
                 val = getattr(self, item)
                 _dict.update({item: val})
         return _dict
@@ -65,6 +65,7 @@ class BaseData:
 
 
 class LinkData(BaseData):
+    items_2_show = ['local_port', 'remote_name', 'remote_port']
     def __init__(self):
         self.node = None
         self.link_type = None
@@ -89,7 +90,6 @@ class LinkData(BaseData):
         self.remote_ios = None
         self.remote_mac = None
         self.discovered_proto = None
-        self.items_2_show = ['local_port', 'remote_name', 'remote_port']
 
 
 class VssData(BaseData):
@@ -114,6 +114,7 @@ class StackData(BaseData):
 
 
 class StackMemberData(BaseData):
+    items_2_show = ['num', 'role', 'serial']
     def __init__(self):
         self.num = 0
         self.role = None
@@ -122,14 +123,7 @@ class StackMemberData(BaseData):
         self.img = None
         self.serial = None
         self.plat = None
-        self.items_2_show = ['num', 'role', 'serial']
-
-
-class IntData(BaseData):
-    def __init__(self, idx, name, cidrs):
-        self.idx = idx
-        self.name = name
-        self.cidrs = cidrs
+        self.ios = None
 
 
 class EntData(BaseData):
@@ -176,4 +170,30 @@ class MACData(BaseData):
         self.vlan = int(vlan)
         self.mac = mac
         self.port = port
+
+class InterfaceData(BaseData):
+    items_2_show = ['idx', 'name', 'cidrs', 'mac', 'oper_status']
+    def __init__(
+        self,
+        idx: int,
+        name: str,
+        name_long: str,
+        mtu: int,
+        media: str,
+        speed: int,
+        mac: str,
+        cidrs: list,
+        admin_status: str,
+        oper_status: str,
+    ):
+        self.idx = idx
+        self.name = name
+        self.name_long = name_long
+        self.mtu = mtu
+        self.media = media
+        self.speed = speed
+        self.mac = mac
+        self.cidrs = cidrs
+        self.admin_status = admin_status
+        self.oper_status = oper_status
 
