@@ -21,10 +21,10 @@ from pysnmp.proto.rfc1902 import (
 )
 import re
 from timeit import default_timer as timer
-from typing import Union
+from typing import Any, Union
 import uuid
 # My Stuff
-from nettopo.core.constants import TYPES
+from nettopo.core.constants import SNMP_TYPES, port_conversion_table
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
 
 
@@ -54,6 +54,8 @@ __all__ = [
     'return_pretty_val',
     'return_snmptype_val',
     'bits_2_megabytes',
+    'oid_endswith',
+    'get_oid_index',
 ]
 
 
@@ -146,7 +148,9 @@ def in_cidr(ip, cidr):
 
 
 def bits_2_megabytes(bits_per_sec) -> int:
-    return int(bits_per_sec) / 8000000
+    if not isinstance(bits_per_sec, int):
+        bits_per_sec = int(bits_per_sec)
+    return bits_per_sec / 8000000
 
 
 def normalize_host(host: Union[str, list], domains: list=None):
@@ -179,20 +183,11 @@ def normalize_host(host: Union[str, list], domains: list=None):
 
 def normalize_port(port: str=None):
     if not port:
-        return 'Unknown'
+        port = 'Unknown'
     else:
-        port = port.replace('TenGigabitEthernet', 'te')
-        port = port.replace('GigabitEthernet', 'gi')
-        port = port.replace('FastEthernet', 'fa')
-        port = port.replace('port-channel', 'po')
-        port = port.replace('Loopback', 'lo')
-        port = port.replace('Vlan', 'vl')
-        port = port.replace('Te', 'te')
-        port = port.replace('Gi', 'gi')
-        port = port.replace('Fa', 'fa')
-        port = port.replace('Lo', 'lo')
-        port = port.replace('Po', 'po')
-        port = port.replace('Vl', 'vl')
+        for key, val in port_conversion_table.items():
+            if port.startswith(key):
+                port = port.replace(key, val)
     return port
 
 
@@ -360,17 +355,10 @@ def lookup_table(table, item):
     return None
 
 
-def oid_last_token(objectId):
-    oid = objectId.getOid()
+def oid_last_token(object_id):
+    oid = object_id.getOid()
     idx = len(oid) - 1
     return oid[idx]
-
-
-def strip_oid_index(oid, idx):
-    oid = oid.getOid()
-    if oid_last_token(objectId) == idx:
-        return oid[:-1]
-    return oid
 
 
 def is_ipv4_address(value):
@@ -452,4 +440,27 @@ def snmp_extract(snmp_data, data_type='val'):
             return snmp_data[0][1].prettyPrint()
         elif data_type == 'oid':
             return snmp_data[0][0].getOid()
+
+
+def get_oid_index(oid: Union[str, object], idx: int=-1) -> int:
+    """ Accepts 'oid' and integer 'idx' representing the index.
+    returns:int: The value found for index as integer.
+    """
+    if not isinstance(oid, str):
+        oid = str(oid)
+    oid_num = oid.split('.')[idx]
+    return int(oid_num)
+
+
+def oid_endswith(oid: Union[str, object], item: Union[str, int]) -> bool:
+    if not isinstance(oid, str):
+        oid = str(oid)
+    if not isinstance(item, str):
+        item = str(item)
+    if '.' in item:
+        num_items = len(item.split('.'))
+        oid_item = '.'.join(oid.split('.')[-num_items:])
+    else:
+        oid_item = str(get_oid_index(oid))
+    return item == oid_item
 

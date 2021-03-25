@@ -11,7 +11,7 @@ import re
 from threading import Thread
 from pysnmp.hlapi import *
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from typing import Union, Dict, List, Any
+from typing import Union, Dict, List, Any, Iterable
 try:
     from netaddr import IPAddress
 except:
@@ -23,17 +23,12 @@ from nettopo.core.constants import (
     VALID_V3_LEVELS,
     VALID_INTEGRITY_ALGO,
     VALID_PRIVACY_ALGO,
-    TYPES,
     INTEGRITY_ALGO,
     PRIVACY_ALGO,
-    RETCODE,
-    ENTPHYCLASS,
-    ARP,
-    DCODE,
-    NODE,
 )
 from nettopo.core.exceptions import NettopoSNMPError
 from nettopo.core.config import Config
+from nettopo.core.util import oid_endswith
 from nettopo.snmp.utils import (
     return_pretty_val,
     return_snmptype_val,
@@ -44,24 +39,134 @@ DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
                     ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)))
 
 # Typing shortcuts
-DLS = Union[dict, list, str]
-DLSN = Union[dict, list, str, None]
-IP = Union[str, IPAddress]
+_UDLS = Union[dict, list, str]
+_IP = Union[str, IPAddress]
+
+
+class SNMPValue:
+    def __init__(self, oid: object, data: Union[list, str],
+                 time_taken: object, is_error=False) -> None:
+        self.oid = oid
+        self.duration = time_taken.duration
+        self.name = str(oid)
+        self.value = None
+        if is_error:
+            raise NettopoSNMPError(f"[SNMPValue] ERROR: {data}")
+        else:
+            self._process_data(data)
+
+    def __str__(self) -> str:
+        return self.value or self.name
+
+    def __repr__(self) -> str:
+        return f"[SNMPValue] <{self.name}>"
+
+    def _process_data(self, data) -> None:
+        if self.value:
+            raise NettopoSNMPError(f"Value exists for {self.name}")
+        self.raw_data = data
+        # Single entry indicates single oid
+        if len(data) == 1:
+            self.value = data[0][1].prettyPrint()
+        elif len(data) > 1:
+            raise NettopoSNMPError(f"SNMPValue {len(data)} items, \
+                                   use SNMPTable for multiple items")
+
+
+class SNMPTable:
+    def __init__(self, oid: Any, data: Union[list, str],
+                 time_taken, is_error=False) -> None:
+        self.oid = oid
+        self.duration = time_taken.duration
+        self.name = str(oid)
+        self.value = None
+        self.table = {}
+        if is_error:
+            raise NettopoSNMPError(data)
+        else:
+            self._process_data(data)
+
+    def __str__(self) -> str:
+        return self.value or self.name
+
+    def __repr__(self) -> str:
+        return f"[SNMPTable] <{self.name}>"
+
+    def __len__(self) -> int:
+        return len(self.table)
+
+    def _process_data(self, data) -> None:
+        if self.table:
+            raise NettopoSNMPError(f"Table exists for {self.name}")
+        self.raw_data = data
+        for row in data:
+            for oid, val in row:
+                oid = str(oid)
+                if oid.startswith(self.name):
+                    self.table.update({oid: val.prettyPrint()})
+
+    def index_table(
+        self,
+        index: Union[int, str],
+    ) -> dict:
+        results = {}
+        for oid, val in self.table.items():
+            if oid_endswith(oid, index):
+                results.update({oid: val})
+        return results
+
+    def search(
+        self,
+        item: Union[int, str, ObjectIdentity],
+        item_type: str='oid',
+        return_type: str=None,
+    ) -> Union[dict, list]:
+        """ Returns a dict unless 'return_type' specified which returns a list.
+        User must handle single item lists.
+        """
+        results = {}
+        for oid, val in self.table.items():
+            if item_type == 'oid':
+                # Oid matching is string based
+                # Use regex to ensure we do not match ending digit
+                # like '1' to '10', '100', etc.
+                item_re = re.compile(str(item) + r'(?!\d)')
+                # Match re with oid
+                if item_re.match(oid):
+                    results.update({oid: val})
+            elif item_type == 'val':
+                if isinstance(item, int) and item == int(val):
+                    results.update({oid: val})
+                elif item == val:
+                    results.update({oid: val})
+            else:
+                raise NettopoSNMPError(f"Wrong item_type {item_type}")
+        if return_type:
+            if return_type == 'oid':
+                return [o for o in results.keys()]
+            elif return_type == 'val':
+                return [v for v in results.values()]
+            else:
+                raise NettopoSNMPError(f"Wrong return_type {return_type}")
+        return results
 
 
 class SNMP:
-    def __init__(self, ip: IP='0.0.0.0', port: int=161, **kwargs) -> None:
+    def __init__(self, ip: _IP, port: int=161, **kwargs) -> None:
         self.ip = str(ip) if isinstance(ip, IPAddress) else ip
         self.port = port
         self.success = False
         self.community = None
         self.vulnerable = False
+        self.config = Config()
         if kwargs and 'community' in kwargs.keys():
-            self.check_creds(kwargs.get('community'))
-        self.check_creds(DEFAULT_COMMS)
-        if self.success:
+            if self.check_creds(kwargs.get('community')):
+                return
+        if self.check_creds(self.config.snmp_creds):
+            return
+        if self.check_creds(DEFAULT_COMMS):
             self.vulnerable = True
-
+            return
 
     def check_community(self, community: str) -> bool:
         cmdGen = cmdgen.CommandGenerator()
@@ -76,8 +181,7 @@ class SNMP:
             self.community = community
         return self.success
 
-
-    def check_creds(self, snmp_creds: DLS) -> bool:
+    def check_creds(self, snmp_creds: _UDLS) -> bool:
         if isinstance(snmp_creds, str):
             if self.check_community(snmp_creds):
                 return True
@@ -94,8 +198,7 @@ class SNMP:
                 return True
         return False
 
-
-    def get_val(self, oid):
+    def get_val(self, oid) -> SNMPValue:
         with about_time() as t_total:
             cmdGen = cmdgen.CommandGenerator()
             errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
@@ -104,13 +207,12 @@ class SNMP:
                 oid,
             )
         if errIndication:
-            print(f"[E] get_snmp_val({self.community}): {errIndication}\n{errStatus}")
-            return None, t_total
+            error = f"SNMP({self.ip}): {errIndication}\n{errStatus}"
+            return SNMPValue(oid, error, t_total, is_error=True)
         else:
-            return varBinds[0][1].prettyPrint(), t_total
+            return SNMPValue(oid, varBinds, t_total)
 
-
-    def get_bulk(self, oid, build_table: bool=True) -> Union[list, None]:
+    def get_bulk(self, oid) -> SNMPTable:
         with about_time() as t_total:
             cmdGen = cmdgen.CommandGenerator()
             errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
@@ -123,109 +225,14 @@ class SNMP:
                 0, 50, oid,
             )
         if errIndication:
-            print(f"[E] get_snmp_bulk({self.community}): {errIndication}\n{errStatus}")
-            return None, t_total
-        elif build_table:
-            return ResultsTable(oid, varBindTable, t_total)
+            error = f"SNMP({self.ip}): {errIndication}\n{errStatus}"
+            return SNMPTable(oid, error, t_total, is_error=True)
         else:
-            ret = []
-            for r in varBindTable:
-                for n, v in r:
-                    if str(n).startswith(oid):
-                        ret.append(r)
-            return ret, t_total
-
-
-class ResultsTable:
-    def __init__(self, oid: Any, data: list, time_taken=None) -> None:
-        self.time_taken = time_taken
-        self.name = str(oid)
-        self.raw_data = data
-        self.table = []
-        self._build_table(self.raw_data)
-
-    def __str__(self) -> str:
-        return self.name
-
-    def __repr__(self) -> str:
-        return f"[ResultsTable] <{self.name}>"
-
-    def __len__(self) -> int:
-        return len(self.table)
-
-    def _add_to_table(self, thing: Union[tuple, list]) -> None:
-        if isinstance(thing, list):
-            for item in thing:
-                if item not in self.table:
-                    self.table.append(item)
-        else:
-            if thing not in self.table:
-                self.table.append(thing)
-
-    def _build_table(self, data) -> None:
-        if len(self.table):
-            raise NettopoSNMPError("ResultsTable has been built")
-        for row in data:
-            for _oid, _val in row:
-                oid = str(_oid)
-                if oid.startswith(self.name):
-                    value = _val.prettyPrint()
-                    entry = (oid, value)
-                    self._add_to_table(entry)
-
-    def index_table(self, index: Union[int, str], strip_oids: bool=True) -> List[tuple]:
-        results = []
-        for oid, val in self.table:
-            oid_index = oid.split('.')[-1:][0]
-            if isinstance(index, int):
-                oid_index = int(oid_index)
-            if oid_index == index:
-                if strip_oids:
-                    oid = '.'.join(oid.split('.')[:-1])
-                results.append((oid, val))
-        return results
-
-    def search(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        item_type: str='oid',
-        return_type: str=None,
-    ) -> list:
-        """ Always returns a list. User must handle single item lists.
-        """
-        results = []
-        for oid, val in self.table:
-            if item_type == 'oid':
-                # Oid matching is string based
-                item = str(item)
-                # Use regex to ensure we do not match ending digit
-                # like '1' to '10', '100', etc.
-                item_re = re.compile(item + r'(?!\d)')
-                # Match re with oid
-                if item_re.match(oid):
-                    results.append((oid, val))
-            elif item_type == 'val':
-                if isinstance(item, int) and item == int(val):
-                    results.append((oid, val))
-                elif isinstance(item, str) and item == str(val):
-                    results.append((oid, val))
-                elif item == val:
-                    results.append((oid, val))
-            else:
-                raise NettopoSNMPError(f"Wrong item_type {item_type}")
-        if return_type:
-            if return_type == 'oid':
-                results = [o for o, _ in results]
-            elif return_type == 'val':
-                results = [v for _, v in results]
-            else:
-                raise NettopoSNMPError(f"Wrong return_type {return_type}")
-        return results
+            return SNMPTable(oid, varBindTable, t_total)
 
 
 class SnmpHandler:
-
-    def __init__(self, ip: IP, **kwargs) -> None:
+    def __init__(self, ip: _IP, **kwargs) -> None:
         self.ip = ip
         self.port = 161
         self.timeout = 10
@@ -251,7 +258,6 @@ class SnmpHandler:
             timeout=self.timeout,
             retries=self.retries
         )
-
 
     def _parse_args(self, **kwargs):
         for key in kwargs.keys():
@@ -296,7 +302,6 @@ class SnmpHandler:
             if key == 'privkey':
                 self.privkey = kwargs[key]
 
-
     def _build_auth(self) -> None:
         if self.version not in VALID_VERSIONS:
             raise ArgumentError('No valid SNMP version defined')
@@ -332,7 +337,6 @@ class SnmpHandler:
                     privProtocol=PRIVACY_ALGO[self.privacy])
             self.check_auth(snmp_auth)
 
-
     def check_auth(self, snmp_auth) -> bool:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
@@ -350,8 +354,7 @@ class SnmpHandler:
             self.snmp_auth = snmp_auth
         return self.success
 
-
-    def find_v2_creds(self, snmp_creds: DLS) -> bool:
+    def find_v2_creds(self, snmp_creds: _UDLS) -> bool:
         if isinstance(snmp_creds, str):
             snmp_auth = cmdgen.CommunityData(snmp_creds)
             if self.check_auth(snmp_auth):
@@ -367,7 +370,6 @@ class SnmpHandler:
                     if self.check_auth(snmp_auth):
                         return True
         return False
-
 
     def get(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
@@ -385,7 +387,6 @@ class SnmpHandler:
                                     return_pretty_val(value)])
         return pretty_varbinds
 
-
     def get_val(self, oid):
         cmdGen = cmdgen.CommandGenerator()
         errorIndication, errorStatus, errorIndex, varBinds = cmdGen.getCmd(
@@ -400,7 +401,6 @@ class SnmpHandler:
         if value is any((o.ERR, o.ERR_INST)):
             return None
         return value
-
 
     def get_bulk(self, oid) -> Union[list, None]:
         cmdGen = cmdgen.CommandGenerator()
@@ -418,7 +418,6 @@ class SnmpHandler:
                         pretty_table.append([name.prettyPrint(),
                                              return_pretty_val(value)])
             return pretty_table
-
 
     def getnext(self, *oidlist):
         cmdGen = cmdgen.CommandGenerator()
@@ -438,7 +437,6 @@ class SnmpHandler:
                                         return_pretty_val(value)])
             pretty_vartable.append(pretty_varbinds)
         return pretty_vartable
-
 
     def set(self, oid=None, value=None, value_type=None, multi=None):
         if multi is None:
@@ -478,7 +476,6 @@ class Worker(Thread):
         self.setDaemon(True)
         self.start()
 
-
     def run(self):
         while True:
             authData, transportTarget, varBinds = self.requests.get()
@@ -501,13 +498,10 @@ class ThreadPool:
         for _ in range(num_threads):
             Worker(self.requests, self.responses)
 
-
     def addRequest(self, authData, transportTarget, varBinds):
         self.requests.put((authData, transportTarget, varBinds))
 
-
     def getResponses(self): return self.responses
-
 
     def waitCompletion(self):
         if hasattr(self.requests, 'join'):
@@ -543,84 +537,3 @@ def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)
-
-
-class TableBuilder:
-    def __init__(self, name: str, data: list) -> None:
-        self.name = name
-        self.raw_data = data
-        self.table = []
-        self._build_table(self.raw_data)
-
-    def __str__(self) -> str:
-        return str(self.name)
-
-    def __repr__(self) -> str:
-        return f"[TableBuilder] <{self.name}>"
-
-    def __len__(self) -> int:
-        return len(self.table)
-
-    def _add_to_table(self, thing: Union[tuple, list]) -> None:
-        if isinstance(thing, list):
-            for item in thing:
-                if item not in self.table:
-                    self.table.append(item)
-        else:
-            if thing not in self.table:
-                self.table.append(thing)
-
-    def _build_table(self, data) -> None:
-        if len(self.table):
-            raise NettopoSNMPError(f"{self.name} has been built")
-        for row in data:
-            for oid, val in row:
-                value = return_pretty_val(val)
-                entry = (oid, value)
-                self._add_to_table(entry)
-
-    def index_table(self, index: Union[int, str], strip_oids: bool=True) -> List[tuple]:
-        results = []
-        for oid, val in self.table:
-            oid_idx = str(oid).split('.')[-1:][0]
-            if oid_idx == str(index):
-                if strip_oids:
-                    oid_no_idx = '.'.join(str(oid).split('.')[:-1])
-                    results.append((oid_no_idx, val))
-                else:
-                    results.append((oid, val))
-        return results
-
-    def search(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        item_type: str='oid',
-        return_type: str=None,
-    ) -> list:
-        """ Always returns a list. User must handle single item lists.
-        """
-        results = []
-        for oid, val in self.table:
-            if item_type == 'oid':
-                # Oid matching is string based
-                item = str(item)
-                # Use regex to ensure we do not match ending digit
-                # like '1' to '10', '100', etc.
-                item_re = re.compile(item + r'(?!\d)')
-                # Match re with oid
-                if item_re.match(str(oid)):
-                    results.append((oid, val))
-            elif item_type == 'val':
-                if item == val:
-                    results.append((oid, val))
-            else:
-                raise NettopoSNMPError(f"Wrong item_type {item_type}")
-        if return_type:
-            if return_type == 'oid':
-                results = [oid for oid, _ in results]
-            elif return_type == 'val':
-                results = [val for _, val in results]
-            else:
-                raise NettopoSNMPError(f"Wrong return_type {return_type}")
-        return results
-

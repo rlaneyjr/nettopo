@@ -167,3 +167,23 @@ class Oids:
     ARP_TYPE: str = '1.3.6.1.2.1.4.22.1.4'
     ERR: str = 'No Such Object currently exists at this OID'
     ERR_INST: str = 'No Such Instance currently exists at this OID'
+    """ New Stuff
+    """
+    # MIB-2 interfaces
+    NEW_SYSDESC: str = '1.3.6.1.2.1.1'
+    # LLDP-MIB
+    NEW_LLDP_MIB: str = '1.0.8802.1.1.2'
+    # LLDP-MIB - Remote systems table
+    NEW_LLDP: str = '1.0.8802.1.1.2.1.4.1'
+    NEW_NUM_OF_INTERFACES: str = '1.3.6.1.2.1.2.1.0'
+    NEW_INTERFACES_TABLE: str = '1.3.6.1.2.1.2.2'
+    # 64-bit Octets in counter
+    NEW_ifHCInOctets: str = '1.3.6.1.2.1.31.1.1.1.6'
+    # 64-bit Octets out counter
+    NEW_ifHCOutOctets: str = '1.3.6.1.2.1.31.1.1.1.10'
+    # 64-bit Packets in counter
+    NEW_ifHCInUcastPkts: str = '1.3.6.1.2.1.31.1.1.1.7'
+    # 64-bit Packets out counter
+    NEW_ifHCOutUcastPkts: str = '1.3.6.1.2.1.31.1.1.1.11'
+    # An estimate of the interface's current bandwidth in units of 1Mbps
+    NEW_ifHighSpeed: str = '1.3.6.1.2.1.31.1.1.1.15'

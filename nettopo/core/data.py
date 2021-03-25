@@ -28,7 +28,7 @@ __all__ = [
 class BaseData:
     """ Base Data class that all other classes inherit from
     Provides:
-    :property:  show - Show the items_2_show
+    :property:  show - Show the show_items
     """
     _ignores = ['_', 'get', 'add', 'actions', 'cache', 'que', 'snmp', 'show']
     def _as_dict(self) -> dict:
@@ -42,8 +42,8 @@ class BaseData:
     @property
     def show(self) -> dict:
         _dict = {}
-        if hasattr(self, 'items_2_show'):
-            show_items = self.items_2_show
+        if hasattr(self, 'show_items'):
+            show_items = self.show_items
         else:
             show_items = self._as_dict().keys()
         for item in show_items:
@@ -64,32 +64,76 @@ class BaseData:
         return f"<{items}>"
 
 
-class LinkData(BaseData):
-    items_2_show = ['local_port', 'remote_name', 'remote_port']
+class InterfaceData(BaseData):
+    show_items = ['idx', 'name', 'cidrs', 'mac', 'oper_status']
     def __init__(self):
+        self.idx = None
+        self.name = None
+        self.media = None
+        self.mac = None
+        self.cidrs = None
+        self.admin_status = None
+        self.oper_status = None
+
+    @property
+    def ip(self) -> str:
+        if self.cidrs:
+            ips = self.cidrs
+            if len(ips) > 1:
+                ips.sort()
+            ip = ips[0]
+            if '/' in ip:
+                return ip.split('/')[0]
+            else:
+                return ip
+
+
+class LinkData(BaseData):
+    show_items = ['local_port', 'remote_name', 'remote_port']
+    def __init__(self):
+        self.discovered_proto = None
         self.node = None
         self.link_type = None
-        self.remote_ip = None
-        self.remote_name = None
         self.vlan = None
+        self.local_interface = None
+        self.local_port = None
+        self.local_if_ip = None
         self.local_native_vlan = None
         self.local_allowed_vlans = None
-        self.remote_native_vlan = None
-        self.remote_allowed_vlans = None
-        self.local_port = None
+        self.local_lag = None
+        self.local_lag_ips = None
+        self.remote_ip = None
+        self.remote_name = None
         self.remote_port = None
         self.remote_port_desc = None
-        self.local_lag = None
+        self.remote_interface = None
+        self.remote_native_vlan = None
+        self.remote_allowed_vlans = None
         self.remote_lag = None
-        self.local_lag_ips = None
         self.remote_lag_ips = None
-        self.local_if_ip = None
         self.remote_if_ip = None
         self.remote_desc = None
+        self.remote_os = None
+        self.remote_model = None
+        self.remote_vendor = None
+        self.remote_version = None
         self.remote_platform = None
         self.remote_ios = None
         self.remote_mac = None
-        self.discovered_proto = None
+
+    def add_local_interface(self, interface: InterfaceData) -> None:
+        if self.local_interface:
+            raise NettopoDataError(f"Local interface exists for {self}")
+        self.local_interface = interface
+        self.local_port = interface.name
+        self.local_if_ip = interface.ip
+
+    def add_remote_interface(self, interface: InterfaceData) -> None:
+        if self.remote_interface:
+            raise NettopoDataError(f"Remote interface exists for {self}")
+        self.remote_interface = interface
+        self.remote_port = interface.name
+        self.remote_if_ip = interface.ip
 
 
 class VssData(BaseData):
@@ -114,7 +158,7 @@ class StackData(BaseData):
 
 
 class StackMemberData(BaseData):
-    items_2_show = ['num', 'role', 'serial']
+    show_items = ['num', 'role', 'serial']
     def __init__(self):
         self.num = 0
         self.role = None
@@ -170,30 +214,3 @@ class MACData(BaseData):
         self.vlan = int(vlan)
         self.mac = mac
         self.port = port
-
-class InterfaceData(BaseData):
-    items_2_show = ['idx', 'name', 'cidrs', 'mac', 'oper_status']
-    def __init__(
-        self,
-        idx: int,
-        name: str,
-        name_long: str,
-        mtu: int,
-        media: str,
-        speed: int,
-        mac: str,
-        cidrs: list,
-        admin_status: str,
-        oper_status: str,
-    ):
-        self.idx = idx
-        self.name = name
-        self.name_long = name_long
-        self.mtu = mtu
-        self.media = media
-        self.speed = speed
-        self.mac = mac
-        self.cidrs = cidrs
-        self.admin_status = admin_status
-        self.oper_status = oper_status
-

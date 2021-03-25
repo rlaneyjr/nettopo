@@ -25,14 +25,18 @@ __all__ = [
     'VALID_V3_LEVELS',
     'VALID_INTEGRITY_ALGO',
     'VALID_PRIVACY_ALGO',
-    'TYPES',
+    'RESERVED_VLANS',
+    'SNMP_TYPES',
     'INTEGRITY_ALGO',
     'PRIVACY_ALGO',
     'RETCODE',
-    'ENTPHYCLASS',
-    'ARP',
     'DCODE',
     'NODE',
+    'port_conversion_table',
+    'retcode_type',
+    'node_type',
+    'arp_type',
+    'entphyclass_type',
     'int_oper_status',
     'int_type',
     'int_admin_status',
@@ -43,8 +47,9 @@ VALID_VERSIONS = ('2', '2c', '3')
 VALID_V3_LEVELS = ('authNoPriv', 'authPriv')
 VALID_INTEGRITY_ALGO = ('md5', 'sha')
 VALID_PRIVACY_ALGO = ('des', '3des', 'aes', 'aes192', 'aes256')
+RESERVED_VLANS = [1002, 1003, 1004, 1005]
 
-TYPES = {
+SNMP_TYPES = {
     'Counter32': Counter32,
     'Counter64': Counter64,
     'Gauge32': Gauge32,
@@ -76,36 +81,10 @@ class RETCODE:
     ERR: int = 2
     SYNTAXERR: int = 3
 
-
 class NODE:
     KNOWN: int = 1
     NEW: int = 2
     NEWIP: int = 3
-
-
-class ARP:
-    # ARP TYPES
-    OTHER: int = 1
-    INVALID: int = 2
-    DYNAMIC: int = 3
-    STATIC: int = 4
-
-
-class ENTPHYCLASS:
-    # OID_ENTPHYENTRY_CLASS values
-    OTHER: int = 1
-    UNKNOWN: int = 2
-    CHASSIS: int = 3
-    BACKPLANE: int = 4
-    CONTAINER: int = 5
-    POWERSUPPLY: int = 6
-    FAN: int = 7
-    SENSOR: int = 8
-    MODULE: int = 9
-    PORT: int = 10
-    STACK: int = 11
-    PDU: int = 12
-
 
 class DCODE:
     ROOT: int = 0x01
@@ -124,6 +103,58 @@ class DCODE:
     LLDP_STR: str = '[lldp]'
     INCLUDE_STR: str = 'i'
     LEAF_STR: str = 'L'
+
+
+port_conversion_table = {
+    'TenGigabitEthernet': 'te',
+    'GigabitEthernet': 'gi',
+    'FastEthernet': 'fa',
+    'Port-channel': 'po',
+    'Loopback': 'lo',
+    'Vlan': 'vl',
+    'Te': 'te',
+    'Gi': 'gi',
+    'Fa': 'fa',
+    'Lo': 'lo',
+    'Po': 'po',
+    'Vl': 'vl',
+}
+
+# return codes
+retcode_type = {
+    1: 'ok',
+    2: 'error',
+    3: 'syntaxerror',
+}
+
+node_type = {
+    1: 'known',
+    2: 'new',
+    3: 'newip',
+}
+
+arp_type = {
+    0: 'unknown',
+    1: 'other',
+    2: 'invalid',
+    3: 'dynamic',
+    4: 'static',
+}
+
+entphyclass_type = {
+    1: 'other',
+    2: 'unknown',
+    3: 'chassis',
+    4: 'backplane',
+    5: 'container',
+    6: 'powersupply',
+    7: 'fan',
+    8: 'sensor',
+    9: 'module',
+    10: 'port',
+    11: 'stack',
+    12: 'pdu',
+}
 
 # http://www.net-snmp.org/docs/mibs/interfaces.html#PhysAddress
 int_admin_status = {
