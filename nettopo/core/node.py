@@ -62,6 +62,8 @@ from nettopo.core.util import (
     bits_2_megabytes,
     get_oid_index,
     oid_endswith,
+    is_same_link,
+    injest_link,
 )
 from nettopo.oids import Oids, CiscoOids, GeneralOids
 
@@ -138,6 +140,25 @@ class Node(BaseData):
             return False
         else:
             return True
+
+    @staticmethod
+    def _link_ios(ios, link: LinkData) -> LinkData:
+        if ios.startswith('0x'):
+            try:
+                ios = binascii.unhexlify(ios[2:])
+            except:
+                pass
+        try:
+            sys = sysdescrparser(ios)
+            link.remote_os = sys.os
+            link.remote_model = sys.model
+            link.remote_vendor = sys.vendor
+            link.remote_version = sys.version
+        except:
+            pass
+        link.remote_desc = ios
+        link.remote_ios = format_ios_ver(ios)
+        return link
 
     def use_vlan_community(self, vlan: _UIS) -> _USN:
         original_community = self.snmp.community
@@ -246,11 +267,7 @@ class Node(BaseData):
             # LLDP neighbors
             self.lldp = self.get_lldp()
             bar()
-            # Combine CDP and LLDP to create links
-            self.links = self.cdp.copy()
-            for link in self.lldp:
-                if link not in self.links:
-                    self.links.append(link)
+            self.links = self.create_links()
             bar()
             # Routing
             snmp_router = self.snmp_get(o.IP_ROUTING)
@@ -282,6 +299,23 @@ class Node(BaseData):
                 if self._has_value(snmp_hsrp_vip):
                     self.hsrp_vip = snmp_hsrp_vip.value
                 bar()
+
+    def create_links(self) -> List[LinkData]:
+        # Combine CDP and LLDP to create links
+        links = self.cdp.copy()
+        for cdp in links:
+            for lldp in self.lldp:
+                if is_same_link(cdp, lldp):
+                    # Remove CDP
+                    links.remove(cdp)
+                    # Combine
+                    link = injest_link(cdp, lldp)
+                    links.append(link)
+        # Add LLDP
+        for lldp in self.lldp:
+            if lldp.local_port not in [l.local_port for l in links]:
+                links.append(lldp)
+        return links
 
     def find_interface(self, item: _UIS, name: str=None) -> InterfaceData:
         if not name:
@@ -397,18 +431,24 @@ class Node(BaseData):
         for if_entry in if_entries:
             idx = int(if_entry)
             idx_table = self.if_table.index_table(idx)
-            if_name_long = idx_table.get(f"{g.ifDescr}.{idx}")
+            if_name = idx_table.get(f"{g.ifDescr}.{idx}")
             # Skip unrouted VLAN ports and Stack ports
-            if if_name_long.startswith(('unrouted', 'Null', 'Stack')):
+            if if_name.startswith(('unrouted', 'Null', 'Stack')):
                 continue
+            if_mac = idx_table.get(f"{g.ifPhysAddress}.{idx}")
+            mac = mac_hex_to_ascii(if_mac)
+            # Skip interfaces we do not have a MAC.
+            # Such as previously stacked switches.
+            if mac == '0000.0000.0000':
+                continue
+            # We have an interface let's build
             interface = InterfaceData()
             interface.idx = idx
+            interface.name = normalize_port(if_name)
+            interface.mac = mac
             interface.cidrs = self.lookup_cidr_index(idx)
-            interface.name = normalize_port(if_name_long)
             if_type = idx_table.get(f"{g.ifType}.{idx}")
-            interface.type = int_type.get(int(if_type))
-            if_mac = idx_table.get(f"{g.ifPhysAddress}.{idx}")
-            interface.mac = mac_hex_to_ascii(if_mac)
+            interface.media = int_type.get(int(if_type))
             if_admin_status = idx_table.get(f"{g.ifAdminStatus}.{idx}")
             interface.admin_status = int_admin_status.get(int(if_admin_status))
             if_oper_status = idx_table.get(f"{g.ifOperStatus}.{idx}")
@@ -661,25 +701,6 @@ class Node(BaseData):
         vlan = self.snmp_get(f"{o.IF_VLAN}.{ifidx}")
         if self._has_value(vlan):
             link.vlan = vlan.value
-        return link
-
-    @staticmethod
-    def _link_ios(ios, link: LinkData) -> LinkData:
-        if ios.startswith('0x'):
-            try:
-                ios = binascii.unhexlify(ios[2:])
-            except:
-                    pass
-        try:
-            sys = sysdescrparser(ios)
-            link.remote_os = sys.os
-            link.remote_model = sys.model
-            link.remote_vendor = sys.vendor
-            link.remote_version = sys.version
-        except:
-            pass
-        link.remote_desc = ios
-        link.remote_ios = format_ios_ver(ios)
         return link
 
     def get_cdp(self) -> List[LinkData]:

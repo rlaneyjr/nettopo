@@ -24,6 +24,7 @@ from timeit import default_timer as timer
 from typing import Any, Union
 import uuid
 # My Stuff
+from nettopo.core.data import LinkData
 from nettopo.core.constants import SNMP_TYPES, port_conversion_table
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
 
@@ -56,6 +57,8 @@ __all__ = [
     'bits_2_megabytes',
     'oid_endswith',
     'get_oid_index',
+    'is_same_link',
+    'injest_link',
 ]
 
 
@@ -463,4 +466,25 @@ def oid_endswith(oid: Union[str, object], item: Union[str, int]) -> bool:
     else:
         oid_item = str(get_oid_index(oid))
     return item == oid_item
+
+
+def is_same_link(link_a: LinkData, link_b: LinkData) -> bool:
+    # Make sure different protocols were used
+    if (link_a.discovered_proto != link_b.discovered_proto) \
+            and (link_a.local_port == link_b.local_port) \
+            and ((link_a.remote_name == link_b.remote_name) \
+            or (link_a.remote_port == link_b.remote_port)):
+        return True
+    return False
+
+
+def injest_link(link_a: LinkData, link_b: LinkData) -> LinkData:
+    # No need to check since it's expensive we only do once.
+    #if self.is_same_link(link):
+    link_a.discovered_proto = 'both'
+    for key, val in link_b.__dict__.items():
+        # Replace items we do not have
+        if val and not getattr(link_a, key):
+            setattr(link_a, key, val)
+    return link_a
 

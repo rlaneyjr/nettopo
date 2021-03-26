@@ -65,7 +65,7 @@ class BaseData:
 
 
 class InterfaceData(BaseData):
-    show_items = ['idx', 'name', 'cidrs', 'mac', 'oper_status']
+    show_items = ['name', 'cidrs', 'mac', 'oper_status']
     def __init__(self):
         self.idx = None
         self.name = None
@@ -87,12 +87,18 @@ class InterfaceData(BaseData):
             else:
                 return ip
 
+    def __str__(self) -> str:
+        return self.name
+
+    def __repr__(self) -> str:
+        return self.idx
+
 
 class LinkData(BaseData):
     show_items = ['local_port', 'remote_name', 'remote_port']
-    def __init__(self):
-        self.discovered_proto = None
+    def __init__(self) -> None:
         self.node = None
+        self.discovered_proto = None
         self.link_type = None
         self.vlan = None
         self.local_interface = None

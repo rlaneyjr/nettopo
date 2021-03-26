@@ -14,14 +14,20 @@ from nettopo.core.data import BaseData
 
 
 class Network(BaseData):
-    def __init__(self, conf=Config()):
+    def __init__(self, conf: Config=None):
         self.max_depth = 100
         self.root_node = None
         self.nodes = []
-        self.num_nodes = len(self.nodes)
-        self.config = conf
+        if conf:
+            self.config = conf
+        else:
+            self.config = Config()
         self.verbose = True
         self.items_2_show = ['root_node', 'num_nodes']
+
+    @property
+    def num_nodes(self) -> int:
+        return len(self.nodes)
 
 
     def _print(self, stuff: str) -> None:
