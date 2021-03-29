@@ -29,6 +29,7 @@ from nettopo.core.constants import (
 )
 from nettopo.core.data import (
     BaseData,
+    DataTable,
     LinkData,
     VssData,
     VssMemberData,
@@ -48,7 +49,7 @@ from nettopo.core.snmp import SNMP
 from nettopo.core.util import (
     timethis,
     bits_from_mask,
-    # normalize_host,
+    normalize_host,
     normalize_port,
     ip_2_str,
     ip_from_cidr,
@@ -62,8 +63,6 @@ from nettopo.core.util import (
     bits_2_megabytes,
     get_oid_index,
     oid_endswith,
-    is_same_link,
-    injest_link,
 )
 from nettopo.oids import Oids, CiscoOids, GeneralOids
 
@@ -85,9 +84,9 @@ config_handler.set_global(theme='smooth')
 
 
 class Node(BaseData):
-    def __init__(self, ip: str, immediate_query: bool=False) -> None:
+    def __init__(self, ip: str, immediate_query: bool=False, **kwargs) -> None:
         self.ip = ip
-        self.snmp = SNMP(self.ip)
+        self.snmp = SNMP(self.ip, **kwargs)
         self.queried = False
         self.show_items = ['name', 'ip', 'plat', 'ios', 'serial',
                            'router', 'vss', 'stack']
@@ -125,14 +124,6 @@ class Node(BaseData):
             self.query_node()
 
     @staticmethod
-    def _split_name(name: str) -> str:
-        split_name = name.split('.')
-        if len(split_name) == 3:
-            return split_name[0]
-        else:
-            return name
-
-    @staticmethod
     def _has_value(thing: Any) -> bool:
         if not hasattr(thing, 'value'):
             return False
@@ -148,6 +139,9 @@ class Node(BaseData):
                 ios = binascii.unhexlify(ios[2:])
             except:
                 pass
+        if isinstance(ios, bytes):
+            ios = ios.decode('utf-8')
+        link.remote_desc = ios
         try:
             sys = sysdescrparser(ios)
             link.remote_os = sys.os
@@ -156,7 +150,6 @@ class Node(BaseData):
             link.remote_version = sys.version
         except:
             pass
-        link.remote_desc = ios
         link.remote_ios = format_ios_ver(ios)
         return link
 
@@ -168,12 +161,8 @@ class Node(BaseData):
         else:
             raise NettopoSNMPError(f"ERROR: {community} failed {self.ip}")
 
-    def snmp_get(
-        self,
-        item: _UISO,
-        is_bulk: bool=False,
-        vlan: _UIS=None,
-    ) -> _UAN:
+    def snmp_get(self, item: _UISO, is_bulk: bool=False,
+                                vlan: _UIS=None) -> _UAN:
         results = None
         error = False
         if vlan:
@@ -202,7 +191,7 @@ class Node(BaseData):
             self.queried = True
             snmp_name = self.snmp_get(o.SYSNAME)
             if self._has_value(snmp_name):
-                self.name = self._split_name(snmp_name.value)
+                self.name = normalize_host(snmp_name.value)
             bar()
             # Description
             snmp_descr = self.snmp_get(o.SYSDESC)
@@ -305,12 +294,13 @@ class Node(BaseData):
         links = self.cdp.copy()
         for cdp in links:
             for lldp in self.lldp:
-                if is_same_link(cdp, lldp):
+                if cdp.is_same_link(lldp):
                     # Remove CDP
                     links.remove(cdp)
-                    # Combine
-                    link = injest_link(cdp, lldp)
-                    links.append(link)
+                    # Injest lldp
+                    cdp.injest_link(lldp)
+                    # Add CDP back
+                    links.append(cdp)
         # Add LLDP
         for lldp in self.lldp:
             if lldp.local_port not in [l.local_port for l in links]:
@@ -352,7 +342,7 @@ class Node(BaseData):
 
     def get_ifname_index(self, idx: int,
                               normalize: bool=True) -> _USN:
-        # Look in interfaces first if available
+        # Look in interfaces first
         if self.interfaces:
             interface = self.find_interface(idx, 'idx')
             if interface:
@@ -467,14 +457,14 @@ class Node(BaseData):
         ips.sort()
         return ips
 
-    def get_ent_from_index(self, idx: str) -> Any:
-        serial = self.snmp_get(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
-        sv = serial.value if self._has_value(serial) else None
-        plat = self.snmp_get(f"{o.ENTPHYENTRY_PLAT}.{idx}")
-        pv = plat.value if self._has_value(plat) else None
-        ios = self.snmp_get(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
-        iv = ios.value if self._has_value(ios) else None
-        return sv, pv, iv
+    def get_ent_from_index(self, idx: int):
+        snmp_serial = self.snmp_get(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
+        serial = snmp_serial.value if self._has_value(snmp_serial) else None
+        snmp_plat = self.snmp_get(f"{o.ENTPHYENTRY_PLAT}.{idx}")
+        plat = snmp_plat.value if self._has_value(snmp_plat) else None
+        snmp_ios = self.snmp_get(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+        ios = snmp_ios.value if self._has_value(snmp_ios) else None
+        return serial, plat, ios
 
     def build_ent_from_oid(self, oid, ent_snmp) -> _UEN:
         idx = get_oid_index(oid, 12)
@@ -486,8 +476,8 @@ class Node(BaseData):
                                         return_type='oid')
             if mod_oids:
                 for mod_oid in mod_oids:
-                    idx = get_oid_index(mod_oid, 12)
-                    mod_ios = self.snmp_get(f"{o.ENTPHYENTRY_SOFTWARE}.{idx}")
+                    mod_idx = get_oid_index(mod_oid, 12)
+                    mod_ios = self.snmp_get(f"{o.ENTPHYENTRY_SOFTWARE}.{mod_idx}")
                     if self._has_value(mod_ios):
                         ios = mod_ios.value
                         break
@@ -497,15 +487,14 @@ class Node(BaseData):
 
     def get_ent(self) -> _UEN:
         # TODO: IOS is incorrect for IOS-XE at least.
-        results = []
         ent_snmp = self.snmp_get(o.ENTPHYENTRY_CLASS, is_bulk=True)
         # Search chassis '3'
         chs_oids = ent_snmp.search('3', item_type='val', return_type='oid')
         if chs_oids:
             for chs_oid in chs_oids:
                 ent = self.build_ent_from_oid(chs_oid, ent_snmp)
-                results.append(ent)
-        return results
+                if ent:
+                    return ent
 
     def get_loopbacks(self) -> List[InterfaceData]:
         return [entry for entry in self.interfaces \
@@ -622,25 +611,33 @@ class Node(BaseData):
         cam_snmp = self.snmp_get(o.VLAN_CAM, is_bulk=True, vlan=vlan)
         if not cam_snmp.table:
             return macs
-        portnum_snmp = self.snmp_get(o.BRIDGE_PORTNUMS, is_bulk=True, vlan=vlan)
-        ifindex_snmp = self.snmp_get(o.IFINDEX, is_bulk=True, vlan=vlan)
+        # portnum_snmp = self.snmp_get(o.BRIDGE_PORTNUMS, is_bulk=True, vlan=vlan)
+        # ifindex_snmp = self.snmp_get(o.IFINDEX, is_bulk=True, vlan=vlan)
         for oid, val in cam_snmp.table.items():
             # find the interface index
             idx = '.'.join(oid.split('.')[11:])
-            bridge_portnum = portnum_snmp.table.get(
-                f"{o.BRIDGE_PORTNUMS}.{idx}",
-            )
-            # get the interface index and description
-            try:
-                ifidx = ifindex_snmp.table.get(
-                    f"{o.IFINDEX}.{bridge_portnum}",
-                )
-                port = self.get_ifname_index(int(ifidx))
-            except TypeError:
-                port = 'local'
-            finally:
-                port = port or 'local'
             mac_addr = mac_hex_to_ascii(val)
+            # Check interfaces for MAC first
+            port_int = self.find_interface(mac_addr, 'mac')
+            port = port_int.name if port_int else None
+            if not port:
+                try:
+                    bridge_portnum = self.snmp_get(
+                        f"{o.BRIDGE_PORTNUMS}.{idx}",
+                        vlan=vlan,
+                    )
+                    if self._has_value(bridge_portnum):
+                        ifidx = self.snmp_get(
+                            f"{o.IFINDEX}.{bridge_portnum.value}",
+                            vlan=vlan,
+                        )
+                        if self._has_value(ifidx):
+                            port = self.get_ifname_index(int(ifidx.value))
+                except TypeError:
+                    pass
+                finally:
+                    if not port:
+                        port = 'local'
             entry = MACData(vlan, mac_addr, port)
             macs.append(entry)
         return macs
@@ -651,9 +648,9 @@ class Node(BaseData):
         mac_table = []
         # Grab CAM table for each VLAN
         for item in self.vlans:
-            vmacs = self.get_macs_for_vlan(item.vid)
-            if vmacs:
-                mac_table.extend(vmacs)
+            macs = self.get_macs_for_vlan(item.vid)
+            if macs:
+                mac_table.extend(macs)
         return mac_table
 
     def get_link(self, ifidx: int, link: LinkData=None) -> LinkData:
@@ -734,7 +731,7 @@ class Node(BaseData):
         for oid, name in cdp_devnames.items():
             link = LinkData()
             link.discovered_proto = 'cdp'
-            link.remote_name = self._split_name(name)
+            link.remote_name = normalize_host(name)
             idx1 = get_oid_index(oid, 14)
             idx2 = get_oid_index(oid, 15)
             idx = ".".join([str(idx1), str(idx2)])
@@ -742,6 +739,10 @@ class Node(BaseData):
             # get remote IP
             rip = cdp.table.get(f"{_cdp_ipaddr}.{idx}")
             link.remote_ip = ip_2_str(rip) or "N/A"
+            # Lookup MAC with IP from arp_table
+            for arp in self.arp_table:
+                if arp.arp_type == 'dynamic' and arp.ip == link.remote_ip:
+                    link.remote_mac = arp.mac
             # get remote port
             rport = cdp.table.get(f"{_cdp_devport}.{idx}")
             link.remote_port = normalize_port(rport)
@@ -782,24 +783,24 @@ class Node(BaseData):
         for oid, name in lld_dev_names.items():
             link = LinkData()
             link.discovered_proto = 'lldp'
-            link.remote_name = self._split_name(name)
+            link.remote_name = normalize_host(name)
             idx1 = get_oid_index(oid, -2)
             idx2 = get_oid_index(oid, -1)
             idx = ".".join(oid.split('.')[-2:])
             lldp_port = lldp.table.get(f"{_lldp_port_name}.{idx1}")
-            if lldp_port:
-                local_port = normalize_port(lldp_port)
-                interface = self.find_interface(local_port, 'name')
-                if interface:
-                    link.add_local_interface(interface)
+            link.local_port = normalize_port(lldp_port)
             link = self.get_link(idx1, link)
             rip_oid = f"{_lldp_devaddr}.{idx}"
             link.remote_ip = self.get_cidr_from_oid(rip_oid)
+            # Lookup MAC with IP from arp_table
+            for arp in self.arp_table:
+                if arp.arp_type == 'dynamic' and arp.ip == link.remote_ip:
+                    link.remote_mac = arp.mac
             rport = lldp.table.get(f"{_lldp_devport}.{idx}")
             link.remote_port = normalize_port(rport)
             link.remote_port_desc = lldp.table.get(f"{_lldp_devpdsc}.{idx}")
-            devid = lldp.table.get(f"{_lldp_devid}.{idx}")
-            link.remote_mac = mac_hex_to_ascii(devid)
+            # devid = lldp.table.get(f"{_lldp_devid}.{idx}")
+            # link.remote_mac = mac_hex_to_ascii(devid)
             rios_bytes = lldp.table.get(f"{_lldp_remote_descr}.{idx}")
             link = self._link_ios(rios_bytes, link)
             neighbors.append(link)

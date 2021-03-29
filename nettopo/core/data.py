@@ -7,10 +7,12 @@ Description:        data.py
 Author:             Ricky Laney
 Version:            0.1.1
 '''
-from typing import Any, List
+from typing import Any, List, NamedTuple
 
 __all__ = [
     'BaseData',
+    'RandomData',
+    'DataTable',
     'LinkData',
     'VssData',
     'VssMemberData',
@@ -30,38 +32,50 @@ class BaseData:
     Provides:
     :property:  show - Show the show_items
     """
-    _ignores = ['_', 'get', 'add', 'actions', 'cache', 'que', 'snmp', 'show']
-    def _as_dict(self) -> dict:
-        _dict = {}
-        for item in dir(self):
-            if not any([item.startswith(x) for x in self._ignores]):
-                val = getattr(self, item)
-                _dict.update({item: val})
-        return _dict
+    # _ignores = ['_', 'get', 'add', 'actions', 'cache', 'que', 'snmp', 'show']
+    # if not any([key.startswith(x) for x in self._ignores]):
+    def _as_dict(self, keys: list=None) -> dict:
+        if keys:
+            _dict = {}
+            for key, val in self.__dict__.items():
+                if key in keys:
+                    _dict.update({key: val})
+            return _dict
+        else:
+            return self.__dict__
 
     @property
     def show(self) -> dict:
-        _dict = {}
         if hasattr(self, 'show_items'):
-            show_items = self.show_items
+            return self._as_dict(self.show_items)
         else:
-            show_items = self._as_dict().keys()
-        for item in show_items:
-            if hasattr(self, item):
-                val = getattr(self, item)
-            else:
-                show_items.remove(item)
-            _dict.update({item: val})
-        return _dict
+            return self._as_dict()
 
     def __str__(self) -> str:
         items = [f"{key} = {val}" for key, val in self.show.items()]
-        return  "\n".join(items)
+        return "\n".join(items)
 
     def __repr__(self):
         items = [f"{key}={val}" for key, val in self.show.items()]
         items = ",".join(items)
-        return f"<{items}>"
+        return f"{self.__class__.__name__}<{items}>"
+
+
+class RandomData(BaseData):
+    def __init__(self, name: str, data: dict):
+        self._name = name
+        self._data = data
+        self.make_nt()
+
+    def make_nt(self) -> None:
+        _nt_temp = {}
+        for key in self._data.keys():
+            _nt_temp.update({key: type(key)})
+        self.NT = NamedTuple(self._name, **_nt_temp)
+        self.nt = self.NT(self._data)
+
+    def __getattr__(self, attr):
+        return getattr(self.nt, attr)
 
 
 class InterfaceData(BaseData):
@@ -87,11 +101,46 @@ class InterfaceData(BaseData):
             else:
                 return ip
 
+
+class DataTable:
+    def __init__(self, data: List[object]) -> None:
+        self._data = data
+        self._name = self._data[0].__class__.__name__
+
     def __str__(self) -> str:
-        return self.name
+        return str(self._data)
 
     def __repr__(self) -> str:
-        return self.idx
+        return f"[DataTable]{self._name} - {len(self)} items"
+
+    def __len__(self) -> int:
+        return len(self._data)
+
+    def columns(self, name) -> list:
+        _columns = []
+        for item in self._data:
+            if hasattr(item, name):
+                value = getattr(item, name)
+                if value:
+                    _columns.append(value)
+        return _columns
+
+    def rows(self, key, value) -> list:
+        _rows = []
+        for row in self._data:
+            if hasattr(row, key):
+                if getattr(row, key) == value:
+                    _rows.append(row)
+            else:
+                raise AttributeError(f"{self._name} missing attribute {key}")
+        return _rows
+
+    def __getattr__(self, attr) -> list:
+        # Only called for missing attributes
+        return self.columns(attr)
+
+    def row(self, key, value) -> object:
+        return self.rows(key, value)[0]
 
 
 class LinkData(BaseData):
@@ -140,6 +189,24 @@ class LinkData(BaseData):
         self.remote_interface = interface
         self.remote_port = interface.name
         self.remote_if_ip = interface.ip
+
+    def is_same_link(self, link: LinkData) -> bool:
+        # Make sure different protocols were used
+        if (self.discovered_proto != link.discovered_proto) \
+                and (self.local_port == link.local_port) \
+                and ((self.remote_name == link.remote_name) \
+                     or (self.remote_port == link.remote_port)):
+            return True
+        return False
+
+    def injest_link(self, link: LinkData) -> None:
+        # No need to check since it's expensive we only do once.
+        #if self.is_same_link(link):
+        self.discovered_proto = 'both'
+        for key, val in link.__dict__.items():
+            # Replace items we do not have
+            if val and not getattr(self, key):
+                setattr(self, key, val)
 
 
 class VssData(BaseData):

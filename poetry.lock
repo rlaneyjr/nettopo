@@ -172,6 +172,14 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "n2g"
+version = "0.1.2"
+description = "Need To Graph"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "netaddr"
 version = "0.8.0"
 description = "A network address manipulation library for Python"
@@ -431,7 +439,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "af5caf7e34c7a905ec2401f143489ad59d27b47d51901816e0d1cb9eccfc2812"
+content-hash = "751a0e2382aefc7a7644497bac74e05575a3306d3477852ecca81dc7106d2d7f"
 
 [metadata.files]
 about-time = [
@@ -546,6 +554,9 @@ markupsafe = [
 mypy-extensions = [
     {file = "mypy_extensions-0.4.3-py2.py3-none-any.whl", hash = "sha256:090fedd75945a69ae91ce1303b5824f428daf5a028d2f6ab8a299250a846f15d"},
     {file = "mypy_extensions-0.4.3.tar.gz", hash = "sha256:2d82818f5bb3e369420cb3c4060a7970edba416647068eb4c5343488a6c604a8"},
+]
+n2g = [
+    {file = "N2G-0.1.2.tar.gz", hash = "sha256:673e8c8c4417e4d70de099fdfa2cdbc7bc893f7712d47c3484c9a83df7785d57"},
 ]
 netaddr = [
     {file = "netaddr-0.8.0-py2.py3-none-any.whl", hash = "sha256:9666d0232c32d2656e5e5f8d735f58fd6c7457ce52fc21c98d45f2af78f990ac"},

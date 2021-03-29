@@ -5,7 +5,6 @@
         network.py
 """
 from timeit import default_timer as timer
-from nettopo.core.config import Config
 from nettopo.core.exceptions import NettopoNetworkError
 from nettopo.core.util import in_acl, str_matches_pattern, normalize_host
 from nettopo.core.node import Node
@@ -65,20 +64,9 @@ class Network(BaseData):
         else:
             print(f"Discovery of {ip} failed")
             return
-        # we may have missed chassis info
-        for n in self.nodes:
-            if not any([n.serial, n.plat, n.ios]):
-                n.actions.get_chassis_info = True
-                if not n.serial:
-                    n.actions.get_serial = True
-                if not n.ios:
-                    n.actions.get_ios = True
-                if not n.plat:
-                    n.actions.get_plat = True
-                n.query_node()
 
 
-    def discover_node(self, node, depth=None):
+    def discover_node(self, node: Node, depth=None):
         """ Given a node, recursively enumerate its adjacencies
         until we reach the specified depth (>0).
         Args:
@@ -87,12 +75,12 @@ class Network(BaseData):
         """
         if not depth:
             depth = self.max_depth
-        if depth > self.max_depth or node.queried:
+        if depth > self.max_depth:
             return
         # vmware ESX can report IP as 0.0.0.0
         # If we are allowing 0.0.0.0/32 in the config,
         # then we added it, but don't discover it
-        if node.ip[0] == '0.0.0.0' or not node.snmp.success:
+        if node.ip == '0.0.0.0' or not node.snmp.success:
             return
         # print some info to stdout
         dcodes = list(DCODE.STEP_INTO)
@@ -102,9 +90,7 @@ class Network(BaseData):
         # get the cached snmp credentials
         snmpobj = node.snmp
         # get list of neighbors
-        neighbors = []
-        neighbors.extend(node.get_cdp_neighbors())
-        neighbors.extend(node.get_lldp_neighbors())
+        neighbors = node.links
         for n in neighbors:
             # some neighbors may not advertise IP addresses - default them to 0.0.0.0
             if not n.remote_ip:
@@ -113,9 +99,8 @@ class Network(BaseData):
             # discover this node
             child, query_result = self.query_ip(n.remote_ip, n.remote_name)
             # if we couldn't pull info from SNMP fill in what we know
-            if not child.snmpobj.success:
-                child.name = normalize_host(n.remote_name,
-                                            self.config.host_domains)
+            if not child.snmp.success:
+                child.name = normalize_host(n.remote_name)
                 child.ip = n.remote_ip
                 dcodes.append(DCODE.ERR_SNMP)
             if query_result == NODE.NEW:
@@ -195,7 +180,7 @@ class Network(BaseData):
         NODE.NEWIP = Already knew about this node but not by this IP
         NODE.KNOWN = Already knew about this node
         """
-        host = normalize_host(hostname, self.config.host_domains)
+        host = normalize_host(hostname)
         node, node_updated = self.get_known_node(ip, host)
         if node:
             if node.queried:
@@ -206,7 +191,7 @@ class Network(BaseData):
             state = NODE.NEW
         # vmware ESX reports the IP as 0.0.0.0
         # LLDP can return an empty string for IPs.
-        if ip in NOTHING or not node.get_snmp_creds(self.config.snmp_creds):
+        if ip in NOTHING or not node.snmp.success:
             return node, state
         node.query_node()
         node.name = node.get_system_name(self.config.host_domains)
@@ -286,7 +271,7 @@ class Network(BaseData):
         self._print(f"{status:3s}")
         for i in range(0, depth):
             self._print(".")
-        name = normalize_host(name, self.config.host_domains)
+        name = normalize_host(name)
         self._print(f"{name} ({ip})")
 
 

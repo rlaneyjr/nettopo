@@ -39,12 +39,17 @@ DEFAULT_VARBINDS = (ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysName', 0)),
                     ObjectType(ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)))
 
 # Typing shortcuts
-_UDLS = Union[dict, list, str]
 _IP = Union[str, IPAddress]
+_UIS = Union[int, str]
+_UISO = Union[int, str, ObjectIdentity]
+_UDL = Union[dict, list]
+_UDLS = Union[dict, list, str]
+_ULN = Union[list, None]
+_ULS = Union[list, str]
 
 
 class SNMPValue:
-    def __init__(self, oid: object, data: Union[list, str],
+    def __init__(self, oid: object, data: _ULS,
                  time_taken: object, is_error=False) -> None:
         self.oid = oid
         self.duration = time_taken.duration
@@ -59,7 +64,7 @@ class SNMPValue:
         return self.value or self.name
 
     def __repr__(self) -> str:
-        return f"[SNMPValue] <{self.name}>"
+        return f"[SNMPValue] <{self.value}>"
 
     def _process_data(self, data) -> None:
         if self.value:
@@ -74,7 +79,7 @@ class SNMPValue:
 
 
 class SNMPTable:
-    def __init__(self, oid: Any, data: Union[list, str],
+    def __init__(self, oid: Any, data: _ULS,
                  time_taken, is_error=False) -> None:
         self.oid = oid
         self.duration = time_taken.duration
@@ -105,22 +110,15 @@ class SNMPTable:
                 if oid.startswith(self.name):
                     self.table.update({oid: val.prettyPrint()})
 
-    def index_table(
-        self,
-        index: Union[int, str],
-    ) -> dict:
+    def index_table(self, index: _UIS) -> dict:
         results = {}
         for oid, val in self.table.items():
             if oid_endswith(oid, index):
                 results.update({oid: val})
         return results
 
-    def search(
-        self,
-        item: Union[int, str, ObjectIdentity],
-        item_type: str='oid',
-        return_type: str=None,
-    ) -> Union[dict, list]:
+    def search(self, item: _UISO, item_type: str='oid',
+                        return_type: str=None) -> _UDL:
         """ Returns a dict unless 'return_type' specified which returns a list.
         User must handle single item lists.
         """
@@ -160,13 +158,14 @@ class SNMP:
         self.vulnerable = False
         self.config = Config()
         if kwargs and 'community' in kwargs.keys():
-            if self.check_creds(kwargs.get('community')):
-                return
-        if self.check_creds(self.config.snmp_creds):
-            return
-        if self.check_creds(DEFAULT_COMMS):
-            self.vulnerable = True
-            return
+            self.check_creds(kwargs.get('community'))
+        else:
+            self.check_creds(self.config.snmp_creds)
+        if not self.success:
+            if self.check_creds(DEFAULT_COMMS):
+                self.vulnerable = True
+            else:
+                raise NettopoSNMPError(f"Failed all SNMP creds - {self.ip}")
 
     def check_community(self, community: str) -> bool:
         cmdGen = cmdgen.CommandGenerator()
@@ -182,19 +181,17 @@ class SNMP:
         return self.success
 
     def check_creds(self, snmp_creds: _UDLS) -> bool:
-        if isinstance(snmp_creds, str):
-            if self.check_community(snmp_creds):
-                return True
-        elif isinstance(snmp_creds, list):
+        if isinstance(snmp_creds, list):
             for cred in snmp_creds:
                 if self.check_community(cred):
                     return True
-        elif isinstance(snmp_creds, dict) and \
-                'community' in snmp_creds.keys():
-            if self.check_community(snmp_creds.get('community')):
-                return True
+        elif isinstance(snmp_creds, dict):
+            for key, val in snmp_creds.items():
+                if key == 'community':
+                    if self.check_community(val):
+                        return True
         else:
-            if self.check_community(cred):
+            if self.check_community(snmp_creds):
                 return True
         return False
 
@@ -402,7 +399,7 @@ class SnmpHandler:
             return None
         return value
 
-    def get_bulk(self, oid) -> Union[list, None]:
+    def get_bulk(self, oid) -> _ULN:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
             self.snmp_auth,
@@ -537,3 +534,4 @@ def multi_node_bulk_query(hosts: List[Any], varBinds=DEFAULT_VARBINDS):
             for varBind in varBinds:
                 print(' = '.join([ x.prettyPrint() for x in varBind ]))
                 print('-'*100)
+

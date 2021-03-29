@@ -4,7 +4,6 @@
 '''
 constants.py
 '''
-from enum import Enum, auto
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.proto.rfc1902 import (
     Counter32,
@@ -106,18 +105,12 @@ class DCODE:
 
 
 port_conversion_table = {
-    'TenGigabitEthernet': 'te',
-    'GigabitEthernet': 'gi',
-    'FastEthernet': 'fa',
-    'Port-channel': 'po',
-    'Loopback': 'lo',
-    'Vlan': 'vl',
-    'Te': 'te',
-    'Gi': 'gi',
-    'Fa': 'fa',
-    'Lo': 'lo',
-    'Po': 'po',
-    'Vl': 'vl',
+    'TenGigabitEthernet': 'Te',
+    'GigabitEthernet': 'Gi',
+    'FastEthernet': 'Fa',
+    'Port-channel': 'Po',
+    'Loopback': 'Lo',
+    'Vlan': 'Vl',
 }
 
 # return codes
