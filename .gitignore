@@ -25,7 +25,6 @@ logs/*
 .DS_Store
 repos/*
 *_report.txt
-.python-version
 
 *Sample*.graphml
 *Example*.graphml
