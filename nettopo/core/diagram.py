@@ -10,7 +10,7 @@ from jinja2 import Template, Environment
 import os
 
 from nettopo.core.exceptions import NettopoDiagramError
-from nettopo.core.config import DiagramDefaults
+from nettopo.core.config import NettopoConfig
 from nettopo.core.network import Network
 from nettopo.core.templates import (
     node_template,
@@ -119,7 +119,7 @@ class DotNode:
 class Diagram:
     def __init__(self, network: Network) -> None:
         self.network = network
-        self.config = self.network.config.diagram or DiagramDefaults()
+        self.config = self.network.config.diagram or NettopoConfig().diagram
 
 
     def generate(self, dot_file, title):

@@ -7,25 +7,32 @@
 from netaddr import IPNetwork
 import json
 import sys
-from typing import Union
-
+from typing import Any, Union
 from nettopo.core.exceptions import NettopoConfigError
-from nettopo.core.util import SingletonDecorator
+from nettopo.core.util import is_ipv4_address
+
+__all__ = [
+    'SingletonDecorator',
+    'Secret',
+    'show_secret',
+    'DiagramDefaults',
+    'NettopoConfig',
+]
 
 
 DEFAULT_CONFIG = {
     "snmp": [
+        {"community": "letmeSNMP", "ver": 2},
         {"community": "private", "ver": 2},
         {"community": "public", "ver": 2}
     ],
     "domains": [
-        ".company.net",
-        ".company.com"
+        ".icloudmon.local",
     ],
     "discover": [
-        "permit ip 10.0.0.0/8",
-        "permit ip 172.16.0.0/12",
-        "permit ip 192.168.0.0/16",
+        "permit 10.0.0.0/8",
+        "permit 172.16.0.0/12",
+        "permit 192.168.0.0/16",
     ],
     "diagram": {
         "node_text_size": 10,
@@ -41,6 +48,39 @@ DEFAULT_CONFIG = {
 }
 
 
+class SingletonDecorator:
+    def __init__(self, klass):
+        self.klass = klass
+        self.instance = None
+
+    def __call__(self, *args, **kwds):
+        if self.instance == None:
+            self.instance = self.klass(*args, **kwds)
+        return self.instance
+
+
+class Secret:
+    def __init__(self, secret):
+        self._secret = secret
+
+    def __str__(self):
+        return "******"
+
+    def __repr__(self):
+        return "[Secret] - hidden"
+
+    @property
+    def _show(self):
+        return self._secret
+
+
+def show_secret(item: Any) -> str:
+    if isinstance(item, Secret):
+        return item._show
+    else:
+        return item
+
+
 class DiagramDefaults:
     node_text_size = 10
     link_text_size = 8
@@ -54,7 +94,7 @@ class DiagramDefaults:
 
 
 @SingletonDecorator
-class Config:
+class NettopoConfig:
     def __init__(self, config=None, filename=None):
         # Load defaults then override with custom
         self.config = DEFAULT_CONFIG
@@ -68,11 +108,11 @@ class Config:
         if line.startswith('#'):
             return
         elif line.startswith('permit'):
-            net = IPNetwork(line.split(' ip ')[1])
+            net = IPNetwork(line.split(' ')[1])
             if net not in self.acl['permit']:
                 self.acl['permit'].append(net)
         elif line.startswith('deny'):
-            net = IPNetwork(line.split(' ip ')[1])
+            net = IPNetwork(line.split(' ')[1])
             if net not in self.acl['deny']:
                 self.acl['deny'].append(net)
         else:
@@ -102,36 +142,43 @@ class Config:
         self.sync_config()
 
     def ip_passes_acl(self, ip: str) -> bool:
-        """ Check to see if this IP is allowed to be discovered
+        """ Is this IPv4 address allowed discovery?
         """
-        # Check allow first
-        for allow_net in self.acl['permit']:
-            if ip in allow_net:
-                return True
-        for deny_net in self.acl['deny']:
-            if ip in deny_net:
-                return False
+        if not is_ipv4_address(ip):
+            raise NettopoConfigError(f"Invalid IPv4 - {ip}")
+        # Check for host_wild first
+        _host_wild = IPNetwork("0.0.0.0/32")
+        if _host_wild in self.acl['permit']:
+            return True
+        elif _host_wild in self.acl['deny']:
+            return False
+        else:
+            for allow_net in self.acl['permit']:
+                if ip in allow_net:
+                    return True
+            for deny_net in self.acl['deny']:
+                if ip in deny_net:
+                    return False
+        # No match is deny
         return False
 
-    def net_passes_acl(self, net: Union[str, IPNetwork]) -> bool:
-        """ Check to see if this IP is allowed to be discovered
+    def passes_acl(self, net: Union[str, IPNetwork]) -> bool:
+        """ Is this IPv4 address or IPv4 network allowed discovery?
         """
         if '/' not in net:
             return self.ip_passes_acl(net)
         if not isinstance(net, IPNetwork):
             net = IPNetwork(net)
         if net.prefixlen == 32:
-            host_wild = IPNetwork("0.0.0.0/32")
-            if host_wild in self.acl['deny']:
-                return False
-            elif host_wild in self.acl['permit']:
-                return True
-            else:
                 ip = str(net).split('/')[0]
                 return self.ip_passes_acl(ip)
-        if net in self.acl['deny']:
-            return False
-        elif net in self.acl['permit']:
-            return True
         else:
-            return self.ip_passes_acl(net)
+            # Check allow first
+            for allow_net in self.acl['permit']:
+                if (net == allow_net) or (net in allow_net):
+                    return True
+            for deny_net in self.acl['deny']:
+                if (net == deny_net) or (net in deny_net):
+                    return False
+        # No match is deny
+        return False

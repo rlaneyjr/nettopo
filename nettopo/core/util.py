@@ -24,77 +24,9 @@ from timeit import default_timer as timer
 from typing import Any, Union
 import uuid
 # My Stuff
-from nettopo.core.config import Config
-from nettopo.core.constants import SNMP_TYPES, port_conversion_table
+from nettopo.core.constants import SNMP_TYPES, port_conversion_map
 from nettopo.core.data import LinkData
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
-
-
-__all__ = [
-    'config',
-    'SingletonDecorator',
-    'Secret',
-    'show_secret',
-    'build_uuid',
-    'timethis',
-    'strip_domain',
-    'bits_from_mask',
-    'in_cidr',
-    'normalize_host',
-    'normalize_port',
-    'ip_2_str',
-    'get_port_module',
-    'ip_from_cidr',
-    'get_path',
-    'format_ios_ver',
-    'mac_ascii_to_hex',
-    'mac_hex_to_ascii',
-    'parse_allowed_vlans',
-    'in_acl',
-    'str_matches_pattern',
-    'lookup_table',
-    'oid_last_token',
-    'is_ipv4_address',
-    'return_pretty_val',
-    'return_snmptype_val',
-    'bits_2_megabytes',
-    'oid_endswith',
-    'get_oid_index',
-]
-
-config = Config()
-
-
-class SingletonDecorator:
-    def __init__(self, klass):
-        self.klass = klass
-        self.instance = None
-
-    def __call__(self, *args, **kwds):
-        if self.instance == None:
-            self.instance = self.klass(*args, **kwds)
-        return self.instance
-
-
-class Secret:
-    def __init__(self, secret):
-        self.secret = secret
-
-    def __str__(self):
-        return "******"
-
-    def __repr__(self):
-        return "******"
-
-    def show(self):
-        return self.secret
-
-
-def show_secret(item: Any) -> str:
-    if isinstance(item, Secret):
-        return item.show()
-    else:
-        return item
 
 
 def build_uuid():
@@ -167,7 +99,7 @@ def bits_2_megabytes(bits_per_sec) -> int:
     return bits_per_sec / 8000000
 
 
-def normalize_host(host: str):
+def normalize_host(host: str, domains: Union[list, str]) -> str:
     # some devices (eg Motorola) report as hex strings
     if host.startswith('0x'):
         try:
@@ -181,7 +113,6 @@ def normalize_host(host: str):
         host = host.decode('utf-8')
     # Nexus appends (SERIAL) to hosts
     host = re.sub('\([^\(]*\)$', '', host)
-    domains = config.host_domains
     if domains:
         if isinstance(domains, list):
             for domain in domains:
@@ -203,7 +134,7 @@ def normalize_port(port: str=None):
     if not port:
         port = 'Unknown'
     else:
-        for key, val in port_conversion_table.items():
+        for key, val in port_conversion_map.items():
             if port.startswith(key):
                 port = port.replace(key, val)
     return port
@@ -343,20 +274,6 @@ def parse_allowed_vlans(allowed_vlans):
         else:
             ret += ',1001'
     return ret if ret else 'All'
-
-
-def in_acl(item, acl):
-        if acl == 'any':
-            return True
-        if not re.match('^([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]$', ip):
-            return False
-        try:
-            if ip in IPNetwork(cidr):
-                return True
-        except:
-            if in_cidr(ip, cidr):
-                return True
-        return False
 
 
 def str_matches_pattern(string, pattern):

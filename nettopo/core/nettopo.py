@@ -9,7 +9,7 @@ from glob import glob
 import re
 import sys
 
-from nettopo.core.config import Config
+from nettopo.core.config import NettopoConfig
 from nettopo.core.exceptions import NettopoError
 from nettopo.core.network import Network
 from nettopo.core.node import Node
@@ -21,7 +21,7 @@ class Nettopo:
     """ Core Nettopo class provides entrance to all Nettopo actions
     """
     def __init__(self, conf=None, conf_file=None):
-        self.config = Config()
+        self.config = NettopoConfig()
         if conf:
             self.config.load(config=conf)
         elif conf_file and os.path.isfile(conf_file):
@@ -139,7 +139,7 @@ class Nettopo:
 
 
     def get_node_ip(self, node: Node):
-        return node.get_ips()
+        return node.ip
 
 
     def get_switch_arp(self, switch_ip, *, ip=None, mac=None, interf=None, arp_type=None):

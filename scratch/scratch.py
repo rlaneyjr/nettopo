@@ -198,9 +198,9 @@ Out[25]: '1.3.6.1.4.1.9.9.46.1.3.1.1.4'
 In [26]: c_vlans = sw1.get_bulk('1.3.6.1.4.1.9.9.46.1.3.1.1')
 
 from nettopo.core.node import Node
-sw1 = Node('10.0.0.1')
+sw1 = Node('10.0.0.1', community='letmeSNMP')
 sw1.query_node()
-sw2 = Node('10.0.0.2')
+sw2 = Node('10.0.0.2', community='letmeSNMP')
 sw2.query_node()
 
 del sw1

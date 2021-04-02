@@ -1,0 +1,271 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<!--Created by yFiles for HTML 2.3.0.4-->
+<graphml xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://www.yworks.com/xml/schema/graphml.html/2.0/ygraphml.xsd " xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:demostyle="http://www.yworks.com/yFilesHTML/demos/FlatDemoStyle/1.0" xmlns:icon-style="http://www.yworks.com/yed-live/icon-style/1.0" xmlns:bpmn="http://www.yworks.com/xml/yfiles-bpmn/2.0" xmlns:demotablestyle="http://www.yworks.com/yFilesHTML/demos/FlatDemoTableStyle/1.0" xmlns:uml="http://www.yworks.com/yFilesHTML/demos/UMLDemoStyle/1.0" xmlns:GraphvizNodeStyle="http://www.yworks.com/yFilesHTML/graphviz-node-style/1.0" xmlns:VuejsNodeStyle="http://www.yworks.com/demos/yfiles-vuejs-node-style/1.0" xmlns:explorer-style="http://www.yworks.com/data-explorer/1.0" xmlns:y="http://www.yworks.com/xml/yfiles-common/3.0" xmlns:x="http://www.yworks.com/xml/yfiles-common/markup/3.0" xmlns:yjs="http://www.yworks.com/xml/yfiles-for-html/2.0/xaml" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance">
+    <key id="d0" for="node" attr.type="int" attr.name="zOrder" y:attr.uri="http://www.yworks.com/xml/yfiles-z-order/1.0/zOrder"/>
+    <key id="d1" for="node" attr.type="boolean" attr.name="Expanded" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/Expanded">
+        <default>true</default>
+    </key>
+    <key id="d2" for="node" attr.type="string" attr.name="url"/>
+    <key id="d3" for="node" attr.type="string" attr.name="description"/>
+    <key id="d4" for="node" attr.name="NodeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeLabels"/>
+    <key id="d5" for="node" attr.name="NodeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeGeometry"/>
+    <key id="d6" for="all" attr.name="UserTags" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/UserTags"/>
+    <key id="d7" for="node" attr.name="NodeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/NodeStyle"/>
+    <key id="d8" for="node" attr.name="NodeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/NodeViewState"/>
+    <key id="d9" for="edge" attr.type="string" attr.name="url"/>
+    <key id="d10" for="edge" attr.type="string" attr.name="description"/>
+    <key id="d11" for="edge" attr.name="EdgeLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeLabels"/>
+    <key id="d12" for="edge" attr.name="EdgeGeometry" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeGeometry"/>
+    <key id="d13" for="edge" attr.name="EdgeStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/EdgeStyle"/>
+    <key id="d14" for="edge" attr.name="EdgeViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/EdgeViewState"/>
+    <key id="d15" for="port" attr.name="PortLabels" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLabels"/>
+    <key id="d16" for="port" attr.name="PortLocationParameter" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortLocationParameter">
+        <default>
+            <x:Static Member="y:FreeNodePortLocationModel.NodeCenterAnchored"/>
+        </default>
+    </key>
+    <key id="d17" for="port" attr.name="PortStyle" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/PortStyle">
+        <default>
+            <x:Static Member="y:VoidPortStyle.Instance"/>
+        </default>
+    </key>
+    <key id="d18" for="port" attr.name="PortViewState" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/folding/1.1/PortViewState"/>
+    <key id="d19" attr.name="SharedData" y:attr.uri="http://www.yworks.com/xml/yfiles-common/2.0/SharedData"/>
+    <data key="d19">
+        <y:SharedData>
+            <y:ExteriorLabelModel x:Key="1" Insets="5"/>
+            <y:CompositeLabelModelParameter x:Key="2">
+                <y:CompositeLabelModelParameter.Parameter>
+                    <y:ExteriorLabelModelParameter Position="South" Model="{y:GraphMLReference 1}"/>
+                </y:CompositeLabelModelParameter.Parameter>
+                <y:CompositeLabelModelParameter.Model>
+                    <y:CompositeLabelModel>
+                        <y:CompositeLabelModel.LabelModels>
+                            <y:GraphMLReference ResourceKey="1"/>
+                            <y:InteriorLabelModel/>
+                            <y:FreeNodeLabelModel/>
+                        </y:CompositeLabelModel.LabelModels>
+                    </y:CompositeLabelModel>
+                </y:CompositeLabelModelParameter.Model>
+            </y:CompositeLabelModelParameter>
+            <yjs:DefaultLabelStyle x:Key="3" verticalTextAlignment="CENTER" horizontalTextAlignment="CENTER" textFill="WHITE" textSize="16">
+                <yjs:DefaultLabelStyle.font>
+                    <yjs:Font fontSize="16" fontFamily="'Roboto'"/>
+                </yjs:DefaultLabelStyle.font>
+            </yjs:DefaultLabelStyle>
+        </y:SharedData>
+    </data>
+    <graph id="G" edgedefault="directed">
+        <data key="d6">
+            <y:Json>{"version":"2.0.0","theme":{"name":"dark","version":"1.0.0"}}</y:Json>
+        </data>
+        <node id="n0">
+            <data key="d0">1</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>switch</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-285" Y="-405" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22286.43800000000005%20369.44500000000005%2048.55799999999999%2024.394999999999982%22%3E%3Cpath%20fill%3D%22%23036998%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M286.932%20381.48h35.718v11.596h-35.718z%22%2F%3E%3Cpath%20fill%3D%22%23036998%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M286.838%20381.538l14.428-11.693h33.33l-11.979%2011.693z%22%2F%3E%3Cpath%20fill%3D%22%23036998%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M322.631%20393.44l11.932-12.891.007-10.684-11.939%2011.657z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M307.775%20378.496l-.693.569h-8.908l-.888.887-2.414-1.052%204.855-1.388-.859.984zm7-4.375l-.693.569h-8.908l-.888.887-2.414-1.052%204.855-1.388-.859.984zm-5.427%202.829l.691-.568h8.91l.889-.888%202.414%201.052-4.856%201.389.86-.985zm4.625-4.375l.691-.568h8.91l.889-.888%202.414%201.052-4.856%201.389.86-.985z%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n1">
+            <data key="d0">2</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>router</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-165" Y="-405" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%2237.186%22%20height%3D%2225.181%22%20version%3D%221.1%22%20viewBox%3D%22275.69%20359.95%2037.186%2025.181%22%3E%3Cpath%20d%3D%22m312.68%20367.31c0%203.95-8.234%207.152-18.393%207.152s-18.393-3.202-18.393-7.152v10.477c0%203.95%208.234%207.152%2018.393%207.152s18.393-3.202%2018.393-7.152z%22%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cellipse%20cx%3D%22294.29%22%20cy%3D%22367.31%22%20rx%3D%2218.393%22%20ry%3D%227.152%22%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22m290.09%20364.51%201.518%202.278-5.742%201.327%201.255-1.045-8.875-1.516%202.227-1.669%208.563%201.45zm8.08%205.524-1.036-2.348%205.179-1.036-0.898%200.805%208.633%201.475-2.072%201.657-8.581-1.611zm-2.832-6.768%205.802-1.588%200.068%202.486-1.45-0.276-2.831%202.348-2.702-0.394%202.922-2.297zm-2.487%208.91-5.524%201.035-0.207-2.555%201.588%200.345%203.041-2.597%202.691%200.456-3.246%202.832z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n2">
+            <data key="d0">3</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>vss</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-75" Y="-405" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22290.62100000000004%20375.833%2031.014999999999986%2041.799000000000035%22%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M291.021%20390.43h26.826v26.802h-26.826zm30.215%2023.447v-26.802l-3.388%203.355v26.802zm-25.31-37.644l-4.905%203.356h26.827l3.388-3.356zm-4.905%203.356h26.826v10.841h-26.826z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M321.236%20387.075v-10.842l-3.388%203.356v10.841zm-3.388%203.355l3.388-3.355%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M295.398%20381.043h4.326v2.237h-4.326zm14.217%200h4.326v2.237h-4.326zm-14.217%205.612h4.326v2.252h-4.326zm14.217%200h4.326v2.252h-4.326z%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M298.334%20382.161h13.289m-13.289%205.62h13.289m-14.06%200l14.06-5.62m-14.06%200l14.06%205.62%22%2F%3E%3Cpath%20d%3D%22M299.426%20402.494v-2.258h.384l-.564-.851-.566.851h.383v2.258zm-1.15.326l-1.597-1.595.271-.274-1.003-.201.203%201.002.271-.272%201.597%201.598zm-.585%201.045h-2.257v-.383l-.853.565.853.566v-.383h2.257zm.327%201.153l-1.597%201.597-.271-.271-.203%201.004%201.003-.205-.271-.272%201.597-1.596zm1.045.584v2.257h-.383l.566.852.564-.852h-.384v-2.257zm1.409-2.524l1.596-1.598.271.272.204-1.002-1.003.201.271.274-1.596%201.595z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M300.626%20405.94a2.336%202.336%200%2000.574-3.256%202.335%202.335%200%2000-3.255-.574%202.336%202.336%200%2000-.574%203.256%202.335%202.335%200%20003.255.574z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M300.423%20405.275l1.596%201.596-.27.272%201.002.205-.204-1.004-.269.271-1.597-1.597zm8.966-2.781v-2.258h-.384l.564-.851.566.851h-.383v2.258zm1.15.326l1.597-1.595-.271-.274%201.002-.201-.203%201.002-.27-.272-1.597%201.598zm.584%201.045h2.258v-.383l.851.565-.851.566v-.383h-2.258zm-.326%201.153l1.597%201.597.27-.271.203%201.004-1.002-.205.271-.272-1.597-1.596zm-1.045.584v2.257h.383l-.566.852-.564-.852h.384v-2.257zm-1.409-2.524l-1.597-1.598-.27.272-.205-1.002%201.004.201-.271.274%201.596%201.595z%22%2F%3E%3Cpath%20d%3D%22M308.189%20405.94a2.334%202.334%200%2001-.574-3.256%202.336%202.336%200%20013.256-.574%202.336%202.336%200%2001.574%203.256%202.337%202.337%200%2001-3.256.574z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M308.392%20405.275l-1.596%201.596.269.272-1.001.205.203-1.004.27.271%201.596-1.597z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.973%22%20d%3D%22M300.582%20404.076h7.65%22%2F%3E%3Cpath%20d%3D%22M304.96%20404.055c0%201.641-.282%202.971-.629%202.971-.348%200-.63-1.33-.63-2.971s.282-2.969.63-2.969c.348%200%20.629%201.328.629%202.969z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-dasharray%3D%221.8%22%20d%3D%22M293.607%20395.398h21.487v16.875h-21.487z%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n3">
+            <data key="d0">4</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>vip</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="15" Y="-405" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22292.51800000000003%20366.288%2030.833000000000027%2041.42500000000001%22%3E%3Cpath%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M322.951%20402.438v-35.75l-5.134%204.875v35.75z%22%2F%3E%3Cpath%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M322.951%20366.688l-5.134%204.875h-24.899l6.45-4.875zm-30.033%204.875h24.899v24.625h-24.899zm0%2024.875h24.899v10.875h-24.899z%22%2F%3E%3Cg%20fill%3D%22%23fff%22%3E%3Cpath%20d%3D%22M303.147%20380.955l-3.788-3.788.643-.643-2.379-.481.481%202.379.643-.643%203.789%203.787zm-1.385%202.481h-5.358v-.909l-2.022%201.341%202.022%201.341v-.908h5.358zm.774%202.733l-3.789%203.788-.643-.642-.481%202.378%202.379-.482-.643-.643%203.788-3.787zm2.48%201.386v5.357h-.909l1.341%202.023%201.341-2.023h-.908v-5.357zm0-7.219v-5.357h-.909l1.341-2.023%201.341%202.023h-.908v5.357zm2.733%206.445l3.788%203.787-.642.643%202.378.482-.481-2.378-.643.642-3.789-3.788zm1.386-2.48h5.357v.908l2.023-1.341-2.023-1.341v.909h-5.357zm-.775-2.735l3.789-3.787.643.643.481-2.379-2.378.481.643.643-3.789%203.788z%22%2F%3E%3Cpath%20d%3D%22M308.736%20388.403a5.588%205.588%200%2010-7.782-1.372%205.587%205.587%200%20007.782%201.372z%22%20stroke%3D%22%23026c9b%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M305.876%20399.849h.913l-1.341-2.023-1.341%202.023h.904v4.218h-.913l1.341%202.023%201.34-2.023h-.903zm-6.927%200h.914l-1.342-2.023-1.34%202.023h.904v4.218h-.914l1.341%202.023%201.341-2.023h-.904zm13.547%200h.914l-1.341-2.023-1.342%202.023h.905v4.218h-.914l1.341%202.023%201.341-2.023h-.904z%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n4">
+            <data key="d0">5</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>route-switch</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-285" Y="-315" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22289.993%20361.089%2031.014000000000067%2041.82200000000006%22%3E%3Cpath%20d%3D%22M290.393%20375.71h26.826v26.801h-26.826zm30.214%2023.446v-26.801l-3.388%203.355v26.801z%22%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M295.298%20361.489l-4.905%203.356h26.826l3.388-3.356zm-4.905%203.356h26.826v10.865h-26.826zm30.214%207.51v-10.866l-3.388%203.356v10.865zm-3.388%203.355h-26.826m26.826%200l3.388-3.355%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M294.77%20366.304h4.327v2.252h-4.327zm14.216%200h4.326v2.252h-4.326zm-14.216%205.63h4.327v2.252h-4.327zm14.216%200h4.326v2.252h-4.326z%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M297.706%20367.43h13.288m-13.288%205.63h13.288m-14.06%200l14.06-5.63m-14.06%200l14.06%205.63%22%2F%3E%3Cpath%20d%3D%22M304.387%20385.213v-5.799h.984l-1.452-2.188-1.452%202.188h.984v5.799zm-2.959.838l-4.1-4.101.695-.695-2.574-.522.522%202.575.695-.696%204.1%204.101zm-1.499%202.684h-5.8v-.983l-2.188%201.451%202.188%201.452v-.984h5.8zm.837%202.958l-4.1%204.101-.695-.695-.522%202.574%202.574-.522-.695-.695%204.1-4.101zm2.685%201.5v5.799h-.984l1.452%202.19%201.452-2.19h-.984v-5.799zm2.958-.838l4.101%204.101-.696.695%202.575.522-.522-2.574-.695.695-4.102-4.101zm1.5-2.684h5.799v.984l2.188-1.452-2.188-1.451v.983h-5.799zm-.839-2.958l4.102-4.101.695.696.522-2.575-2.575.522.696.695-4.101%204.101z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M307.467%20394.064a6.005%206.005%200%2010-6.888-9.836%206.005%206.005%200%20006.888%209.836z%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n5">
+            <data key="d0">6</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>prog-switch</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-285" Y="-225" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22294.069%20368.394%2026.862000000000023%2027.21100000000007%22%3E%3Cpath%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M294.469%20373.23h21.6v21.975h-21.6z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M305.268%20380.332h6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M312.156%20378.337v3.846l2.318-1.848z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M305.268%20387.977h6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M312.156%20385.953v3.845l2.318-1.847z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M301.449%20384.183v-6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M299.506%20377.323h3.846l-1.848-2.316z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M309.074%20384.183v-6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M307.105%20377.349h3.846l-1.847-2.317z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M309.1%20384.134v6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M311.031%20390.991h-3.846l1.866%202.317z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M301.527%20384.134v6.641%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M303.498%20390.991h-3.846l1.866%202.317z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M305.363%20387.975h-6.642%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M298.451%20389.996v-3.846l-2.316%201.847z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%221.3%22%20d%3D%22M305.363%20380.35h-6.642%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.2%22%20d%3D%22M298.451%20382.371v-3.846l-2.316%201.847z%22%2F%3E%3Cpath%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M315.993%20373.206h-21.5l5.45-4.35h20.55v21.837l-4.45%204.5v-21.862zm.038-.037l4.5-4.375%22%2F%3E%3Cpath%20d%3D%22M305.271%20388.787a4.589%204.589%200%20100-9.175%204.589%204.589%200%20000%209.175z%22%20fill%3D%22%23026c9b%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n6">
+            <data key="d0">7</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>N2K</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-165" Y="-315" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22275.737%20387.459%2048.557000000000016%2024.396000000000015%22%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M276.229%20399.494h35.72v11.596h-35.72z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M276.137%20399.552l14.427-11.693h33.33l-11.978%2011.693z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M311.93%20411.455l11.931-12.893.008-10.684-11.939%2011.657zm-25.421-13.357l11.167-9.008m-2.297%209.008l11.167-9.008m-2.297%209.008l11.167-9.008m-24.351%201.607h26.429%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M289.87%20404.98h-6.684v-.611l-2.52.903%202.52.902v-.611h6.684zm3.778%201.92v2.37h-1.726l2.544.894%202.545-.894h-1.725v-2.37zm0-3.191v-2.367h-1.726l2.544-.895%202.545.895h-1.725v2.367zm5.416%201.854h6.682v.611l2.523-.902-2.523-.903v.611h-6.682z%22%2F%3E%3Cpath%20d%3D%22M305.218%20409.074c-1.254.471-7.018-.82-12.868-2.883-5.852-2.06-9.579-4.111-8.323-4.582%201.254-.469%207.017.822%2012.869%202.883%205.851%202.061%209.576%204.113%208.322%204.582z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M304.885%20401.574c1.324.445-2.317%202.488-8.131%204.563-5.815%202.074-11.602%203.395-12.926%202.951-1.324-.445%202.315-2.488%208.131-4.563%205.813-2.074%2011.6-3.394%2012.926-2.951z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M297.207%20406.648c2.208-.549%202.743-1.627%201.198-2.408-1.546-.783-4.586-.973-6.794-.426-2.207.547-2.743%201.627-1.196%202.408%201.544.784%204.585.973%206.792.426z%22%20fill%3D%22%23b5b5b5%22%2F%3E%3Cpath%20d%3D%22M297.676%20390.701c-.248.766-3.841.839-3.87%200-.028-.774%203.779-.849%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.028-.774%203.779-.849%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.027-.774%203.779-.849%203.87%200%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M287.682%20393.594h26.428%22%2F%3E%3Cpath%20d%3D%22M294.292%20393.598c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M284.246%20396.552h26.429%22%2F%3E%3Cpath%20d%3D%22M290.455%20396.556c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200m8.87%200c-.248.766-3.841.839-3.87%200-.027-.773%203.779-.848%203.87%200%22%20fill-rule%3D%22evenodd%22%20clip-rule%3D%22evenodd%22%20fill%3D%22%23fff%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n7">
+            <data key="d0">8</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>N5K</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-75" Y="-315" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22282.404%20384.35400000000004%2048.53800000000001%2024.133999999999958%22%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M282.804%20396.42l14.428-11.666h33.31l-11.94%2011.666z%22%2F%3E%3Cpath%20d%3D%22M315.528%20390.918l.888-.889%202.775%201.262-4.865%201.399%201.103-1.454h-8.865l.318-.318zm-5.324-2.975l-.318.317h-9.04l-1.369%201.064-2.329-1.14%205.337-1.563-1.321%201.322zm-4.987%205.03l-.319.318h-9.084l-1.369%201.02-2.415-1.139%205.468-1.52-1.234%201.321zm15.43-6.256l.888-.887%202.775%201.217-4.866%201.398%201.06-1.41h-8.909l.318-.318z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M315.572%20391.223l.888-.887%202.425%201.041-4.865%201.398%201.234-1.234h-8.909l.318-.318zm-5.675-2.975l-.317.318h-8.909l-.889.889-2.415-1.053%204.856-1.388-1.235%201.234z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M318.602%20407.802l11.94-12.031v-10.998l-11.94%2011.647z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M304.866%20393.279l-.317.319h-8.909l-.889.888-2.415-1.052%204.855-1.389-1.234%201.234zm15.781-6.256l.888-.888%202.425%201.043-4.865%201.398%201.234-1.234h-8.909l.318-.319z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23000%22%20stroke-width%3D%22.28%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M320.071%20387.395l-1.094%201.093m-4.025%203.151l-1.094%201.093m-7.044-1.662l-.524.438m5.644-4.682l-.482.438%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M318.602%20407.955V396.42h-35.75v11.607z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M296.07%20402.307h-6.682v-.612l-2.522.901%202.522.902v-.611h6.682zm3.779%201.919v2.368h-1.727l2.544.894%202.545-.894h-1.725v-2.368zm0-3.191v-2.368h-1.727l2.544-.894%202.545.894h-1.725v2.368zm5.415%201.852h6.682v.611l2.523-.902-2.523-.901v.612h-6.682z%22%2F%3E%3Cpath%20d%3D%22M311.418%20406.4c-1.254.469-7.018-.822-12.868-2.883-5.853-2.061-9.578-4.113-8.323-4.582%201.254-.469%207.017.82%2012.869%202.883%205.851%202.061%209.576%204.112%208.322%204.582z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M311.085%20398.9c1.324.445-2.317%202.488-8.131%204.561-5.815%202.075-11.602%203.396-12.926%202.95s2.315-2.486%208.131-4.56c5.814-2.076%2011.6-3.396%2012.926-2.951z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M303.407%20403.973c2.208-.548%202.743-1.625%201.198-2.408-1.546-.781-4.586-.973-6.794-.424-2.207.547-2.743%201.625-1.196%202.407%201.544.783%204.585.973%206.792.425z%22%20fill%3D%22%23b5b5b5%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n8">
+            <data key="d0">9</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>N7K</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="15" Y="-315" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22287.20000000000005%20383.04%2024.826999999999998%2033.71600000000001%22%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M311.627%20392.757l-4.107%203.9H287.6l5.16-3.9z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M287.6%20396.657h19.92v19.699H287.6z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M311.22%20412.657v-19.699l-3.82%203.699v19.699z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M294.676%20405.976h-4.287v-1.106l-1.618%201.631%201.618%201.633v-1.106h4.287zm2.424%203.474v4.287h-1.108l1.632%201.618%201.633-1.618h-1.107v-4.287zm0-5.773v-4.287h-1.108l1.632-1.617%201.633%201.617h-1.107v4.287zm3.473%203.351h4.287v1.106l1.618-1.633-1.618-1.631v1.106h-4.287z%22%2F%3E%3Cpath%20d%3D%22M304.521%20413.384c-.805.85-4.502-1.486-8.255-5.215-3.755-3.73-6.145-7.443-5.34-8.293.805-.85%204.502%201.486%208.256%205.217%203.754%203.728%206.144%207.441%205.339%208.291z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M304.308%20399.814c.85.805-1.486%204.5-5.216%208.254-3.73%203.754-7.442%206.145-8.292%205.34-.85-.805%201.485-4.502%205.216-8.256%203.729-3.754%207.441-6.145%208.292-5.338z%22%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M299.383%20408.993a3.129%203.129%200%2010-3.589-5.127%203.129%203.129%200%20003.589%205.127z%22%20fill%3D%22%23b5b5b5%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M311.627%20383.44l-4.107%203.9H287.6l5.16-3.9zm-24.027%203.9h19.92v9.456H287.6z%22%2F%3E%3Cpath%20fill%3D%22%230079b7%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M311.22%20393.097v-9.456l-3.82%203.699v9.456z%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M289.387%20388.798h3.894v2.029h-3.894zm12.795%200h3.894v2.029h-3.894zm-12.795%205.068h3.894v2.027h-3.894zm12.795%200h3.894v2.027h-3.894z%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M292.029%20389.814h11.959m-11.959%205.212h11.959m-12.654-.144l12.654-5.068m-12.654%200l12.654%205.068%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n9">
+            <data key="d0">10</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>firewall</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-165" Y="-225" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22295.478%20370.665%2021.104000000000042%2030.226%22%3E%3Cg%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%3E%3Cpath%20d%3D%22M301.088%20376.547h7.926v26.484h-7.926zm7.926%200h-7.926l7.1-5.615h6.915z%22%2F%3E%3Cpath%20d%3D%22M315.103%20370.932v25.271l-6.089%206.865v-26.521zm-1.873%205.927v-4.25m0%2012.856v-4.25m0%2012.853v-4.25m1.873%202.172l-6.089%206.658m6.089-10.869l-6.089%206.45m6.089-10.661l-6.089%206.239m6.089-10.452l-6.089%206.032m6.089-10.242l-6.089%205.824m0-4.422l6.089-5.615m-6.089%2027.685h-7.926m7.926-4.414h-7.926m7.926-4.414h-7.926m7.926-4.414h-7.926m7.926-4.414h-7.926m10.08%2019.67v-4.272m0-4.457v-4.271m0-4.375v-4.272%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n10">
+            <data key="d0">11</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>fwsm</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-75" Y="-225" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22295.714%20352.14000000000004%2025.338000000000022%2040.46999999999997%22%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M320.594%20352.649l-2.75%203.112h-21.73l3.562-3.112z%22%2F%3E%3Cpath%20d%3D%22M296.114%20355.63h21.729v8.83h-21.729zm24.475%205.937v-8.831l-2.745%202.894v8.83z%22%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M317.844%20364.365v17.36l2.745-2.892v-17.361z%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M317.737%20358.403h-21.513m23.158-4.484h-21.515m19.87%207.465h-21.513m24.428-6.077l-2.738%202.997m2.738-.016l-2.738%202.996%22%2F%3E%3Cpath%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M302.597%20355.671v2.706%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M310.917%20355.671v2.706m-8.32%203.154v2.704m8.32-2.704v2.704m-3.994-5.701v2.706m-8.32-2.706v2.706m16.639-2.706v2.706m-9.559-8.7l-3.086%203.082m11.404-3.082l-3.084%203.082%22%2F%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M317.844%20364.365v17.217h-21.73v-17.217%22%2F%3E%3Cpath%20d%3D%22M296.114%20381.544h21.729v10.666h-21.729zm24.475%207.773v-10.594l-2.745%202.893v10.594z%22%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%2F%3E%3Cpath%20d%3D%22M307.337%20370.964v-3.758h.637l-.94-1.418-.941%201.418h.637v3.758zm-1.917.543l-2.657-2.658.451-.451-1.668-.336.337%201.668.451-.452%202.656%202.658zm-.972%201.739h-3.758v-.638l-1.418.942%201.418.94v-.637h3.758zm.542%201.917l-2.656%202.656-.451-.449-.337%201.668%201.668-.338-.451-.451%202.657-2.657zm1.74-.345v7.254h-.637l.941%201.419.94-1.419h-.637v-7.254zm1.917.774l2.658%202.657-.451.451%201.668.338-.337-1.668-.451.449-2.658-2.656zm.972-1.739h3.758v.637l1.419-.94-1.419-.942v.638h-3.758zm-.543-1.917l2.658-2.658.451.452.337-1.668-1.668.336.451.451-2.658%202.658z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20d%3D%22M309.333%20376.698a3.891%203.891%200%2010-4.465-6.375%203.891%203.891%200%20004.465%206.375z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M319.392%20354.001v8.647%22%2F%3E%3Cpath%20d%3D%22M306.801%20385.745h5.72v-.567l1.874%201.136-1.874%201.166v-.568h-5.72zm0%203.559h5.72v-.569l1.874%201.136-1.874%201.166v-.567h-5.72zm.128-5.261h-5.721v-.567l-1.873%201.135%201.873%201.165v-.566h5.721zm0%203.558h-5.721v-.568l-1.873%201.136%201.873%201.166v-.566h5.721z%22%20fill%3D%22%23fff%22%2F%3E%3Cpath%20fill%3D%22none%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20stroke-linecap%3D%22round%22%20stroke-linejoin%3D%22round%22%20d%3D%22M317.737%20364.403h-21.513m24.428-3.096l-2.738%202.997m-.177%2017.224h-21.513m24.285-2.666l-2.524%202.639%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n11">
+            <data key="d0">12</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>iosfw</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="15" Y="-225" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22296.86100000000005%20366.697%2019.47800000000001%2031.531000000000063%22%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M297.267%20380.355h16.163v17.473h-16.163zm0-10.595h16.163v10.565h-16.163zm0-.118l3.088-2.51h15.584l-2.509%202.51zm16.163%2028.185l2.509-3.089V377.63l-2.509%202.581z%22%2F%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M313.43%20380.302l2.509-2.731v-10.272l-2.509%202.51zm-16.155%2015.338h16.091m-16.091-15.371h16.091%22%2F%3E%3Cpath%20fill%3D%22%23fff%22%20d%3D%22M304.123%20389.679v2.312h-.904l1.809%202.312%201.861-2.312h-.906v-2.312zm0-1.836v-2.313h-.904l1.809-2.312%201.861%202.312h-.906v2.313zm-4.713.107h2.313v-.904l2.312%201.81-2.312%201.86v-.904h-2.313zm11.225%200h-2.314v-.904l-2.312%201.81%202.312%201.86v-.904h2.314z%22%2F%3E%3Cpath%20fill%3D%22%23007cba%22%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%20d%3D%22M313.43%20373.186h-16.163m17.663-4.833h-16.163m14.663%208.476h-16.163m18.587-5.734l-2.16%202.144m2.16%201.499l-2.16%202.144m1.111-8.43v10.132m-12.75-8.737v3.306m6.25-3.306v3.306m-6.25%203.856v3.306m6.25-3.306v3.306m-3-6.968v3.306m-6.25-3.306v3.306m12.5-3.306v3.306m-6.378-9.556l-3.122%202.689m9.372-2.689l-3.122%202.689%22%2F%3E%3Cg%20stroke%3D%22%23fff%22%20stroke-width%3D%22.4%22%3E%3Cpath%20fill%3D%22none%22%20d%3D%22M315.939%20377.571l-2.587%202.858h-16.091%22%2F%3E%3Cpath%20fill%3D%22%23007cba%22%20d%3D%22M315.939%20392.905l-2.587%202.858%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+        <node id="n12">
+            <data key="d0">13</data>
+            <data key="d4">
+                <x:List>
+                    <y:Label LayoutParameter="{y:GraphMLReference 2}" Style="{y:GraphMLReference 3}">
+                        <y:Label.Text>cloud</y:Label.Text>
+                    </y:Label>
+                </x:List>
+            </data>
+            <data key="d5">
+                <y:RectD X="-285" Y="-135" Width="30" Height="30"/>
+            </data>
+            <data key="d7">
+                <icon-style:CroppingImageNodeStyle image="data:image/svg+xml;charset=utf-8,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%22262.716%20361.22%2087.95699999999998%2050.727999999999994%22%3E%3Cpath%20d%3D%22M295.041%20369.346c-14.4-2.875-22%204.5-20.8%2010.875l.097.348c-11.222%201.91-8.28%2015.152-2.897%2015.152l.53-.017c-1.355%206.222%2011.758%2012.555%2019.07%209.391l.47-.515c2.608%205.597%2011.87%206.532%2021.03%206.765%207.939.203%2012.571-.425%2015.976-3.904l.524.154c12.707%201.022%2018.494-7.755%2015.716-14.057l.684-.192c4.332-1.146%204.832-11.146-2.6-12.625l.143-.387c3.227-6.505-4.383-12.64-14.942-11.488l-.731-.382c-7.559-6.844-29.315-5.729-31.834%201.04l-.436-.158z%22%20fill%3D%22%23fff%22%20stroke%3D%22%2302709f%22%20stroke-width%3D%22.4%22%2F%3E%3C%2Fsvg%3E" clipMode="outline"/>
+            </data>
+        </node>
+    </graph>
+</graphml>

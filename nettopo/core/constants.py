@@ -16,30 +16,11 @@ from pysnmp.proto.rfc1902 import (
     TimeTicks,
     Unsigned32,
 )
+import os
 
 
-__all__ = [
-    'NOTHING',
-    'VALID_VERSIONS',
-    'VALID_V3_LEVELS',
-    'VALID_INTEGRITY_ALGO',
-    'VALID_PRIVACY_ALGO',
-    'RESERVED_VLANS',
-    'SNMP_TYPES',
-    'INTEGRITY_ALGO',
-    'PRIVACY_ALGO',
-    'RETCODE',
-    'DCODE',
-    'NODE',
-    'port_conversion_table',
-    'retcode_type',
-    'node_type',
-    'arp_type',
-    'entphyclass_type',
-    'int_oper_status',
-    'int_type',
-    'int_admin_status',
-]
+NETTOPO_ROOT_DIR = os.path.dirname(os.path.dirname(__file__))
+NETTOPO_ICON_DIR = os.path.join(NETTOPO_ROOT_DIR, 'icons', 'cisco')
 
 NOTHING = (None, '0.0.0.0', 'UNKNOWN', '')
 VALID_VERSIONS = ('2', '2c', '3')
@@ -104,7 +85,7 @@ class DCODE:
     LEAF_STR: str = 'L'
 
 
-port_conversion_table = {
+port_conversion_map = {
     'TenGigabitEthernet': 'Te',
     'GigabitEthernet': 'Gi',
     'FastEthernet': 'Fa',
@@ -114,19 +95,19 @@ port_conversion_table = {
 }
 
 # return codes
-retcode_type = {
+retcode_type_map = {
     1: 'ok',
     2: 'error',
     3: 'syntaxerror',
 }
 
-node_type = {
+node_type_map = {
     1: 'known',
     2: 'new',
     3: 'newip',
 }
 
-arp_type = {
+mac_type_map = {
     0: 'unknown',
     1: 'other',
     2: 'invalid',
@@ -134,7 +115,25 @@ arp_type = {
     4: 'static',
 }
 
-entphyclass_type = {
+# '1.3.6.1.2.1.17.4.3.1.3'
+bridge_status_map = {
+    1: 'other',
+    2: 'invalid',
+    3: 'learned',
+    4: 'self',
+    5: 'mgmt'
+}
+
+stp_state_map = {
+    1: 'disabled',
+    2: 'blocking',
+    3: 'listening',
+    4: 'learning',
+    5: 'forwarding',
+    6: 'broken'
+}
+
+entphyclass_type_map = {
     1: 'other',
     2: 'unknown',
     3: 'chassis',
@@ -150,13 +149,13 @@ entphyclass_type = {
 }
 
 # http://www.net-snmp.org/docs/mibs/interfaces.html#PhysAddress
-int_admin_status = {
+int_admin_status_map = {
     1: 'up',
     2: 'down',
     3: 'testing',
 }
 
-int_type = {
+int_type_map = {
     1: 'other',
     2: 'regular1822',
     3: 'hdh1822',
@@ -431,7 +430,7 @@ int_type = {
     272: 'vmwareNicTeam',
 }
 
-int_oper_status = {
+int_oper_status_map = {
     1: 'up',
     2: 'down',
     3: 'testing',
@@ -441,3 +440,157 @@ int_oper_status = {
     7: 'lowerLayerDown',
 }
 
+cisco_icon_colors = [
+    'aqua',
+    'blue',
+    'brown',
+    'cyan',
+    'green',
+    'grey',
+    'orange1',
+    'orange2',
+    'red',
+    'yellow',
+]
+
+
+cisco_icon_mapper = {
+    'cloud': 'generic-cloud',
+    'host': 'generic-host',
+    'printer': 'generic-printer',
+    'router': 'router',
+    'firewall': 'security-firewall',
+    'switch': 'switch',
+    'layer3': 'switch-layer3',
+    'multilayer': 'switch-multilayer',
+    'n1k': 'switch-nexus1000',
+    'n2k': 'switch-nexus2000',
+    'n5k': 'switch-nexus5000',
+    'n7k': 'switch-nexus7000',
+    'stack': 'switch-stack',
+    'virtual': 'switch-virtuallayer',
+    'vss': 'switch-VSS',
+}
+
+cisco_icon_list = [
+    'generic-CA',
+    'generic-cablemodem',
+    'generic-cloud',
+    'generic-database',
+    'generic-directoryserver',
+    'generic-dslam',
+    'generic-fileserver',
+    'generic-handheld',
+    'generic-host',
+    'generic-key',
+    'generic-keys',
+    'generic-laptop-mm',
+    'generic-laptop',
+    'generic-lock',
+    'generic-mac-woman',
+    'generic-macintosh',
+    'generic-mainframe',
+    'generic-man-running',
+    'generic-man-woman',
+    'generic-modem',
+    'generic-oa',
+    'generic-page',
+    'generic-pc-man',
+    'generic-pc',
+    'generic-person',
+    'generic-printer',
+    'generic-radio-tower',
+    'generic-server-mini',
+    'generic-setopbox',
+    'generic-settopbox2',
+    'generic-stp',
+    'generic-supercomputer',
+    'generic-terminal',
+    'generic-tv',
+    'generic-video-camera',
+    'generic-woman',
+    'generic-workstation',
+    'generic-workstation2',
+    'hub-fast',
+    'hub-small',
+    'router-7513',
+    'router-ASR1000',
+    'router-ASR9000',
+    'router-AXP',
+    'router-broadband',
+    'router-CME',
+    'router-content',
+    'router-CRS',
+    'router-firewall',
+    'router-itp',
+    'router-mpls-p',
+    'router-mpls-pe',
+    'router-mpls',
+    'router-netflow',
+    'router-opticall',
+    'router-services',
+    'router-voice',
+    'router-wavelength',
+    'router-wireless',
+    'router',
+    'security-asa5500',
+    'security-firewall-pix',
+    'security-firewall',
+    'security-fwsm',
+    'security-nac-appliance',
+    'switch-atm-fast',
+    'switch-atm-tsr',
+    'switch-atm',
+    'switch-content-module',
+    'switch-content',
+    'switch-layer3',
+    'switch-multifabric',
+    'switch-multilayer',
+    'switch-nexus1000',
+    'switch-nexus2000',
+    'switch-nexus5000',
+    'switch-nexus7000',
+    'switch-pccard',
+    'switch-remote-multilayer',
+    'switch-remote',
+    'switch-server',
+    'switch-service-control',
+    'switch-slb',
+    'switch-sm',
+    'switch-stack',
+    'switch-virtuallayer',
+    'switch-voice',
+    'switch-VSS',
+    'switch',
+    'voice-accessserver',
+    'voice-ata',
+    'voice-bts10200',
+    'voice-callmanager',
+    'voice-CUBE',
+    'voice-fax',
+    'voice-gateway',
+    'voice-ipphone',
+    'voice-mcu',
+    'voice-octel',
+    'voice-pbx',
+    'voice-pgw2200',
+    'voice-phone',
+    'voice-phone_fax',
+    'voice-server-moh',
+    'voice-server-sip',
+    'voice-softswitch',
+    'voice-switch-atm',
+    'voice-switch',
+    'voice-tp500',
+    'voice-tp1000',
+    'voice-tp3000',
+    'voice-tp3200',
+    'voice-universalgateway',
+    'wireless-ap-dualmode',
+    'wireless-ap-lw',
+    'wireless-ap-mesh',
+    'wireless-ap',
+    'wireless-bridge',
+    'wireless-controller',
+    'wireless-wism',
+]

@@ -8,19 +8,17 @@ from timeit import default_timer as timer
 from nettopo.core.exceptions import NettopoNetworkError
 from nettopo.core.util import in_acl, str_matches_pattern, normalize_host
 from nettopo.core.node import Node
+from nettopo.core.config import NettopoConfig
 from nettopo.core.constants import NOTHING, NODE, DCODE
 from nettopo.core.data import BaseData
 
 
 class Network(BaseData):
-    def __init__(self, conf: Config=None):
+    def __init__(self, conf: NettopoConfig=None):
         self.max_depth = 100
         self.root_node = None
         self.nodes = []
-        if conf:
-            self.config = conf
-        else:
-            self.config = Config()
+        self.config = conf or NettopoConfig()
         self.verbose = True
         self.items_2_show = ['root_node', 'num_nodes']
 

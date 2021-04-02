@@ -27,7 +27,7 @@ from nettopo.core.constants import (
     PRIVACY_ALGO,
 )
 from nettopo.core.exceptions import NettopoSNMPError
-from nettopo.core.config import Config
+from nettopo.core.config import NettopoConfig
 from nettopo.core.util import oid_endswith
 from nettopo.snmp.utils import (
     return_pretty_val,
@@ -156,7 +156,7 @@ class SNMP:
         self.success = False
         self.community = None
         self.vulnerable = False
-        self.config = Config()
+        self.config = NettopoConfig()
         if kwargs and 'community' in kwargs.keys():
             self.check_creds(kwargs.get('community'))
         else:

@@ -7,24 +7,8 @@ Description:        data.py
 Author:             Ricky Laney
 Version:            0.1.1
 '''
-from typing import Any, List, NamedTuple
-
-__all__ = [
-    'BaseData',
-    'RandomData',
-    'DataTable',
-    'LinkData',
-    'VssData',
-    'VssMemberData',
-    'StackData',
-    'StackMemberData',
-    'SVIData',
-    'LoopBackData',
-    'VLANData',
-    'ARPData',
-    'MACData',
-    'InterfaceData',
-]
+from collections import UserList, UserDict
+from typing import Any, List, Union, NamedTuple
 
 
 class BaseData:
@@ -32,17 +16,19 @@ class BaseData:
     Provides:
     :property:  show - Show the show_items
     """
-    # _ignores = ['_', 'get', 'add', 'actions', 'cache', 'que', 'snmp', 'show']
-    # if not any([key.startswith(x) for x in self._ignores]):
     def _as_dict(self, keys: list=None) -> dict:
+        try:
+            _my_data = self.__dict__['data']
+        except:
+            _my_data = self.__dict__
         if keys:
             _dict = {}
-            for key, val in self.__dict__.items():
+            for key, val in _my_data.items():
                 if key in keys:
                     _dict.update({key: val})
             return _dict
         else:
-            return self.__dict__
+            return _my_data
 
     @property
     def show(self) -> dict:
@@ -58,28 +44,56 @@ class BaseData:
     def __repr__(self):
         items = [f"{key}={val}" for key, val in self.show.items()]
         items = ",".join(items)
-        return f"{self.__class__.__name__}<{items}>"
+        return f"<{items}>"
 
 
-class RandomData(BaseData):
-    def __init__(self, name: str, data: dict):
-        self._name = name
-        self._data = data
-        self.make_nt()
+class BaseDict(BaseData, UserDict):
+    pass
 
-    def make_nt(self) -> None:
-        _nt_temp = {}
-        for key in self._data.keys():
-            _nt_temp.update({key: type(key)})
-        self.NT = NamedTuple(self._name, **_nt_temp)
-        self.nt = self.NT(self._data)
 
-    def __getattr__(self, attr):
-        return getattr(self.nt, attr)
+class DataTable(UserList):
+    def __init__(self, data: List[object]) -> None:
+        self._name = data[0].__class__.__name__
+        super().__init__(data)
+
+    def __repr__(self) -> str:
+        return f"[{self._name}] - {len(self)} items"
+
+    def __len__(self) -> int:
+        return len(self.data)
+
+    def column(self, name: str) -> list:
+        _columns = []
+        for item in self.data:
+            value = getattr(item, name, None)
+            if value:
+                _columns.append(value)
+        return _columns
+
+    def rows(self, key: str=None, value: Union[str, int]=None) -> list:
+        if not all([key, value]):
+            return self.data
+        _rows = []
+        for row in self.data:
+            if not hasattr(row, key):
+                raise AttributeError(f"{self._name} missing attribute {key}")
+            if getattr(row, key, None) == value:
+                _rows.append(row)
+        return _rows
+
+    def __getattr__(self, attr) -> list:
+        # Only called for missing attributes
+        return self.column(attr)
+
+    def get_item(self, key: str, value: Union[str, int]) -> object:
+        _rows = self.rows(key, value)
+        if len(_rows) > 1:
+            raise AttributeError(f"{len(_rows)} match for {key}: {value}")
+        return _rows[0]
 
 
 class InterfaceData(BaseData):
-    show_items = ['name', 'cidrs', 'mac', 'oper_status']
+    show_items = ['name', 'mac', 'ip', 'cidrs', 'oper_status']
     def __init__(self):
         self.idx = None
         self.name = None
@@ -100,47 +114,6 @@ class InterfaceData(BaseData):
                 return ip.split('/')[0]
             else:
                 return ip
-
-
-class DataTable:
-    def __init__(self, data: List[object]) -> None:
-        self._data = data
-        self._name = self._data[0].__class__.__name__
-
-    def __str__(self) -> str:
-        return str(self._data)
-
-    def __repr__(self) -> str:
-        return f"[DataTable]{self._name} - {len(self)} items"
-
-    def __len__(self) -> int:
-        return len(self._data)
-
-    def columns(self, name) -> list:
-        _columns = []
-        for item in self._data:
-            if hasattr(item, name):
-                value = getattr(item, name)
-                if value:
-                    _columns.append(value)
-        return _columns
-
-    def rows(self, key, value) -> list:
-        _rows = []
-        for row in self._data:
-            if hasattr(row, key):
-                if getattr(row, key) == value:
-                    _rows.append(row)
-            else:
-                raise AttributeError(f"{self._name} missing attribute {key}")
-        return _rows
-
-    def __getattr__(self, attr) -> list:
-        # Only called for missing attributes
-        return self.columns(attr)
-
-    def row(self, key, value) -> object:
-        return self.rows(key, value)[0]
 
 
 class LinkData(BaseData):
@@ -190,7 +163,7 @@ class LinkData(BaseData):
         self.remote_port = interface.name
         self.remote_if_ip = interface.ip
 
-    def is_same_link(self, link: LinkData) -> bool:
+    def is_same_link(self, link: object) -> bool:
         # Make sure different protocols were used
         if (self.discovered_proto != link.discovered_proto) \
                 and (self.local_port == link.local_port) \
@@ -199,7 +172,7 @@ class LinkData(BaseData):
             return True
         return False
 
-    def injest_link(self, link: LinkData) -> None:
+    def injest_link(self, link: object) -> None:
         # No need to check since it's expensive we only do once.
         #if self.is_same_link(link):
         self.discovered_proto = 'both'
@@ -275,15 +248,15 @@ class VLANData(BaseData):
 
 
 class ARPData(BaseData):
-    def __init__(self, ip, mac, port, arp_type):
+    def __init__(self, ip, mac, interface):
         self.ip = ip
         self.mac = mac
-        self.port = port
-        self.arp_type = arp_type
+        self.interface = interface
 
 
 class MACData(BaseData):
-    def __init__(self, vlan, mac, port):
+    def __init__(self, vlan, mac, port, status):
         self.vlan = int(vlan)
         self.mac = mac
         self.port = port
+        self.status = status

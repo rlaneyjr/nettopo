@@ -169,6 +169,7 @@ class Oids:
     ERR_INST: str = 'No Such Instance currently exists at this OID'
     """ New Stuff
     """
+    NEW_ARP: str = '1.3.6.1.2.1.3.1.1.2'
     # MIB-2 interfaces
     NEW_SYSDESC: str = '1.3.6.1.2.1.1'
     # LLDP-MIB
