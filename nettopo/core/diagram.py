@@ -4,10 +4,11 @@
 '''
     diagram.py
 '''
-import pydot
 import datetime
 from jinja2 import Template, Environment
 import os
+from N2G import yed_diagram
+import pydot
 
 from nettopo.core.exceptions import NettopoDiagramError
 from nettopo.core.config import NettopoConfig
@@ -77,6 +78,43 @@ sample_graph = {
     ]
 }
 """
+
+class yEdNode:
+    ''' Represents a network node for a DOT diagram
+    '''
+    def __init__(self, node, config):
+        self.node = node
+        self.config = config
+        self.ntype = 'single'
+        self.shape = 'diamond' if self.node.router else 'ellipse'
+        self.style = 'solid'
+        self.peripheries = 1
+        # set the node properties
+        if self.node.vss.enabled:
+            if self.config.expand_vss:
+                self.ntype = 'vss'
+            else:
+                # group VSS into one diagram node
+                self.peripheries = 2
+        if self.node.stack.enabled:
+            if self.config.expand_stackwise:
+                self.ntype = 'stackwise'
+            else:
+                # group Stackwise into one diagram node
+                self.peripheries = self.node.stack.count
+        if self.node.vpc_domain and self.config.group_vpc:
+            self.ntype = 'vpc'
+
+    @property
+    def label(self):
+        return self.label
+
+    @label.setter
+    def label(self):
+        template = Template(node_template)
+        # env = Environment()
+        # temp = env.from_string(node_template)
+        return template.render(node=self.node, config=self.config)
 
 class DotNode:
     ''' Represents a network node for a DOT diagram
