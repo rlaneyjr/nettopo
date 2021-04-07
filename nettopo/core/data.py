@@ -9,7 +9,18 @@ Version:            0.1.1
 '''
 from collections import UserList, UserDict
 from typing import Any, List, Union, NamedTuple
+from netaddr import IPAddress
+from pysnmp.smi.rfc1902 import ObjectIdentity
 
+# Typing shortcuts
+_IP = Union[str, IPAddress]
+_UIS = Union[int, str]
+_UISO = Union[int, str, ObjectIdentity]
+_UDL = Union[dict, list]
+_UDLS = Union[dict, list, str]
+_ULN = Union[list, None]
+_ULS = Union[list, str]
+_UOL = Union[object, list]
 
 class BaseData:
     """ Base Data class that all other classes inherit from
@@ -47,10 +58,6 @@ class BaseData:
         return f"<{items}>"
 
 
-class BaseDict(BaseData, UserDict):
-    pass
-
-
 class DataTable(UserList):
     def __init__(self, data: List[object]) -> None:
         self._name = data[0].__class__.__name__
@@ -70,7 +77,7 @@ class DataTable(UserList):
                 _columns.append(value)
         return _columns
 
-    def rows(self, key: str=None, value: Union[str, int]=None) -> list:
+    def rows(self, key: str=None, value: _UIS=None) -> list:
         if not all([key, value]):
             return self.data
         _rows = []
@@ -85,11 +92,15 @@ class DataTable(UserList):
         # Only called for missing attributes
         return self.column(attr)
 
-    def get_item(self, key: str, value: Union[str, int]) -> object:
+    def get_item(self, key: str, value: _UIS, no_list: bool=False) -> _UOL:
         _rows = self.rows(key, value)
-        if len(_rows) > 1:
-            raise AttributeError(f"{len(_rows)} match for {key}: {value}")
-        return _rows[0]
+        if len(_rows) == 1 or no_list:
+            return _rows[0]
+        elif len(_rows) > 1 and not no_list:
+            return _rows
+
+
+class BaseDict(BaseData, UserDict): pass
 
 
 class InterfaceData(BaseData):
@@ -123,7 +134,6 @@ class LinkData(BaseData):
         self.discovered_proto = None
         self.link_type = None
         self.vlan = None
-        self.local_interface = None
         self.local_port = None
         self.local_if_ip = None
         self.local_native_vlan = None
@@ -134,7 +144,6 @@ class LinkData(BaseData):
         self.remote_name = None
         self.remote_port = None
         self.remote_port_desc = None
-        self.remote_interface = None
         self.remote_native_vlan = None
         self.remote_allowed_vlans = None
         self.remote_lag = None
@@ -148,20 +157,6 @@ class LinkData(BaseData):
         self.remote_platform = None
         self.remote_ios = None
         self.remote_mac = None
-
-    def add_local_interface(self, interface: InterfaceData) -> None:
-        if self.local_interface:
-            raise NettopoDataError(f"Local interface exists for {self}")
-        self.local_interface = interface
-        self.local_port = interface.name
-        self.local_if_ip = interface.ip
-
-    def add_remote_interface(self, interface: InterfaceData) -> None:
-        if self.remote_interface:
-            raise NettopoDataError(f"Remote interface exists for {self}")
-        self.remote_interface = interface
-        self.remote_port = interface.name
-        self.remote_if_ip = interface.ip
 
     def is_same_link(self, link: object) -> bool:
         # Make sure different protocols were used
@@ -248,10 +243,11 @@ class VLANData(BaseData):
 
 
 class ARPData(BaseData):
-    def __init__(self, ip, mac, interface):
+    def __init__(self, ip, mac, interface, arp_type=None):
         self.ip = ip
         self.mac = mac
         self.interface = interface
+        self.arp_type = arp_type
 
 
 class MACData(BaseData):

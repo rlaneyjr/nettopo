@@ -210,3 +210,11 @@ o = Oids()
 g = GeneralOids()
 c = CiscoOids()
 sw1 = SNMP('10.0.0.1', community='letmeSNMP')
+
+_arp_table = '1.3.6.1.2.1.4.22'
+_arp_entry = '1.3.6.1.2.1.4.22.1'
+_arp_vlan = '1.3.6.1.2.1.4.22.1.1'
+_arp_mac = '1.3.6.1.2.1.4.22.1.2'
+_arp_ip = '1.3.6.1.2.1.4.22.1.3'
+_arp_type = '1.3.6.1.2.1.4.22.1.4'
+_arp_oid = '1.3.6.1.2.1.3.1.1.2'

@@ -8,16 +8,6 @@ Author:             Ricky Laney
 Version:            0.1.1
 '''
 
-__all__ = [
-    'NettopoError',
-    'NettopoNodeError',
-    'NettopoNetworkError',
-    'NettopoDiagramError',
-    'NettopoCatalogError',
-    'NettopoCacheError',
-    'NettopoSNMPError',
-]
-
 
 class NettopoError(Exception): pass
 class NettopoNodeError(NettopoError): pass
@@ -27,4 +17,6 @@ class NettopoCacheError(NettopoError): pass
 class NettopoConfigError(NettopoError): pass
 class NettopoDiagramError(NettopoError): pass
 class NettopoSNMPError(NettopoError): pass
+class NettopoSNMPTableError(NettopoError): pass
+class NettopoSNMPValueError(NettopoError): pass
 class NettopoTypeError(NettopoError): pass

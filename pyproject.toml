@@ -18,6 +18,9 @@ tabulate = "^0.8.7"
 about-time = "^3.1.1"
 N2G = "^0.1.2"
 python-igraph = "^0.9.1"
+scapy = "^2.4.4"
+python-nmap = "^0.6.4"
+puresnmp = "^1.10.2"
 
 [tool.poetry.dev-dependencies]
 pytest = "^6.2.2"

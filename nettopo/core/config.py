@@ -11,39 +11,35 @@ from typing import Any, Union
 from nettopo.core.exceptions import NettopoConfigError
 from nettopo.core.util import is_ipv4_address
 
-__all__ = [
-    'SingletonDecorator',
-    'Secret',
-    'show_secret',
-    'DiagramDefaults',
-    'NettopoConfig',
-]
-
 
 DEFAULT_CONFIG = {
-    "snmp": [
-        {"community": "letmeSNMP", "ver": 2},
-        {"community": "private", "ver": 2},
-        {"community": "public", "ver": 2}
+    'general': {
+        'verbose': True,
+        'max_depth': 100,
+    },
+    'snmp': [
+        {'community': 'letmeSNMP', 'ver': 2},
+        {'community': 'private', 'ver': 2},
+        {'community': 'public', 'ver': 2}
     ],
-    "domains": [
-        ".icloudmon.local",
+    'domains': [
+        '.icloudmon.local',
     ],
-    "discover": [
-        "permit 10.0.0.0/8",
-        "permit 172.16.0.0/12",
-        "permit 192.168.0.0/16",
+    'discover': [
+        'permit 10.0.0.0/8',
+        'permit 172.16.0.0/12',
+        'permit 192.168.0.0/16',
     ],
-    "diagram": {
-        "node_text_size": 10,
-        "link_text_size": 8,
-        "title_text_size": 15,
-        "get_stack_members": True,
-        "get_vss_members": True,
-        "expand_stackwise": True,
-        "expand_vss": True,
-        "expand_lag": True,
-        "group_vpc": True
+    'diagram': {
+        'node_text_size': 10,
+        'link_text_size': 8,
+        'title_text_size': 16,
+        'get_stack_members': True,
+        'get_vss_members': True,
+        'expand_stackwise': True,
+        'expand_vss': True,
+        'expand_lag': True,
+        'group_vpc': True
     }
 }
 
@@ -81,26 +77,15 @@ def show_secret(item: Any) -> str:
         return item
 
 
-class DiagramDefaults:
-    node_text_size = 10
-    link_text_size = 8
-    title_text_size = 15
-    get_stack_members = True
-    get_vss_members = True
-    expand_stackwise = True
-    expand_vss = True
-    expand_lag = True
-    group_vpc = True
-
-
 @SingletonDecorator
 class NettopoConfig:
     def __init__(self, config=None, filename=None):
         # Load defaults then override with custom
         self.config = DEFAULT_CONFIG
+        self.general = {}
+        self.diagram = {}
         self.host_domains = []
         self.snmp_creds = []
-        self.diagram = DiagramDefaults()
         self.acl = {'permit': [], 'deny': []}
         self.load(config=config, filename=filename)
 
@@ -119,13 +104,17 @@ class NettopoConfig:
             raise NettopoConfigError(f"ACl line has no permit or deny {line}")
 
     def sync_config(self) -> None:
-        for cred in self.config['snmp']:
+        general_cfg = self.config.get('general')
+        self.general.update(**general_cfg)
+        diagram_cfg = self.config.get('diagram')
+        self.diagram.update(**diagram_cfg)
+        for cred in self.config.get('snmp'):
             if cred['community'] not in self.snmp_creds:
                 self.snmp_creds.append(cred['community'])
-        for domain in self.config['domains']:
+        for domain in self.config.get('domains'):
             if domain not in self.host_domains:
                 self.host_domains.append(domain)
-        for line in self.config['discover']:
+        for line in self.config.get('discover'):
             self.add_acl_line(line)
 
     def load_json(self, json_file):
@@ -148,15 +137,15 @@ class NettopoConfig:
             raise NettopoConfigError(f"Invalid IPv4 - {ip}")
         # Check for host_wild first
         _host_wild = IPNetwork("0.0.0.0/32")
-        if _host_wild in self.acl['permit']:
+        if _host_wild in self.acl.get('permit'):
             return True
-        elif _host_wild in self.acl['deny']:
+        elif _host_wild in self.acl.get('deny'):
             return False
         else:
-            for allow_net in self.acl['permit']:
+            for allow_net in self.acl.get('permit'):
                 if ip in allow_net:
                     return True
-            for deny_net in self.acl['deny']:
+            for deny_net in self.acl.get('deny'):
                 if ip in deny_net:
                     return False
         # No match is deny
@@ -165,19 +154,19 @@ class NettopoConfig:
     def passes_acl(self, net: Union[str, IPNetwork]) -> bool:
         """ Is this IPv4 address or IPv4 network allowed discovery?
         """
-        if '/' not in net:
-            return self.ip_passes_acl(net)
+        if '/' not in str(net):
+            return self.ip_passes_acl(str(net))
         if not isinstance(net, IPNetwork):
             net = IPNetwork(net)
         if net.prefixlen == 32:
-                ip = str(net).split('/')[0]
-                return self.ip_passes_acl(ip)
+            ip = str(net).split('/')[0]
+            return self.ip_passes_acl(ip)
         else:
             # Check allow first
-            for allow_net in self.acl['permit']:
+            for allow_net in self.acl.get('permit'):
                 if (net == allow_net) or (net in allow_net):
                     return True
-            for deny_net in self.acl['deny']:
+            for deny_net in self.acl.get('deny'):
                 if (net == deny_net) or (net in deny_net):
                     return False
         # No match is deny

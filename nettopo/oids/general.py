@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
 Title:              general.py
 Description:        General OIDs
 Author:             Ricky Laney
@@ -15,7 +15,7 @@ Version:            0.1.4
 1.3.6.1.2.1 - SNMP MIB-2
 1.3.6.1.2.1.4 - ip
 1.3.6.1.2.1.4.21 - ipRouteTable
-'''
+"""
 
 
 class GeneralOids:
@@ -35,40 +35,45 @@ class GeneralOids:
     sysORDescr = '1.3.6.1.2.1.1.9.1.3'
     sysORUpTime = '1.3.6.1.2.1.1.9.1.4'
     # From IF-MIB
-    ifTable = "1.3.6.1.2.1.2.2"
-    ifEntry = "1.3.6.1.2.1.2.2.1"
-    ifIndex = "1.3.6.1.2.1.2.2.1.1"
-    ifDescr = "1.3.6.1.2.1.2.2.1.2"
-    ifType = "1.3.6.1.2.1.2.2.1.3"
-    ifMtu = "1.3.6.1.2.1.2.2.1.4"
-    ifSpeed = "1.3.6.1.2.1.2.2.1.5"
-    ifPhysAddress = "1.3.6.1.2.1.2.2.1.6"
-    ifAdminStatus = "1.3.6.1.2.1.2.2.1.7"
-    ifOperStatus = "1.3.6.1.2.1.2.2.1.8"
-    ifAlias = "1.3.6.1.2.1.31.1.1.1.18"
+    ifTable = '1.3.6.1.2.1.2.2'
+    ifEntry = '1.3.6.1.2.1.2.2.1'
+    ifIndex = '1.3.6.1.2.1.2.2.1.1'
+    ifDescr = '1.3.6.1.2.1.2.2.1.2'
+    ifType = '1.3.6.1.2.1.2.2.1.3'
+    ifMtu = '1.3.6.1.2.1.2.2.1.4'
+    ifSpeed = '1.3.6.1.2.1.2.2.1.5'
+    ifPhysAddress = '1.3.6.1.2.1.2.2.1.6'
+    ifAdminStatus = '1.3.6.1.2.1.2.2.1.7'
+    ifOperStatus = '1.3.6.1.2.1.2.2.1.8'
+    ifAlias = '1.3.6.1.2.1.31.1.1.1.18'
+    ifName = '1.3.6.1.2.1.31.1.1.1.1'
     # From IP-MIB
-    ipAdEntTable = "1.3.6.1.2.1.4.20.1"
-    ipAdEntAddr = "1.3.6.1.2.1.4.20.1.1"
-    ipAdEntIfIndex = "1.3.6.1.2.1.4.20.1.2"
-    ipAdEntNetMask = "1.3.6.1.2.1.4.20.1.3"
+    ipMib = '1.3.6.1.2.1.4'
+    ipRouteTable = f'{ipMib}.21'
+    ipAdEntTable = f'{ipMib}.20.1'
+    ipAdEntAddr = f'{ipMib}.20.1.1'
+    ipAdEntIfIndex = f'{ipMib}.20.1.2'
+    ipAdEntNetMask = f'{ipMib}.20.1.3'
     # From HOST-RESOURCES-MIB
-    hrStorageIndex = "1.3.6.1.2.1.25.2.3.1.1"
-    hrStorageType = "1.3.6.1.2.1.25.2.3.1.2"
-    hrStorageDescr = "1.3.6.1.2.1.25.2.3.1.3"
-    hrStorageAllocationUnits = "1.3.6.1.2.1.25.2.3.1.4"
-    hrStorageSize = "1.3.6.1.2.1.25.2.3.1.5"
-    hrStorageUsed = "1.3.6.1.2.1.25.2.3.1.6"
-    hrStorageAllocationFailures = "1.3.6.1.2.1.25.2.3.1.7"
+    hrStorageIndex = '1.3.6.1.2.1.25.2.3.1.1'
+    hrStorageType = '1.3.6.1.2.1.25.2.3.1.2'
+    hrStorageDescr = '1.3.6.1.2.1.25.2.3.1.3'
+    hrStorageAllocationUnits = '1.3.6.1.2.1.25.2.3.1.4'
+    hrStorageSize = '1.3.6.1.2.1.25.2.3.1.5'
+    hrStorageUsed = '1.3.6.1.2.1.25.2.3.1.6'
+    hrStorageAllocationFailures = '1.3.6.1.2.1.25.2.3.1.7'
     hrSWInstalledName = '1.3.6.1.2.1.25.6.3.1.2'
     # From ENTITY-MIB
-    entPhysicalDescr = "1.3.6.1.2.1.47.1.1.1.1.2"
-    entPhysicalName = "1.3.6.1.2.1.47.1.1.1.1.7"
-    entPhysicalHardwareRev = "1.3.6.1.2.1.47.1.1.1.1.8"
-    entPhysicalFirmwareRev = "1.3.6.1.2.1.47.1.1.1.1.9"
-    entPhysicalSoftwareRev = "1.3.6.1.2.1.47.1.1.1.1.10"
-    entPhysicalSerialNum = "1.3.6.1.2.1.47.1.1.1.1.11"
-    entPhysicalMfgName = "1.3.6.1.2.1.47.1.1.1.1.12"
-    entPhysicalModelName = "1.3.6.1.2.1.47.1.1.1.1.13"
+    entMib = '1.3.6.1.2.1.47.1.1.1.1'
+    entPhysicalDescr = f'{entMib}.2'
+    entPhysicalClass = f'{entMib}.5'
+    entPhysicalName = f'{entMib}.7'
+    entPhysicalHardwareRev = f'{entMib}.8'
+    entPhysicalFirmwareRev = f'{entMib}.9'
+    entPhysicalSoftwareRev = f'{entMib}.10'
+    entPhysicalSerialNum = f'{entMib}.11'
+    entPhysicalMfgName = f'{entMib}.12'
+    entPhysicalModelName = f'{entMib}.13'
 
 
 class Oids:
@@ -159,7 +164,7 @@ class Oids:
     VLANS_NEW: str = '1.3.6.1.4.1.9.9.46.1.3.1.1.4.1'
     VLAN_CAM: str = '1.3.6.1.2.1.17.4.3.1.1'
     BRIDGE_PORTNUMS: str = '1.3.6.1.2.1.17.4.3.1.2'
-    IFINDEX: str = '1.3.6.1.2.1.17.1.4.1.2'
+    BRIDGE_IFINDEX: str = '1.3.6.1.2.1.17.1.4.1.2'
     ARP: str = '1.3.6.1.2.1.4.22.1'
     ARP_VLAN: str = '1.3.6.1.2.1.4.22.1.1'
     ARP_MAC: str = '1.3.6.1.2.1.4.22.1.2'

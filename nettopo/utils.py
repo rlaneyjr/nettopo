@@ -238,7 +238,7 @@ def parse_allowed_vlans(allowed_vlans):
             ret += ',1001'
     return ret if ret else 'All'
 
-def in_acl(item, acl):
+def in_acl(ip, acl):
         if acl == 'any':
             return True
         if not re.match('^([0-2]?[0-9]?[0-9]\.){3}[0-2]?[0-9]?[0-9]$', ip):

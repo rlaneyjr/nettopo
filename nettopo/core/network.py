@@ -4,23 +4,136 @@
 """
         network.py
 """
+import netifaces
+import scapy.all as scapy
+import socket
+from dataclasses import dataclass
+from functools import cached_property
+from netaddr import IPNetwork, IPAddress
+from nmap import PortScanner
 from timeit import default_timer as timer
+from typing import Union, Dict, List
+
 from nettopo.core.exceptions import NettopoNetworkError
-from nettopo.core.util import in_acl, str_matches_pattern, normalize_host
+from nettopo.core.util import normalize_host
 from nettopo.core.node import Node
 from nettopo.core.config import NettopoConfig
 from nettopo.core.constants import NOTHING, NODE, DCODE
 from nettopo.core.data import BaseData
 
+_USNA = Union[str, IPNetwork, IPAddress]
+_USN = Union[str, IPNetwork]
+_USA = Union[str, IPAddress]
+_UNN = Union[IPNetwork, NettopoNetworkError]
 
-class Network(BaseData):
-    def __init__(self, conf: NettopoConfig=None):
+
+class NettopoLocalNetwork:
+    """ Use this class to store local network details and ensure we don't
+    include in other operations
+    """
+    @cached_property
+    def name(self):
+        try:
+            myname = socket.gethostname()
+        except:
+            myname = 'localhost'
+        return myname
+
+    @cached_property
+    def dns_ip(self):
+        try:
+            myip = socket.gethostbyname(self.name)
+        except:
+            myip = '127.0.0.1'
+        return myip
+
+    @cached_property
+    def if_addrs(self):
+        return netifaces.ifaddresses(self.default_interface)
+
+    @cached_property
+    def ip(self):
+        return self.if_addrs[netifaces.AF_INET][0]['addr']
+
+    @cached_property
+    def ips(self):
+        return [self.ip, self.dns_ip]
+
+    @cached_property
+    def fqdn(self):
+        try:
+            myfqdn = socket.getfqdn()
+        except:
+            myfqdn = 'localhost.local'
+        return myfqdn
+
+    @cached_property
+    def netmask(self):
+        return self.if_addrs[netifaces.AF_INET][0]['netmask']
+
+    @cached_property
+    def network(self):
+        return IPNetwork(f"{self.ip}/{self.netmask}")
+
+    @cached_property
+    def gws(self):
+        return netifaces.gateways()
+
+    @cached_property
+    def default_gateway(self):
+        return self.gws['default'][netifaces.AF_INET][0]
+
+    @cached_property
+    def default_interface(self):
+        return self.gws['default'][netifaces.AF_INET][1]
+
+
+@dataclass
+class Nslookup:
+    ip: str
+    @cached_property
+    def dns(self) -> str:
+        try:
+            return socket.gethostbyaddr(self.ip)[0]
+        except:
+            return "UNKNOWN"
+
+
+@dataclass
+class Port:
+    port: int
+    @cached_property
+    def name(self) -> str:
+        try:
+            return socket.getservbyport(self.port)
+        except:
+            return "UNKNOWN"
+
+
+class NettopoNetwork(BaseData):
+    items_2_show = ['root_node', 'num_nodes']
+    def __init__(self, network: _USNA=None, conf: NettopoConfig=None):
+        self.local_net = NettopoLocalNetwork()
+        self.config = conf or NettopoConfig()
         self.max_depth = 100
         self.root_node = None
         self.nodes = []
-        self.config = conf or NettopoConfig()
+        self.possible_nodes = []
         self.verbose = True
-        self.items_2_show = ['root_node', 'num_nodes']
+        self.is_local = False
+        self.network = self._create_network(network)
+
+    def _create_network(self, network: _USNA=None) -> _UNN:
+        if not network:
+            network = self.local_net.network
+            self.is_local = True
+        if self.config.passes_acl(network):
+            if not isinstance(network, IPNetwork):
+                return IPNetwork(network)
+            else:
+                return network
+        else:
+            return False
 
     @property
     def num_nodes(self) -> int:
@@ -37,12 +150,23 @@ class Network(BaseData):
             n.queried = False
 
 
-    def discover(self, ip):
+    def snmp_scan(self, hosts=None) -> list:
+        if not hosts:
+            hosts = self.network
+        self._print(f"Scanning network = {hosts}")
+        port_scan = PortScanner(hosts=hosts, ports='161')
+        return port_scan.all_hosts()
+
+
+    def discover(self, root_ip: _USA=None, network: _USN=None):
         """ Discover the network starting at the defined root node IP.
         Recursively enumerate the network tree up to self.depth.
         Populates self.nodes[] as a list of discovered nodes in the
         network with self.root_node being the root.
         """
+        if not root_ip:
+            ip = self.local_net.default_gateway
+        snmp_hosts = self.snmp_scan(network)
         self._print(f"""Discovery codes:
                     . depth
                     {DCODE.ERR_SNMP_STR} connection error

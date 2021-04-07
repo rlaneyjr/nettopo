@@ -51,7 +51,7 @@ class NettopoHost:
     :paraqm: port = The port on the NettopoNode this host is connected to
     :return: None
     '''
-    def __init__(self, ip: AS, mac: str, net_devices=None, links=None) -> None:
+    def __init__(self, ip: AS, mac: str, net_device=None, links=None) -> None:
         self.ip = ip
         self.mac = mac
         self.net_devices = net_devices if net_devices else self.get_net_device()

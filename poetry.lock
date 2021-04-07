@@ -276,6 +276,19 @@ optional = false
 python-versions = "*"
 
 [[package]]
+name = "puresnmp"
+version = "1.10.2.post1"
+description = "Pure Python SNMP implementation"
+category = "main"
+optional = false
+python-versions = ">=3.5,<4.0"
+
+[package.dependencies]
+six = "*"
+t61codec = ">=1.0.1"
+verlib = "*"
+
+[[package]]
 name = "py"
 version = "1.10.0"
 description = "library with cross-python path, ini-parsing, io, code, log facilities"
@@ -394,6 +407,14 @@ texttable = ">=1.6.2"
 plotting = ["pycairo (>=1.18.0)"]
 
 [[package]]
+name = "python-nmap"
+version = "0.6.4"
+description = "This is a python class to use nmap and access scan results from python3"
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "pyyaml"
 version = "5.4.1"
 description = "YAML parser and emitter for Python"
@@ -402,12 +423,41 @@ optional = false
 python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, !=3.4.*, !=3.5.*"
 
 [[package]]
+name = "scapy"
+version = "2.4.4"
+description = "Scapy: interactive packet manipulation tool"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*, !=3.3.*, <4"
+
+[package.extras]
+basic = ["ipython"]
+complete = ["ipython", "pyx", "cryptography (>=2.0)", "matplotlib"]
+docs = ["sphinx (>=2.2.0)", "sphinx_rtd_theme (>=0.4.3)", "tox (>=3.0.0)"]
+
+[[package]]
+name = "six"
+version = "1.15.0"
+description = "Python 2 and 3 compatibility utilities"
+category = "main"
+optional = false
+python-versions = ">=2.7, !=3.0.*, !=3.1.*, !=3.2.*"
+
+[[package]]
 name = "snmpsysdescrparser"
 version = "0.1.20"
 description = "SNMP sysDescr parser."
 category = "main"
 optional = false
 python-versions = "*"
+
+[[package]]
+name = "t61codec"
+version = "2.0.0"
+description = "Python Codec for ITU T.61 Strings"
+category = "main"
+optional = false
+python-versions = ">=3.6,<4.0"
 
 [[package]]
 name = "tabulate"
@@ -451,6 +501,14 @@ ipython-genutils = "*"
 test = ["pytest"]
 
 [[package]]
+name = "verlib"
+version = "0.1"
+description = "A new version comparison tool for distutils."
+category = "main"
+optional = false
+python-versions = "*"
+
+[[package]]
 name = "wcwidth"
 version = "0.2.5"
 description = "Measures the displayed width of unicode strings in a terminal"
@@ -461,7 +519,7 @@ python-versions = "*"
 [metadata]
 lock-version = "1.1"
 python-versions = "^3.9"
-content-hash = "aff2f3a6d73a7c5f4f0fde1188f2a0381458e54e0b9b13076012321bd8889bfa"
+content-hash = "7323f4ebc74c2eec1a0850b8585e40b6ea73fe662917cdd1fe5ec0c4135a6497"
 
 [metadata.files]
 about-time = [
@@ -640,6 +698,10 @@ ptyprocess = [
     {file = "ptyprocess-0.7.0-py2.py3-none-any.whl", hash = "sha256:4b41f3967fce3af57cc7e94b888626c18bf37a083e3651ca8feeb66d492fef35"},
     {file = "ptyprocess-0.7.0.tar.gz", hash = "sha256:5c5d0a3b48ceee0b48485e0c26037c0acd7d29765ca3fbb5cb3831d347423220"},
 ]
+puresnmp = [
+    {file = "puresnmp-1.10.2.post1-py3-none-any.whl", hash = "sha256:b2cc0b31237bea785f0c73009743c87ff899a484b8fbf47d2b7abe1a057e51d8"},
+    {file = "puresnmp-1.10.2.post1.tar.gz", hash = "sha256:615a93c7365fed05357049ff0500eb7152d42f4e3a0181801d07d4fdf2632750"},
+]
 py = [
     {file = "py-1.10.0-py2.py3-none-any.whl", hash = "sha256:3b80836aa6d1feeaa108e046da6423ab8f6ceda6468545ae8d02d9d58d18818a"},
     {file = "py-1.10.0.tar.gz", hash = "sha256:21b81bda15b66ef5e1a777a21c4dcd9c20ad3efd0b3f817e7a809035269e1bd3"},
@@ -770,6 +832,9 @@ python-igraph = [
     {file = "python_igraph-0.9.1-pp37-pypy37_pp73-manylinux2010_x86_64.whl", hash = "sha256:64f9745278c412ef131cd5ea174ff67f9473fe7666bcb1e0b4fc7f1b21c3e224"},
     {file = "python_igraph-0.9.1-pp37-pypy37_pp73-win32.whl", hash = "sha256:391c94f3630b07f7de3a9381a31a96b244944c8a804a39e7946fa45876bc5a15"},
 ]
+python-nmap = [
+    {file = "python-nmap-0.6.4.tar.gz", hash = "sha256:5d4bced024ca5defc57531be0fca7bf8158a99c330f42373354ea776d2117804"},
+]
 pyyaml = [
     {file = "PyYAML-5.4.1-cp27-cp27m-macosx_10_9_x86_64.whl", hash = "sha256:3b2b1824fe7112845700f815ff6a489360226a5609b96ec2190a45e62a9fc922"},
     {file = "PyYAML-5.4.1-cp27-cp27m-win32.whl", hash = "sha256:129def1b7c1bf22faffd67b8f3724645203b79d8f4cc81f674654d9902cb4393"},
@@ -793,9 +858,20 @@ pyyaml = [
     {file = "PyYAML-5.4.1-cp39-cp39-win_amd64.whl", hash = "sha256:c20cfa2d49991c8b4147af39859b167664f2ad4561704ee74c1de03318e898db"},
     {file = "PyYAML-5.4.1.tar.gz", hash = "sha256:607774cbba28732bfa802b54baa7484215f530991055bb562efbed5b2f20a45e"},
 ]
+scapy = [
+    {file = "scapy-2.4.4.tar.gz", hash = "sha256:ecfd7a14cd9c3ef0eb08d28d5bb71d97219edff1454ccbdff229f676b27900ee"},
+]
+six = [
+    {file = "six-1.15.0-py2.py3-none-any.whl", hash = "sha256:8b74bedcbbbaca38ff6d7491d76f2b06b3592611af620f8426e82dddb04a5ced"},
+    {file = "six-1.15.0.tar.gz", hash = "sha256:30639c035cdb23534cd4aa2dd52c3bf48f06e5f4a941509c8bafd8ce11080259"},
+]
 snmpsysdescrparser = [
     {file = "snmpsysdescrparser-0.1.20-py3-none-any.whl", hash = "sha256:7d66be1f858ceab890ee4f84908e9bb55b02b5ea82a7c41e31905542bfa32477"},
     {file = "snmpsysdescrparser-0.1.20.tar.gz", hash = "sha256:c7f2e9d9e24e14a222060044abac564730e692bb069a0c834f78f60fc59ad144"},
+]
+t61codec = [
+    {file = "t61codec-2.0.0-py3-none-any.whl", hash = "sha256:7475de8a568c5d381bc8cd823258bcaae0ec8365d037713c3c9ba9c7abce14eb"},
+    {file = "t61codec-2.0.0.tar.gz", hash = "sha256:21c238fbf897b32e5fe9450b71193a1d223abb591dd84b5da8fbc50a2c9277db"},
 ]
 tabulate = [
     {file = "tabulate-0.8.7-py3-none-any.whl", hash = "sha256:ac64cb76d53b1231d364babcd72abbb16855adac7de6665122f97b593f1eb2ba"},
@@ -812,6 +888,9 @@ toml = [
 traitlets = [
     {file = "traitlets-5.0.5-py3-none-any.whl", hash = "sha256:69ff3f9d5351f31a7ad80443c2674b7099df13cc41fc5fa6e2f6d3b0330b0426"},
     {file = "traitlets-5.0.5.tar.gz", hash = "sha256:178f4ce988f69189f7e523337a3e11d91c786ded9360174a3d9ca83e79bc5396"},
+]
+verlib = [
+    {file = "verlib-0.1.tar.gz", hash = "sha256:652d097d114dc9076606a5416b0dc193df3ef2632596e6e0e9d21d2ba51bf267"},
 ]
 wcwidth = [
     {file = "wcwidth-0.2.5-py2.py3-none-any.whl", hash = "sha256:beb4802a9cebb9144e99086eff703a642a13d6a0052920003a230f3294bbe784"},

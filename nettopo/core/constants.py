@@ -107,7 +107,7 @@ node_type_map = {
     3: 'newip',
 }
 
-mac_type_map = {
+arp_type_map = {
     0: 'unknown',
     1: 'other',
     2: 'invalid',
