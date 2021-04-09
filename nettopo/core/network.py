@@ -16,7 +16,7 @@ from typing import Union, Dict, List
 
 from nettopo.core.exceptions import NettopoNetworkError
 from nettopo.core.util import normalize_host
-from nettopo.core.node import Node
+from nettopo.core.node import Node, Nodes
 from nettopo.core.config import NettopoConfig
 from nettopo.core.constants import NOTHING, NODE, DCODE
 from nettopo.core.data import BaseData
@@ -24,7 +24,7 @@ from nettopo.core.data import BaseData
 _USNA = Union[str, IPNetwork, IPAddress]
 _USN = Union[str, IPNetwork]
 _USA = Union[str, IPAddress]
-_UNN = Union[IPNetwork, NettopoNetworkError]
+_UNN = Union[IPNetwork, None]
 
 
 class NettopoLocalNetwork:
@@ -111,19 +111,23 @@ class Port:
 
 
 class NettopoNetwork(BaseData):
-    items_2_show = ['root_node', 'num_nodes']
+    show_items = ['root_node', 'num_nodes']
     def __init__(self, network: _USNA=None, conf: NettopoConfig=None):
         self.local_net = NettopoLocalNetwork()
         self.config = conf or NettopoConfig()
         self.max_depth = 100
         self.root_node = None
-        self.nodes = []
-        self.possible_nodes = []
+        self.nodes = None
+        self.possible_nodes = None
         self.verbose = True
         self.is_local = False
-        self.network = self._create_network(network)
+        self.network = self.create_network(network)
 
-    def _create_network(self, network: _USNA=None) -> _UNN:
+    def __len__(self) -> int:
+        if self.nodes:
+            return len(self.nodes)
+
+    def create_network(self, network: _USNA=None) -> _UNN:
         if not network:
             network = self.local_net.network
             self.is_local = True
@@ -133,30 +137,19 @@ class NettopoNetwork(BaseData):
             else:
                 return network
         else:
-            return False
-
-    @property
-    def num_nodes(self) -> int:
-        return len(self.nodes)
-
+            self._print(f"{network} is not allowed to be discovered")
 
     def _print(self, stuff: str) -> None:
         if self.verbose:
             print(stuff)
 
-
-    def reset_discovered(self):
-        for n in self.nodes:
-            n.queried = False
-
-
-    def snmp_scan(self, hosts=None) -> list:
+    def snmp_scan(self, hosts=None) -> None:
         if not hosts:
             hosts = self.network
         self._print(f"Scanning network = {hosts}")
-        port_scan = PortScanner(hosts=hosts, ports='161')
-        return port_scan.all_hosts()
-
+        port_scanner = PortScanner()
+        port_scanner.scan(hosts=str(hosts), ports='161')
+        self.possible_nodes = port_scanner.all_hosts()
 
     def discover(self, root_ip: _USA=None, network: _USN=None):
         """ Discover the network starting at the defined root node IP.
@@ -165,10 +158,17 @@ class NettopoNetwork(BaseData):
         network with self.root_node being the root.
         """
         if not root_ip:
-            ip = self.local_net.default_gateway
-        snmp_hosts = self.snmp_scan(network)
+            # Use the default gateway as starting point
+            root_ip = self.local_net.default_gateway
+        if not network:
+            network = f"{root_ip}/24"
+        self.snmp_scan(network)
+        if root_ip not in self.possible_nodes:
+            raise NettopoNetworkError(
+                f"{root_ip} appears to not have SNMP enabled"
+            )
         self._print(f"""Discovery codes:
-                    . depth
+                    . depth indicator
                     {DCODE.ERR_SNMP_STR} connection error
                     {DCODE.DISCOVERED_STR} discovering node
                     {DCODE.STEP_INTO_STR} numerating adjacencies
@@ -176,27 +176,24 @@ class NettopoNetwork(BaseData):
                     {DCODE.LEAF_STR} leaf node""")
         print('Discovering network...')
         # Start the process of querying this node and recursing adjacencies.
-        self.root_node, new_node = self.query_ip(ip, 'UNKNOWN')
-        if self.root_node:
-            self._print(f"Discovery of {ip} successful")
-            self.nodes.append(self.root_node)
-            self.print_step(self.root_node.ip[0], self.root_node.name,
+        root_node = Node(root_ip, immediate_query=True)
+        if root_node.queried:
+            self._print(f"Discovery of {root_ip} successful")
+            self.root_node = root_node
+            self.print_step(self.root_node.ip, self.root_node.name,
                             [DCODE.ROOT, DCODE.DISCOVERED])
             self.discover_node(self.root_node, self.max_depth)
         else:
-            print(f"Discovery of {ip} failed")
+            print(f"Discovery of {root_ip} failed")
             return
 
-
-    def discover_node(self, node: Node, depth=None):
+    def discover_node(self, node: Node, depth: int=0):
         """ Given a node, recursively enumerate its adjacencies
         until we reach the specified depth (>0).
         Args:
         node:   Node object to enumerate.
         depth:  The depth left that we can go further away from the root.
         """
-        if not depth:
-            depth = self.max_depth
         if depth > self.max_depth:
             return
         # vmware ESX can report IP as 0.0.0.0
@@ -209,8 +206,6 @@ class NettopoNetwork(BaseData):
         if depth == 0:
             dcodes.append(DCODE.ROOT)
         self.print_step(node.ip, node.name, dcodes)
-        # get the cached snmp credentials
-        snmpobj = node.snmp
         # get list of neighbors
         neighbors = node.links
         for n in neighbors:
@@ -241,7 +236,6 @@ class NettopoNetwork(BaseData):
             # if we need to discover this node then add it to the list
             if query_result == NODE.NEW:
                 self.discover_node(child, depth+1)
-
 
     def discover_details(self):
         """ Enumerate the discovered nodes from discover() and update the
@@ -288,56 +282,7 @@ class NettopoNetwork(BaseData):
                         link.node.vpc_peerlink_node = node
                         break
 
-
-    def query_ip(self, ip, hostname: str='UNKNOWN'):
-        """ Query this IP.
-        Return node details and if we already knew about it or if this is a new node.
-        Don't save the node to the known list, just return info about it.
-        Args:
-        ip:                 IP Address of the node.
-        host:               Hostname of this known (if known from CDP/LLDP)
-        Returns:
-        Node:        Node of this object
-        int:                NODE.NEW = Newly queried node
-        NODE.NEWIP = Already knew about this node but not by this IP
-        NODE.KNOWN = Already knew about this node
-        """
-        host = normalize_host(hostname)
-        node, node_updated = self.get_known_node(ip, host)
-        if node:
-            if node.queried:
-                return node, NODE.KNOWN
-            state = NODE.NEWIP if node_updated else NODE.KNOWN
-        else:
-            node = Node(ip)
-            state = NODE.NEW
-        # vmware ESX reports the IP as 0.0.0.0
-        # LLDP can return an empty string for IPs.
-        if ip in NOTHING or not node.snmp.success:
-            return node, state
-        node.query_node()
-        node.name = node.get_system_name(self.config.host_domains)
-        if node.name != hostname:
-            # the hostname changed (cdp/lldp vs snmp)!
-            # double check we don't already know about this node
-            if state == NODE.NEW:
-                node2, node2_updated = self.get_known_node(ip, host)
-                if node2 and not node2_updated:
-                    return node, NODE.KNOWN
-                elif node2_updated:
-                    state = NODE.NEWIP
-        # Finally, if we still don't have a name, use the IP.
-        # e.g. Maybe CDP/LLDP was empty and we dont have good credentials
-        # for this device.  A blank name can break Dot.
-        if node.name in NOTHING:
-            node.name = node.get_ipaddr().replace('.', '_')
-        # CDP/LLDP does not report, need for extended ACL
-        node.actions.get_serial = True
-        node.query_node()
-        return node, state
-
-
-    def get_known_node(self, ip, hostname='UNKNOWN'):
+    def get_node(self, ip, hostname: str):
         """ Look for known nodes by IP and HOSTNAME.
         If found by HOSTNAME, add the IP if not already known.
         Return:
@@ -345,22 +290,58 @@ class NettopoNetwork(BaseData):
         updated:    True=updated, False=not updated
         """
         current_node = None
-        for x in self.nodes:
-            for xip in x.ip:
-                if xip == '0.0.0.0':
-                    continue
-                if xip == ip:
-                    return x, False
-            if x.name == hostname:
-                current_node = x
+        for node in self.nodes:
+            if (ip == node.ip) or (hostname == node.name):
+                current_node = node
         if current_node:
-            if ip not in current_node.ip:
-                current_node.ip.append(ip)
+            if ip not in current_node.ips:
+                current_node.ips.append(ip)
                 return current_node, True
-            return current_node, False
+            else:
+                return current_node, False
         else:
             return False, False
 
+    def query_ip(self, ip, hostname: str=None):
+        """ Query this IP.
+        Return node details and if we already knew about it or if this is a new node.
+        Don't save the node to the known list, just return info about it.
+        Args:
+        ip:                 IP Address of the node.
+        host:               Hostname of this node (if known from CDP/LLDP)
+        Returns:
+        Node:        Node of this object
+        int:                NODE.NEW = Newly queried node
+        NODE.NEWIP = Already knew about this node but not by this IP
+        NODE.KNOWN = Already knew about this node
+        """
+        if hostname:
+            host = normalize_host(hostname, self.config.host_domains)
+        else:
+            host = 'unknown'
+        node, was_updated = self.get_node(ip, host)
+        if node:
+            state = NODE.NEWIP if was_updated else NODE.KNOWN
+            if node.queried:
+                return node, state
+        else:
+            node = Node(ip)
+            state = NODE.NEW
+        # vmware ESX reports the IP as 0.0.0.0
+        # LLDP can return an empty string for IPs.
+        if node.ip in NOTHING or not node.snmp.success:
+            return node, state
+        node.query_node()
+        if (node.name != host) and (state != NODE.NEW):
+            # the hostname changed (cdp/lldp vs snmp)!
+            # double check we don't already know about this node
+            if state == NODE.NEW:
+                node2, node2_updated = self.get_node(ip, host)
+                if node2 and not node2_updated:
+                    return node, NODE.KNOWN
+                elif node2_updated:
+                    state = NODE.NEWIP
+        return node, state
 
     def print_step(self, ip, name, dcodes, depth=0):
         dcodes = dcodes if isinstance(dcodes, list) else list(dcodes)
@@ -395,7 +376,6 @@ class NettopoNetwork(BaseData):
             self._print(".")
         name = normalize_host(name)
         self._print(f"{name} ({ip})")
-
 
     def add_update_link(self, node, link):
         """ Add or update a link.

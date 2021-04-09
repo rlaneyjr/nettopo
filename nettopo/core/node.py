@@ -218,6 +218,10 @@ class Node(BaseData):
                     snmp_name.value,
                     self.snmp.config.host_domains,
                 )
+            # Finally, if we still don't have a name, use the IP.
+            # A blank name can break Dot.
+            if self.name in NOTHING:
+                self.name = self.ip.replace('.', '_')
             bar()
             # Description
             snmp_descr = self.snmp_get(o.SYSDESC)

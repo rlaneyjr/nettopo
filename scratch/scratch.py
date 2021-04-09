@@ -218,3 +218,10 @@ _arp_mac = '1.3.6.1.2.1.4.22.1.2'
 _arp_ip = '1.3.6.1.2.1.4.22.1.3'
 _arp_type = '1.3.6.1.2.1.4.22.1.4'
 _arp_oid = '1.3.6.1.2.1.3.1.1.2'
+
+from nettopo.core.node import Node, Nodes
+sw1 = Node('10.0.0.1', community='letmeSNMP')
+sw1.query_node()
+sw2 = Node('10.0.0.2', community='letmeSNMP')
+sw2.query_node()
+
