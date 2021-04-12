@@ -20,12 +20,12 @@ from nettopo.core.catalog import Catalog
 class Nettopo:
     """ Core Nettopo class provides entrance to all Nettopo actions
     """
-    def __init__(self, conf=None, conf_file=None):
+    def __init__(self, config=None, config_file=None):
         self.config = NettopoConfig()
-        if conf:
-            self.config.load(config=conf)
-        elif conf_file and os.path.isfile(conf_file):
-            self.config.load(filename=conf_file)
+        if config:
+            self.config.load(config=config)
+        elif config_file and os.path.isfile(config_file):
+            self.config.load(filename=config_file)
         self.network = Network(self.config)
         self.diagram = None
         self.catalog = None

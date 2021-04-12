@@ -51,6 +51,7 @@ from nettopo.core.data import (
 from nettopo.core.exceptions import NettopoSNMPError, NettopoNodeError
 from nettopo.core.snmp import SNMP
 from nettopo.core.util import (
+    show_secret,
     timethis,
     bits_from_mask,
     normalize_host,
@@ -97,10 +98,13 @@ class Nodes(DataTable):
     """ Store a list of nodes with our DataTable class.
         Use this just like a list but with Nodes only.
     """
-    def __get__(self, node_id: str) -> object:
-        for node in self.data:
-            if node._id == node_id:
-                return node
+    def get_node(self, node_id: str) -> object:
+        return self.get_item('_id', node_id, True)
+
+    def append(self, node: object) -> None:
+        current_node = self.get_item('_id', node._id, True)
+        if not current_node:
+            super().append(node)
 
 
 class Node(BaseData):
@@ -178,11 +182,11 @@ class Node(BaseData):
 
     def use_vlan_community(self, vlan: _UIS) -> _USN:
         original_community = self.snmp.community
-        community = f"{original_community}@{str(vlan)}"
+        community = f"{show_secret(original_community)}@{str(vlan)}"
         if self.snmp.check_community(community):
             return original_community
         else:
-            raise NettopoSNMPError(f"ERROR: {community} failed {self.ip}")
+            raise NettopoSNMPError(f"ERROR: {community} failed for {self.ip}")
 
     def snmp_get(self, item: _UISO, is_bulk: bool=False,
                                 vlan: _UIS=None) -> _OA:
@@ -323,7 +327,7 @@ class Node(BaseData):
         """ Combine CDP and LLDP to create links
 
         Using the following method:
-            1. Make a new 'deep' copy of CDP called 'links'.
+            1. Make a new 'deep' copy of CDP as 'links'.
             2. Iterate though CDP and LLDP.
             3. If a match is found 'is_same_link'.
             4. Remove the CDP entry.

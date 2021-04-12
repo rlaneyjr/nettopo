@@ -29,6 +29,13 @@ from nettopo.core.data import LinkData
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
 
 
+def show_secret(item: Any) -> str:
+    if hasattr(item, 'show'):
+        return item.show
+    else:
+        return item
+
+
 def build_uuid():
     return str(uuid.uuid4())
 

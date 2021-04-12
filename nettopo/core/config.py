@@ -4,16 +4,19 @@
 '''
     config.py
 '''
+from collections import UserList
 from netaddr import IPNetwork
 import json
 import sys
 from typing import Any, Union
+from nettopo.core.data import Secret, SecretList, SingletonDecorator
 from nettopo.core.exceptions import NettopoConfigError
-from nettopo.core.util import is_ipv4_address
+from nettopo.core.util import is_ipv4_address, show_secret
 
 
 DEFAULT_CONFIG = {
     'general': {
+        'show_progress': True,
         'verbose': True,
         'max_depth': 100,
     },
@@ -44,39 +47,6 @@ DEFAULT_CONFIG = {
 }
 
 
-class SingletonDecorator:
-    def __init__(self, klass):
-        self.klass = klass
-        self.instance = None
-
-    def __call__(self, *args, **kwds):
-        if self.instance == None:
-            self.instance = self.klass(*args, **kwds)
-        return self.instance
-
-
-class Secret:
-    def __init__(self, secret):
-        self._secret = secret
-
-    def __str__(self):
-        return "******"
-
-    def __repr__(self):
-        return "[Secret] - hidden"
-
-    @property
-    def _show(self):
-        return self._secret
-
-
-def show_secret(item: Any) -> str:
-    if isinstance(item, Secret):
-        return item._show
-    else:
-        return item
-
-
 @SingletonDecorator
 class NettopoConfig:
     def __init__(self, config=None, filename=None):
@@ -85,7 +55,7 @@ class NettopoConfig:
         self.general = {}
         self.diagram = {}
         self.host_domains = []
-        self.snmp_creds = []
+        self.snmp_creds = SecretList([])
         self.acl = {'permit': [], 'deny': []}
         self.load(config=config, filename=filename)
 
@@ -109,8 +79,9 @@ class NettopoConfig:
         diagram_cfg = self.config.get('diagram')
         self.diagram.update(**diagram_cfg)
         for cred in self.config.get('snmp'):
-            if cred['community'] not in self.snmp_creds:
-                self.snmp_creds.append(cred['community'])
+            secret_cred = Secret(cred['community'])
+            if secret_cred not in self.snmp_creds:
+                self.snmp_creds.append(secret_cred)
         for domain in self.config.get('domains'):
             if domain not in self.host_domains:
                 self.host_domains.append(domain)

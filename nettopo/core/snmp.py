@@ -25,12 +25,13 @@ from nettopo.core.constants import (
     INTEGRITY_ALGO,
     PRIVACY_ALGO,
 )
+from nettopo.core.data import Secret, SecretList
 from nettopo.core.exceptions import (
     NettopoSNMPError,
     NettopoSNMPTableError,
     NettopoSNMPValueError,
 )
-from nettopo.core.util import oid_endswith
+from nettopo.core.util import oid_endswith, show_secret
 from nettopo.snmp.utils import (
     return_pretty_val,
     return_snmptype_val,
@@ -41,7 +42,7 @@ _IP = Union[str, IPAddress]
 _UIS = Union[int, str]
 _UISO = Union[int, str, ObjectIdentity]
 _UDL = Union[dict, list]
-_UDLS = Union[dict, list, str]
+_USDLS = Union[SecretList, dict, list, str]
 _ULN = Union[list, None]
 _ULS = Union[list, str]
 
@@ -181,21 +182,23 @@ class SNMP:
                     f"Failed all SNMP creds - {self.ip}"
                 )
 
-    def check_community(self, community: str) -> bool:
+    def check_community(self, community: Union[str, Secret]) -> bool:
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
-            cmdgen.CommunityData(community),
+            cmdgen.CommunityData(show_secret(community)),
             cmdgen.UdpTransportTarget((self.ip, self.port)),
             '1.3.6.1.2.1.1.5.0')
         if errIndication:
             self.success = False
         else:
             self.success = True
+            if not isinstance(community, Secret):
+                community = Secret(community)
             self.community = community
         return self.success
 
-    def check_creds(self, snmp_creds: _UDLS) -> bool:
-        if isinstance(snmp_creds, list):
+    def check_creds(self, snmp_creds: _USDLS) -> bool:
+        if isinstance(snmp_creds, (SecretList, list)):
             for cred in snmp_creds:
                 if self.check_community(cred):
                     return True

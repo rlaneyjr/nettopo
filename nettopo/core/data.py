@@ -20,7 +20,53 @@ _UDL = Union[dict, list]
 _UDLS = Union[dict, list, str]
 _ULN = Union[list, None]
 _ULS = Union[list, str]
-_UOL = Union[object, list]
+_UOLN = Union[object, list, None]
+
+
+class SingletonDecorator:
+    def __init__(self, klass):
+        self.klass = klass
+        self.instance = None
+
+    def __call__(self, *args, **kwds):
+        if self.instance == None:
+            self.instance = self.klass(*args, **kwds)
+        return self.instance
+
+
+class Secret:
+    def __init__(self, secret):
+        self._secret = secret
+
+    def __str__(self):
+        return "******"
+
+    def __repr__(self):
+        return "[Secret] - hidden"
+
+    def __eq__(self, other: object) -> bool:
+        return self._secret == other._secret
+
+    @property
+    def show(self):
+        return self._secret
+
+
+class SecretList(UserList):
+    def __repr__(self) -> str:
+        return f"[SecretList] - {len(self)} secrets"
+
+    def __contains__(self, thing):
+        if hasattr(thing, 'show'):
+            return thing.show in [m.show for m in self]
+        else:
+            return thing in [m.show for m in self]
+
+    def append(self, thing):
+        if not isinstance(thing, Secret):
+            thing = Secret(thing)
+        super().append(thing)
+
 
 class BaseData:
     """ Base Data class that all other classes inherit from
@@ -92,11 +138,13 @@ class DataTable(UserList):
         # Only called for missing attributes
         return self.column(attr)
 
-    def get_item(self, key: str, value: _UIS, no_list: bool=False) -> _UOL:
+    def get_item(self, key: str, value: _UIS, no_list: bool=False) -> _UOLN:
         _rows = self.rows(key, value)
-        if len(_rows) == 1 or no_list:
+        if not _rows:
+            return None
+        if (len(_rows) == 1) or no_list:
             return _rows[0]
-        elif len(_rows) > 1 and not no_list:
+        elif (len(_rows) > 1) and not no_list:
             return _rows
 
 
