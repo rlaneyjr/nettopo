@@ -31,7 +31,7 @@ from nettopo.core.exceptions import (
     NettopoSNMPTableError,
     NettopoSNMPValueError,
 )
-from nettopo.core.util import oid_endswith, show_secret
+from nettopo.core.util import oid_endswith
 from nettopo.snmp.utils import (
     return_pretty_val,
     return_snmptype_val,
@@ -183,17 +183,17 @@ class SNMP:
                 )
 
     def check_community(self, community: Union[str, Secret]) -> bool:
+        if not isinstance(community, Secret):
+            community = Secret(community)
         cmdGen = cmdgen.CommandGenerator()
         errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
-            cmdgen.CommunityData(show_secret(community)),
+            cmdgen.CommunityData(community.show),
             cmdgen.UdpTransportTarget((self.ip, self.port)),
             '1.3.6.1.2.1.1.5.0')
         if errIndication:
             self.success = False
         else:
             self.success = True
-            if not isinstance(community, Secret):
-                community = Secret(community)
             self.community = community
         return self.success
 
@@ -216,7 +216,7 @@ class SNMP:
         with about_time() as t_total:
             cmdGen = cmdgen.CommandGenerator()
             errIndication, errStatus, errIndex, varBinds = cmdGen.getCmd(
-                cmdgen.CommunityData(self.community),
+                cmdgen.CommunityData(self.community.show),
                 cmdgen.UdpTransportTarget((self.ip, self.port), retries=2),
                 oid,
             )
@@ -230,7 +230,7 @@ class SNMP:
         with about_time() as t_total:
             cmdGen = cmdgen.CommandGenerator()
             errIndication, errStatus, errIndex, varBindTable = cmdGen.bulkCmd(
-                cmdgen.CommunityData(self.community),
+                cmdgen.CommunityData(self.community.show),
                 cmdgen.UdpTransportTarget(
                     (self.ip, self.port),
                     timeout=30,

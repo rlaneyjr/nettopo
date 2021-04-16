@@ -25,15 +25,8 @@ from typing import Any, Union
 import uuid
 # My Stuff
 from nettopo.core.constants import SNMP_TYPES, port_conversion_map
-from nettopo.core.data import LinkData
+from nettopo.core.data import Secret, LinkData
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
-
-
-def show_secret(item: Any) -> str:
-    if hasattr(item, 'show'):
-        return item.show
-    else:
-        return item
 
 
 def build_uuid():

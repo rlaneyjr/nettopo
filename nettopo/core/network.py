@@ -14,12 +14,12 @@ from nmap import PortScanner
 from timeit import default_timer as timer
 from typing import Union, Dict, List
 
-from nettopo.core.exceptions import NettopoNetworkError
-from nettopo.core.util import normalize_host
+from nettopo.core.exceptions import NettopoSNMPError, NettopoNetworkError
+from nettopo.core.util import normalize_host, is_ipv4_address
 from nettopo.core.node import Node, Nodes
 from nettopo.core.config import NettopoConfig
 from nettopo.core.constants import NOTHING, NODE, DCODE
-from nettopo.core.data import BaseData
+from nettopo.core.data import BaseData, LinkData
 
 _USNA = Union[str, IPNetwork, IPAddress]
 _USN = Union[str, IPNetwork]
@@ -117,9 +117,11 @@ class NettopoNetwork(BaseData):
         self.config = NettopoConfig()
         self.root_node = None
         self.nodes = None
+        self.hosts = None
         self.snmp_nodes = None
         self.is_local = False
         self.network =  None
+        self.level = None
         self.max_depth = self.config.general['max_depth']
         self.verbose = self.config.general['verbose']
         self.create_network(network)
@@ -145,35 +147,52 @@ class NettopoNetwork(BaseData):
             self.is_local = None
             self._print(f"{network} is not allowed to be discovered")
 
+    def create_node(self, ip, query=True):
+        try:
+            node = Node(ip)
+            if query:
+                node.query_node()
+            return node
+        except NettopoSNMPError:
+            self._print(f"SNMP failed for SNMP discovered node {ip}")
+
     def snmp_scan(self, hosts: str) -> None:
         self._print(f"Scanning network = {hosts}")
         port_scanner = PortScanner()
         port_scanner.scan(hosts=hosts, ports='161')
-        self.snmp_nodes = port_scanner.all_hosts()
+        snmp_ips = port_scanner.all_hosts()
+        while snmp_ips:
+            ip = snmp_ips.pop(0)
+            node = self.create_node(ip, False)
+            if node:
+                if not self.snmp_nodes:
+                    self.snmp_nodes = Nodes([node])
+                else:
+                    self.snmp_nodes.append(node)
 
     def discover(self, root_ip: _USA=None):
-        hosts = None
-        if not root_ip:
-            if not self.is_local:
-                raise NettopoNetworkError(
-                    f"Must provide root ip for non-local network {self.network}"
-                )
-            else:
-                # Try the default gateway as starting point
-                root_ip = self.local_net.default_gateway
-        if self.network and root_ip in self.network:
-            hosts = str(self.network)
-        else:
+        if not root_ip and not self.network:
+            raise NettopoNetworkError("Error must provide root IP or network")
+        elif not root_ip and self.is_local:
+            # Try the default gateway on local network
+            root_ip = self.local_net.default_gateway
+        if (root_ip and not self.network) or (root_ip not in self.network):
             # Try creating network with root_ip
             self.create_network(f"{root_ip}/24")
-            if self.network:
-                hosts = str(self.network)
-        if hosts:
-            self.snmp_scan(hosts)
+            if not self.network:
+                raise NettopoNetworkError(f"{root_ip}/24 did not pass ACL")
+        if not root_ip and self.network:
+            # Still no root but we have network we can scan for SNMP nodes
+            self.snmp_scan(str(self.network))
+        # Create the root node
+        if root_ip:
+            self.root_node = self.create_node(root_ip, False)
+        elif self.snmp_nodes:
+            self.root_node = self.snmp_nodes.pop(0)
         else:
-            raise NettopoNetworkError(f"{root_ip}/24 did not pass ACL")
-        if root_ip not in self.snmp_nodes:
-            raise NettopoNetworkError(f"{root_ip} does not have SNMP enabled")
+            raise NettopoNetworkError(
+                f"No SNMP nodes discovered on {self.network}"
+            )
         self._print(f"""Discovery codes:
                     . depth indicator
                     {DCODE.ERR_SNMP_STR} connection error
@@ -182,14 +201,75 @@ class NettopoNetwork(BaseData):
                     {DCODE.INCLUDE_STR} include node
                     {DCODE.LEAF_STR} leaf node""")
         print('Discovering network...')
-        # Start the process of querying this node and recursing adjacencies.
-        root_node = Node(root_ip, immediate_query=True)
-        if root_node.snmp.success:
+        # Start the process of querying snmp nodes and recursing adjacencies.
+        if self.root_node:
+            self.root_node.query_node()
             self._print(f"Discovery of {root_ip} successful")
-            self.root_node = root_node
-            self.print_step(self.root_node.ip, self.root_node.name,
-                            [DCODE.ROOT, DCODE.DISCOVERED])
-            self.discover_node(self.root_node)
+            self._print(f"""Checking adjacencies:
+                {self.root_node.name}, {self.root_node.ip}
+                {DCODE.ROOT}, {DCODE.DISCOVERED}""")
+            self.nodes = Nodes([self.root_node])
+            self.hosts = []
+            self.level = 0
+            if self.snmp_nodes:
+                self.discover_level(self.snmp_nodes)
+            else:
+                self.discover_level()
         else:
             print(f"Discovery of {root_ip} failed")
             return
+
+    def discover_level(self, nodes=None):
+        if self.level == 0:
+            # First level "root level"
+            if not nodes:
+                self.discover_neighbors(self.root_node)
+        # Increase our level
+        self.level += 1
+        # Check max depth
+        if self.level <= self.max_depth:
+            for node in nodes:
+                self.discover_neighbors(node)
+
+    def discover_neighbors(self, node: Node):
+        # Store our new nodes here
+        new_nodes = []
+        for link in node.links:
+            link, new_node = self.process_link(link)
+            if new_node:
+                new_nodes.append(new_node)
+            elif link:
+                self.hosts.append(link)
+            else:
+                self._print("Already knew about this node")
+        # Got our new neighbors now discover them
+        if new_nodes:
+            self.nodes.extend(new_nodes)
+            self.discover_level(new_nodes)
+
+    def process_link(self, link: LinkData):
+        # We have not processed this link yet
+        if not link.remote_node:
+            if is_ipv4_address(link.remote_ip) and link.remote_ip != '0.0.0.0':
+                if link.remote_name in self.nodes.column('name'):
+                    known_node = self.nodes.get_node(link.remote_name, 'name')
+                    link.remote_node = known_node._id
+                    # Add IP to list if not there
+                    if link.remote_ip not in known_node.ips:
+                        known_node.ips.append(link.remote_ip)
+                    return False, False
+                else:
+                    try:
+                        # Create and process as remote node
+                        new_node = Node(link.remote_ip)
+                        link.remote_node = new_node._id
+                        new_node.query_node()
+                        return link, new_node
+                    except NettopoSNMPError:
+                        self._print(f"SNMP failed for {link.remote_ip}")
+                        link.remote_node = 'host'
+                        return link, False
+            else:
+                # No valid IP so add it as a host
+                link.remote_node = 'host'
+                return link, False

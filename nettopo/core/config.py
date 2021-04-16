@@ -9,9 +9,9 @@ from netaddr import IPNetwork
 import json
 import sys
 from typing import Any, Union
-from nettopo.core.data import Secret, SecretList, SingletonDecorator
+from nettopo.core.data import SecretList, SingletonDecorator
 from nettopo.core.exceptions import NettopoConfigError
-from nettopo.core.util import is_ipv4_address, show_secret
+from nettopo.core.util import is_ipv4_address
 
 
 DEFAULT_CONFIG = {
@@ -79,9 +79,7 @@ class NettopoConfig:
         diagram_cfg = self.config.get('diagram')
         self.diagram.update(**diagram_cfg)
         for cred in self.config.get('snmp'):
-            secret_cred = Secret(cred['community'])
-            if secret_cred not in self.snmp_creds:
-                self.snmp_creds.append(secret_cred)
+            self.snmp_creds.append(cred['community'])
         for domain in self.config.get('domains'):
             if domain not in self.host_domains:
                 self.host_domains.append(domain)

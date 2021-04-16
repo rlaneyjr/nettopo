@@ -35,7 +35,7 @@ class SingletonDecorator:
 
 
 class Secret:
-    def __init__(self, secret):
+    def __init__(self, secret: str) -> None:
         self._secret = secret
 
     def __str__(self):
@@ -48,24 +48,25 @@ class Secret:
         return self._secret == other._secret
 
     @property
-    def show(self):
-        return self._secret
+    def show(self) -> str:
+        return str(self._secret)
 
 
 class SecretList(UserList):
     def __repr__(self) -> str:
         return f"[SecretList] - {len(self)} secrets"
 
-    def __contains__(self, thing):
-        if hasattr(thing, 'show'):
+    def __contains__(self, thing: Union[str, Secret]) -> bool:
+        if isinstance(thing, Secret):
             return thing.show in [m.show for m in self]
         else:
             return thing in [m.show for m in self]
 
-    def append(self, thing):
+    def append(self, thing: Union[str, Secret]) -> None:
         if not isinstance(thing, Secret):
             thing = Secret(thing)
-        super().append(thing)
+        if not self.__contains__(thing):
+            super().append(thing)
 
 
 class BaseData:
@@ -111,9 +112,6 @@ class DataTable(UserList):
 
     def __repr__(self) -> str:
         return f"[{self._name}] - {len(self)} items"
-
-    def __len__(self) -> int:
-        return len(self.data)
 
     def column(self, name: str) -> list:
         _columns = []
@@ -178,24 +176,15 @@ class InterfaceData(BaseData):
 class LinkData(BaseData):
     show_items = ['local_port', 'remote_name', 'remote_port']
     def __init__(self) -> None:
-        self.node = None
+        self.local_node = None
         self.discovered_proto = None
-        self.link_type = None
-        self.vlan = None
         self.local_port = None
         self.local_if_ip = None
-        self.local_native_vlan = None
-        self.local_allowed_vlans = None
-        self.local_lag = None
-        self.local_lag_ips = None
+        self.remote_node = None
         self.remote_ip = None
         self.remote_name = None
         self.remote_port = None
         self.remote_port_desc = None
-        self.remote_native_vlan = None
-        self.remote_allowed_vlans = None
-        self.remote_lag = None
-        self.remote_lag_ips = None
         self.remote_if_ip = None
         self.remote_desc = None
         self.remote_os = None
@@ -205,6 +194,18 @@ class LinkData(BaseData):
         self.remote_platform = None
         self.remote_ios = None
         self.remote_mac = None
+
+        # Removed below from 'LinkData' since it was returning incorrect info
+        # self.vlan = None
+        # self.link_type = None
+        # self.local_native_vlan = None
+        # self.local_allowed_vlans = None
+        # self.local_lag = None
+        # self.local_lag_ips = None
+        # self.remote_native_vlan = None
+        # self.remote_allowed_vlans = None
+        # self.remote_lag = None
+        # self.remote_lag_ips = None
 
     def is_same_link(self, link: object) -> bool:
         # Make sure different protocols were used

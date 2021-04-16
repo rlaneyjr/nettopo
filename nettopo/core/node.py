@@ -32,6 +32,7 @@ from nettopo.core.constants import (
     int_admin_status_map,
 )
 from nettopo.core.data import (
+    Secret,
     BaseData,
     DataTable,
     LinkData,
@@ -51,7 +52,6 @@ from nettopo.core.data import (
 from nettopo.core.exceptions import NettopoSNMPError, NettopoNodeError
 from nettopo.core.snmp import SNMP
 from nettopo.core.util import (
-    show_secret,
     timethis,
     bits_from_mask,
     normalize_host,
@@ -98,13 +98,17 @@ class Nodes(DataTable):
     """ Store a list of nodes with our DataTable class.
         Use this just like a list but with Nodes only.
     """
-    def get_node(self, node_id: str) -> object:
-        return self.get_item('_id', node_id, True)
+    def get_node(self, node_id: str, key='_id') -> object:
+        return self.get_item(key, node_id, True)
 
     def append(self, node: object) -> None:
-        current_node = self.get_item('_id', node._id, True)
+        current_node = self.get_item('_id', node._id, True) or None
         if not current_node:
             super().append(node)
+
+    def extend(self, nodes: List[object]) -> None:
+        for node in nodes:
+            self.append(node)
 
 
 class Node(BaseData):
@@ -181,10 +185,10 @@ class Node(BaseData):
         return link
 
     def use_vlan_community(self, vlan: _UIS) -> _USN:
-        original_community = self.snmp.community
-        community = f"{show_secret(original_community)}@{str(vlan)}"
+        original_community = self.snmp.community.show
+        community = Secret(f"{original_community}@{str(vlan)}")
         if self.snmp.check_community(community):
-            return original_community
+            return Secret(original_community)
         else:
             raise NettopoSNMPError(f"ERROR: {community} failed for {self.ip}")
 
@@ -763,7 +767,7 @@ class Node(BaseData):
         if not link:
             link = LinkData()
             link.discovered_proto = 'Unknown'
-        link.node = self._id
+        link.local_node = self._id
         if not link.local_port:
             local_port = self.get_ifname_index(ifidx)
             if local_port:
@@ -777,35 +781,38 @@ class Node(BaseData):
         if interface:
             link.local_port = interface.name
             link.local_if_ip = interface.ip
-        link_type = self.snmp_get(f"{o.TRUNK_VTP}.{ifidx}")
-        if self._has_value(link_type):
-            if link_type.value == '2':
-                link.link_type = 'trunk'
-            elif link_type.value == '1':
-                link.link_type = 'access'
-            else:
-                link.link_type = 'unknown'
-        # trunk
-        if link.link_type == 'trunk':
-            native_vlan = self.snmp_get(f"{o.TRUNK_NATIVE}.{ifidx}")
-            if self._has_value(native_vlan):
-                link.local_native_vlan = native_vlan.value
-            trunk_allowed = self.snmp_get(f"{o.TRUNK_ALLOW}.{ifidx}")
-            if self._has_value(trunk_allowed):
-                link.local_allowed_vlans = parse_allowed_vlans(trunk_allowed.value)
-        # LAG membership
-        lag = self.snmp_get(f"{o.LAG_LACP}.{ifidx}")
-        if self._has_value(lag):
-            interface = self.find_interface(int(lag.value), 'idx')
-            if interface:
-                link.local_lag = interface.name
-                link.local_lag_ips = interface.cidrs
-                link.remote_lag_ips = []
-        # VLAN info
-        vlan = self.snmp_get(f"{o.IF_VLAN}.{ifidx}")
-        if self._has_value(vlan):
-            link.vlan = vlan.value
         return link
+        ###############################
+        # Removed below from 'get_link' since it was returning incorrect info
+        ###############################
+        # link_type = self.snmp_get(f"{o.TRUNK_VTP}.{ifidx}")
+        # if self._has_value(link_type):
+        #     if link_type.value == '2':
+        #         link.link_type = 'trunk'
+        #     elif link_type.value == '1':
+        #         link.link_type = 'access'
+        #     else:
+        #         link.link_type = 'unknown'
+        # # trunk
+        # if link.link_type == 'trunk':
+        #     native_vlan = self.snmp_get(f"{o.TRUNK_NATIVE}.{ifidx}")
+        #     if self._has_value(native_vlan):
+        #         link.local_native_vlan = native_vlan.value
+        #     trunk_allowed = self.snmp_get(f"{o.TRUNK_ALLOW}.{ifidx}")
+        #     if self._has_value(trunk_allowed):
+        #         link.local_allowed_vlans = parse_allowed_vlans(trunk_allowed.value)
+        # # LAG membership
+        # lag = self.snmp_get(f"{o.LAG_LACP}.{ifidx}")
+        # if self._has_value(lag):
+        #     interface = self.find_interface(int(lag.value), 'idx')
+        #     if interface:
+        #         link.local_lag = interface.name
+        #         link.local_lag_ips = interface.cidrs
+        #         link.remote_lag_ips = []
+        # # VLAN info
+        # vlan = self.snmp_get(f"{o.IF_VLAN}.{ifidx}")
+        # if self._has_value(vlan):
+        #     link.vlan = vlan.value
 
     def get_cdp(self) -> List[LinkData]:
         """ Get a list of CDP neighbors.
