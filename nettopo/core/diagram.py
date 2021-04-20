@@ -12,7 +12,7 @@ import pydot
 
 from nettopo.core.exceptions import NettopoDiagramError
 from nettopo.core.config import NettopoConfig
-from nettopo.core.network import Network
+from nettopo.core.network import NettopoNetwork
 from nettopo.core.templates import (
     node_template,
     credits_template,
@@ -155,13 +155,12 @@ class DotNode:
 
 
 class Diagram:
-    def __init__(self, network: Network) -> None:
+    def __init__(self, network: NettopoNetwork, style: str='dot') -> None:
         self.network = network
-        self.config = self.network.config.diagram or NettopoConfig().diagram
-
+        self.style = style
+        self.config = self.network.config.diagram
 
     def generate(self, dot_file, title):
-        self.network.reset_discovered()
         title_text_size = self.config.title_text_size
         date_text_size = title_text_size - 2
         today = datetime.datetime.now()

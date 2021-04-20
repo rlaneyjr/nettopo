@@ -4,27 +4,34 @@
 """
         network.py
 """
-import netifaces
-import scapy.all as scapy
-import socket
 from dataclasses import dataclass
 from functools import cached_property
 from netaddr import IPNetwork, IPAddress
+import netifaces
 from nmap import PortScanner
-from timeit import default_timer as timer
-from typing import Union, Dict, List
+import scapy.all as scapy
+import socket
+from typing import Union, Dict, List, Optional
 
-from nettopo.core.exceptions import NettopoSNMPError, NettopoNetworkError
+from nettopo.core.exceptions import (
+    NettopoSNMPError,
+    NettopoNetworkError,
+    NettopoACLDenied,
+)
 from nettopo.core.util import normalize_host, is_ipv4_address
 from nettopo.core.node import Node, Nodes
 from nettopo.core.config import NettopoConfig
 from nettopo.core.constants import NOTHING, NODE, DCODE
-from nettopo.core.data import BaseData, LinkData
+from nettopo.core.data import BaseData, LinkData, DataTable
 
 _USNA = Union[str, IPNetwork, IPAddress]
 _USN = Union[str, IPNetwork]
 _USA = Union[str, IPAddress]
-_UNN = Union[IPNetwork, None]
+_ON = Optional[IPNetwork]
+_LO = List[object]
+_OLO = Optional[List[object]]
+_OUSA = Optional[Union[str, IPAddress]]
+_USNA = Optional[Union[str, IPNetwork, IPAddress]]
 
 
 class NettopoLocalNetwork:
@@ -110,18 +117,33 @@ class Port:
             return "UNKNOWN"
 
 
+class Level:
+    """ A level is the results from the discovery of a single level.
+    It contains the node(s), link(s), and host(s) if any. A level must
+    contain a numerical value and at least one node.
+
+    :params:depth:int - Integer representation of the depth. (required)
+    :params:nodes:list - Nodes discovered in this level. (required)
+    """
+    def __init__(self, depth: int, nodes: Union[Nodes, Node]):
+        self.depth = depth
+        if isinstance(nodes, Node):
+            nodes = Nodes([nodes])
+        self.nodes = nodes
+
+
 class NettopoNetwork(BaseData):
     show_items = ['root_node', 'num_nodes']
-    def __init__(self, network: _USNA=None):
+    def __init__(self, network: _USNA=None, config: NettopoConfig=None):
         self.local_net = NettopoLocalNetwork()
-        self.config = NettopoConfig()
+        self.config =  config if config else NettopoConfig()
+        self.root_ip = None
         self.root_node = None
-        self.nodes = None
-        self.hosts = None
-        self.snmp_nodes = None
+        self.nodes = Nodes()
         self.is_local = False
-        self.network =  None
-        self.level = None
+        self.network = None
+        self.levels = []
+        self.depth = None
         self.max_depth = self.config.general['max_depth']
         self.verbose = self.config.general['verbose']
         self.create_network(network)
@@ -141,111 +163,117 @@ class NettopoNetwork(BaseData):
         if not isinstance(network, IPNetwork):
             network = IPNetwork(network)
         if self.config.passes_acl(network):
+            self._print(f"{network} is allowed to be discovered")
             self.network = network
+            if self.is_local:
+                # Use the default gateway as root on local network
+                self.root_ip = self.local_net.default_gateway
+            elif self.network.prefixlen == 32:
+                self.root_ip = self.network.ip
         else:
-            self.network = False
-            self.is_local = None
             self._print(f"{network} is not allowed to be discovered")
+            raise NettopoACLDenied(f"{network} not premitted discovery")
 
-    def create_node(self, ip, query=True):
+    def create_node(self, ip, query: bool=False):
         try:
             node = Node(ip)
+            self._print(f"SNMP access to {ip} success")
             if query:
-                node.query_node()
+                node.query_node(self.verbose)
             return node
         except NettopoSNMPError:
-            self._print(f"SNMP failed for SNMP discovered node {ip}")
+            self._print(f"SNMP access to {ip} failed")
 
-    def snmp_scan(self, hosts: str) -> None:
+    def snmp_discover_root(self, network: _USNA=None) -> Optional[Node]:
+        if network:
+            self.create_network(network)
+        hosts = str(self.network)
         self._print(f"Scanning network = {hosts}")
         port_scanner = PortScanner()
         port_scanner.scan(hosts=hosts, ports='161')
         snmp_ips = port_scanner.all_hosts()
-        while snmp_ips:
-            ip = snmp_ips.pop(0)
-            node = self.create_node(ip, False)
+        for ip in snmp_ips:
+            self._print(f"Discovered {ip} has port 161 checking SNMP access")
+            node = self.create_node(ip)
             if node:
-                if not self.snmp_nodes:
-                    self.snmp_nodes = Nodes([node])
-                else:
-                    self.snmp_nodes.append(node)
+                return node
 
-    def discover(self, root_ip: _USA=None):
-        if not root_ip and not self.network:
-            raise NettopoNetworkError("Error must provide root IP or network")
-        elif not root_ip and self.is_local:
-            # Try the default gateway on local network
-            root_ip = self.local_net.default_gateway
-        if (root_ip and not self.network) or (root_ip not in self.network):
-            # Try creating network with root_ip
-            self.create_network(f"{root_ip}/24")
-            if not self.network:
-                raise NettopoNetworkError(f"{root_ip}/24 did not pass ACL")
-        if not root_ip and self.network:
-            # Still no root but we have network we can scan for SNMP nodes
-            self.snmp_scan(str(self.network))
-        # Create the root node
-        if root_ip:
-            self.root_node = self.create_node(root_ip, False)
-        elif self.snmp_nodes:
-            self.root_node = self.snmp_nodes.pop(0)
+    def auto_discover(self, network: _USNA=None) -> None:
+        self.root_node = self.snmp_discover_root(network)
+        if self.root_node:
+            self.root_node.query_node(self.verbose)
+            self._print(f"Discovery of {self.root_node.name} successful")
+            self._start_discovery()
         else:
             raise NettopoNetworkError(
                 f"No SNMP nodes discovered on {self.network}"
             )
-        self._print(f"""Discovery codes:
-                    . depth indicator
-                    {DCODE.ERR_SNMP_STR} connection error
-                    {DCODE.DISCOVERED_STR} discovering node
-                    {DCODE.STEP_INTO_STR} numerating adjacencies
-                    {DCODE.INCLUDE_STR} include node
-                    {DCODE.LEAF_STR} leaf node""")
-        print('Discovering network...')
-        # Start the process of querying snmp nodes and recursing adjacencies.
-        if self.root_node:
-            self.root_node.query_node()
-            self._print(f"Discovery of {root_ip} successful")
-            self._print(f"""Checking adjacencies:
-                {self.root_node.name}, {self.root_node.ip}
-                {DCODE.ROOT}, {DCODE.DISCOVERED}""")
-            self.nodes = Nodes([self.root_node])
-            self.hosts = []
-            self.level = 0
-            if self.snmp_nodes:
-                self.discover_level(self.snmp_nodes)
+
+    def discover(self, ip: _OUSA=None):
+        if ip:
+            if not self.network or (ip not in self.network):
+                self.create_network(ip)
+            if (ip in self.network) and not self.root_ip:
+                self.root_ip = ip
+        if self.root_ip:
+            print('Discovering root {self.root_ip}')
+            # Create the root node
+            self.root_node = self.create_node(self.root_ip)
+            if self.root_node:
+                self.root_node.query_node(self.verbose)
+                self._print(f"Discovery of {self.root_node.name} successful")
+                self._start_discovery()
             else:
-                self.discover_level()
+                print(f"Discovery of {self.root_ip} failed")
         else:
-            print(f"Discovery of {root_ip} failed")
-            return
+            print(f"Auto discovery of {self.network} started")
+            self.auto_discover()
 
-    def discover_level(self, nodes=None):
-        if self.level == 0:
-            # First level "root level"
-            if not nodes:
-                self.discover_neighbors(self.root_node)
-        # Increase our level
-        self.level += 1
-        # Check max depth
-        if self.level <= self.max_depth:
-            for node in nodes:
-                self.discover_neighbors(node)
+    def _start_discovery(self):
+        if not self.root_node:
+            raise NettopoNetworkError(
+                f"No root node discovered on {self.network}"
+            )
+        # Add root_node to global list of nodes
+        self.nodes.append(self.root_node)
+        # First level 0 "root level"
+        self.depth = 0
+        root_level = Level(self.depth, self.root_node)
+        self.levels.append(root_level)
+        # Now start the recursive discovery
+        self.discover_level(self.nodes)
 
-    def discover_neighbors(self, node: Node):
-        # Store our new nodes here
-        new_nodes = []
-        for link in node.links:
-            link, new_node = self.process_link(link)
-            if new_node:
-                new_nodes.append(new_node)
-            elif link:
-                self.hosts.append(link)
+    def discover_level(self, nodes: Nodes):
+        # Increase our depth
+        self.depth += 1
+        # Now check max depth
+        if self.depth <= self.max_depth:
+            # Discover neighbors
+            new_nodes = self.discover_neighbors(nodes)
+            if new_nodes:
+                # Add our new nodes to global list
+                self.nodes.extend(new_nodes)
+                # Now create the next level
+                new_level = Level(self.depth, new_nodes)
+                self.levels.append(new_level)
+                # And try again
+                self.discover_level(new_nodes)
             else:
-                self._print("Already knew about this node")
-        # Got our new neighbors now discover them
-        if new_nodes:
-            self.nodes.extend(new_nodes)
-            self.discover_level(new_nodes)
+                self._print("No more neighbors found. Stopping discovery")
+        else:
+            self._print("Reached max depth. Stopping discovery")
+
+    def discover_neighbors(self, nodes: Nodes):
+        # Store our new nodes here
+        new_nodes = Nodes()
+        for node in nodes:
+            if not node.queried:
+                node.query_node(self.verbose)
+            for link in node.links:
+                new_node = self.process_link(link)
+                if new_node:
+                    new_nodes.append(new_node)
+        return new_nodes
 
     def process_link(self, link: LinkData):
         # We have not processed this link yet
@@ -257,19 +285,17 @@ class NettopoNetwork(BaseData):
                     # Add IP to list if not there
                     if link.remote_ip not in known_node.ips:
                         known_node.ips.append(link.remote_ip)
-                    return False, False
+                    return None
                 else:
-                    try:
-                        # Create and process as remote node
-                        new_node = Node(link.remote_ip)
+                    # Create and process as remote node but don't query
+                    new_node = self.create_node(link.remote_ip)
+                    if new_node:
                         link.remote_node = new_node._id
-                        new_node.query_node()
-                        return link, new_node
-                    except NettopoSNMPError:
-                        self._print(f"SNMP failed for {link.remote_ip}")
+                        return new_node
+                    else:
                         link.remote_node = 'host'
-                        return link, False
+                        return None
             else:
                 # No valid IP so add it as a host
                 link.remote_node = 'host'
-                return link, False
+                return None

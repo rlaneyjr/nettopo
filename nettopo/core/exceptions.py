@@ -12,6 +12,7 @@ Version:            0.1.1
 class NettopoError(Exception): pass
 class NettopoNodeError(NettopoError): pass
 class NettopoNetworkError(NettopoError): pass
+class NettopoACLDenied(NettopoError): pass
 class NettopoCatalogError(NettopoError): pass
 class NettopoCacheError(NettopoError): pass
 class NettopoConfigError(NettopoError): pass

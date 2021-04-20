@@ -65,7 +65,7 @@ class SecretList(UserList):
     def append(self, thing: Union[str, Secret]) -> None:
         if not isinstance(thing, Secret):
             thing = Secret(thing)
-        if not self.__contains__(thing):
+        if not thing in self:
             super().append(thing)
 
 
@@ -106,12 +106,14 @@ class BaseData:
 
 
 class DataTable(UserList):
-    def __init__(self, data: List[object]) -> None:
-        self._name = data[0].__class__.__name__
-        super().__init__(data)
+    def __init__(self, data: List[object]=None) -> None:
+        if data:
+            super().__init__(data)
+        else:
+            super().__init__([])
 
     def __repr__(self) -> str:
-        return f"[{self._name}] - {len(self)} items"
+        return f"[{self.__class__.__name__}] - {len(self)} items"
 
     def column(self, name: str) -> list:
         _columns = []

@@ -1,123 +1,112 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
         nettopo.py
-'''
+"""
 import os
 from glob import glob
 import re
 import sys
+from typing import Union, Optional
+from netaddr import IPNetwork, IPAddress
 
 from nettopo.core.config import NettopoConfig
-from nettopo.core.exceptions import NettopoError
-from nettopo.core.network import Network
+from nettopo.core.exceptions import NettopoError, NettopoSNMPError
+from nettopo.core.network import NettopoNetwork
 from nettopo.core.node import Node
 from nettopo.core.diagram import Diagram
 from nettopo.core.catalog import Catalog
+
+# Typing shortcuts
+_USA = Union[str, IPAddress]
+_USNA = Union[str, IPNetwork, IPAddress]
+_USIN = Union[str, IPAddress, Node]
 
 
 class Nettopo:
     """ Core Nettopo class provides entrance to all Nettopo actions
     """
-    def __init__(self, config=None, config_file=None):
-        self.config = NettopoConfig()
-        if config:
-            self.config.load(config=config)
-        elif config_file and os.path.isfile(config_file):
-            self.config.load(filename=config_file)
-        self.network = Network(self.config)
+    def __init__(self, network: _USNA=None, config=None, config_file=None):
+        self.config = NettopoConfig(config=config, filename=config_file)
+        self.network = NettopoNetwork(network, self.config)
         self.diagram = None
         self.catalog = None
 
-
-    def has_snmp(self, node):
+    def has_snmp(self, node: Node):
         if node.snmp.success:
             return True
-        if node.get_snmp_creds(self.config.snmp_creds):
-            return True
-        raise NettopoError(f"No valid SNMP credentials for {node.ip}")
+        raise NettopoSNMPError(f"No valid SNMP credentials for {node.ip}")
 
+    def add_snmp_credential(self, community: str):
+        self.config.snmp_creds.append(community)
 
-    def add_snmp_credential(self, snmp_community, snmp_ver=2):
-        if snmp_ver != 2:
-            raise NettopoError('snmp_ver is not valid')
-            return
-        self.config.add_creds(snmp_community)
-
-
-    def set_discover_maxdepth(self, depth: int=0):
+    def set_maxdepth(self, depth: int):
         self.network.max_depth = depth
 
-
-    def set_verbose(self, verbose: bool=True):
+    def set_verbose(self, verbose: bool):
         self.network.verbose = verbose
 
-
-    def discover_network(self, root_ip, details):
+    def discover_network(self, root_ip: _USA=None):
         self.network.discover(root_ip)
-        if details:
-            self.network.discover_details()
         self.diagram = Diagram(self.network)
         self.catalog = Catalog(self.network)
 
+    def new_node(self, ip: _USIN) -> Optional[Node]:
+        if isinstance(ip, Node):
+            node = ip
+        else:
+            node = self.network.create_node(ip)
+        if not node:
+            raise NettopoError("Unable to create Node")
+        return node
 
-    def new_node(self, ip):
-        node = Node(ip)
-        return node if self.has_snmp(node) else False
-
-
-    def query_node(self, node, **get_values):
-        # see node.actions in node.py for what get_values are available
-        if self.has_snmp(node):
-            for getv in get_values:
-                setattr(node.actions, getv, get_values[getv])
-        return node.query_node()
-
+    def query_node(self, node: Node):
+        if self.has_snmp(node) and not node.queried:
+            node.query_node(self.network.verbose)
 
     def write_diagram(self, output_file, diagram_title: str="Nettopo Diagram"):
         if not self.diagram:
             raise NettopoError("You must discover_network to write_diagram")
         self.diagram.generate(output_file, diagram_title)
 
-
     def write_catalog(self, output_file):
         if not self.catalog:
             raise NettopoError("You must discover_network to write_catalog")
         self.catalog.generate(output_file)
 
+    def get_node_vlans(self, ip):
+        node = self.new_node(ip)
+        if node:
+            node.get_vlans()
+            return node.vlans
 
-    def get_switch_vlans(self, ip):
-        node = ip if isinstance(ip, Node) else Node(ip)
-        if not node.get_snmp_creds(self.config.snmp_creds):
-            return []
-        return node.get_vlans()
-
-
-    def get_switch_macs(self, switch_ip_or_node, *, vlan=None, mac=None, port=None):
-        ''' Get the CAM table from a switch.
+    def get_node_macs(
+        self,
+        ip_or_node: _USA,
+        *,
+        vlan: int=None,
+        mac: str=None,
+        port: str=None,
+    ):
+        """ Get the CAM table from a switch.
         Args:
             *switch_ip* or *node* is required
-        :param: switch_ip       IP address of the device
+        :param: ip_or_node       IP address of the device
         :param: node            Node() class object
         :param: vlan            Filter results by VLAN
         :param: mac             Filter results by MAC address (regex)
         :param: port            Filter results by port (regex)
-        :param: verbose         Display progress to stdout
         :return:                Array of MAC objects
-        '''
-        if not isinstance(switch_ip_or_node, Node):
-            node = Node(switch_ip_or_node)
-        else:
-            node = switch_ip_or_node
-        # if not node.queried:
-        #     node.query_node()
+        """
+        node = self.new_node(ip_or_node)
         if vlan:
             # get MACs for single VLAN
             macs = node.get_macs_for_vlan(vlan)
         else:
             # get all MACs
-            macs = node.get_cam()
+            node.get_cam()
+            macs = node.mac_table
         if not all([mac, port]):
             return macs or []
         # filter results
@@ -129,21 +118,17 @@ class Nettopo:
                 ret.append(m)
         return ret
 
-
     def get_nodes(self):
         return self.network.nodes
-
 
     def get_discovered_nodes(self):
         return [node for node in self.network.nodes if node.queried]
 
-
     def get_node_ip(self, node: Node):
         return node.ip
 
-
-    def get_switch_arp(self, switch_ip, *, ip=None, mac=None, interf=None, arp_type=None):
-        '''
+    def get_node_arp(self, switch_ip, *, ip=None, mac=None, interf=None, arp_type=None):
+        """
         Get the ARP table from a switch.
         Args:
             switch_ip           IP address of the device
@@ -153,19 +138,17 @@ class Nettopo:
             arp_type            Filter results by ARP Type
         Return:
             Array of arp objects
-        '''
-        node = Node(switch_ip)
-        if not node.get_snmp_creds(self.config.snmp_creds):
-            return []
-        arp = node.get_arp()
-        if not arp:
-            return []
+        """
+        node = self.new_node(switch_ip)
+        if not node.arp_table:
+            node.get_arp()
+        arps = node.arp_table
         if not all([ip, mac, interf, arp_type]):
             # no filtering
-            return arp
+            return arps
         # filter the result table
         ret = []
-        for a in arp:
+        for a in arps:
             if ip and not re.match(ip, a.ip):
                 continue
             if mac and not re.match(mac, a.mac):
@@ -177,10 +160,7 @@ class Nettopo:
             ret.append(a)
         return ret
 
-
     def get_neighbors(self, node: Node) -> list:
-        neighbors = []
-        if self.has_snmp(node):
-            neighbors.extend(node.get_cdp_neighbors())
-            neighbors.extend(node.get_lldp_neighbors())
-        return neighbors
+        if not node.links:
+            node.create_links()
+        return node.links

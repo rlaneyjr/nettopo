@@ -4,12 +4,10 @@
 """
     node.py
 """
-from about_time import about_time
+# from about_time import about_time
 from alive_progress import alive_bar, config_handler
 import binascii
 from copy import deepcopy
-from dataclasses import dataclass
-from functools import cached_property
 from netaddr import IPAddress
 from pysnmp.smi.rfc1902 import ObjectIdentity
 import re
@@ -77,7 +75,6 @@ _IP = Union[str, IPAddress]
 _UDL = Union[dict, list]
 _UDLS = Union[dict, list, str]
 _ULS = Union[list, str]
-_ULSIN = Union[list, str, int, None]
 _UIS = Union[int, str]
 _USN = Union[str, None]
 _UISO = Union[int, str, ObjectIdentity]
@@ -85,6 +82,7 @@ _OA = Optional[Any]
 _OL = Optional[list]
 _OEd = Optional[EntData]
 _OId = Optional[InterfaceData]
+_OLSIN = Optional[Union[list, str, int]]
 
 # Easy access to our OIDs
 o = Oids()
@@ -98,12 +96,11 @@ class Nodes(DataTable):
     """ Store a list of nodes with our DataTable class.
         Use this just like a list but with Nodes only.
     """
-    def get_node(self, node_id: str, key='_id') -> object:
+    def get_node(self, node_id: str, key='_id') -> Optional[object]:
         return self.get_item(key, node_id, True)
 
     def append(self, node: object) -> None:
-        current_node = self.get_item('_id', node._id, True) or None
-        if not current_node:
+        if node not in self:
             super().append(node)
 
     def extend(self, nodes: List[object]) -> None:
@@ -114,7 +111,6 @@ class Nodes(DataTable):
 class Node(BaseData):
     """ Node class that builds data from SNMP queries.
     """
-    pass
     show_items = ['name', 'ip', 'plat', 'ios', 'serial', 'router']
     def __init__(self, ip: str, immediate_query: bool=False, **kwargs) -> None:
         self._id = build_uuid()
@@ -148,9 +144,7 @@ class Node(BaseData):
         self.ip_table = None
         self.arp_table = None
         self.mac_table = None
-        self.cdp = None
-        self.lldp = None
-        self.links = []
+        self.links = None
         if immediate_query:
             self.query_node()
 
@@ -185,12 +179,12 @@ class Node(BaseData):
         return link
 
     def use_vlan_community(self, vlan: _UIS) -> _USN:
-        original_community = self.snmp.community.show
-        community = Secret(f"{original_community}@{str(vlan)}")
-        if self.snmp.check_community(community):
-            return Secret(original_community)
+        original_community = self.snmp.community
+        vlan_community = Secret(f"{original_community.show}@{str(vlan)}")
+        if self.snmp.check_community(vlan_community):
+            return original_community
         else:
-            raise NettopoSNMPError(f"ERROR: {community} failed for {self.ip}")
+            raise NettopoSNMPError(f"{vlan_community} failed for {self.ip}")
 
     def snmp_get(self, item: _UISO, is_bulk: bool=False,
                                 vlan: _UIS=None) -> _OA:
@@ -212,167 +206,173 @@ class Node(BaseData):
                 return error
             return results
 
-    def query_node(self) -> None:
-        """ Query this node with option to reset
+    def query_node(self, bar: bool=True) -> None:
+        """ Query this node
         """
         if self.queried:
             print(f"{self.name} has already been queried.")
             return
-        with alive_bar(title='Node Query') as bar:
-            self.queried = True
-            snmp_name = self.snmp_get(o.SYSNAME)
-            if self._has_value(snmp_name):
-                self.name = normalize_host(
-                    snmp_name.value,
-                    self.snmp.config.host_domains,
-                )
-            # Finally, if we still don't have a name, use the IP.
-            # A blank name can break Dot.
-            if self.name in NOTHING:
-                self.name = self.ip.replace('.', '_')
+        if bar:
+            self.query_with_bar()
+        else:
+            self.query_no_bar()
+        self.queried = True
+
+    def query_no_bar(self) -> None:
+        """ Query this node without a status bar
+        """
+        # Name
+        self.get_name()
+        # Description
+        self.get_descr()
+        # Interfaces
+        self.build_interface_table()
+        # IPs
+        self.get_ips()
+        # Vlans
+        self.get_vlans()
+        # SVIs
+        self.get_svis()
+        # loopback
+        self.get_loopbacks()
+        # bootfile
+        self.get_bootfile()
+        # Ent chassis info (serial, ios, platform)
+        self.get_ent()
+        # stack
+        self.get_stack()
+        # vss
+        self.get_vss()
+        # serial
+        self.get_serial()
+        # VPC peerlink polulates self.vpc
+        self.get_vpc()
+        # Populates ARP DataTable
+        self.get_arp()
+        # Populates MAC DataTable
+        self.get_cam()
+        self.create_links()
+        # Routing
+        self.get_routing()
+
+    def query_with_bar(self) -> None:
+        """ Query this node with a status bar
+        """
+        with alive_bar(title=f"Node Query for {self.ip}") as bar:
+            # Name
+            self.get_name()
             bar()
             # Description
-            snmp_descr = self.snmp_get(o.SYSDESC)
-            if self._has_value(snmp_descr):
-                self.descr = snmp_descr.value
-                sys = sysdescrparser(snmp_descr.value)
-                self.os = sys.os
-                self.model = sys.model
-                self.vendor = sys.vendor
-                self.version = sys.version
+            self.get_descr()
             bar()
             # Interfaces
-            self.interfaces = self.build_interface_table()
+            self.build_interface_table()
             bar()
             # IPs
-            self.ips = self.get_ips()
+            self.get_ips()
             bar()
             # Vlans
-            self.vlans = self.get_vlans()
+            self.get_vlans()
             bar()
             # SVIs
-            self.svis = self.get_svis()
+            self.get_svis()
             bar()
             # loopback
-            self.loopbacks = self.get_loopbacks()
+            self.get_loopbacks()
             bar()
             # bootfile
-            bootfile = self.snmp_get(o.SYS_BOOT)
-            if self._has_value(bootfile):
-                self.bootfile = bootfile.value
+            self.get_bootfile()
             bar()
             # Ent chassis info (serial, ios, platform)
-            self.ent = self.get_ent()
+            self.get_ent()
             bar()
             # stack
-            self.stack = self.get_stack()
+            self.get_stack()
             bar()
             # vss
-            self.vss = self.get_vss()
+            self.get_vss()
             bar()
             # serial
-            if self.vss:
-                if self.vss.enabled and self.vss.serial:
-                    self.serial = self.vss.serial
-            else:
-                serial = self.snmp_get(o.SYS_SERIAL)
-                if self._has_value(serial):
-                    self.serial = serial.value
+            self.get_serial()
             bar()
             # VPC peerlink polulates self.vpc
-            self.vpc = self.get_vpc()
+            self.get_vpc()
             bar()
-            # Populates self.arp_table
-            self.arp_table = self.get_arp()
+            # Populates ARP DataTable
+            self.get_arp()
             bar()
-            # Populates self.mac_table
-            self.mac_table = self.get_cam()
+            # Populates MAC DataTable
+            self.get_cam()
             bar()
-            # CDP neighbors
-            self.cdp = self.get_cdp()
-            bar()
-            # LLDP neighbors
-            self.lldp = self.get_lldp()
-            bar()
-            self.links = self.create_links()
+            self.create_links()
             bar()
             # Routing
-            snmp_router = self.snmp_get(o.IP_ROUTING)
-            if self._has_value(snmp_router) and snmp_router.value == '1':
-                self.router = True
+            self.get_routing()
             bar()
-            if self.router:
-                # OSPF
-                snmp_ospf = self.snmp_get(o.OSPF)
-                if self._has_value(snmp_ospf):
-                    self.ospf = snmp_ospf.value
-                bar()
-                snmp_ospf_id = self.snmp_get(o.OSPF_ID)
-                if self._has_value(snmp_ospf_id):
-                    self.ospf_id = snmp_ospf_id.value
-                bar()
-                # BGP
-                bgp_las = self.snmp_get(o.BGP_LAS)
-                if self._has_value(bgp_las) and bgp_las.value != '0':
-                    # 4500x reports 0 as disabled
-                    self.bgp_las = bgp_las.value
-                bar()
-                # HSRP
-                snmp_hsrp_pri = self.snmp_get(o.HSRP_PRI)
-                if self._has_value(snmp_hsrp_pri):
-                    self.hsrp_pri = snmp_hsrp_pri.value
-                bar()
-                snmp_hsrp_vip = self.snmp_get(o.HSRP_VIP)
-                if self._has_value(snmp_hsrp_vip):
-                    self.hsrp_vip = snmp_hsrp_vip.value
-                bar()
 
-    def create_links(self) -> List[LinkData]:
-        """ Combine CDP and LLDP to create links
+    def get_name(self):
+        snmp_name = self.snmp_get(o.SYSNAME)
+        if self._has_value(snmp_name):
+            self.name = normalize_host(
+                snmp_name.value,
+                self.snmp.config.host_domains,
+            )
+        # Finally, if we still don't have a name, use the IP.
+        # A blank name can break Dot.
+        if self.name in NOTHING:
+            self.name = self.ip.replace('.', '_')
 
-        Using the following method:
-            1. Make a new 'deep' copy of CDP as 'links'.
-            2. Iterate though CDP and LLDP.
-            3. If a match is found 'is_same_link'.
-            4. Remove the CDP entry.
-            5. From the CDP entry 'injest' the LLDP entry.
-            6. Add this new CDP/LLDP entry back to the list.
-            4. Iterate through LLDP again.
-            8. Add LLDP entry if local_port not in 'links'.
-        """
-        links = deepcopy(self.cdp)
-        for cdp in links:
-            for lldp in self.lldp:
-                if cdp.is_same_link(lldp):
-                    # Remove CDP
-                    links.remove(cdp)
-                    # From cdp injest lldp
-                    cdp.injest_link(lldp)
-                    # Add the combined cdp/lldp back
-                    links.append(cdp)
-        # Add LLDP
-        for lldp in self.lldp:
-            if lldp.local_port not in [l.local_port for l in links]:
-                links.append(lldp)
-        return links
+    def get_descr(self):
+        # Description
+        snmp_descr = self.snmp_get(o.SYSDESC)
+        if self._has_value(snmp_descr):
+            self.descr = snmp_descr.value
+            sys = sysdescrparser(snmp_descr.value)
+            self.os = sys.os
+            self.model = sys.model
+            self.vendor = sys.vendor
+            self.version = sys.version
 
-    def get_interface_entry(self, key: str, value: str) -> _OId:
-        if hasattr(self, 'int_dt'):
-            if value in self.int_dt.column(key):
-                return self.int_dt.get_item(key, value, no_list=True)
-        for interface in self.interfaces:
-            if value == getattr(interface, key):
-                return interface
+    def get_bootfile(self):
+        # bootfile
+        bootfile = self.snmp_get(o.SYS_BOOT)
+        if self._has_value(bootfile):
+            self.bootfile = bootfile.value
 
-    def find_interface(self, item: _UIS, name: str=None) -> _OId:
-        if not name:
-            if isinstance(item, int):
-                name = 'idx'
-            elif isinstance(item, str):
-                name = 'name'
-            else:
-                raise NettopoNodeError(f"Unsupported type = {type(item)}")
-        return self.get_interface_entry(name, item)
+    def get_serial(self):
+        # serial
+        if self.vss:
+            if self.vss.enabled and self.vss.serial:
+                self.serial = self.vss.serial
+        else:
+            serial = self.snmp_get(o.SYS_SERIAL)
+            if self._has_value(serial):
+                self.serial = serial.value
+
+    def get_routing(self):
+        # Routing
+        snmp_router = self.snmp_get(o.IP_ROUTING)
+        if self._has_value(snmp_router) and snmp_router.value == '1':
+            self.router = True
+            # OSPF
+            snmp_ospf = self.snmp_get(o.OSPF)
+            if self._has_value(snmp_ospf):
+                self.ospf = snmp_ospf.value
+            snmp_ospf_id = self.snmp_get(o.OSPF_ID)
+            if self._has_value(snmp_ospf_id):
+                self.ospf_id = snmp_ospf_id.value
+            # BGP
+            bgp_las = self.snmp_get(o.BGP_LAS)
+            if self._has_value(bgp_las) and bgp_las.value != '0':
+                # 4500x reports 0 as disabled
+                self.bgp_las = bgp_las.value
+            # HSRP
+            snmp_hsrp_pri = self.snmp_get(o.HSRP_PRI)
+            if self._has_value(snmp_hsrp_pri):
+                self.hsrp_pri = snmp_hsrp_pri.value
+            snmp_hsrp_vip = self.snmp_get(o.HSRP_VIP)
+            if self._has_value(snmp_hsrp_vip):
+                self.hsrp_vip = snmp_hsrp_vip.value
 
     def get_cidr_from_oid(self, oid: str) -> str:
         ip = ".".join(oid.split('.')[-4:])
@@ -399,7 +399,7 @@ class Node(BaseData):
     def get_ifname_index(self, idx: int, normalize: bool=True) -> _USN:
         # Look in interfaces first
         if self.interfaces:
-            interface = self.find_interface(idx, 'idx')
+            interface = self.get_interface_entry('idx', idx)
             if interface:
                 return interface.name
         else:
@@ -431,7 +431,7 @@ class Node(BaseData):
                         cidrs.append(f"{ip}/32")
         return cidrs
 
-    def build_interface_table(self) -> List[InterfaceData]:
+    def build_interface_table(self) -> DataTable:
         """
         # From IF-MIB
         ifTable = "1.3.6.1.2.1.2.2"
@@ -444,26 +444,6 @@ class Node(BaseData):
         ifPhysAddress = "1.3.6.1.2.1.2.2.1.6"
         ifAdminStatus = "1.3.6.1.2.1.2.2.1.7"
         ifOperStatus = "1.3.6.1.2.1.2.2.1.8"
-        indexed_table = [
-            ('1.3.6.1.2.1.2.2.1.1.3', '3'),
-            ('1.3.6.1.2.1.2.2.1.2.3', 'GigabitEthernet1/0/1'),
-            ('1.3.6.1.2.1.2.2.1.3.3', '6'),
-            ('1.3.6.1.2.1.2.2.1.4.3', '9000'),
-            ('1.3.6.1.2.1.2.2.1.5.3', '1000000000'),
-            ('1.3.6.1.2.1.2.2.1.6.3', '0x88908d1b1781'),
-            ('1.3.6.1.2.1.2.2.1.7.3', '1'),
-            ('1.3.6.1.2.1.2.2.1.8.3', '1'),
-            ('1.3.6.1.2.1.2.2.1.9.3', '6773'),
-            ('1.3.6.1.2.1.2.2.1.10.3', '3428545753'),
-            ('1.3.6.1.2.1.2.2.1.11.3', '12200292'),
-            ('1.3.6.1.2.1.2.2.1.13.3', '0'),
-            ('1.3.6.1.2.1.2.2.1.14.3', '0'),
-            ('1.3.6.1.2.1.2.2.1.15.3', '0'),
-            ('1.3.6.1.2.1.2.2.1.16.3', '528472411'),
-            ('1.3.6.1.2.1.2.2.1.17.3', '14091342'),
-            ('1.3.6.1.2.1.2.2.1.19.3', '0'),
-            ('1.3.6.1.2.1.2.2.1.20.3', '0')
-        ]
         """
         interfaces = []
         if not self.if_table:
@@ -499,19 +479,24 @@ class Node(BaseData):
             if_oper_status = idx_table.get(f"{g.ifOperStatus}.{idx}")
             interface.oper_status = int_oper_status_map.get(int(if_oper_status))
             interfaces.append(interface)
-        self.int_dt = DataTable(interfaces)
-        return interfaces
+        self.interfaces = DataTable(interfaces)
+
+    def get_interface_entry(self, key: str, value: str) -> _OId:
+        if not self.interfaces:
+            self.build_interface_table()
+        if value in self.interfaces.column(key):
+            return self.interfaces.get_item(key, value, no_list=True)
 
     def get_ips(self) -> list:
         """ Collects and stores all the IPs for Node
         returns - list of IPs
         """
         ips = []
-        for entry in self.interfaces:
-            if entry.cidrs:
-                ips.extend([cidr.split('/')[0] for cidr in entry.cidrs])
+        for cidrs in self.interfaces.cidrs:
+            if cidrs:
+                ips.extend([cidr.split('/')[0] for cidr in cidrs])
         ips.sort()
-        return ips
+        self.ips = ips
 
     def get_ent_from_index(self, idx: int):
         snmp_serial = self.snmp_get(f"{o.ENTPHYENTRY_SERIAL}.{idx}")
@@ -550,28 +535,24 @@ class Node(BaseData):
             for chs_oid in chs_oids:
                 ent = self.build_ent_from_oid(chs_oid, ent_snmp)
                 if ent:
-                    return ent
+                    self.ent = ent
 
     def get_loopbacks(self) -> List[InterfaceData]:
-        if hasattr(self, 'int_dt'):
-            return self.int_dt.rows('media', 'softwareLoopback')
-        return [entry for entry in self.interfaces \
-                if entry.media == 'softwareLoopback']
+        self.loopbacks = self.interfaces.rows('media', 'softwareLoopback')
 
-    def get_svis(self) -> List[SVIData]:
+    def get_svis(self) -> DataTable:
         svis = []
         svi_table = self.snmp_get(o.SVI_VLANIF, is_bulk=True)
         for oid, val in svi_table.table.items():
             vlan = get_oid_index(oid, 14)
             svi = SVIData(vlan)
-            interface = self.find_interface(int(val), 'idx')
+            interface = self.get_interface_entry('idx', int(val))
             if interface:
                 svi.ips = interface.cidrs
             svis.append(svi)
-        self.svi_dt = DataTable(svis)
-        return svis
+        self.svis = DataTable(svis)
 
-    def get_vlans(self) -> List[VLANData]:
+    def get_vlans(self) -> DataTable:
         vlans = []
         vlan_table = self.snmp_get(o.VLANS_NEW, is_bulk=True)
         for oid, name in vlan_table.table.items():
@@ -579,8 +560,7 @@ class Node(BaseData):
             vid = get_oid_index(oid)
             if vid not in RESERVED_VLANS:
                 vlans.append(VLANData(vid, name))
-        self.vlan_dt = DataTable(vlans)
-        return vlans
+        self.vlans = DataTable(vlans)
 
     def get_stack(self)-> StackData:
         stack_roles = ['master', 'member', 'notMember', 'standby']
@@ -606,9 +586,9 @@ class Node(BaseData):
         if len(stack.members) > 1:
             stack.enabled = True
             stack.count = len(stack.members)
-            return stack
+        self.stack = stack
 
-    def get_vss(self) -> VssData:
+    def get_vss(self) -> Optional[VssData]:
         vss_snmp = self.snmp_get(o.VSS, is_bulk=True)
         if not vss_snmp.table:
             return
@@ -634,9 +614,9 @@ class Node(BaseData):
                         chassis += 1
                     if chassis > 1:
                         break
-            return vss
+            self.vss = vss
 
-    def get_vpc(self) -> Union[VPCData, None]:
+    def get_vpc(self) -> Optional[VPCData]:
         """ If VPC is enabled,
         Return the VPC domain and interface name of the VPC peerlink.
         """
@@ -646,27 +626,9 @@ class Node(BaseData):
                 vpc = VPCData()
                 vpc.domain = get_oid_index(oid)
                 vpc.ifname = self.get_ifname_index(int(val))
-            return vpc
+            self.vpc = vpc
 
-    def old_get_arp(self) -> List[ARPData]:
-        """
-        """
-        _arp_oid = '1.3.6.1.2.1.3.1.1.2'
-        arp_table = []
-        arps = self.snmp_get(_arp_oid, is_bulk=True)
-        for oid, val in arps.table.items():
-            oid_end = oid.split(f"{_arp_oid}.")[1]
-            end_list = oid_end.split('.')
-            idx = end_list.pop(0)
-            _ = end_list.pop(0)
-            ip = '.'.join(end_list)
-            interface = self.get_ifname_index(int(idx))
-            mac = mac_hex_to_ascii(val)
-            arp_table.append(ARPData(ip, mac, interface))
-        self.arp_dt = DataTable(arp_table)
-        return arp_table
-
-    def get_arp(self) -> List[ARPData]:
+    def get_arp(self) -> DataTable:
         """
         """
         _arp_table = '1.3.6.1.2.1.4.22'
@@ -687,16 +649,13 @@ class Node(BaseData):
             arpt = index_arp.get(f"{_arp_type}.{oid_idx}")
             arp_type = arp_type_map.get(int(arpt))
             arp_table.append(ARPData(ip, mac, interface, arp_type))
-        self.arp_dt = DataTable(arp_table)
-        return arp_table
+        self.arp_table = DataTable(arp_table)
 
-    def get_arp_entry(self, key: str, value: str) -> Union[ARPData, None]:
-        if hasattr(self, 'arp_dt'):
-            if value in self.arp_dt.column(key):
-                return self.arp_dt.get_item(key, value, no_list=True)
-        for arp in self.arp_table:
-            if value == getattr(arp, key):
-                return arp
+    def get_arp_entry(self, key: str, value: str) -> Optional[ARPData]:
+        if not self.arp_table:
+            self.get_arp()
+        if value in self.arp_table.column(key):
+            return self.arp_table.get_item(key, value, no_list=True)
 
     def get_macs_for_vlan(self, vlan: int) -> List[MACData]:
         ''' MAC addresses for a single VLAN
@@ -743,7 +702,7 @@ class Node(BaseData):
             macs.append(entry)
         return macs
 
-    def get_cam(self) -> List[MACData]:
+    def get_cam(self) -> DataTable:
         ''' MAC address table from this node
         '''
         mac_table = []
@@ -752,16 +711,13 @@ class Node(BaseData):
             macs = self.get_macs_for_vlan(vlan.vid)
             if macs:
                 mac_table.extend(macs)
-        self.mac_dt = DataTable(mac_table)
-        return mac_table
+        self.mac_table = DataTable(mac_table)
 
-    def get_mac_entry(self, key: str, value: str) -> Union[MACData, None]:
-        if hasattr(self, 'mac_dt'):
-            if value in self.mac_dt.column(key):
-                return self.mac_dt.get_item(key, value, no_list=True)
-        for mac in self.mac_table:
-            if value == getattr(mac, key):
-                return mac
+    def get_mac_entry(self, key: str, value: str) -> Optional[MACData]:
+        if not self.mac_table:
+            self.get_cam()
+        if value in self.mac_table.column(key):
+            return self.mac_table.get_item(key, value, no_list=True)
 
     def get_link(self, ifidx: int, link: LinkData=None) -> LinkData:
         if not link:
@@ -774,10 +730,10 @@ class Node(BaseData):
                 link.local_port = local_port
         if link.local_port:
             # Check local interfaces for name
-            interface = self.find_interface(link.local_port, 'name')
+            interface = self.get_interface_entry('name', link.local_port)
         else:
             # Check local interfaces for index
-            interface = self.find_interface(ifidx, 'idx')
+            interface = self.get_interface_entry('idx', ifidx)
         if interface:
             link.local_port = interface.name
             link.local_if_ip = interface.ip
@@ -804,7 +760,7 @@ class Node(BaseData):
         # # LAG membership
         # lag = self.snmp_get(f"{o.LAG_LACP}.{ifidx}")
         # if self._has_value(lag):
-        #     interface = self.find_interface(int(lag.value), 'idx')
+        #     interface = self.get_interface_entry('idx', int(lag.value))
         #     if interface:
         #         link.local_lag = interface.name
         #         link.local_lag_ips = interface.cidrs
@@ -818,16 +774,6 @@ class Node(BaseData):
         """ Get a list of CDP neighbors.
         Returns a list of LinkData's.
         Will always return an array.
-        # CDP (BULK)
-        CDP: str = '1.3.6.1.4.1.9.9.23.1.2.1.1'
-        CDP_IPADDR: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.4'
-        CDP_IOS: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.5'
-        # CDP_DEVID + .ifidx.53
-        CDP_DEVID: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.6'
-        CDP_DEVPORT: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.7'
-        CDP_DEVPLAT: str = '1.3.6.1.4.1.9.9.23.1.2.1.1.8'
-        # CDP_INT 6.ifidx
-        CDP_INT: str = '1.3.6.1.4.1.9.9.23.1.1.1.1.'
         """
         _cdp_mib = '1.3.6.1.4.1.9.9.23.1'
         _cdp_ipaddr = '1.3.6.1.4.1.9.9.23.1.2.1.1.4'
@@ -877,15 +823,6 @@ class Node(BaseData):
         """ Get a list of LLDP neighbors.
         Returns a list of LinkData's
         Will always return an array.
-        NEW_LLDP_MIB: str = '1.0.8802.1.1.2'
-        LLDP: str = '1.0.8802.1.1.2.1.4'
-        LLDP_TYPE: str = '1.0.8802.1.1.2.1.4.1.1.6.0'
-        LLDP_DEVID: str = '1.0.8802.1.1.2.1.4.1.1.5.0'
-        LLDP_DEVPORT: str = '1.0.8802.1.1.2.1.4.1.1.7.0'
-        LLDP_DEVPDSC: str = '1.0.8802.1.1.2.1.4.1.1.8.0'
-        LLDP_DEVNAME: str = '1.0.8802.1.1.2.1.4.1.1.9.0'
-        LLDP_DEVDESC: str = '1.0.8802.1.1.2.1.4.1.1.10.0'
-        LLDP_DEVADDR: str = '1.0.8802.1.1.2.1.4.2.1.5.0'
         """
         _lldp_mib = '1.0.8802.1.1.2'
         _lldp_devaddr = '1.0.8802.1.1.2.1.4.2.1.5.0'
@@ -929,57 +866,35 @@ class Node(BaseData):
             neighbors.append(link)
         return neighbors
 
-""" SNMP Queries Saved
-ospf = self.snmp_get(o.OSPF)
-ospf_id = self.snmp_get(o.OSPF_ID)
+    def create_links(self) -> DataTable:
+        """ Combine CDP and LLDP to create links
 
-ent_class = self.snmp_get(o.ENTPHYENTRY_CLASS, is_bulk=True)
-ent_serial = self.snmp_get(o.ENTPHYENTRY_SERIAL, is_bulk=True)
-ent_plat = self.snmp_get(o.ENTPHYENTRY_PLAT, is_bulk=True)
-ent_ios = self.snmp_get(o.ENTPHYENTRY_SOFTWARE, is_bulk=True)
-link_type = self.snmp_get(o.TRUNK_VTP, is_bulk=True)
-lag = self.snmp_get(o.LAG_LACP, is_bulk=True)
-ifname = self.snmp_get(o.IFNAME, is_bulk=True)
-ifip = self.snmp_get(o.IF_IP, is_bulk=True)
-ethif = self.snmp_get(o.ETH_IF, is_bulk=True)
-trunk_allowed = self.snmp_get(o.TRUNK_ALLOW, is_bulk=True)
-trunk_native = self.snmp_get(o.TRUNK_NATIVE, is_bulk=True)
-portnums = self.snmp_get(o.BRIDGE_PORTNUMS, is_bulk=True)
-ifindex = self.snmp_get(o.IFINDEX, is_bulk=True)
-vlan = self.snmp_get(o.VLANS, is_bulk=True)
-vlandesc = self.snmp_get(o.VLAN_DESC, is_bulk=True)
-svi = self.snmp_get(o.SVI_VLANIF, is_bulk=True)
-vpc = self.snmp_get(o.VPC_PEERLINK_IF, is_bulk=True)
-stack = self.snmp_get(o.STACK, is_bulk=True)
-cdp = self.snmp_get(o.CDP, is_bulk=True)
-lldp = self.snmp_get(o.LLDP, is_bulk=True)
-route = self.snmp_get(o.IP_ROUTE_TABLE, is_bulk=True)
-arp = self.snmp_get(o.ARP, is_bulk=True)
-cam = self.snmp_get(o.VLAN_CAM, is_bulk=True)
+        Using the following method:
+            1. Gather CDP and LLDP links.
+            2. Iterate though CDP and LLDP.
+            3. If a match is found 'is_same_link'.
+            4. Remove the CDP entry.
+            5. From the CDP entry 'injest' the LLDP entry.
+            6. Add this new CDP/LLDP entry back to the list.
+            4. Iterate through LLDP again.
+            8. Add LLDP entry if local_port not in 'links'.
+        """
+        # Start with CDP and build
+        links = self.get_cdp()
+        # LLDP links
+        lldp_links = self.get_lldp()
+        for cdp in links:
+            for lldp in lldp_links:
+                if cdp.is_same_link(lldp):
+                    # Remove CDP
+                    links.remove(cdp)
+                    # From cdp injest lldp
+                    cdp.injest_link(lldp)
+                    # Add the combined cdp/lldp back
+                    links.append(cdp)
+        # Iterate again to add LLDP links not in CDP
+        for lldp in lldp_links:
+            if lldp.local_port not in [l.local_port for l in links]:
+                links.append(lldp)
+        self.links = DataTable(links)
 
-bulk_shit = {
-    'ent_class': o.ENTPHYENTRY_CLASS,
-    'ent_serial': o.ENTPHYENTRY_SERIAL,
-    'ent_plat': o.ENTPHYENTRY_PLAT,
-    'ent_ios': o.ENTPHYENTRY_SOFTWARE,
-    'link_type': o.TRUNK_VTP,
-    'lag': o.LAG_LACP,
-    'ifname': o.IFNAME,
-    'ifip': o.IF_IP,
-    'ethif': o.ETH_IF,
-    'trunk_allowed': o.TRUNK_ALLOW,
-    'trunk_native': o.TRUNK_NATIVE,
-    'portnums': o.BRIDGE_PORTNUMS,
-    'ifindex': o.IFINDEX,
-    'vlan': o.VLANS,
-    'vlandesc': o.VLAN_DESC,
-    'svi': o.SVI_VLANIF,
-    'vpc': o.VPC_PEERLINK_IF,
-    'stack': o.STACK,
-    'cdp': o.CDP,
-    'lldp': o.LLDP,
-    'route': o.IP_ROUTE_TABLE,
-    'arp': o.ARP,
-    'cam': o.VLAN_CAM,
-}
-"""

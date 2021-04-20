@@ -8,8 +8,7 @@
 # sw2.query_node()
 # nodes = Nodes([sw1, sw2])
 
-from nettopo.core.network import NettopoNetwork
-net = NettopoNetwork('10.0.0.0/24')
-net.discover('10.0.0.1')
-net.nodes.rows()
+from nettopo.core.nettopo import Nettopo
+net = Nettopo('10.0.0.0/24')
+net.discover_network('10.0.0.1')
 

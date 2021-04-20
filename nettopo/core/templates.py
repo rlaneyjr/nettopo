@@ -1,13 +1,13 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
     templates.py
 
 Jinja2 templates
-'''
+"""
 
-credits_template = '''
+credits_template = """
 <table border=0>
   <tr>
     <td balign=right>
@@ -16,9 +16,9 @@ credits_template = '''
     </td>
   </tr>
 </table>
-'''
+"""
 
-node_template = '''
+node_template = """
 <font point-size="10"><b>{{ node.name }}</b></font><br />
 {{ node.get_ips() }}<br />
 {% if node.ios %}
@@ -70,71 +70,22 @@ node_template = '''
         VLAN {{ svi.vlan }} - {{ svi.ip }}<br />
     {% endfor %}
 {% endif %}
-'''
+"""
 
-link_template = '''
-{% if node.vpc_peerlink_if in [link.local_port, link.local_lag] %}
+link_template = """
+{% if node.vpc and node.vpc.ifname == link.local_port %}
     VPC<br />
 {% endif %}
-{% if is_lag %}
-    LAG<br />
-    {{ lag_members }} Members<br />
-{% else %}
-    Local: {{ link.local_port }}<br />
-    Remote: {{ link.remote_port }}<br />
+{% if link.local_port %}
+    Local Port: {{ link.local_port }}<br />
 {% endif %}
-{% if is_lag %}
-    {% if link.local_lag != 'UNKNOWN' %}
-        LAG Member<br />
-        {% if link.local_lag_ips and link.remote_lag_ips %}
-            Local: {{ link.local_lag }} - {{ link.local_lag_ips[0] }}<br />
-            Remote: {{ link.remote_lag }} - {{ link.remote_lag_ips[0] }}<br />
-        {% else %}
-            Local: {{ link.local_lag }} | Remote: {{ link.remote_lag }}<br />
-        {% endif %}
-    {% endif %}
-    {% if link.local_if_ip and link.local_if_ip != 'UNKNOWN' %}
-        Local: {{ link.local_if_ip }}<br />
-    {% endif %}
-    {% if link.remote_if_ip and link.remote_if_ip != 'UNKNOWN' %}
-        Remote: {{ link.remote_if_ip }}<br />
-    {% endif %}
-{% else %}
-    {% for lnk in node.links %}
-        {% if lnk.local_lag == link.local_lag %}
-            Local: {{ l.local_port }} | Remote: {{ l.remote_port }}"
-        {% endif %}
-    {% endfor %}
-    {% if link.local_lag_ips and link.remote_lag_ips %}
-        Local: {{ link.local_lag }} - {{ link.local_lag_ips[0] }}<br />
-        Remote: {{ link.remote_lag }} - {{ link.remote_lag_ips[0] }}<br />
-    {% else %}
-        Local: {{ link.local_lag }} | Remote: {{ link.remote_lag }}<br />
-    {% endif %}
+{% if link.remote_port %}
+    Remote Port: {{ link.remote_port }}<br />
 {% endif %}
-{% if link.link_type == '1' %}
-    TRUNK<br />
-    {% if link.local_native_vlan == link.remote_native_vlan %}
-        Native Match: {{ link.local_native_vlan }}<br />
-    {% elif not link.remote_native_vlan %}
-        Native Local: {{ link.local_native_vlan }} Remote: None<br />
-    {% else %}
-        Native Local: {{ link.local_native_vlan }} Remote: {{ link.remote_native_vlan }}<br />
-    {% endif %}
-    {% if link.local_allowed_vlans == link.remote_allowed_vlans %}
-        Allowed Match: {{ link.local_allowed_vlans }}<br />
-    {% else %}
-        Allowed Local: {{ link.local_allowed_vlans }}<br />
-        {% if link.remote_allowed_vlans %}
-            Allowed Remote: {{ link.remote_allowed_vlans }}<br />
-        {% endif %}
-    {% endif %}
-{% elif not link.link_type %}
-    ROUTED<br />
-{% else %}
-    SWITCHED<br />
-    {% if link.vlan %}
-        VLAN {{ link.vlan }}<br />
-    {% endif %}
+{% if link.local_if_ip %}
+    Local IP: {{ link.local_if_ip }}<br />
 {% endif %}
-'''
+{% if link.remote_if_ip %}
+    Remote IP: {{ link.remote_if_ip }}<br />
+{% endif %}
+"""

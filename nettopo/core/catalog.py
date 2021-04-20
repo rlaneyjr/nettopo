@@ -6,19 +6,18 @@
 '''
 import os
 from nettopo.core.exceptions import NettopoCatalogError
-from nettopo.core.network import Network
+from nettopo.core.network import NettopoNetwork
 
 
 class Catalog:
-    def __init__(self, network: Network):
-        if isinstance(network, Network):
+    def __init__(self, network: NettopoNetwork):
+        if isinstance(network, NettopoNetwork):
             self.network = network
         else:
             try:
-                self.network = Network(network)
+                self.network = NettopoNetwork(network)
             except:
-                raise NettopoCatalogError(f"{network} not a valid Nettopo \
-                                                                    Network")
+                raise NettopoCatalogError(f"{network} invalid NettopoNetwork")
 
 
     def generate(self, filename=None):
