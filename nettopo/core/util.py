@@ -7,6 +7,7 @@
 import binascii
 from datetime import timedelta
 from functools import wraps
+import logging
 from pyasn1.type.univ import ObjectIdentifier
 from pysnmp.proto.rfc1902 import (
     Counter32,
@@ -21,12 +22,29 @@ from pysnmp.proto.rfc1902 import (
 )
 import re
 from timeit import default_timer as timer
-from typing import Any, Union
+from typing import Any, Union, Optional
 import uuid
 # My Stuff
 from nettopo.core.constants import SNMP_TYPES, port_conversion_map
 from nettopo.core.data import Secret, LinkData
 from nettopo.core.exceptions import NettopoError, NettopoTypeError
+
+LOG = logging.getLogger(__name__)
+
+
+def configure_logging(
+    level: Optional[int]=None,
+    logger: Optional[logging.Logger]=None,
+    format: str='%(message)s'
+):
+    """Switches on logging at a given level. For a given logger or globally.
+
+    :param level:
+    :param logger:
+    :param format:
+    """
+    logging.basicConfig(format=format, level=level if logger else None)
+    logger and logger.setLevel(level or logging.INFO)
 
 
 def build_uuid():

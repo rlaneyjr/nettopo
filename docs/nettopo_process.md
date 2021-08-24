@@ -23,3 +23,30 @@ Discovery
 9. If default gateway is public IP and not in DMZ, label 'internet'.
 10. If DG is private, then this is our network device and add to table for discovery.
 11. 
+
+	
+
+How to collect Interface-VLAN membership info from Cisco Switch via SNMP (CISCO-VLAN-MEMBERSHIP-MIB)
+--------------------------------------
+ 
+> CISCO-VLAN-MEMBERSHIP-MIB contain several usefull OIDs for collecting Interface VLAN membership information from Cisco Swithes
+  1.3.6.1.4.1.9.9.68.1.2.2.1.1 (vmVlanType)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.2 (vmVlan)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.3 (vmPortStatus)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.4 (vmVlans)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.5 (vmVlans2k)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.6 (vmVlans3k)
+  1.3.6.1.4.1.9.9.68.1.2.2.1.7 (vmVlans4k)
+ 
+Lets see what our LAB switch reports on these for Interface with ifIndex = [4]
+ 
+1. OID VLAN Memership Type: 1.3.6.1.4.1.9.9.68.1.2.2.1.1
+  1 = static, 2 = dynamic, 3 = multiVlan
+  Output Example: ‘1.3.6.1.4.1.9.9.68.1.2.2.1.1.4’ => “1” (VLAN statically assigned to this port)
+ 
+2. OID VLAN ID of the Port: 1.3.6.1.4.1.9.9.68.1.2.2.1.1
+  Output Example: ‘1.3.6.1.4.1.9.9.68.1.2.2.1.2.4′ => “104” (Port is assigned to VLAN 104)
+ 
+3. OID Port Status: 1.3.6.1.4.1.9.9.68.1.2.2.1.3
+  1 = Inactive, 2 = Active, 3 = Shutdown
+  Output Example: ‘1.3.6.1.4.1.9.9.68.1.2.2.1.3.4’ => “2” (Port is Active)

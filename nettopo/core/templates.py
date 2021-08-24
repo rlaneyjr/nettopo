@@ -6,6 +6,10 @@
 
 Jinja2 templates
 """
+from jinja2 import BaseLoader, TemplateNotFound
+from jinja2.environment import Template
+from jinja2.nativetypes import NativeEnvironment
+from typing import Optional, Any
 
 credits_template = """
 <table border=0>
@@ -20,7 +24,7 @@ credits_template = """
 
 node_template = """
 <font point-size="10"><b>{{ node.name }}</b></font><br />
-{{ node.get_ips() }}<br />
+{{ node.ip }}<br />
 {% if node.ios %}
     {{ node.ios }}<br />
 {% endif %}
@@ -89,3 +93,30 @@ link_template = """
     Remote IP: {{ link.remote_if_ip }}<br />
 {% endif %}
 """
+
+template_mapper = {
+    'credits': credits_template,
+    'node': node_template,
+    'link': link_template,
+}
+
+class MyTemplateLoader(BaseLoader):
+    def __init__(self) -> None:
+        self.template_mapper = template_mapper
+
+    def get_source(self, environment, template):
+        source = self.template_mapper.get(template)
+        if not source:
+            raise TemplateNotFound(f"Template {template} not found")
+        return source, None, False
+
+
+def load_template(kind: str, template: str) -> Any:
+    # Create a new instancve of our MyTemplateLoader class
+    temp_loader = MyTemplateLoader()
+    env = NativeEnvironment(
+        trim_blocks=True,
+        lstrip_blocks=True,
+        loader=temp_loader,
+    )
+    return env.get_template(template)

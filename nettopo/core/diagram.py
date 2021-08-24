@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 # vim: noai:et:tw=80:ts=4:ss=4:sts=4:sw=4:ft=python
 
-'''
+"""
     diagram.py
-'''
+"""
 import datetime
 from jinja2 import Template, Environment
 import os
@@ -24,17 +24,32 @@ from nettopo.core.util import get_path, get_port_module
 from N2G import yed_diagram
 
 diagram = yed_diagram()
-sample_list_graph = [
-    {'source': {'id': 'SW1', 'top_label': 'CORE', 'bottom_label': '1,1,1,1'}, 'src_label': 'Gig0/0', 'target': 'R1', 'trgt_label': 'Gig0/1'},
-    {'source': {'id': 'R2', 'top_label': 'DC-PE'}, 'src_label': 'Gig0/0', 'target': 'SW1', 'trgt_label': 'Gig0/2'},
-    {'source': {'id':'R3', 'bottom_label': '1.1.1.3'}, 'src_label': 'Gig0/0', 'target': 'SW1', 'trgt_label': 'Gig0/3'},
-    {'source': 'SW1', 'src_label': 'Gig0/4', 'target': 'R4', 'trgt_label': 'Gig0/1'},
-    {'source': 'SW1', 'src_label': 'Gig0/5', 'target': 'R5', 'trgt_label': 'Gig0/7'},
-    {'source': 'SW1', 'src_label': 'Gig0/6', 'target': 'R6', 'trgt_label': 'Gig0/11'}
-]
-diagram.from_list(sample_list_graph)
-diagram.dump_file(filename="Sample_graph.graphml", folder="./")
+diagram.add_node('R1', top_label='Core', bottom_label='ASR1004', description="loopback0: 192.168.1.1", url="google.com")
+diagram.add_node('R2', top_label='Edge', bottom_label='MX240', description="loopback0: 192.168.1.2")
+diagram.add_link('R1', 'R2', label='DF', src_label='Gi0/1', trgt_label='ge-0/1/2', description="link media-type: 10G-LR", url="github.com")
+diagram.layout(algo="kk")
+diagram.dump_file(filename="Sample_graph.graphml", folder="./Output/")
 
+
+diagram = yed_diagram()
+sample_graph={
+'nodes': [
+    {'id': 'a', 'pic': 'router.svg', 'label': 'R1' },
+    {'id': 'R2', 'bottom_label':'CE12800', 'top_label':'1.1.1.1'},
+    {'id': 'c', 'label': 'R3', 'bottom_label':'FI', 'top_label':'fns751', 'description': 'role: access'},
+    {'id': 'd', 'pic':'firewall.svg', 'label': 'FW1', 'description': 'location: US'},
+    {'id': 'R4', 'pic': 'router'}
+],
+'links': [
+    {'source': 'a', 'src_label': 'Gig0/0\nUP', 'label': 'DF', 'target': 'R2', 'trgt_label': 'Gig0/1', 'description': 'role: uplink'},
+    {'source': 'R2', 'src_label': 'Gig0/0', 'label': 'Copper', 'target': 'c', 'trgt_label': 'Gig0/2'},
+    {'source': 'c', 'src_label': 'Gig0/0', 'label': 'ZR', 'target': 'a', 'trgt_label': 'Gig0/3'},
+    {'source': 'd', 'src_label': 'Gig0/10', 'label': 'LR', 'target': 'c', 'trgt_label': 'Gig0/8'},
+    {'source': 'd', 'src_label': 'Gig0/11', 'target': 'R4', 'trgt_label': 'Gig0/18'}
+]}
+diagram.from_dict(sample_graph)
+diagram.layout(algo="kk")
+diagram.dump_file(filename="Sample_graph.graphml", folder="./Output/")
 
 from_dict:
 Method to build graph from dictionary.
@@ -80,8 +95,8 @@ sample_graph = {
 """
 
 class yEdNode:
-    ''' Represents a network node for a DOT diagram
-    '''
+    """ Represents a network node for a yEd diagram
+    """
     def __init__(self, node, config):
         self.node = node
         self.config = config
@@ -117,8 +132,8 @@ class yEdNode:
         return template.render(node=self.node, config=self.config)
 
 class DotNode:
-    ''' Represents a network node for a DOT diagram
-    '''
+    """ Represents a network node for a DOT diagram
+    """
     def __init__(self, node, config):
         self.node = node
         self.config = config
@@ -155,12 +170,18 @@ class DotNode:
 
 
 class Diagram:
+    _styles_ = ['dot', 'yed', 'drawio']
     def __init__(self, network: NettopoNetwork, style: str='dot') -> None:
         self.network = network
-        self.style = style
         self.config = self.network.config.diagram
+        if style in self._styles_:
+            self.style = style
+        else:
+            raise NettopoDiagramError(
+                f"{style} is not a known style. Choose from {self._styles_}"
+            )
 
-    def generate(self, dot_file, title):
+    def generate(self, out_file, title):
         title_text_size = self.config.title_text_size
         date_text_size = title_text_size - 2
         today = datetime.datetime.now()
@@ -188,7 +209,7 @@ class Diagram:
             _, file_ext = os.path.splitext(f)
             func_name = f"write_{file_ext.lstrip('.')}"
             # write_'format'(path, prog='program')
-            if func_name in diagram.__dir__():
+            if func_name in dir(diagram):
                 output_func = getattr(diagram, func_name)
                 output_func(f)
                 print(f"Created diagram: {f}")

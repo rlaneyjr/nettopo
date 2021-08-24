@@ -161,6 +161,15 @@ class InterfaceData(BaseData):
         self.cidrs = None
         self.admin_status = None
         self.oper_status = None
+        self.mtu = None
+        self.speed = None
+        self.alias = None
+        self.port_type = None
+        self.port_native_vlan = None
+        self.port_allowed_vlans = None
+        self.port_vlan = None
+        self.port_vlan_mem = None
+        self.port_vlan_status = None
 
     @property
     def ip(self) -> str:
@@ -196,18 +205,21 @@ class LinkData(BaseData):
         self.remote_platform = None
         self.remote_ios = None
         self.remote_mac = None
-
-        # Removed below from 'LinkData' since it was returning incorrect info
-        # self.vlan = None
-        # self.link_type = None
-        # self.local_native_vlan = None
-        # self.local_allowed_vlans = None
-        # self.local_lag = None
-        # self.local_lag_ips = None
-        # self.remote_native_vlan = None
-        # self.remote_allowed_vlans = None
-        # self.remote_lag = None
-        # self.remote_lag_ips = None
+        self.link_type = None
+        self.local_native_vlan = None
+        self.local_allowed_vlans = None
+        self.local_vlan = None
+        self.local_vlan_mem = None
+        self.local_vlan_status = None
+        self.local_lag = None
+        self.local_lag_ips = None
+        self.remote_native_vlan = None
+        self.remote_allowed_vlans = None
+        self.remote_vlan = None
+        self.remote_vlan_mem = None
+        self.remote_vlan_status = None
+        self.remote_lag = None
+        self.remote_lag_ips = None
 
     def is_same_link(self, link: object) -> bool:
         # Make sure different protocols were used

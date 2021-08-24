@@ -184,7 +184,8 @@ class NettopoNetwork(BaseData):
         except NettopoSNMPError:
             self._print(f"SNMP access to {ip} failed")
 
-    def snmp_discover_root(self, network: _USNA=None) -> Optional[Node]:
+    def snmp_discover_nodes(self, network: _USNA=None, query: bool=False) -> Optional[Node]:
+        snmp_nodes = Nodes()
         if network:
             self.create_network(network)
         hosts = str(self.network)
@@ -194,16 +195,16 @@ class NettopoNetwork(BaseData):
         snmp_ips = port_scanner.all_hosts()
         for ip in snmp_ips:
             self._print(f"Discovered {ip} has port 161 checking SNMP access")
-            node = self.create_node(ip)
+            node = self.create_node(ip, query)
             if node:
-                return node
+                snmp_nodes.append(node)
+        return snmp_nodes
 
     def auto_discover(self, network: _USNA=None) -> None:
-        self.root_node = self.snmp_discover_root(network)
-        if self.root_node:
-            self.root_node.query_node(self.verbose)
-            self._print(f"Discovery of {self.root_node.name} successful")
-            self._start_discovery()
+        snmp_nodes = self.snmp_discover_nodes(network, True)
+        if snmp_nodes:
+            self._print(f"Discovered {len(snmp_nodes)} SNMP nodes")
+            self._start_discovery(snmp_nodes)
         else:
             raise NettopoNetworkError(
                 f"No SNMP nodes discovered on {self.network}"
@@ -229,16 +230,18 @@ class NettopoNetwork(BaseData):
             print(f"Auto discovery of {self.network} started")
             self.auto_discover()
 
-    def _start_discovery(self):
-        if not self.root_node:
+    def _start_discovery(self, nodes: Optional[Nodes]=None):
+        if nodes:
+            self.nodes = nodes
+        elif self.root_node:
+            self.nodes = Nodes([self.root_node])
+        else:
             raise NettopoNetworkError(
-                f"No root node discovered on {self.network}"
+                f"No nodes provided or root node discovered on {self.network}"
             )
-        # Add root_node to global list of nodes
-        self.nodes.append(self.root_node)
         # First level 0 "root level"
         self.depth = 0
-        root_level = Level(self.depth, self.root_node)
+        root_level = Level(self.depth, self.nodes)
         self.levels.append(root_level)
         # Now start the recursive discovery
         self.discover_level(self.nodes)
