@@ -75,10 +75,7 @@ class BaseData:
     :property:  show - Show the show_items
     """
     def _as_dict(self, keys: list=None) -> dict:
-        try:
-            _my_data = self.__dict__['data']
-        except:
-            _my_data = self.__dict__
+        _my_data = self.__dict__.get("data", self.__dict__)
         if keys:
             _dict = {}
             for key, val in _my_data.items():
