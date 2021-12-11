@@ -30,7 +30,7 @@ class Catalog:
                 for mem in node.stack.members:
                     serial = mem.serial or 'Unknown'
                     plat = mem.plat or 'Unknown'
-                    lines.append(f"{node.name},{node.ip[0]},{plat},{node.ios}, \
+                    lines.append(f"{node.name},{node.ip},{plat},{node.ios}, \
                                         {serial},STACK,{node.bootfile}\n")
             # VSS
             elif node.vss.enabled:
@@ -38,12 +38,12 @@ class Catalog:
                     serial = node.vss.members[i].serial
                     plat = node.vss.members[i].plat
                     ios = node.vss.members[i].ios
-                    lines.append(f"{node.name},{node.ip[0]},{plat},{ios}, \
+                    lines.append(f"{node.name},{node.ip},{plat},{ios}, \
                                        {serial},VSS,{node.bootfile}\n")
             # Stand Alone
             else:
-                lines.append(f"{node.name},{node.ip[0]},{node.plat}, \
-                        {node.ios},{node.serial},SINGLE,{node.bootfile}\n")
+                lines.append(f"{node.name},{node.ip},{node.plat}, \
+                        {node.os},{node.serial},SINGLE,{node.bootfile}\n")
         if filename and os.path.isfile(filename):
             with open(filename, 'w+') as f:
                 for line in lines:

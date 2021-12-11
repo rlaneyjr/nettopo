@@ -53,21 +53,29 @@ class Secret:
 
 
 class SecretList(UserList):
+
     def __repr__(self) -> str:
         return f"[SecretList] - {len(self)} secrets"
 
     def __contains__(self, thing: Union[str, Secret]) -> bool:
-        if isinstance(thing, Secret):
-            return thing.show in [m.show for m in self]
-        else:
-            return thing in [m.show for m in self]
+        return show_secret(thing) in self.show_list
+
+    @property
+    def show_list(self) -> List[str]:
+        return [s.show for s in self]
 
     def append(self, thing: Union[str, Secret]) -> None:
         if not isinstance(thing, Secret):
             thing = Secret(thing)
-        if not thing in self:
+        if thing not in self:
             super().append(thing)
 
+
+def show_secret(secret: Union[str, Secret]) -> str:
+    if isinstance(secret, Secret):
+        return secret.show
+    else:
+        return str(secret)
 
 class BaseData:
     """ Base Data class that all other classes inherit from
@@ -136,13 +144,12 @@ class DataTable(UserList):
         return self.column(attr)
 
     def get_item(self, key: str, value: _UIS, no_list: bool=False) -> _UOLN:
-        _rows = self.rows(key, value)
-        if not _rows:
-            return None
-        if (len(_rows) == 1) or no_list:
-            return _rows[0]
-        elif (len(_rows) > 1) and not no_list:
-            return _rows
+        rows = self.rows(key, value)
+        if rows:
+            if (len(rows) == 1) or no_list:
+                return rows[0]
+            elif (len(rows) > 1) and not no_list:
+                return rows
 
 
 class BaseDict(BaseData, UserDict): pass
@@ -218,23 +225,16 @@ class LinkData(BaseData):
         self.remote_lag = None
         self.remote_lag_ips = None
 
-    def is_same_link(self, link: object) -> bool:
+    def __eq__(self, o: object) -> bool:
+        ''' Custom equality checker for Link objects
+        '''
         # Make sure different protocols were used
-        if (self.discovered_proto != link.discovered_proto) \
-                and (self.local_port == link.local_port) \
-                and ((self.remote_name == link.remote_name) \
-                     or (self.remote_port == link.remote_port)):
+        if (self.discovered_proto != o.discovered_proto) \
+                and (self.local_port == o.local_port) \
+                and ((self.remote_name == o.remote_name) \
+                     or (self.remote_port == o.remote_port)):
             return True
         return False
-
-    def injest_link(self, link: object) -> None:
-        # No need to check since it's expensive we only do once.
-        #if self.is_same_link(link):
-        self.discovered_proto = 'both'
-        for key, val in link.__dict__.items():
-            # Replace items we do not have
-            if val and not getattr(self, key):
-                setattr(self, key, val)
 
 
 class VssData(BaseData):

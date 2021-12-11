@@ -49,6 +49,11 @@ DEFAULT_CONFIG = {
 
 @SingletonDecorator
 class NettopoConfig:
+    """ Config class that holds Nettopo's configuration
+    Also a singleton so there is only one instance ever.
+    All changes made are sure to be the same config instance.
+    """
+
     def __init__(self, config=None, filename=None):
         # Load defaults then override with custom
         self.config = DEFAULT_CONFIG
@@ -58,6 +63,14 @@ class NettopoConfig:
         self.snmp_creds = SecretList([])
         self.acl = {'permit': [], 'deny': []}
         self.load(config=config, filename=filename)
+
+    def load(self, config=None, filename=None):
+        if config:
+            self.config.update(**config)
+        if filename:
+            json_data = self.load_json(filename)
+            self.config.update(**json_data)
+        self.sync_config()
 
     def add_acl_line(self, line: str) -> None:
         if line.startswith('#'):
@@ -90,14 +103,6 @@ class NettopoConfig:
         with open(json_file) as jf:
             json_data = json.load(jf)
         return json_data
-
-    def load(self, config=None, filename=None):
-        if config:
-            self.config.update(**config)
-        if filename:
-            json_data = self.load_json(filename)
-            self.config.update(**json_data)
-        self.sync_config()
 
     def ip_passes_acl(self, ip: str) -> bool:
         """ Is this IPv4 address allowed discovery?

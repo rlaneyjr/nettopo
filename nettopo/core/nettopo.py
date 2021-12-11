@@ -47,8 +47,8 @@ class Nettopo:
     def set_verbose(self, verbose: bool):
         self.network.verbose = verbose
 
-    def discover_network(self, root_ip: _USA=None):
-        self.network.discover(root_ip)
+    def discover_network(self, ip: _USA=None):
+        self.network.discover(ip=ip)
         self.diagram = Diagram(self.network)
         self.catalog = Catalog(self.network)
 

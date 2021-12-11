@@ -152,8 +152,13 @@ def normalize_port(port: str=None):
     if not port:
         port = 'Unknown'
     else:
+        if port.startswith('0x'):
+            try:
+                port = binascii.unhexlify(port[2:])
+            except Exception:
+                port = port
         for key, val in port_conversion_map.items():
-            if port.startswith(key):
+            if str(port).startswith(key):
                 port = port.replace(key, val)
     return port
 
@@ -206,16 +211,16 @@ def get_path(pattern):
 
 
 def format_ios_ver(img):
-    x = img.decode('utf-8') if isinstance(img, bytes) else str(img)
     try:
-        img_s = re.search('(Version:? |CCM:)([^ ,$]*)', x)
+        img_s = re.search('(Version:? |CCM:)([^ ,$]*)', img)
     except:
-        return x
-    if img_s:
-        if img_s.group(1) == 'CCM:':
-            return f"CCM {img_s.group(2)}"
-        return img_s.group(2)
-    return x
+        img_s = False
+    finally:
+        if img_s:
+            if img_s.group(1) == 'CCM:':
+                return f"CCM {img_s.group(2)}"
+            return img_s.group(2)
+        return img
 
 
 def mac_ascii_to_hex(mac_str):
